@@ -136,7 +136,7 @@ export default function Explorer() {
         <div>
           <h1 className="text-3xl font-bold font-serif tracking-widest bg-gradient-to-r from-amber-300 via-amber-400 to-amber-600 bg-clip-text text-transparent">AVENA</h1>
           <p className="text-[10px] tracking-[4px] uppercase text-amber-500 mt-0.5">Explorer v2.0</p>
-          <p className="text-[10px] text-gray-500 italic mt-1">In partnership with Xavia Estate</p>
+          <p className="text-[10px] text-gray-500 italic mt-1">In partnership with <a href="https://www.xaviaestate.com" target="_blank" rel="noopener noreferrer" className="text-amber-400 hover:text-amber-300 transition-colors">Xavia Estate</a></p>
         </div>
         <div className="flex gap-6">
           <div className="text-center">
