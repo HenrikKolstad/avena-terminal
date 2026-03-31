@@ -250,13 +250,46 @@ async function main() {
   const properties = Array.isArray(data.root.property) ? data.root.property : [data.root.property];
   console.log(`Found ${properties.length} properties in feed`);
 
-  // Filter new builds only + Costa Blanca & Calida only (no Almería, Valencia)
+  // Filter: new builds only + Costa Blanca & Calida only (no Almería, Valencia)
   const allowedCostas = ['costa blanca south', 'costa blanca north', 'costa calida', 'costa blanca south - inland', 'costa blanca north - inland'];
   const parsed = properties
     .filter(p => p.new_build == 1)
     .filter(p => {
       const costa = (p.costa || '').toLowerCase();
       return allowedCostas.some(c => costa.includes(c.split(' - ')[0]) || c.includes(costa));
+    })
+    .filter(p => {
+      // Exclude resale/renovated disguised as new builds
+      const title = ((p.title?.en) || '').toLowerCase();
+      const desc = ((p.desc?.en) || '').toLowerCase();
+      const combined = title + ' ' + desc;
+
+      // Keyword exclusions
+      const excludeKeywords = ['renovate', 'renovated', 'renovation', 'regenerated', 'reform',
+        'resale', 'second hand', 'secondhand', 'bank repo', 'private pier',
+        'recently built', 'already built'];
+      if (excludeKeywords.some(kw => combined.includes(kw))) {
+        console.log('  EXCLUDED (keyword):', title.substring(0, 60));
+        return false;
+      }
+
+      // Delivery date in the past (before 2025) = already completed, likely resale
+      if (p.delivery_date) {
+        const deliveryYear = parseInt(p.delivery_date.toString().split('-')[0]);
+        if (deliveryYear < 2025) {
+          console.log('  EXCLUDED (old delivery ' + p.delivery_date + '):', title.substring(0, 60));
+          return false;
+        }
+      }
+
+      // year_build before 2023 = definitely not a new build
+      const yearBuild = parseInt(p.year_build);
+      if (yearBuild && yearBuild < 2023) {
+        console.log('  EXCLUDED (year_build ' + yearBuild + '):', title.substring(0, 60));
+        return false;
+      }
+
+      return true;
     })
     .map(parseProperty)
     .filter(Boolean);
