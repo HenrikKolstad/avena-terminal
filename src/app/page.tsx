@@ -437,27 +437,112 @@ function StatBox({ label, value }: { label: string; value: string }) {
 
 function YieldTab({ properties }: { properties: Property[] }) {
   const sorted = [...properties].sort((a, b) => (b._yield?.gross || 0) - (a._yield?.gross || 0));
+  const [selected, setSelected] = useState<Property | null>(null);
+
+  const calc = selected?._yield ? (() => {
+    const gross = selected._yield!.annual;
+    const mgmt = Math.round(gross * 0.15);
+    const community = Math.round(selected.pf * 0.003);
+    const maintenance = Math.round(selected.pf * 0.005);
+    const insurance = Math.round(selected.pf * 0.002);
+    const totalCosts = mgmt + community + maintenance + insurance;
+    const net = gross - totalCosts;
+    const netYield = ((net / selected.pf) * 100).toFixed(1);
+    return { gross, mgmt, community, maintenance, insurance, totalCosts, net, netYield };
+  })() : null;
+
   return (
-    <div className="p-8">
-      <h2 className="font-serif text-xl text-amber-400 mb-4">Estimated Rental Yield</h2>
+    <div className="p-6">
+      {/* Info banner */}
+      <div className="bg-[#111118] border border-amber-700/30 rounded-lg p-4 mb-6 text-xs text-gray-400">
+        <p className="font-semibold text-amber-400 mb-1">How rental yield is calculated</p>
+        <p className="mb-1">
+          <span className="text-white">Gross yield</span> = nightly rate × weeks occupancy ÷ property price.
+          Nightly rates are sourced from AirDNA, Airbnb, and Vrbo data for each location.
+          Occupancy is estimated at 19–21 weeks/year (peak + shoulder season).
+        </p>
+        <p className="mb-1">
+          <span className="text-white">Net yield</span> deducts: property management (15%), community fees (~0.3%), maintenance (~0.5%), insurance (~0.2%).
+        </p>
+        <p className="text-gray-600">
+          ⚠ Not included: mortgage interest, income tax on rental earnings (~19% for EU residents), one-time furnishing costs, vacancy risk, platform fees (Airbnb ~3%). Click any property to see the full breakdown.
+        </p>
+      </div>
+
+      <h2 className="font-serif text-xl text-amber-400 mb-4">Top Rental Yield Properties</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {sorted.slice(0, 30).map((d, i) => (
-          <div key={d.ref || i} className="bg-[#111118] border border-[#2a2a30] rounded-lg p-4 hover:border-amber-500/50 transition-all">
+          <div
+            key={d.ref || i}
+            onClick={() => setSelected(selected?.ref === d.ref ? null : d)}
+            className={`bg-[#111118] border rounded-lg p-4 cursor-pointer transition-all ${selected?.ref === d.ref ? 'border-amber-500' : 'border-[#2a2a30] hover:border-amber-500/50'}`}
+          >
             <div className="flex justify-between items-start mb-2">
-              <div>
-                <div className="text-amber-300 font-semibold text-sm">{d.p}</div>
+              <div className="flex-1 pr-2">
+                <div className="text-amber-300 font-semibold text-sm leading-tight">{d.p}</div>
                 <div className="text-gray-500 text-xs">{d.l}</div>
               </div>
-              <span className={`text-lg font-bold ${(d._yield?.gross || 0) >= 7 ? 'text-emerald-400' : (d._yield?.gross || 0) >= 5 ? 'text-amber-400' : 'text-gray-500'}`}>
+              <span className={`text-lg font-bold whitespace-nowrap ${(d._yield?.gross || 0) >= 7 ? 'text-emerald-400' : (d._yield?.gross || 0) >= 5 ? 'text-amber-400' : 'text-gray-500'}`}>
                 {d._yield?.gross}%
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2 text-center mt-3">
               <div><div className="text-sm font-bold">{formatPrice(d.pf)}</div><div className="text-[9px] text-gray-500">Price</div></div>
               <div><div className="text-sm font-bold">€{d._yield?.rate}/n</div><div className="text-[9px] text-gray-500">Nightly</div></div>
-              <div><div className="text-sm font-bold">{formatPrice(d._yield?.annual || 0)}</div><div className="text-[9px] text-gray-500">Annual</div></div>
+              <div><div className="text-sm font-bold">{formatPrice(d._yield?.annual || 0)}</div><div className="text-[9px] text-gray-500">Gross/yr</div></div>
             </div>
             <div className="text-[9px] text-gray-600 mt-2">Source: {d._yield?.src} | {d._yield?.weeks} wks occupancy</div>
+            <div className="text-[9px] text-amber-600 mt-1">Click for full breakdown →</div>
+
+            {/* Expanded calculator */}
+            {selected?.ref === d.ref && calc && (
+              <div className="mt-4 pt-4 border-t border-[#2a2a30]" onClick={e => e.stopPropagation()}>
+                <div className="text-xs font-semibold text-amber-400 mb-3">Annual Cash Flow Calculator</div>
+                <div className="space-y-1.5 text-xs">
+                  <div className="flex justify-between text-emerald-400 font-semibold">
+                    <span>Gross rental income</span>
+                    <span>+{formatPrice(calc.gross)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-400">
+                    <span>Property management (15%)</span>
+                    <span>-{formatPrice(calc.mgmt)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-400">
+                    <span>Community fees (~0.3%)</span>
+                    <span>-{formatPrice(calc.community)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-400">
+                    <span>Maintenance (~0.5%)</span>
+                    <span>-{formatPrice(calc.maintenance)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-400">
+                    <span>Insurance (~0.2%)</span>
+                    <span>-{formatPrice(calc.insurance)}</span>
+                  </div>
+                  <div className="border-t border-[#2a2a30] pt-1.5 flex justify-between font-bold text-white">
+                    <span>Net income/year</span>
+                    <span className="text-emerald-400">{formatPrice(calc.net)}</span>
+                  </div>
+                  <div className="flex justify-between font-bold">
+                    <span className="text-gray-400">Net yield</span>
+                    <span className="text-emerald-400">{calc.netYield}%</span>
+                  </div>
+                </div>
+                <div className="mt-3 text-[9px] text-gray-600">
+                  ⚠ Excludes: mortgage interest, income tax (~19%), Airbnb fees (~3%), furnishing costs
+                </div>
+                {d.u && (
+                  <a
+                    href={d.u}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 block text-center text-xs bg-amber-600 hover:bg-amber-500 text-black font-semibold py-2 rounded transition-colors"
+                  >
+                    View on Xavia Estate →
+                  </a>
+                )}
+              </div>
+            )}
           </div>
         ))}
       </div>
