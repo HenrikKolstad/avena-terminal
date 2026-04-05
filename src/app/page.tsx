@@ -435,115 +435,211 @@ function StatBox({ label, value }: { label: string; value: string }) {
   );
 }
 
-function YieldTab({ properties }: { properties: Property[] }) {
-  const sorted = [...properties].sort((a, b) => (b._yield?.gross || 0) - (a._yield?.gross || 0));
-  const [selected, setSelected] = useState<Property | null>(null);
+function YieldCard({ d, expanded, onToggle }: { d: Property; expanded: boolean; onToggle: () => void }) {
+  const [downPct, setDownPct] = useState(30);
+  if (!d._yield) return null;
 
-  const calc = selected?._yield ? (() => {
-    const gross = selected._yield!.annual;
-    const mgmt = Math.round(gross * 0.15);
-    const community = Math.round(selected.pf * 0.003);
-    const maintenance = Math.round(selected.pf * 0.005);
-    const insurance = Math.round(selected.pf * 0.002);
-    const totalCosts = mgmt + community + maintenance + insurance;
-    const net = gross - totalCosts;
-    const netYield = ((net / selected.pf) * 100).toFixed(1);
-    return { gross, mgmt, community, maintenance, insurance, totalCosts, net, netYield };
-  })() : null;
+  const net = Math.round(d._yield.annual * 0.75);
+  const netYield = ((net / d.pf) * 100).toFixed(1);
+  const buyFee = Math.round(d.pf * 0.13);
+  const totalCost = d.pf + buyFee;
+  const downPayment = Math.round(totalCost * (downPct / 100));
+  const loanAmt = totalCost - downPayment;
+  const rate = 0.0375 / 12;
+  const n = 25 * 12;
+  const mortgageMo = loanAmt > 0 ? Math.round(loanAmt * rate * Math.pow(1 + rate, n) / (Math.pow(1 + rate, n) - 1)) : 0;
+  const annualCashflow = net - mortgageMo * 12;
+  const cashOnCash = downPayment > 0 ? ((annualCashflow / downPayment) * 100).toFixed(1) : '0';
+
+  const srcIcon = d._yield.src?.toLowerCase().includes('airbnb') ? '🏠' : d._yield.src?.toLowerCase().includes('resort') ? '🏨' : '📊';
+
+  return (
+    <div
+      className={`bg-[#111118] border rounded-lg overflow-hidden transition-all cursor-pointer ${expanded ? 'border-amber-500' : 'border-[#2a2a30] hover:border-amber-500/40'}`}
+      onClick={onToggle}
+    >
+      <div className="p-4">
+        <div className="flex justify-between items-start mb-1">
+          <div className="flex-1 pr-2">
+            <div className="text-amber-300 font-semibold text-sm leading-tight">{d.p}</div>
+            <div className="text-[10px] text-gray-500 mt-0.5">Via Xavia Estate — {d.l}</div>
+            {d.u && (
+              <a href={d.u} target="_blank" rel="noopener noreferrer"
+                onClick={e => e.stopPropagation()}
+                className="text-[10px] text-amber-500 hover:text-amber-300 underline mt-0.5 block">
+                View property ↗
+              </a>
+            )}
+          </div>
+          <div className="text-right">
+            <div className={`text-2xl font-bold ${(d._yield.gross || 0) >= 7 ? 'text-emerald-400' : (d._yield.gross || 0) >= 5 ? 'text-amber-400' : 'text-gray-400'}`}>
+              {d._yield.gross}%
+            </div>
+            <div className="text-[9px] text-gray-500 uppercase tracking-wide">Gross Yield</div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-4 gap-2 mt-3 pt-3 border-t border-[#1e1e28]">
+          <div>
+            <div className="text-[9px] text-gray-500 uppercase tracking-wide mb-0.5">Avg Night</div>
+            <div className="text-sm font-bold">€{d._yield.rate}</div>
+          </div>
+          <div>
+            <div className="text-[9px] text-gray-500 uppercase tracking-wide mb-0.5">Annual Gross</div>
+            <div className="text-sm font-bold">{formatPrice(d._yield.annual)}</div>
+          </div>
+          <div>
+            <div className="text-[9px] text-gray-500 uppercase tracking-wide mb-0.5">Annual Net</div>
+            <div className="text-sm font-bold text-emerald-400">{formatPrice(net)}</div>
+          </div>
+          <div>
+            <div className="text-[9px] text-gray-500 uppercase tracking-wide mb-0.5">Avg Price</div>
+            <div className="text-sm font-bold">{formatPrice(d.pf)}</div>
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center mt-2">
+          <div className="text-[9px] text-gray-600">
+            {d.t} · {d.bd}bed · {d._yield.weeks}wk
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-[9px]">{srcIcon}</span>
+            <span className="text-[9px] text-gray-600">{d._yield.src}</span>
+          </div>
+          <div className="text-right">
+            <div className="text-[9px] text-gray-500">Net Yield</div>
+            <div className="text-sm font-bold text-emerald-400">{netYield}%</div>
+          </div>
+        </div>
+      </div>
+
+      {expanded && (
+        <div className="border-t border-[#2a2a30] p-4 bg-[#0d0d14]" onClick={e => e.stopPropagation()}>
+          <div className="flex justify-between items-center mb-3">
+            <div className="text-xs font-semibold text-amber-400">Investment Calculator</div>
+            <div className="text-[10px] text-gray-500">3.75% eff. interest · 25yr term</div>
+          </div>
+
+          <div className="mb-3">
+            <div className="flex justify-between text-[10px] text-gray-400 mb-1">
+              <span>Down Payment</span>
+              <span className="text-amber-400 font-bold">{downPct}%</span>
+            </div>
+            <input
+              type="range" min={10} max={100} step={5} value={downPct}
+              onChange={e => setDownPct(Number(e.target.value))}
+              className="w-full accent-amber-500 h-1.5 rounded cursor-pointer"
+            />
+          </div>
+
+          <div className="grid grid-cols-3 gap-3 text-center">
+            <div>
+              <div className="text-[9px] text-gray-500 uppercase tracking-wide">Down Payment</div>
+              <div className="text-sm font-bold text-amber-400">{formatPrice(downPayment)}</div>
+            </div>
+            <div>
+              <div className="text-[9px] text-gray-500 uppercase tracking-wide">Mortgage/Mo</div>
+              <div className="text-sm font-bold">{formatPrice(mortgageMo)}</div>
+            </div>
+            <div>
+              <div className="text-[9px] text-gray-500 uppercase tracking-wide">Annual Cashflow</div>
+              <div className={`text-sm font-bold ${annualCashflow >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>{formatPrice(annualCashflow)}</div>
+            </div>
+            <div>
+              <div className="text-[9px] text-gray-500 uppercase tracking-wide">Total Cost (13%)</div>
+              <div className="text-sm font-bold">{formatPrice(totalCost)}</div>
+            </div>
+            <div>
+              <div className="text-[9px] text-gray-500 uppercase tracking-wide">Loan Amount</div>
+              <div className="text-sm font-bold">{formatPrice(loanAmt)}</div>
+            </div>
+            <div>
+              <div className="text-[9px] text-gray-500 uppercase tracking-wide">Cash-on-Cash</div>
+              <div className={`text-sm font-bold ${Number(cashOnCash) >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>{cashOnCash}%</div>
+            </div>
+          </div>
+
+          {d.u && (
+            <a href={d.u} target="_blank" rel="noopener noreferrer"
+              className="mt-3 block text-center text-xs bg-amber-600 hover:bg-amber-500 text-black font-semibold py-2 rounded transition-colors">
+              View on Xavia Estate →
+            </a>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function YieldTab({ properties }: { properties: Property[] }) {
+  const [sortMode, setSortMode] = useState<'yield' | 'income' | 'price'>('yield');
+  const [expandedRef, setExpandedRef] = useState<string | null>(null);
+
+  const sorted = [...properties].filter(p => p._yield).sort((a, b) => {
+    if (sortMode === 'yield') return (b._yield?.gross || 0) - (a._yield?.gross || 0);
+    if (sortMode === 'income') return (b._yield?.annual || 0) - (a._yield?.annual || 0);
+    return a.pf - b.pf;
+  });
 
   return (
     <div className="p-6">
-      {/* Info banner */}
-      <div className="bg-[#111118] border border-amber-700/30 rounded-lg p-4 mb-6 text-xs text-gray-400">
-        <p className="font-semibold text-amber-400 mb-1">How rental yield is calculated</p>
-        <p className="mb-1">
-          <span className="text-white">Gross yield</span> = nightly rate × weeks occupancy ÷ property price.
-          Nightly rates are sourced from AirDNA, Airbnb, and Vrbo data for each location.
-          Occupancy is estimated at 19–21 weeks/year (peak + shoulder season).
-        </p>
-        <p className="mb-1">
-          <span className="text-white">Net yield</span> deducts: property management (15%), community fees (~0.3%), maintenance (~0.5%), insurance (~0.2%).
-        </p>
-        <p className="text-gray-600">
-          ⚠ Not included: mortgage interest, income tax on rental earnings (~19% for EU residents), one-time furnishing costs, vacancy risk, platform fees (Airbnb ~3%). Click any property to see the full breakdown.
-        </p>
+      {/* Three info boxes */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+        <div className="bg-[#111118] border border-[#2a2a30] rounded-lg p-4">
+          <div className="text-[9px] uppercase tracking-widest text-amber-600 font-bold mb-2">How It Works</div>
+          <p className="text-[11px] text-gray-400 leading-relaxed">
+            Each property is matched to <span className="text-white">real Airbnb/Booking.com data</span> from its exact area. Nightly rates are annual averages across high, mid, and low seasons — not just the peak summer price agents show you.
+          </p>
+        </div>
+        <div className="bg-[#111118] border border-[#2a2a30] rounded-lg p-4">
+          <div className="text-[9px] uppercase tracking-widest text-amber-600 font-bold mb-2">What&apos;s Included in Net (−25%)</div>
+          <ul className="text-[11px] text-gray-400 space-y-0.5">
+            <li>Airbnb platform fee <span className="text-gray-500">(14%)</span></li>
+            <li>Cleaning <span className="text-gray-500">(~€35/turnover)</span></li>
+            <li>IBI property tax + Insurance</li>
+            <li>Community fees</li>
+            <li>Utilities <span className="text-gray-500">(water, electric)</span></li>
+            <li>Maintenance <span className="text-gray-500">(~€500/yr)</span></li>
+          </ul>
+        </div>
+        <div className="bg-[#111118] border border-[#2a2a30] rounded-lg p-4">
+          <div className="text-[9px] uppercase tracking-widest text-red-600 font-bold mb-2">Not Included</div>
+          <ul className="text-[11px] text-gray-400 space-y-0.5">
+            <li>Spanish income tax <span className="text-gray-500">(19% IRNR for non-residents on net rental profit)</span></li>
+            <li>Tourist license <span className="text-gray-500">(€250–500, one-time)</span></li>
+            <li>Furnishing costs <span className="text-gray-500">(~€5–15k)</span></li>
+            <li>Home country tax <span className="text-gray-500">(varies)</span></li>
+            <li>Mortgage interest <span className="text-gray-500">(see calculator)</span></li>
+          </ul>
+        </div>
       </div>
 
-      <h2 className="font-serif text-xl text-amber-400 mb-4">Top Rental Yield Properties</h2>
+      {/* Source bar + Sort */}
+      <div className="flex flex-wrap justify-between items-center bg-[#111118] border border-[#2a2a30] rounded-lg px-4 py-2 mb-4 gap-2">
+        <div className="text-[10px] text-gray-500">
+          <span className="text-gray-400">Sources:</span> AirDNA, Airbtics, Vrbo, Booking.com (2025–2026 data) &bull;{' '}
+          <span className="text-gray-400">Occupancy:</span> 16–24 weeks/year based on beach distance &bull;{' '}
+          <span className="text-gray-400">Self-managed model</span> (no management company)
+        </div>
+        <div className="flex gap-2">
+          {([['yield', 'By Yield %'], ['income', 'By Income €'], ['price', 'By Price']] as ['yield' | 'income' | 'price', string][]).map(([key, label]) => (
+            <button key={key} onClick={() => setSortMode(key)}
+              className={`text-[10px] px-3 py-1 rounded border transition-all ${sortMode === key ? 'bg-amber-600 border-amber-600 text-black font-semibold' : 'border-[#2a2a30] text-gray-400 hover:border-amber-600/50'}`}>
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <h2 className="font-serif text-xl text-amber-400 mb-4">Estimated Rental Yield</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {sorted.slice(0, 30).map((d, i) => (
-          <div
+          <YieldCard
             key={d.ref || i}
-            onClick={() => setSelected(selected?.ref === d.ref ? null : d)}
-            className={`bg-[#111118] border rounded-lg p-4 cursor-pointer transition-all ${selected?.ref === d.ref ? 'border-amber-500' : 'border-[#2a2a30] hover:border-amber-500/50'}`}
-          >
-            <div className="flex justify-between items-start mb-2">
-              <div className="flex-1 pr-2">
-                <div className="text-amber-300 font-semibold text-sm leading-tight">{d.p}</div>
-                <div className="text-gray-500 text-xs">{d.l}</div>
-              </div>
-              <span className={`text-lg font-bold whitespace-nowrap ${(d._yield?.gross || 0) >= 7 ? 'text-emerald-400' : (d._yield?.gross || 0) >= 5 ? 'text-amber-400' : 'text-gray-500'}`}>
-                {d._yield?.gross}%
-              </span>
-            </div>
-            <div className="grid grid-cols-3 gap-2 text-center mt-3">
-              <div><div className="text-sm font-bold">{formatPrice(d.pf)}</div><div className="text-[9px] text-gray-500">Price</div></div>
-              <div><div className="text-sm font-bold">€{d._yield?.rate}/n</div><div className="text-[9px] text-gray-500">Nightly</div></div>
-              <div><div className="text-sm font-bold">{formatPrice(d._yield?.annual || 0)}</div><div className="text-[9px] text-gray-500">Gross/yr</div></div>
-            </div>
-            <div className="text-[9px] text-gray-600 mt-2">Source: {d._yield?.src} | {d._yield?.weeks} wks occupancy</div>
-            <div className="text-[9px] text-amber-600 mt-1">Click for full breakdown →</div>
-
-            {/* Expanded calculator */}
-            {selected?.ref === d.ref && calc && (
-              <div className="mt-4 pt-4 border-t border-[#2a2a30]" onClick={e => e.stopPropagation()}>
-                <div className="text-xs font-semibold text-amber-400 mb-3">Annual Cash Flow Calculator</div>
-                <div className="space-y-1.5 text-xs">
-                  <div className="flex justify-between text-emerald-400 font-semibold">
-                    <span>Gross rental income</span>
-                    <span>+{formatPrice(calc.gross)}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-400">
-                    <span>Property management (15%)</span>
-                    <span>-{formatPrice(calc.mgmt)}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-400">
-                    <span>Community fees (~0.3%)</span>
-                    <span>-{formatPrice(calc.community)}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-400">
-                    <span>Maintenance (~0.5%)</span>
-                    <span>-{formatPrice(calc.maintenance)}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-400">
-                    <span>Insurance (~0.2%)</span>
-                    <span>-{formatPrice(calc.insurance)}</span>
-                  </div>
-                  <div className="border-t border-[#2a2a30] pt-1.5 flex justify-between font-bold text-white">
-                    <span>Net income/year</span>
-                    <span className="text-emerald-400">{formatPrice(calc.net)}</span>
-                  </div>
-                  <div className="flex justify-between font-bold">
-                    <span className="text-gray-400">Net yield</span>
-                    <span className="text-emerald-400">{calc.netYield}%</span>
-                  </div>
-                </div>
-                <div className="mt-3 text-[9px] text-gray-600">
-                  ⚠ Excludes: mortgage interest, income tax (~19%), Airbnb fees (~3%), furnishing costs
-                </div>
-                {d.u && (
-                  <a
-                    href={d.u}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-3 block text-center text-xs bg-amber-600 hover:bg-amber-500 text-black font-semibold py-2 rounded transition-colors"
-                  >
-                    View on Xavia Estate →
-                  </a>
-                )}
-              </div>
-            )}
-          </div>
+            d={d}
+            expanded={expandedRef === (d.ref || String(i))}
+            onToggle={() => setExpandedRef(expandedRef === (d.ref || String(i)) ? null : (d.ref || String(i)))}
+          />
         ))}
       </div>
     </div>
