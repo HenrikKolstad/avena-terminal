@@ -4,6 +4,104 @@ const { XMLParser } = require('fast-xml-parser');
 const FEED_URL = 'https://xml.redsp.net/files/915/89215pmi61h/ella-properties-spain-redsp_v4.xml';
 const OUTPUT = 'public/data.json';
 
+// Xavia Estate location IDs — maps town name → search URL
+const xaviaLocations = {
+  'Albir': { id: 373, prov: 4 },
+  'Alenda Golf': { id: 3876, prov: 4 },
+  'Algorfa': { id: 19, prov: 4 },
+  'Alicante': { id: 100, prov: 4 },
+  'Almoradi': { id: 96, prov: 4 },
+  'Almoradí': { id: 96, prov: 4 },
+  'Altaona Golf': { id: 457, prov: 5 },
+  'Altea': { id: 68, prov: 4 },
+  'Benidorm': { id: 38, prov: 4 },
+  'Benijofar': { id: 18, prov: 4 },
+  'Bigastro': { id: 99, prov: 4 },
+  'Cabo Roig': { id: 27, prov: 4 },
+  'Calpe': { id: 69, prov: 4 },
+  'Campoamor': { id: 46, prov: 4 },
+  'Cartagena': { id: 188, prov: 5 },
+  'Ciudad Quesada': { id: 17, prov: 4 },
+  'Daya Nueva': { id: 42, prov: 4 },
+  'Denia': { id: 181, prov: 4 },
+  'Dolores': { id: 22, prov: 4 },
+  'El Campello': { id: 67, prov: 4 },
+  'El Raso': { id: 41, prov: 4 },
+  'Finestrat': { id: 65, prov: 4 },
+  'Formentera del Segura': { id: 31, prov: 4 },
+  'Golf La Marquesa': { id: 4487, prov: 4 },
+  'Gran Alacant': { id: 35, prov: 4 },
+  'Guardamar del Segura': { id: 14, prov: 4 },
+  'Hondon de las Nieves': { id: 124, prov: 4 },
+  'Hondón de las Nieves': { id: 124, prov: 4 },
+  'La Finca Golf Resort': { id: 481, prov: 4 },
+  'La Manga Club': { id: 1669, prov: 5 },
+  'La Manga del Mar Menor': { id: 206, prov: 5 },
+  'La Marina': { id: 23, prov: 4 },
+  'La Nucia': { id: 72, prov: 4 },
+  'La Serena Golf': { id: 1557, prov: 5 },
+  'La Zenia': { id: 29, prov: 4 },
+  'Las Colinas Golf': { id: 247, prov: 4 },
+  'Las Filipinas': { id: 103, prov: 4 },
+  'Lo Pagan': { id: 241, prov: 5 },
+  'Lo Romero Golf': { id: 497, prov: 4 },
+  'Lomas de Campoamor': { id: 526, prov: 4 },
+  'Los Alcazares': { id: 49, prov: 5 },
+  'Los Alcázares': { id: 49, prov: 5 },
+  'Los Balcones': { id: 39, prov: 4 },
+  'Los Montesinos': { id: 52, prov: 4 },
+  'Mil Palmeras': { id: 63, prov: 4 },
+  'Moraira': { id: 5, prov: 4 },
+  'Orihuela Costa': { id: 46, prov: 4 },
+  'Pilar de La Horadada': { id: 43, prov: 4 },
+  'Pilar de la Horadada': { id: 43, prov: 4 },
+  'Pinar de Campoverde': { id: 74, prov: 4 },
+  'Playa Flamenca': { id: 21, prov: 4 },
+  'Playa Honda': { id: 118, prov: 5 },
+  'Polop': { id: 64, prov: 4 },
+  'Puerto de Mazarron': { id: 58, prov: 5 },
+  'Puerto de Mazarrón': { id: 58, prov: 5 },
+  'Punta Prima': { id: 15, prov: 4 },
+  'Rojales': { id: 82, prov: 4 },
+  'San Fulgencio': { id: 73, prov: 4 },
+  'San Javier': { id: 70, prov: 5 },
+  'San Miguel de Salinas': { id: 32, prov: 4 },
+  'San Pedro del Pinatar': { id: 50, prov: 5 },
+  'Santa Pola': { id: 53, prov: 4 },
+  'Santa Rosalia Resort': { id: 2779, prov: 5 },
+  'Santiago de la Ribera': { id: 87, prov: 5 },
+  'Torre de la Horadada': { id: 86, prov: 4 },
+  'Torre Pacheco': { id: 102, prov: 5 },
+  'Torrevieja': { id: 16, prov: 4 },
+  'Villajoyosa': { id: 71, prov: 4 },
+  'Villamartin': { id: 24, prov: 4 },
+  'Villamartín': { id: 24, prov: 4 },
+  'Vistabella Golf': { id: 2626, prov: 4 },
+  'Allonbay': { id: 71, prov: 4 }, // Villajoyosa area
+  'Alfaz del Pi': { id: 373, prov: 4 },
+  'Alfas del Pi': { id: 373, prov: 4 },
+  'Jávea Xàbia': { id: 6, prov: 4 },
+  'Javea Xabia': { id: 6, prov: 4 },
+  'Moraira_Teulada': { id: 5, prov: 4 },
+  'La Union': { id: 1035, prov: 5 },
+  'Benissa': { id: 69, prov: 4 }, // near Calpe
+  'Benitachell': { id: 5, prov: 4 }, // near Moraira
+  'Orihuela': { id: 46, prov: 4 },
+  'la Nucia': { id: 72, prov: 4 },
+  'San Juan Alicante': { id: 3424, prov: 4 },
+  'Los Nietos': { id: 458, prov: 5 },
+  'Mutxamel': { id: 256, prov: 4 },
+  'Los Urrutias': { id: 205, prov: 5 },
+};
+
+function getXaviaUrl(town) {
+  const loc = xaviaLocations[town];
+  if (loc) {
+    return `https://www.xaviaestate.com/search-property/province_${loc.prov}/city_${loc.id}/page_1/order_ddesc/`;
+  }
+  return 'https://www.xaviaestate.com/en/properties/';
+}
+
 // Region mapping from costa field
 function mapRegion(costa) {
   if (!costa) return 'cb-south';
@@ -220,7 +318,7 @@ function parseProperty(prop) {
     s: getStatus(prop),
     dy: 0,
     f: desc.substring(0, 400),
-    u: `https://www.xaviaestate.com/en/property/${prop.ref || prop.id}/`,
+    u: getXaviaUrl(town),
     ref: prop.ref || prop.id,
     dev_ref: prop.development_ref || null,
     imgs: images,
