@@ -402,7 +402,7 @@ export default function Explorer() {
                   }).catch(() => {});
                 }}
                 className="block text-center py-3 bg-gradient-to-r from-amber-600 to-amber-400 text-black font-bold text-sm rounded-lg hover:from-amber-500 hover:to-amber-300 transition-all tracking-wide">
-                View on Xavia Estate →
+                Browse Similar on Xavia Estate →
               </a>
             </div>
           </div>
