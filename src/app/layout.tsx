@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AVENA Explorer — Spain Property Investment Scanner",
+  title: "Avena Estate — Spain Property Investment Scanner",
   description:
     "Find the best new-build property deals in Costa Blanca & Costa Cálida. Deal scoring, rental yield analysis, and market comparison.",
 };
