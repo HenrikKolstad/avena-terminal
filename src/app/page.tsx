@@ -32,6 +32,7 @@ export default function Explorer() {
   const [authEmail, setAuthEmail] = useState('');
   const [authSent, setAuthSent] = useState(false);
   const [authLoading2, setAuthLoading2] = useState(false);
+  const [showWelcomePro, setShowWelcomePro] = useState(false);
 
   useEffect(() => {
     loadProperties().then(d => { setProperties(d); setLoading(false); });
@@ -41,6 +42,8 @@ export default function Explorer() {
     const params = new URLSearchParams(window.location.search);
     if (params.get('subscribed') === 'true') {
       window.history.replaceState({}, '', '/');
+      setShowWelcomePro(true);
+      setTimeout(() => setShowWelcomePro(false), 6000);
     }
   }, []);
 
@@ -522,6 +525,20 @@ export default function Explorer() {
           </>
         )}
       </div>
+
+      {/* WELCOME PRO TOAST */}
+      {showWelcomePro && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[600] animate-slide-up">
+          <div className="bg-gradient-to-r from-emerald-900 to-emerald-800 border border-emerald-500/50 rounded-2xl px-6 py-4 shadow-2xl flex items-center gap-4 min-w-[300px]">
+            <div className="text-3xl">🎉</div>
+            <div>
+              <div className="text-emerald-300 font-bold text-sm">Welcome to Avena PRO!</div>
+              <div className="text-emerald-500 text-xs mt-0.5">All 1,000+ properties unlocked. Refresh if access hasn&apos;t updated yet.</div>
+            </div>
+            <button onClick={() => setShowWelcomePro(false)} className="text-emerald-600 hover:text-emerald-300 ml-2 text-lg">×</button>
+          </div>
+        </div>
+      )}
 
       {/* AUTH MODAL */}
       {showAuthModal && (
