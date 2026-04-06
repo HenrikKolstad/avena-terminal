@@ -47,7 +47,8 @@ export default function Explorer() {
     if (params.get('subscribed') === 'true') {
       window.history.replaceState({}, '', '/');
       setShowWelcomePro(true);
-      setTimeout(() => setShowWelcomePro(false), 6000);
+      setTimeout(() => setShowWelcomePro(false), 8000);
+      if (!user) setShowAuthModal(true);
     }
   }, []);
 
@@ -544,7 +545,8 @@ export default function Explorer() {
             <div className="text-3xl">🎉</div>
             <div>
               <div className="text-emerald-300 font-bold text-sm">Welcome to Avena PRO!</div>
-              <div className="text-emerald-500 text-xs mt-0.5">All 1,000+ properties unlocked. Refresh if access hasn&apos;t updated yet.</div>
+              <div className="text-emerald-500 text-xs mt-0.5">All 1,000+ properties unlocked.</div>
+              <div className="text-emerald-400 text-xs mt-1 font-medium">Sign in with the same email you used to subscribe to activate your access.</div>
             </div>
             <button onClick={() => setShowWelcomePro(false)} className="text-emerald-600 hover:text-emerald-300 ml-2 text-lg">×</button>
           </div>
