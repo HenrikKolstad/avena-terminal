@@ -58,8 +58,13 @@ export async function POST(req: NextRequest) {
     });
 
     if (session.error) {
-      console.error('Stripe session error:', session.error);
+      console.error('Stripe session error:', JSON.stringify(session.error));
       return NextResponse.json({ error: session.error.message }, { status: 500 });
+    }
+
+    if (!session.url) {
+      console.error('Stripe session missing URL:', JSON.stringify(session));
+      return NextResponse.json({ error: 'Stripe account not fully activated. Please complete Stripe onboarding at dashboard.stripe.com.' }, { status: 500 });
     }
 
     return NextResponse.json({ url: session.url });
