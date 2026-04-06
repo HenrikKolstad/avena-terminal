@@ -152,7 +152,8 @@ export default function Explorer() {
         <div>
           <h1 className="text-2xl md:text-3xl font-bold font-serif tracking-widest bg-gradient-to-r from-amber-300 via-amber-400 to-amber-600 bg-clip-text text-transparent">AVENA</h1>
           <p className="text-[10px] tracking-[4px] uppercase text-amber-500 mt-0.5">Estate</p>
-          <p className="text-[10px] text-gray-500 italic mt-1">In partnership with <a href="https://www.xaviaestate.com" target="_blank" rel="noopener noreferrer" className="text-amber-400 hover:text-amber-300 transition-colors">Xavia Estate</a></p>
+          <p className="text-[11px] text-gray-400 mt-1 max-w-xs leading-snug">Real-time investment intelligence across 1,000+ new builds on Spain&apos;s southern coast</p>
+          <p className="text-[10px] text-gray-600 italic mt-1">In partnership with <a href="https://www.xaviaestate.com" target="_blank" rel="noopener noreferrer" className="text-amber-400 hover:text-amber-300 transition-colors">Xavia Estate</a></p>
         </div>
         <div className="flex gap-3 md:gap-6 items-center">
           <div className="text-center">
