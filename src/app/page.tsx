@@ -634,7 +634,7 @@ export default function Explorer() {
                     body: JSON.stringify({ email: paywallEmail }),
                   });
                   const { url, error } = await res.json();
-                  if (error) { alert('Error: ' + error); setPaywallLoading(false); return; }
+                  if (error || !url) { alert('Error: ' + (error || 'Stripe account not yet activated. Visit dashboard.stripe.com to complete setup.')); setPaywallLoading(false); return; }
                   window.location.href = url;
                 } catch {
                   alert('Something went wrong. Please try again.');
