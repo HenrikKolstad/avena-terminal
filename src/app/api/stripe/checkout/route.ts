@@ -2,8 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
+// Increase timeout + disable retries to prevent Vercel serverless timeouts
 function getStripe() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-03-31.basil' });
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2025-03-31.basil',
+    maxNetworkRetries: 0,
+    timeout: 8000,
+  });
 }
 
 function getSupabase() {
@@ -13,29 +18,41 @@ function getSupabase() {
   );
 }
 
+// Tell Vercel to allow up to 30s for this route
+export const maxDuration = 30;
+
 export async function POST(req: NextRequest) {
   try {
     const stripe = getStripe();
-    const supabase = getSupabase();
 
     const { email } = await req.json();
     if (!email) return NextResponse.json({ error: 'Email required' }, { status: 400 });
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://avena-estate.com';
 
-    // Get or create Stripe customer
+    // Try to get existing Stripe customer, skip Supabase lookup if it fails
     let customerId: string | undefined;
-    const { data: sub } = await supabase
-      .from('subscriptions')
-      .select('stripe_customer_id')
-      .eq('email', email)
-      .single();
+    try {
+      const supabase = getSupabase();
+      const { data: sub } = await supabase
+        .from('subscriptions')
+        .select('stripe_customer_id')
+        .eq('email', email)
+        .single();
+      if (sub?.stripe_customer_id) customerId = sub.stripe_customer_id;
+    } catch {
+      // Supabase lookup failed — continue without customer ID
+    }
 
-    if (sub?.stripe_customer_id) {
-      customerId = sub.stripe_customer_id;
-    } else {
-      const customer = await stripe.customers.create({ email });
-      customerId = customer.id;
+    if (!customerId) {
+      // Search Stripe for existing customer first
+      const existing = await stripe.customers.list({ email, limit: 1 });
+      if (existing.data.length > 0) {
+        customerId = existing.data[0].id;
+      } else {
+        const customer = await stripe.customers.create({ email });
+        customerId = customer.id;
+      }
     }
 
     // Create Stripe Checkout session
