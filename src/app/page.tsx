@@ -35,6 +35,8 @@ export default function Explorer() {
   const [authSent, setAuthSent] = useState(false);
   const [authLoading2, setAuthLoading2] = useState(false);
   const [showWelcomePro, setShowWelcomePro] = useState(false);
+  const [paywallEmail, setPaywallEmail] = useState('');
+  const [paywallLoading, setPaywallLoading] = useState(false);
 
   useEffect(() => {
     loadProperties().then(d => { setProperties(d); setLoading(false); });
@@ -614,10 +616,43 @@ export default function Explorer() {
                 </li>
               ))}
             </ul>
-            <button onClick={startCheckout}
-              className="w-full bg-gradient-to-r from-amber-600 to-amber-400 text-black font-bold py-3.5 rounded-lg hover:from-amber-500 hover:to-amber-300 transition-all text-sm tracking-wide">
-              Subscribe — €49/month →
-            </button>
+            {user ? (
+              <button onClick={startCheckout} disabled={paywallLoading}
+                className="w-full bg-gradient-to-r from-amber-600 to-amber-400 text-black font-bold py-3.5 rounded-lg hover:from-amber-500 hover:to-amber-300 transition-all text-sm tracking-wide disabled:opacity-50">
+                Subscribe — €49/month →
+              </button>
+            ) : (
+              <form onSubmit={async e => {
+                e.preventDefault();
+                setPaywallLoading(true);
+                try {
+                  const res = await fetch('/api/stripe/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: paywallEmail }),
+                  });
+                  const { url, error } = await res.json();
+                  if (error) { alert('Error: ' + error); setPaywallLoading(false); return; }
+                  window.location.href = url;
+                } catch {
+                  alert('Something went wrong. Please try again.');
+                  setPaywallLoading(false);
+                }
+              }}>
+                <input
+                  type="email"
+                  required
+                  placeholder="your@email.com"
+                  value={paywallEmail}
+                  onChange={e => setPaywallEmail(e.target.value)}
+                  className="w-full bg-[#08080d] border border-[#2a2a30] text-gray-100 px-4 py-3 rounded-lg text-sm outline-none focus:border-amber-500 mb-3"
+                />
+                <button type="submit" disabled={paywallLoading}
+                  className="w-full bg-gradient-to-r from-amber-600 to-amber-400 text-black font-bold py-3.5 rounded-lg hover:from-amber-500 hover:to-amber-300 transition-all text-sm tracking-wide disabled:opacity-50">
+                  {paywallLoading ? 'Redirecting to Stripe…' : 'Subscribe — €49/month →'}
+                </button>
+              </form>
+            )}
             <p className="text-center text-gray-600 text-[10px] mt-3">Secured by Stripe · Cancel anytime in account settings</p>
           </div>
         </div>
