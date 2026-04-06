@@ -849,7 +849,13 @@ function YieldTab({ properties, isPaid, onUpgrade }: { properties: Property[]; i
         </div>
       </div>
 
-      <h2 className="font-serif text-xl text-amber-400 mb-4">Estimated Rental Yield</h2>
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <h2 className="font-serif text-xl text-amber-400">Estimated Rental Yield</h2>
+        <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/25 rounded-lg px-3 py-2">
+          <span className="text-amber-400 text-sm">💰</span>
+          <span className="text-amber-300 text-xs font-medium">Tap any card to open the loan & investment calculator</span>
+        </div>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {sorted.slice(0, isPaid ? 30 : FREE_YIELD_LIMIT).map((d, i) => (
           <YieldCard
