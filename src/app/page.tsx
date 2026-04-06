@@ -655,7 +655,21 @@ export default function Explorer() {
                 </button>
               </form>
             )}
-            <p className="text-center text-gray-600 text-[10px] mt-3">Secured by Stripe · Cancel anytime in account settings</p>
+            <div className="mt-4 pt-4 border-t border-[#2a2a30]">
+              <div className="flex items-center justify-center gap-3 mb-2">
+                <svg className="w-8 h-5 opacity-60" viewBox="0 0 60 25" fill="none"><text x="0" y="20" fontSize="22" fontWeight="bold" fill="#635BFF" fontFamily="Arial">stripe</text></svg>
+                <span className="text-gray-600 text-[10px]">|</span>
+                <div className="flex items-center gap-1 text-gray-500 text-[10px]"><span>🔒</span><span>256-bit SSL</span></div>
+                <span className="text-gray-600 text-[10px]">|</span>
+                <div className="flex items-center gap-1 text-gray-500 text-[10px]"><span>🛡️</span><span>PCI Compliant</span></div>
+              </div>
+              <div className="flex items-center justify-center gap-4 mb-2">
+                {['VISA', 'MC', 'AMEX', 'IDEAL'].map(card => (
+                  <span key={card} className="text-[9px] font-bold px-2 py-0.5 rounded border border-[#2a2a30] text-gray-500 tracking-wider">{card}</span>
+                ))}
+              </div>
+              <p className="text-center text-gray-600 text-[10px]">Cancel anytime · No contracts · Billed monthly</p>
+            </div>
           </div>
         </div>
       )}
