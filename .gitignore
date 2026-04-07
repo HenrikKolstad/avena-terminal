@@ -6,3 +6,7 @@ feed.xml
 *.log
 
 .vercel
+.env*.local
+.env.production
+tsconfig.tsbuildinfo
+audit-output.txt
