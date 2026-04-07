@@ -155,9 +155,9 @@ const townMarket = {
   'Santa Pola':              { Apartment: 3270, Villa: 3000 }, // SpainHouses €3267
   'Guardamar del Segura':    { Apartment: 3290, Villa: 3000 }, // SpainHouses €3289
   'Guardamar':               { Apartment: 3290, Villa: 3000 },
-  'Algorfa':                 { Apartment: 3000, Villa: 3500 }, // La Finca Golf Resort — resale market €2,800-4,000/m²
-  'La Finca Golf':           { Apartment: 3000, Villa: 3500 },
-  'La Finca Golf Resort':    { Apartment: 3000, Villa: 3500 },
+  'Algorfa':                 { Apartment: 2800, Villa: 2600 }, // La Finca Golf — large villas price non-linearly; conservative resale base
+  'La Finca Golf':           { Apartment: 2800, Villa: 2600 },
+  'La Finca Golf Resort':    { Apartment: 2800, Villa: 2600 },
   'San Miguel de Salinas':   { Apartment: 2600, Villa: 2600 }, // NB market-adjusted
   'Rojales':                 { Apartment: 3100, Villa: 3100 }, // NB market-adjusted
   'Ciudad Quesada':          { Apartment: 3200, Villa: 3200 }, // Expat/golf community NB market
