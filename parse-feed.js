@@ -189,7 +189,7 @@ const townMarket = {
   'Alicante':                { Apartment: 3380, Villa: 3100 }, // SpainHouses €3383
   'Elche':                   { Apartment: 2760, Villa: 2500 },
   // COSTA BLANCA NORTH
-  'Calpe':                   { Apartment: 4150, Villa: 3800 }, // SpainHouses €4145
+  'Calpe':                   { Apartment: 3500, Villa: 3500 }, // Resale-adj. standard market (SpainHouses €4145 skewed by luxury sea-view)
   'Benidorm':                { Apartment: 4480, Villa: 3400 }, // SpainHouses €4475 (apt-heavy; villa resale market is thinner)
   'Altea':                   { Apartment: 4130, Villa: 3800 }, // SpainHouses €4130
   'Jávea Xàbia':             { Apartment: 4400, Villa: 4000 }, // SpainHouses Jávea €4407
