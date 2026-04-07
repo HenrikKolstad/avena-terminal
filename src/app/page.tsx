@@ -304,20 +304,56 @@ export default function Explorer() {
   return (
     <div className="min-h-screen bg-[#070709]">
       {/* TOP BAR */}
-      <header className="relative sticky top-0 z-50 border-b border-[#1a1a24] px-4 md:px-8 py-4 md:py-6 shadow-2xl" style={{ background: 'linear-gradient(180deg, #0f0e18 0%, #0a0a12 100%)' }}>
+      <header className="relative sticky top-0 z-50 border-b border-[#1a1a24] px-4 md:px-8 py-3 md:py-6 shadow-2xl" style={{ background: 'linear-gradient(180deg, #0f0e18 0%, #0a0a12 100%)' }}>
         <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(90deg, transparent 0%, #c9a84c 30%, #e8c96a 50%, #c9a84c 70%, transparent 100%)' }} />
-        <div className="flex items-center justify-between gap-4">
 
+        {/* MOBILE HEADER */}
+        <div className="flex md:hidden items-center justify-between gap-3">
+          <a href="/" className="flex-shrink-0">
+            <h1 className="text-2xl font-bold font-serif tracking-[0.2em] bg-gradient-to-r from-amber-300 via-amber-400 to-amber-600 bg-clip-text text-transparent">AVENA</h1>
+            <p className="text-[8px] tracking-[5px] uppercase text-[#c9a84c]/60 font-light">Estate</p>
+          </a>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="text-center">
+              <div className="text-lg font-bold text-amber-400 font-serif leading-none">{stats.count}</div>
+              <div className="text-[8px] uppercase tracking-widest text-gray-600">Props</div>
+            </div>
+            <div className="text-center border-l border-[#1a1a24] pl-2">
+              <div className="text-lg font-bold text-amber-400 font-serif leading-none">{stats.avgDisc}%</div>
+              <div className="text-[8px] uppercase tracking-widest text-gray-600">Disc</div>
+            </div>
+            {!authLoading && (
+              user ? (
+                <div className="flex items-center gap-2 border-l border-[#1a1a24] pl-2">
+                  {isPaid ? (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full font-bold" style={{ background: 'linear-gradient(135deg, #c9a84c22, #c9a84c44)', border: '1px solid rgba(201,168,76,0.5)', color: '#c9a84c' }}>PRO</span>
+                  ) : (
+                    <button onClick={() => setShowPaywall(true)} className="text-[10px] bg-amber-600 text-black font-bold px-2.5 py-1 rounded-lg">Go PRO</button>
+                  )}
+                  <button onClick={signOut} className="text-[10px] text-gray-600">↩</button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5 border-l border-[#1a1a24] pl-2">
+                  <button onClick={() => setShowAuthModal(true)} className="text-[10px] border border-[#c9a84c]/40 text-[#c9a84c]/80 font-semibold px-2 py-1 rounded-lg">In</button>
+                  <button onClick={() => setShowPaywall(true)} className="text-[10px] text-black font-bold px-2.5 py-1 rounded-lg" style={{ background: 'linear-gradient(135deg, #c9a84c, #e8c96a)' }}>PRO</button>
+                </div>
+              )
+            )}
+          </div>
+        </div>
+
+        {/* DESKTOP HEADER */}
+        <div className="hidden md:flex items-center justify-between gap-4">
           {/* LEFT — logo */}
           <div className="flex-shrink-0">
             <a href="/" className="block cursor-pointer">
-              <h1 className="text-2xl md:text-4xl font-bold font-serif tracking-[0.2em] bg-gradient-to-r from-amber-300 via-amber-400 to-amber-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity">AVENA</h1>
+              <h1 className="text-4xl font-bold font-serif tracking-[0.2em] bg-gradient-to-r from-amber-300 via-amber-400 to-amber-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity">AVENA</h1>
               <p className="text-[9px] tracking-[6px] uppercase text-[#c9a84c]/60 mt-0.5 font-light">Estate</p>
             </a>
-            <div className="text-[10px] text-gray-600 mt-2 leading-relaxed hidden md:block">
+            <div className="text-[10px] text-gray-600 mt-2 leading-relaxed">
               <div>{t.hero_scanner}</div>
             </div>
-            <p className="text-[9px] text-gray-700 mt-1.5 hidden md:flex items-center gap-1 flex-wrap">
+            <p className="text-[9px] text-gray-700 mt-1.5 flex items-center gap-1 flex-wrap">
               <span>With</span>
               <a href="https://www.xaviaestate.com" target="_blank" rel="noopener noreferrer" className="font-semibold hover:opacity-80 transition-opacity" style={{ color: '#F5A623' }}>Xavia Estate</a>
               <span>&amp;</span>
@@ -325,110 +361,122 @@ export default function Explorer() {
             </p>
           </div>
 
-          {/* CENTER — hero punchlines (desktop only) */}
+          {/* CENTER — hero punchlines */}
           <div className="hidden lg:flex flex-col gap-2 flex-1 max-w-md mx-auto text-center">
-            <div className="text-lg xl:text-xl font-semibold leading-snug text-gray-200">
-              {t.hero_line1}
-            </div>
+            <div className="text-lg xl:text-xl font-semibold leading-snug text-gray-200">{t.hero_line1}</div>
             <div className="h-px w-16 mx-auto" style={{ background: 'linear-gradient(90deg, transparent, #c9a84c, transparent)' }} />
-            <div className="text-lg xl:text-xl font-semibold leading-snug text-gray-200">
-              {t.hero_line2}
-            </div>
+            <div className="text-lg xl:text-xl font-semibold leading-snug text-gray-200">{t.hero_line2}</div>
           </div>
 
           {/* RIGHT — stats + auth */}
-          <div className="flex gap-3 md:gap-5 items-center flex-shrink-0">
-          <div className="text-center">
-            <div className="text-2xl md:text-3xl font-bold text-amber-400 font-serif">{stats.count}</div>
-            <div className="text-[9px] uppercase tracking-widest text-gray-500">Properties</div>
+          <div className="flex gap-5 items-center flex-shrink-0">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-amber-400 font-serif">{stats.count}</div>
+              <div className="text-[9px] uppercase tracking-widest text-gray-500">Properties</div>
+            </div>
+            <div className="text-center border-l border-[#1a1a24] pl-6">
+              <div className="text-3xl font-bold text-amber-400 font-serif">{stats.avgDisc}%</div>
+              <div className="text-[9px] uppercase tracking-widest text-gray-500">Avg Discount</div>
+            </div>
+            <div className="text-center border-l border-[#1a1a24] pl-6">
+              <div className="text-3xl font-bold text-amber-400 font-serif">{stats.bestScore}</div>
+              <div className="text-[9px] uppercase tracking-widest text-gray-500">Best Score</div>
+            </div>
+            <div className="ml-4">
+              {!authLoading && (
+                user ? (
+                  <div className="flex items-center gap-3">
+                    {isPaid ? (
+                      <span className="text-[10px] px-2.5 py-1 rounded-full font-bold tracking-wide" style={{ background: 'linear-gradient(135deg, #c9a84c22, #c9a84c44)', border: '1px solid rgba(201,168,76,0.5)', color: '#c9a84c' }}>PRO</span>
+                    ) : (
+                      <button onClick={() => setShowPaywall(true)} className="text-[11px] bg-amber-600 hover:bg-amber-500 text-black font-bold px-3 py-1.5 rounded-lg transition-colors">Upgrade →</button>
+                    )}
+                    <button onClick={signOut} className="text-[10px] text-gray-500 hover:text-gray-300 transition-colors">{t.btn_signout}</button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setShowAuthModal(true)} className="text-[11px] border border-[#c9a84c]/40 text-[#c9a84c]/80 hover:border-[#c9a84c] hover:text-[#c9a84c] font-semibold px-3 py-1.5 rounded-lg transition-all whitespace-nowrap">{t.btn_signin}</button>
+                    <button onClick={() => setShowPaywall(true)} className="text-[11px] text-black font-bold px-4 py-1.5 rounded-lg whitespace-nowrap" style={{ background: 'linear-gradient(135deg, #c9a84c, #e8c96a)' }}>{t.btn_subscribe}</button>
+                  </div>
+                )
+              )}
+            </div>
           </div>
-          <div className="text-center border-l border-[#1a1a24] pl-4 md:pl-6">
-            <div className="text-2xl md:text-3xl font-bold text-amber-400 font-serif">{stats.avgDisc}%</div>
-            <div className="text-[9px] uppercase tracking-widest text-gray-500">Avg Discount</div>
-          </div>
-          <div className="text-center border-l border-[#1a1a24] pl-4 md:pl-6">
-            <div className="text-2xl md:text-3xl font-bold text-amber-400 font-serif">{stats.bestScore}</div>
-            <div className="text-[9px] uppercase tracking-widest text-gray-500">Best Score</div>
-          </div>
-          {/* Auth button */}
-          <div className="ml-4">
-            {!authLoading && (
-              user ? (
-                <div className="flex items-center gap-3">
-                  {isPaid ? (
-                    <span className="text-[10px] px-2.5 py-1 rounded-full font-bold tracking-wide" style={{ background: 'linear-gradient(135deg, #c9a84c22, #c9a84c44)', border: '1px solid rgba(201,168,76,0.5)', color: '#c9a84c' }}>PRO</span>
-                  ) : (
-                    <button onClick={() => setShowPaywall(true)}
-                      className="text-[11px] bg-amber-600 hover:bg-amber-500 text-black font-bold px-3 py-1.5 rounded-lg transition-colors">
-                      Upgrade →
-                    </button>
-                  )}
-                  <button onClick={signOut} className="text-[10px] text-gray-500 hover:text-gray-300 transition-colors">
-                    {t.btn_signout}
-                  </button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <button onClick={() => setShowAuthModal(true)}
-                    className="text-[11px] border border-[#c9a84c]/40 text-[#c9a84c]/80 hover:border-[#c9a84c] hover:text-[#c9a84c] font-semibold px-3 py-1.5 rounded-lg transition-all whitespace-nowrap">
-                    {t.btn_signin}
-                  </button>
-                  <button onClick={() => setShowPaywall(true)}
-                    className="text-[11px] text-black font-bold px-4 py-1.5 rounded-lg whitespace-nowrap"
-                    style={{ background: 'linear-gradient(135deg, #c9a84c, #e8c96a)' }}>
-                    {t.btn_subscribe}
-                  </button>
-                </div>
-              )
-            )}
-          </div>
-        </div>
         </div>
       </header>
 
-      {/* FILTER BAR */}
-      <div className="bg-[#0a0a12] border-b border-[#1a1a24] px-4 md:px-8 py-2.5 flex gap-2 overflow-x-auto items-end scrollbar-none">
-        <FilterSelect label="Region" value={filters.region} onChange={v => setFilters(f => ({...f, region: v}))}
-          options={[['all',t.filter_all_regions],['cb-south',t.filter_cb_south],['cb-north',t.filter_cb_north],['costa-calida',t.filter_calida]]} />
-        <FilterSelect label="Type" value={filters.type} onChange={v => setFilters(f => ({...f, type: v}))}
-          options={[['all',t.filter_all_types],['Villa','Villa'],['Apartment','Apartment'],['Townhouse','Townhouse'],['Bungalow','Bungalow']]} />
-        <FilterSelect label="Status" value={filters.status} onChange={v => setFilters(f => ({...f, status: v}))}
-          options={[['all',t.filter_all_status],['off-plan',t.filter_offplan],['under-construction',t.filter_construction],['ready',t.filter_ready]]} />
-        <FilterSelect label="Min Score" value={String(filters.minScore)} onChange={v => setFilters(f => ({...f, minScore: +v}))}
-          options={[['0','Any'],['40','40+'],['50','50+'],['60','60+'],['70','70+'],['80','80+']]} />
-        <FilterSelect label="Beds" value={String(filters.minBeds)} onChange={v => setFilters(f => ({...f, minBeds: +v}))}
-          options={[['0','Any'],['1','1+'],['2','2+'],['3','3+'],['4','4+']]} />
-        <div className="flex flex-col gap-1">
-          <label className="text-[8px] tracking-[2px] text-gray-600 uppercase">Search</label>
-          <input type="text" value={filters.query} onChange={e => setFilters(f => ({...f, query: e.target.value}))}
-            placeholder={t.search_placeholder}
-            className="text-gray-300 px-3 py-1.5 rounded-md text-xs outline-none min-w-[150px]"
-            style={{ background: '#0a0a12', border: '1px solid #1e1e28' }}
-            onFocus={e => { (e.target as HTMLInputElement).style.borderColor = '#c9a84c'; }}
-            onBlur={e => { (e.target as HTMLInputElement).style.borderColor = '#1e1e28'; }} />
-        </div>
-        {/* Language switcher */}
-        <div className="flex flex-col gap-1">
-          <label className="text-[8px] tracking-[2px] text-gray-600 uppercase opacity-0">Lang</label>
-          <div className="flex items-center gap-1">
-            {LANGUAGES.map(l => (
-              <button
-                key={l.code}
-                onClick={() => setLang(l.code)}
-                title={l.label}
-                className={`text-lg leading-none transition-all hover:scale-110 ${lang === l.code ? 'opacity-100 scale-110' : 'opacity-40 hover:opacity-70'}`}
-              >
-                {l.flag}
-              </button>
-            ))}
+      {/* FILTER BAR — desktop: single row, mobile: 2-row grid */}
+      <div className="bg-[#0a0a12] border-b border-[#1a1a24] px-3 md:px-8 py-2">
+        {/* Mobile filters */}
+        <div className="md:hidden">
+          <div className="grid grid-cols-3 gap-1.5 mb-1.5">
+            <FilterSelect label="Region" value={filters.region} onChange={v => setFilters(f => ({...f, region: v}))}
+              options={[['all',t.filter_all_regions],['cb-south',t.filter_cb_south],['cb-north',t.filter_cb_north],['costa-calida',t.filter_calida]]} />
+            <FilterSelect label="Type" value={filters.type} onChange={v => setFilters(f => ({...f, type: v}))}
+              options={[['all',t.filter_all_types],['Villa','Villa'],['Apartment','Apartment'],['Townhouse','Townhouse'],['Bungalow','Bungalow']]} />
+            <FilterSelect label="Status" value={filters.status} onChange={v => setFilters(f => ({...f, status: v}))}
+              options={[['all',t.filter_all_status],['off-plan',t.filter_offplan],['under-construction',t.filter_construction],['ready',t.filter_ready]]} />
+          </div>
+          <div className="flex gap-1.5 items-center">
+            <div className="flex-1">
+              <input type="text" value={filters.query} onChange={e => setFilters(f => ({...f, query: e.target.value}))}
+                placeholder={t.search_placeholder}
+                className="w-full text-gray-300 px-3 py-1.5 rounded-md text-xs outline-none"
+                style={{ background: '#0d0d16', border: '1px solid #1e1e28' }}
+                onFocus={e => { (e.target as HTMLInputElement).style.borderColor = '#c9a84c'; }}
+                onBlur={e => { (e.target as HTMLInputElement).style.borderColor = '#1e1e28'; }} />
+            </div>
+            {/* Language flags on mobile */}
+            <div className="flex items-center gap-0.5">
+              {LANGUAGES.map(l => (
+                <button key={l.code} onClick={() => setLang(l.code)} title={l.label}
+                  className={`text-base leading-none transition-all ${lang === l.code ? 'opacity-100' : 'opacity-30'}`}>
+                  {l.flag}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-        <div className="flex flex-col gap-1 ml-auto">
-          <label className="text-[9px] uppercase tracking-widest text-gray-500 opacity-0">x</label>
-          <button onClick={exportCSV}
-            className="bg-[#18181f] border border-[#2a2a30] hover:border-amber-500/50 text-gray-400 hover:text-amber-400 px-3 py-1.5 rounded-md text-xs font-semibold transition-all whitespace-nowrap">
-            Export CSV ↓
-          </button>
+        {/* Desktop filters */}
+        <div className="hidden md:flex gap-2 overflow-x-auto items-end scrollbar-none py-0.5">
+          <FilterSelect label="Region" value={filters.region} onChange={v => setFilters(f => ({...f, region: v}))}
+            options={[['all',t.filter_all_regions],['cb-south',t.filter_cb_south],['cb-north',t.filter_cb_north],['costa-calida',t.filter_calida]]} />
+          <FilterSelect label="Type" value={filters.type} onChange={v => setFilters(f => ({...f, type: v}))}
+            options={[['all',t.filter_all_types],['Villa','Villa'],['Apartment','Apartment'],['Townhouse','Townhouse'],['Bungalow','Bungalow']]} />
+          <FilterSelect label="Status" value={filters.status} onChange={v => setFilters(f => ({...f, status: v}))}
+            options={[['all',t.filter_all_status],['off-plan',t.filter_offplan],['under-construction',t.filter_construction],['ready',t.filter_ready]]} />
+          <FilterSelect label="Min Score" value={String(filters.minScore)} onChange={v => setFilters(f => ({...f, minScore: +v}))}
+            options={[['0','Any'],['40','40+'],['50','50+'],['60','60+'],['70','70+'],['80','80+']]} />
+          <FilterSelect label="Beds" value={String(filters.minBeds)} onChange={v => setFilters(f => ({...f, minBeds: +v}))}
+            options={[['0','Any'],['1','1+'],['2','2+'],['3','3+'],['4','4+']]} />
+          <div className="flex flex-col gap-1">
+            <label className="text-[8px] tracking-[2px] text-gray-600 uppercase">Search</label>
+            <input type="text" value={filters.query} onChange={e => setFilters(f => ({...f, query: e.target.value}))}
+              placeholder={t.search_placeholder}
+              className="text-gray-300 px-3 py-1.5 rounded-md text-xs outline-none min-w-[150px]"
+              style={{ background: '#0a0a12', border: '1px solid #1e1e28' }}
+              onFocus={e => { (e.target as HTMLInputElement).style.borderColor = '#c9a84c'; }}
+              onBlur={e => { (e.target as HTMLInputElement).style.borderColor = '#1e1e28'; }} />
+          </div>
+          {/* Language switcher */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[8px] tracking-[2px] text-gray-600 uppercase opacity-0">Lang</label>
+            <div className="flex items-center gap-1">
+              {LANGUAGES.map(l => (
+                <button key={l.code} onClick={() => setLang(l.code)} title={l.label}
+                  className={`text-lg leading-none transition-all hover:scale-110 ${lang === l.code ? 'opacity-100 scale-110' : 'opacity-40 hover:opacity-70'}`}>
+                  {l.flag}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-col gap-1 ml-auto">
+            <label className="text-[9px] uppercase tracking-widest text-gray-500 opacity-0">x</label>
+            <button onClick={exportCSV}
+              className="bg-[#18181f] border border-[#2a2a30] hover:border-amber-500/50 text-gray-400 hover:text-amber-400 px-3 py-1.5 rounded-md text-xs font-semibold transition-all whitespace-nowrap">
+              Export CSV ↓
+            </button>
+          </div>
         </div>
       </div>
 
@@ -478,49 +526,47 @@ export default function Explorer() {
                 return (
                   <div key={d.ref || d.p + i}
                     onClick={() => isLocked ? setShowPaywall(true) : (setPreview(i), setPreviewLuxScore(null))}
-                    className={`relative border rounded-2xl p-4 cursor-pointer transition-all active:scale-[0.99] ${isLocked ? 'opacity-30 blur-[2px] select-none border-[#1a1a24]' : preview === i ? 'border-[#c9a84c]/60 shadow-lg shadow-[#c9a84c]/5' : 'border-[#1e1e2a] hover:border-[#c9a84c]/30'}`}
+                    className={`relative border rounded-xl cursor-pointer transition-all active:scale-[0.99] ${isLocked ? 'opacity-30 blur-[2px] select-none border-[#1a1a24]' : preview === i ? 'border-[#c9a84c]/60 shadow-lg shadow-[#c9a84c]/5' : 'border-[#1e1e2a]'}`}
                     style={{ background: 'linear-gradient(160deg, #0e0e18 0%, #0a0a12 100%)' }}>
-                    {rank <= 3 && (
-                      <div className={`absolute -top-1.5 -left-1.5 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-extrabold ${rank === 1 ? 'bg-[#c9a84c] text-black' : rank === 2 ? 'bg-gray-400 text-black' : 'bg-amber-800 text-white'}`}>
+                    {/* Top row: rank badge + title + score */}
+                    <div className="flex items-center gap-2.5 px-3 pt-3 pb-2">
+                      <div className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-extrabold ${rank <= 3 ? (rank === 1 ? 'bg-[#c9a84c] text-black' : rank === 2 ? 'bg-gray-400 text-black' : 'bg-amber-800 text-white') : 'bg-[#1a1a24] text-gray-500'}`}>
                         {rank}
                       </div>
-                    )}
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex-1 pr-3">
-                        <div className="text-white font-semibold text-sm leading-snug">{d.p}</div>
-                        <div className="text-gray-600 text-[11px] mt-0.5">{d.l}</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-white font-semibold text-sm leading-tight truncate">{d.p}</div>
+                        <div className="text-gray-600 text-[11px]">{d.l}</div>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <span className={`text-2xl font-extrabold font-serif ${scoreClass(d._sc || 0)}`}>{d._sc}</span>
-                        <div className="text-[9px] text-gray-600 uppercase tracking-wide">score</div>
+                        <span className={`text-xl font-extrabold font-serif ${scoreClass(d._sc || 0)}`}>{d._sc}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 flex-wrap">
+                    {/* Middle row: price + discount + 5yr */}
+                    <div className="flex items-center gap-2 px-3 pb-2 flex-wrap">
                       <span className="text-white font-bold text-sm">{formatPrice(d.pf)}</span>
                       {d.pm2 ? <span className="text-gray-500 text-xs">€{d.pm2}/m²</span> : null}
                       {dc >= 0 ? (
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${dc >= 15 ? 'bg-emerald-500/15 text-emerald-400' : 'bg-emerald-500/10 text-emerald-300'}`}>
-                          -{dc.toFixed(0)}% {discountEuros(d) > 0 ? `· save ${formatPrice(discountEuros(d))}` : ''}
+                        <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${dc >= 15 ? 'bg-emerald-500/15 text-emerald-400' : 'bg-emerald-500/10 text-emerald-300'}`}>
+                          -{dc.toFixed(0)}%{discountEuros(d) > 0 ? ` · -€${Math.round(discountEuros(d)/1000)}k` : ''}
                         </span>
                       ) : (
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-500/15 text-red-400">+{Math.abs(dc).toFixed(0)}%</span>
+                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-red-500/15 text-red-400">+{Math.abs(dc).toFixed(0)}%</span>
                       )}
                       {(() => { const p5 = profit5yr(d.pf, d.r); return p5 > 0 ? (
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#c9a84c]/10 text-[#c9a84c]">
-                          +{formatPrice(p5)} in 5yr
-                        </span>
+                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-[#c9a84c]/10 text-[#c9a84c]">+€{Math.round(p5/1000)}k 5yr</span>
                       ) : null; })()}
-                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${d.s === 'off-plan' ? 'bg-emerald-500/12 text-emerald-400' : d.s === 'under-construction' ? 'bg-amber-500/12 text-amber-400' : 'bg-blue-500/12 text-blue-400'}`}>
-                        {d.s === 'off-plan' ? t.status_offplan : d.s === 'under-construction' ? t.status_construction : t.status_ready}
-                      </span>
-                      {d.c && <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-500/80">~{d.c}</span>}
-                      <span className="text-gray-600 text-[10px]">{d.bd}bd · {d.bm}m²{d.bk !== null ? ` · ${d.bk}km beach` : ''}</span>
                     </div>
-                    <div className="flex justify-end mt-1.5">
+                    {/* Bottom row: meta chips + portfolio button */}
+                    <div className="flex items-center gap-1.5 px-3 pb-2.5 flex-wrap">
+                      <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${d.s === 'off-plan' ? 'bg-emerald-500/12 text-emerald-400' : d.s === 'under-construction' ? 'bg-amber-500/12 text-amber-400' : 'bg-blue-500/12 text-blue-400'}`}>
+                        {d.s === 'off-plan' ? t.off_plan_tag : d.s === 'under-construction' ? t.under_construction_tag : t.ready_tag}
+                      </span>
+                      {d.c && <span className="text-[10px] text-amber-500/70">~{d.c}</span>}
+                      <span className="text-gray-600 text-[10px]">{d.bd}bd · {d.bm}m²{d.bk !== null ? ` · ${d.bk}km 🏖` : ''}</span>
                       <button
                         onClick={e => { e.stopPropagation(); if (!isLocked) togglePortfolio(d.ref || d.p); }}
-                        className={`text-[10px] px-2 py-0.5 rounded border transition-all ${portfolio.includes(d.ref || d.p) ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400' : 'border-[#2a2a30] text-gray-600 hover:text-gray-300'}`}>
-                        {portfolio.includes(d.ref || d.p) ? 'In Portfolio' : '+ Portfolio'}
+                        className={`ml-auto text-[10px] px-2 py-0.5 rounded border transition-all ${portfolio.includes(d.ref || d.p) ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400' : 'border-[#2a2a30] text-gray-600'}`}>
+                        {portfolio.includes(d.ref || d.p) ? '✓' : '+'}
                       </button>
                     </div>
                   </div>
