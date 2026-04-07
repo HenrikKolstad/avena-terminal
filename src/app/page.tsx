@@ -427,10 +427,10 @@ export default function Explorer() {
                 onBlur={e => { (e.target as HTMLInputElement).style.borderColor = '#1e1e28'; }} />
             </div>
             {/* Language flags on mobile */}
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center gap-1">
               {LANGUAGES.map(l => (
                 <button key={l.code} onClick={() => setLang(l.code)} title={l.label}
-                  className={`text-base leading-none transition-all ${lang === l.code ? 'opacity-100' : 'opacity-30'}`}>
+                  className={`text-2xl leading-none transition-all active:scale-90 ${lang === l.code ? 'opacity-100 drop-shadow-lg' : 'opacity-25'}`}>
                   {l.flag}
                 </button>
               ))}
@@ -464,7 +464,7 @@ export default function Explorer() {
             <div className="flex items-center gap-1">
               {LANGUAGES.map(l => (
                 <button key={l.code} onClick={() => setLang(l.code)} title={l.label}
-                  className={`text-lg leading-none transition-all hover:scale-110 ${lang === l.code ? 'opacity-100 scale-110' : 'opacity-40 hover:opacity-70'}`}>
+                  className={`text-2xl leading-none transition-all hover:scale-110 active:scale-95 ${lang === l.code ? 'opacity-100 scale-110 drop-shadow-lg' : 'opacity-35 hover:opacity-70'}`}>
                   {l.flag}
                 </button>
               ))}
