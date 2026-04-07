@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { Property, SortKey, SortDir } from '@/lib/types';
 import { loadProperties } from '@/lib/data';
-import { formatPrice, scoreClass, scoreColor, regionLabel, discount, discountEuros, calcYield } from '@/lib/scoring';
+import { formatPrice, scoreClass, scoreColor, regionLabel, discount, discountEuros, cappedDiscountEuros, calcYield } from '@/lib/scoring';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { useLanguage } from '@/context/LanguageContext';
@@ -547,10 +547,10 @@ export default function Explorer() {
                       {d.pm2 ? <span className="text-gray-500 text-xs">€{d.pm2}/m²</span> : null}
                       {dc >= 0 ? (
                         <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${dc >= 15 ? 'bg-emerald-500/15 text-emerald-400' : 'bg-emerald-500/10 text-emerald-300'}`}>
-                          -{dc.toFixed(0)}%{discountEuros(d) > 0 ? ` · -€${Math.round(discountEuros(d)/1000)}k` : ''}
+                          -{dc.toFixed(0)}%{cappedDiscountEuros(d) > 0 ? ` · -€${Math.round(cappedDiscountEuros(d)/1000)}k` : ''}{d._capped ? ' ⚠' : ''}
                         </span>
                       ) : (
-                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-red-500/15 text-red-400">+{Math.abs(dc).toFixed(0)}%</span>
+                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-red-500/15 text-red-400">+{Math.abs(dc).toFixed(0)}%{d._capped ? ' ⚠' : ''}</span>
                       )}
                       {(() => { const p5 = profit5yr(d.pf, d.r); return p5 > 0 ? (
                         <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-[#c9a84c]/10 text-[#c9a84c]">+€{Math.round(p5/1000)}k 5yr</span>
@@ -632,21 +632,21 @@ export default function Explorer() {
                         <td className="px-3 py-2.5 border-b border-[#141420] text-xs text-gray-400">€{d.mm2}</td>
                         <td className="px-3 py-2.5 border-b border-[#141420]">
                           {(() => {
-                            const de = discountEuros(d);
+                            const de = cappedDiscountEuros(d);
                             return dc >= 0 ? (
                               <div>
                                 <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-bold ${dc >= 15 ? 'bg-emerald-500/15 text-emerald-400' : dc >= 5 ? 'bg-emerald-500/10 text-emerald-300' : 'bg-emerald-500/5 text-emerald-200'}`}>
-                                  -{dc.toFixed(0)}%
+                                  -{dc.toFixed(0)}%{d._capped ? <span className="ml-0.5 text-amber-400" title="Under review — benchmark may need adjustment">⚠</span> : null}
                                 </span>
-                                {de > 0 && <div className="text-[9px] text-emerald-500/70 mt-0.5">-€{(de/1000).toFixed(0)}k</div>}
+                                {de > 0 && <div className="text-[9px] text-emerald-500/70 mt-0.5">-€{(de/1000).toFixed(0)}k{d._capped && d._capReason !== 'luxury_review' ? ' (cap)' : ''}</div>}
                                 <div className="text-[9px] text-[#c9a84c]/80 mt-0.5 font-semibold">+€{(profit5yr(d.pf, d.r)/1000).toFixed(0)}k 5yr</div>
                               </div>
                             ) : (
                               <div>
                                 <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-500/15 text-red-400">
-                                  +{Math.abs(dc).toFixed(0)}%
+                                  +{Math.abs(dc).toFixed(0)}%{d._capped ? <span className="ml-0.5 text-amber-400" title="Under review">⚠</span> : null}
                                 </span>
-                                {de < 0 && <div className="text-[9px] text-red-500/70 mt-0.5">+€{(Math.abs(de)/1000).toFixed(0)}k</div>}
+                                {de < 0 && <div className="text-[9px] text-red-500/70 mt-0.5">+€{(Math.abs(de)/1000).toFixed(0)}k{d._capped && d._capReason !== 'luxury_review' ? ' (cap)' : ''}</div>}
                                 <div className="text-[9px] text-[#c9a84c]/80 mt-0.5 font-semibold">+€{(profit5yr(d.pf, d.r)/1000).toFixed(0)}k 5yr</div>
                               </div>
                             );

@@ -42,6 +42,9 @@ export interface Property {
   _estMm2?: number;
   pm2lo?: number;
   pm2hi?: number;
+  _capped?: boolean;        // discount/overpriced amount was sanity-capped
+  _capReason?: string;      // 'discount_cap' | 'overprice_cap' | 'luxury_review'
+  _rawDiscEuros?: number;   // original uncapped value (for logging)
 }
 
 export interface YieldResult {

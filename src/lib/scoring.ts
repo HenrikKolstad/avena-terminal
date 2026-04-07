@@ -82,8 +82,10 @@ export function calcScore(d: Property): number {
   let s = 0;
 
   // 1. DISCOUNT vs NB market (40 points max)
-  // mm2 is now the NB benchmark directly
-  if (d.mm2 > 0 && d.pm2 && d.pm2 > 0) {
+  // If capped, the benchmark may be unreliable — score conservatively
+  if (d._capped && d._capReason !== 'luxury_review') {
+    s += 15; // treat as "at market" — fair but not inflated
+  } else if (d.mm2 > 0 && d.pm2 && d.pm2 > 0) {
     const df = (d.mm2 - d.pm2) / d.mm2; // positive = below NB market
     if (df >= 0.25) s += 40;
     else if (df >= 0.20) s += 35;
@@ -203,6 +205,22 @@ export function getGrowthRate(d: Property): number {
   return 7;
 }
 
+// Returns the euro cap for a given price point
+export function discountEuroCap(pf: number): number {
+  if (pf < 500000) return 200000;
+  if (pf < 1000000) return 250000;
+  return Infinity; // luxury: no hard cap, only % flag
+}
+
+// Returns the capped discount euros for display (positive = discount, negative = overpriced)
+export function cappedDiscountEuros(d: Property): number {
+  const raw = discountEuros(d);
+  if (!raw) return 0;
+  const cap = discountEuroCap(d.pf);
+  if (cap === Infinity) return raw;
+  return raw > 0 ? Math.min(raw, cap) : Math.max(raw, -cap);
+}
+
 export function initProperty(d: Property): Property {
   if (d.bm > 0) {
     d.pm2lo = Math.round(d.pf / d.bm);
@@ -212,6 +230,25 @@ export function initProperty(d: Property): Property {
   d._mths = monthsToCompletion(d.c);
   d._grw = getGrowthRate(d);
   d._estMm2 = Math.round(d.mm2 * (1 + (d._grw / 100) * (d._mths / 12)));
+
+  // --- DISCOUNT SANITY CAPS (must run before calcScore) ---
+  const rawDiscEuros = d.bm > 0 && d.mm2 > 0 ? Math.round(d.mm2 * d.bm - d.pf) : 0;
+  const discPct = d.mm2 > 0 && d.pm2 && d.pm2 > 0 ? (d.mm2 - d.pm2) / d.mm2 * 100 : 0;
+  const cap = discountEuroCap(d.pf);
+  const isLuxury = d.pf >= 1000000;
+
+  d._capped = false;
+  d._rawDiscEuros = rawDiscEuros;
+
+  if (!isLuxury && Math.abs(rawDiscEuros) > cap) {
+    d._capped = true;
+    d._capReason = rawDiscEuros > 0 ? 'discount_cap' : 'overprice_cap';
+  } else if (isLuxury && discPct > 35) {
+    d._capped = true;
+    d._capReason = 'luxury_review';
+  }
+  // --------------------------------------------------------
+
   d._yield = calcYield(d);
   d._sc = calcScore(d);
   return d;

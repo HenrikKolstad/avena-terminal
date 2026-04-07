@@ -501,6 +501,42 @@ async function main() {
 
   fs.writeFileSync(OUTPUT, JSON.stringify(unique, null, 0));
   console.log(`Wrote ${OUTPUT} (${(fs.statSync(OUTPUT).size / 1024).toFixed(0)}KB)`);
+
+  // --- DISCOUNT SANITY CAP REPORT ---
+  // Replicate initProperty cap logic inline (parse-feed is plain JS, not TS)
+  function getCapLimit(pf) { return pf < 500000 ? 200000 : pf < 1000000 ? 250000 : Infinity; }
+  const cappedProps = unique.filter(p => {
+    if (!p.bm || !p.mm2 || !p.pm2) return false;
+    const rawDiscEuros = Math.round(p.mm2 * p.bm - p.pf);
+    const cap = getCapLimit(p.pf);
+    const discPct = (p.mm2 - p.pm2) / p.mm2 * 100;
+    if (cap !== Infinity && Math.abs(rawDiscEuros) > cap) return true;
+    if (p.pf >= 1000000 && discPct > 35) return true;
+    return false;
+  });
+  if (cappedProps.length > 0) {
+    console.log(`\n⚠  CAPPED PROPERTIES (${cappedProps.length}) — benchmark may need adjustment:`);
+    let discountCap = 0, overpriceCap = 0, luxuryReview = 0;
+    cappedProps.forEach(p => {
+      const rawDiscEuros = Math.round(p.mm2 * p.bm - p.pf);
+      const cap = getCapLimit(p.pf);
+      const discPct = (p.mm2 - p.pm2) / p.mm2 * 100;
+      if (p.pf >= 1000000 && discPct > 35) luxuryReview++;
+      else if (rawDiscEuros > 0) discountCap++;
+      else overpriceCap++;
+    });
+    console.log(`  discount_cap: ${discountCap} | overprice_cap: ${overpriceCap} | luxury_review: ${luxuryReview}`);
+    cappedProps.slice(0, 20).forEach(p => {
+      const rawDiscEuros = Math.round(p.mm2 * p.bm - p.pf);
+      const cap = getCapLimit(p.pf);
+      const discPct = Math.round((p.mm2 - p.pm2) / p.mm2 * 100);
+      const capStr = cap === Infinity ? `${discPct}% discount (luxury >35% flag)` : `raw €${Math.round(rawDiscEuros/1000)}k → cap €${Math.round(cap/1000)}k`;
+      console.log(`  ${(p.p || '').substring(0, 38).padEnd(38)} | ${((p.l||'').split(',')[0]).padEnd(22)} | pf:€${Math.round(p.pf/1000)}k bm:${p.bm}m² | ${capStr}`);
+    });
+    if (cappedProps.length > 20) console.log(`  ... and ${cappedProps.length - 20} more`);
+  } else {
+    console.log('\n✓ No capped properties — all discounts within sanity limits');
+  }
 }
 
 main().catch(console.error);
