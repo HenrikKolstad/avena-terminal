@@ -487,14 +487,191 @@ async function main() {
 
   console.log(`${unique.length} unique properties after dedup`);
 
-  // ─── SELF-BENCHMARK: use feed's own median pm2 per town+type ──────────────
-  // "The feed IS the market" — if Calpe apts average €X/m² in our data, that IS the benchmark.
-  // This replaces external/manual benchmarks with data-derived ones for any town with ≥5 props.
-  // For small towns, the original areaNBBenchmarks value from parseProperty() is kept.
+  // ─── HEDONIC REGRESSION BENCHMARK ───────────────────────────────────────────
+  // Personalised fair-value pm2 for each property based on its own attributes.
+  // OLS regression: pm2 = f(log_area, beach, sea_view, golf, beds, is_villa, region_dummies, town_dummies)
+
   const isVilType = t => ['Villa','Townhouse','Bungalow'].includes(t);
   const getMedian = arr => { const s = [...arr].sort((a,b)=>a-b); return s[Math.floor(s.length/2)]; };
 
-  // Group pm2 by town + segment
+  // --- Matrix math helpers (plain JS, no external libs) ---
+  function matMul(A, B) {
+    const rows = A.length, cols = B[0].length, inner = B.length;
+    const C = Array.from({length: rows}, () => new Array(cols).fill(0));
+    for (let i = 0; i < rows; i++)
+      for (let k = 0; k < inner; k++) {
+        if (A[i][k] === 0) continue;
+        for (let j = 0; j < cols; j++)
+          C[i][j] += A[i][k] * B[k][j];
+      }
+    return C;
+  }
+
+  function transpose(A) {
+    const rows = A.length, cols = A[0].length;
+    const T = Array.from({length: cols}, () => new Array(rows).fill(0));
+    for (let i = 0; i < rows; i++)
+      for (let j = 0; j < cols; j++)
+        T[j][i] = A[i][j];
+    return T;
+  }
+
+  function invertMatrix(M) {
+    const n = M.length;
+    // Augment with identity
+    const aug = M.map((row, i) => {
+      const r = [...row];
+      for (let j = 0; j < n; j++) r.push(i === j ? 1 : 0);
+      return r;
+    });
+    // Gaussian elimination with partial pivoting
+    for (let col = 0; col < n; col++) {
+      // Find pivot
+      let maxRow = col;
+      let maxVal = Math.abs(aug[col][col]);
+      for (let row = col + 1; row < n; row++) {
+        if (Math.abs(aug[row][col]) > maxVal) {
+          maxVal = Math.abs(aug[row][col]);
+          maxRow = row;
+        }
+      }
+      if (maxVal < 1e-12) throw new Error(`Matrix singular at col ${col}`);
+      [aug[col], aug[maxRow]] = [aug[maxRow], aug[col]];
+      const pivot = aug[col][col];
+      for (let j = 0; j < 2 * n; j++) aug[col][j] /= pivot;
+      for (let row = 0; row < n; row++) {
+        if (row === col) continue;
+        const factor = aug[row][col];
+        if (factor === 0) continue;
+        for (let j = 0; j < 2 * n; j++) aug[row][j] -= factor * aug[col][j];
+      }
+    }
+    return aug.map(row => row.slice(n));
+  }
+
+  function ols(X, y) {
+    const Xt = transpose(X);
+    const XtX = matMul(Xt, X);
+    const XtXinv = invertMatrix(XtX);
+    const Xty = matMul(Xt, y.map(v => [v]));
+    return matMul(XtXinv, Xty).map(r => r[0]);
+  }
+
+  // --- Collect town counts for dummies (towns with ≥8 properties) ---
+  const townCounts = new Map();
+  unique.forEach(p => {
+    if (!p.pm2 || p.pm2 <= 0) return;
+    const town = (p.l || '').split(',')[0].trim();
+    townCounts.set(town, (townCounts.get(town) || 0) + 1);
+  });
+  const dummyTowns = [...townCounts.entries()]
+    .filter(([, cnt]) => cnt >= 8)
+    .map(([t]) => t);
+  // Omit the most common town as baseline
+  dummyTowns.sort((a, b) => townCounts.get(b) - townCounts.get(a));
+  const baselineTown = dummyTowns.shift(); // removed from encoding, acts as baseline
+  console.log(`Hedonic regression: ${dummyTowns.length} town dummies (baseline: ${baselineTown}), ${townCounts.size} towns total`);
+
+  // Feature names for diagnostics
+  // r_south is omitted (baseline region since baseline town Torrevieja is cb-south)
+  const featureNames = [
+    'intercept', 'log_bm', 'beach', 'sea_view', 'golf', 'beds', 'is_villa',
+    'r_north', 'r_calida',
+    ...dummyTowns
+  ];
+
+  // --- Build feature row for a property ---
+  // r_south omitted (baseline region = cb-south, since baseline town Torrevieja is cb-south)
+  function buildRow(p) {
+    const bm = p.bm > 0 ? p.bm : 80;
+    const log_bm = Math.log(bm);
+    const beach = p.bk !== null ? Math.min(p.bk, 10) : 5; // null=unknown → 5
+    const sea_view = (p.views && p.views.includes('sea')) ? 1 : 0;
+    const golf = (p.cats && p.cats.includes('golf')) ? 1 : 0;
+    const beds = Math.min(Math.max(p.bd || 1, 1), 6);
+    const is_villa = isVilType(p.t) ? 1 : 0;
+    const r_north = p.r === 'cb-north' ? 1 : 0;
+    const r_calida = p.r === 'costa-calida' ? 1 : 0;
+    const town = (p.l || '').split(',')[0].trim();
+    const townDummies = dummyTowns.map(t => t === town ? 1 : 0);
+    return [1, log_bm, beach, sea_view, golf, beds, is_villa, r_north, r_calida, ...townDummies];
+  }
+
+  // --- Collect training data (properties with valid pm2) ---
+  const trainProps = unique.filter(p => p.pm2 && p.pm2 > 0 && p.bm > 0);
+  const X = trainProps.map(p => buildRow(p));
+  const y = trainProps.map(p => p.pm2);
+
+  console.log(`Training hedonic model on ${trainProps.length} properties with ${featureNames.length} features...`);
+
+  let beta;
+  let regressionOk = false;
+  try {
+    beta = ols(X, y);
+    regressionOk = true;
+  } catch (e) {
+    console.error('Regression failed:', e.message, '— falling back to town median');
+  }
+
+  if (regressionOk) {
+    // --- Diagnostics ---
+    const yHat = X.map(row => row.reduce((s, v, i) => s + v * beta[i], 0));
+    const yMean = y.reduce((s, v) => s + v, 0) / y.length;
+    const ssTot = y.reduce((s, v) => s + (v - yMean) ** 2, 0);
+    const ssRes = y.reduce((s, v, i) => s + (v - yHat[i]) ** 2, 0);
+    const r2 = 1 - ssRes / ssTot;
+    const rmse = Math.sqrt(ssRes / y.length);
+    console.log(`\nHedonic model diagnostics:`);
+    console.log(`  R² = ${r2.toFixed(3)}  RMSE = €${Math.round(rmse)}/m²`);
+
+    if (r2 < 0.3) {
+      console.warn('  WARNING: R² < 0.3 — regression may be unreliable, check feature matrix');
+    }
+
+    // Top 5 positive & negative coefficients
+    const coefPairs = featureNames.map((name, i) => ({ name, coef: beta[i] }));
+    const sorted = [...coefPairs].sort((a, b) => b.coef - a.coef);
+    console.log('  Top 5 positive coefficients:');
+    sorted.slice(0, 5).forEach(c => console.log(`    ${c.name.padEnd(20)} ${c.coef > 0 ? '+' : ''}${c.coef.toFixed(1)}`));
+    console.log('  Top 5 negative coefficients:');
+    sorted.slice(-5).reverse().forEach(c => console.log(`    ${c.name.padEnd(20)} ${c.coef > 0 ? '+' : ''}${c.coef.toFixed(1)}`));
+
+    // --- Apply regression to all properties ---
+    let clampLow = 0, clampHigh = 0, regApplied = 0;
+    unique.forEach(p => {
+      if (!p.bm || p.bm <= 0) return; // no area — keep existing mm2
+      const row = buildRow(p);
+      const predicted = row.reduce((s, v, i) => s + v * beta[i], 0);
+      let mm2 = Math.round(predicted);
+      if (predicted < 1500) { mm2 = 1500; clampLow++; }
+      else if (predicted > 15000) { mm2 = 15000; clampHigh++; }
+      p.mm2 = mm2;
+      regApplied++;
+    });
+    console.log(`  Applied to ${regApplied} properties (clamped low: ${clampLow}, high: ${clampHigh})`);
+
+    // --- Distribution: how many properties fall below predicted by how much ---
+    const withPm2 = unique.filter(p => p.pm2 && p.pm2 > 0 && p.mm2 > 0);
+    let d5 = 0, d15 = 0, d25 = 0, d25plus = 0, above = 0;
+    withPm2.forEach(p => {
+      const pct = (p.mm2 - p.pm2) / p.mm2 * 100;
+      if (pct > 25) d25plus++;
+      else if (pct > 15) d25++;
+      else if (pct > 5) d15++;
+      else if (pct > 0) d5++;
+      else above++;
+    });
+    console.log(`\n  Discount distribution (${withPm2.length} props with pm2):`);
+    console.log(`    >25% below predicted: ${d25plus}`);
+    console.log(`    15-25% below:         ${d25}`);
+    console.log(`    5-15% below:          ${d15}`);
+    console.log(`    0-5% below:           ${d5}`);
+    console.log(`    at/above predicted:   ${above}`);
+    console.log();
+  }
+
+  // --- Fallback: town median for properties where regression was skipped ---
+  // Also used as backstop for any town with no regression (area=0 properties kept as-is)
   const townPm2 = {};
   unique.forEach(p => {
     if (!p.pm2 || p.pm2 <= 0) return;
@@ -505,7 +682,6 @@ async function main() {
     townPm2[key].push(p.pm2);
   });
 
-  // Group pm2 by region + segment for regional fallback
   const regionPm2 = {};
   unique.forEach(p => {
     if (!p.pm2 || p.pm2 <= 0) return;
@@ -515,34 +691,24 @@ async function main() {
     regionPm2[key].push(p.pm2);
   });
 
-  // Apply self-benchmark where we have enough data (≥5 same-type properties in the town)
-  let selfBenchCount = 0;
+  // Properties with bm=0 had regression skipped → apply town median fallback
+  let fallbackCount = 0;
   unique.forEach(p => {
+    if (p.bm > 0) return; // regression already applied
     const town = (p.l || '').split(',')[0].trim();
     const seg  = isVilType(p.t) ? 'vil' : 'apt';
     const key  = `${town}::${seg}`;
     const arr  = townPm2[key] || [];
     if (arr.length >= 5) {
       p.mm2 = getMedian(arr);
-      selfBenchCount++;
+      fallbackCount++;
     } else {
-      // Try regional median as fallback for small towns
       const rKey = `${p.r}::${seg}`;
       const rArr = regionPm2[rKey] || [];
-      if (rArr.length >= 10) p.mm2 = getMedian(rArr);
-      // else: keep mm2 from areaNBBenchmarks (parseProperty computed it)
+      if (rArr.length >= 10) { p.mm2 = getMedian(rArr); fallbackCount++; }
     }
   });
-  console.log(`Self-benchmarked: ${selfBenchCount}/${unique.length} properties use feed-derived median mm2`);
-
-  // Log median benchmarks for key towns
-  const keyTowns = ['Torrevieja','Calpe','Finestrat','Los Alcazares','Orihuela Costa','Pilar de La Horadada','Torre Pacheco'];
-  console.log('\nFeed-derived benchmarks (median pm2):');
-  keyTowns.forEach(t => {
-    const a = townPm2[`${t}::apt`]; const v = townPm2[`${t}::vil`];
-    console.log(`  ${t.padEnd(22)} apt:${a?getMedian(a):'–'} (n=${a?a.length:0})  vil:${v?getMedian(v):'–'} (n=${v?v.length:0})`);
-  });
-  console.log();
+  if (fallbackCount > 0) console.log(`Town-median fallback applied to ${fallbackCount} properties (area=0)`);
   // ─────────────────────────────────────────────────────────────────────────────
 
   // Stats

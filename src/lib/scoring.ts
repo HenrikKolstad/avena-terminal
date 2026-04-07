@@ -170,8 +170,8 @@ export function calcYield(d: Property): YieldResult {
   return { gross: +(annual / avgP * 100).toFixed(1), annual: Math.round(annual), rate: Math.round(rate), weeks: baseWk, src };
 }
 
-// Hard cap on displayed discount percentage — real new builds don't exceed this
-export const DISCOUNT_PCT_CAP = 25;
+// Hard cap on displayed discount percentage — luxury market allows wider swings; 40 is a generous backstop
+export const DISCOUNT_PCT_CAP = 40;
 
 export function discount(d: Property): number {
   if (!d.mm2 || !d.pm2) return 0;
@@ -251,11 +251,7 @@ export function initProperty(d: Property): Property {
   d._capped = false;
   d._rawDiscEuros = rawDiscEuros;
 
-  if (discPct > DISCOUNT_PCT_CAP) {
-    // Discount % exceeds believable limit — benchmark likely too high
-    d._capped = true;
-    d._capReason = 'pct_cap';
-  } else if (!isLuxury && Math.abs(rawDiscEuros) > cap) {
+  if (!isLuxury && Math.abs(rawDiscEuros) > cap) {
     d._capped = true;
     d._capReason = rawDiscEuros > 0 ? 'discount_cap' : 'overprice_cap';
   } else if (isLuxury && discPct > 35) {
