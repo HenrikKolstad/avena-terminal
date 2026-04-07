@@ -364,9 +364,9 @@ export default function Explorer() {
               <div className="text-[9px] text-gray-700 mt-0.5">Costa Del Sol properties coming soon ⏳</div>
             </div>
             <p className="text-[9px] text-gray-700 mt-1.5 flex items-center gap-1 flex-wrap">
-              <span>With</span>
+              <span>In partnership with</span>
               <a href="https://www.xaviaestate.com" target="_blank" rel="noopener noreferrer" className="font-semibold hover:opacity-80 transition-opacity" style={{ color: '#F5A623' }}>Xavia Estate</a>
-              <span>&amp;</span>
+              <span className="text-gray-600">&</span>
               <a href="https://stripe.com" target="_blank" rel="noopener noreferrer" className="font-semibold hover:opacity-80 transition-opacity" style={{ color: '#635BFF' }}>Stripe</a>
             </p>
           </div>
