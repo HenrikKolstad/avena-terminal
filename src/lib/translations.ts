@@ -1,12 +1,12 @@
 export type Lang = 'en' | 'de' | 'nl' | 'sv' | 'es' | 'fr';
 
-export const LANGUAGES: { code: Lang; flag: string; label: string }[] = [
-  { code: 'en', flag: '🇬🇧', label: 'EN' },
-  { code: 'de', flag: '🇩🇪', label: 'DE' },
-  { code: 'nl', flag: '🇳🇱', label: 'NL' },
-  { code: 'sv', flag: '🇸🇪', label: 'SV' },
-  { code: 'es', flag: '🇪🇸', label: 'ES' },
-  { code: 'fr', flag: '🇫🇷', label: 'FR' },
+export const LANGUAGES: { code: Lang; flag: string; label: string; country: string }[] = [
+  { code: 'en', flag: '🇬🇧', label: 'EN', country: 'gb' },
+  { code: 'de', flag: '🇩🇪', label: 'DE', country: 'de' },
+  { code: 'nl', flag: '🇳🇱', label: 'NL', country: 'nl' },
+  { code: 'sv', flag: '🇸🇪', label: 'SV', country: 'se' },
+  { code: 'es', flag: '🇪🇸', label: 'ES', country: 'es' },
+  { code: 'fr', flag: '🇫🇷', label: 'FR', country: 'fr' },
 ];
 
 const t = {

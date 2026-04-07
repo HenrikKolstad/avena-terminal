@@ -430,8 +430,8 @@ export default function Explorer() {
             <div className="flex items-center gap-1">
               {LANGUAGES.map(l => (
                 <button key={l.code} onClick={() => setLang(l.code)} title={l.label}
-                  className={`text-2xl leading-none transition-all active:scale-90 ${lang === l.code ? 'opacity-100 drop-shadow-lg' : 'opacity-25'}`}>
-                  {l.flag}
+                  className={`transition-all active:scale-90 rounded-sm overflow-hidden ${lang === l.code ? 'opacity-100 ring-1 ring-[#c9a84c]' : 'opacity-35 hover:opacity-70'}`}>
+                  <img src={`https://flagcdn.com/w20/${l.country}.png`} alt={l.label} width={20} height={14} className="block" />
                 </button>
               ))}
             </div>
@@ -464,8 +464,8 @@ export default function Explorer() {
             <div className="flex items-center gap-1">
               {LANGUAGES.map(l => (
                 <button key={l.code} onClick={() => setLang(l.code)} title={l.label}
-                  className={`text-2xl leading-none transition-all hover:scale-110 active:scale-95 ${lang === l.code ? 'opacity-100 scale-110 drop-shadow-lg' : 'opacity-35 hover:opacity-70'}`}>
-                  {l.flag}
+                  className={`transition-all hover:scale-110 active:scale-95 rounded-sm overflow-hidden ${lang === l.code ? 'opacity-100 ring-1 ring-[#c9a84c] scale-110' : 'opacity-35 hover:opacity-70'}`}>
+                  <img src={`https://flagcdn.com/w20/${l.country}.png`} alt={l.label} width={20} height={14} className="block" />
                 </button>
               ))}
             </div>
