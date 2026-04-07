@@ -723,6 +723,30 @@ async function main() {
   console.log(`With images: ${unique.filter(p => p.imgs.length > 0).length}`);
   console.log(`With GPS: ${unique.filter(p => p.lat && p.lng).length}`);
 
+  // --- NEW-THIS-WEEK TRACKING ---
+  // Load previous data.json to diff which refs are new
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  let prevAddedMap = {};
+  try {
+    const prev = JSON.parse(fs.readFileSync(OUTPUT, 'utf8'));
+    prev.forEach(p => { if (p.ref && p._added) prevAddedMap[p.ref] = p._added; });
+    console.log(`Loaded ${Object.keys(prevAddedMap).length} previous _added dates`);
+  } catch { /* file doesn't exist yet */ }
+
+  // If no _added history found (first run or old data.json), baseline all as 30 days ago
+  if (Object.keys(prevAddedMap).length === 0) {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    unique.forEach(p => { if (p.ref) prevAddedMap[p.ref] = thirtyDaysAgo; });
+    console.log('No _added history found — baselined all properties as 30 days old');
+  }
+  unique.forEach(p => {
+    p._added = prevAddedMap[p.ref] || today; // new ref = added today
+  });
+  const newThisWeek = unique.filter(p => p._added >= sevenDaysAgo).length;
+  console.log(`New this week: ${newThisWeek}`);
+  // --------------------------------
+
   fs.writeFileSync(OUTPUT, JSON.stringify(unique, null, 0));
   console.log(`Wrote ${OUTPUT} (${(fs.statSync(OUTPUT).size / 1024).toFixed(0)}KB)`);
 

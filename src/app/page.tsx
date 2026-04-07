@@ -194,12 +194,14 @@ export default function Explorer() {
   };
 
   const stats = useMemo(() => {
-    if (!filtered.length) return { count: 0, avgDisc: 0, bestScore: 0 };
+    if (!filtered.length) return { count: 0, avgDisc: 0, bestScore: 0, newThisWeek: 0 };
     const discs = filtered.map(d => displayDiscount(d)).filter(x => x > 0);
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
     return {
       count: filtered.length,
       avgDisc: discs.length ? Math.round(discs.reduce((a, b) => a + b, 0) / discs.length) : 0,
       bestScore: Math.max(...filtered.map(d => d._sc || 0)),
+      newThisWeek: filtered.filter(d => d._added && d._added >= sevenDaysAgo).length,
     };
   }, [filtered]);
 
@@ -322,6 +324,13 @@ export default function Explorer() {
               <div className="text-lg font-bold text-amber-400 font-serif leading-none">{stats.avgDisc}%</div>
               <div className="text-[8px] uppercase tracking-widest text-gray-600">Disc</div>
             </div>
+            <div className="text-center border-l border-[#1a1a24] pl-2">
+              <div className="flex items-center gap-0.5">
+                <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse inline-block"></span>
+                <div className="text-lg font-bold text-emerald-400 font-serif leading-none">{stats.newThisWeek}</div>
+              </div>
+              <div className="text-[8px] uppercase tracking-widest text-gray-600">New</div>
+            </div>
             {!authLoading && (
               user ? (
                 <div className="flex items-center gap-2 border-l border-[#1a1a24] pl-2">
@@ -381,6 +390,13 @@ export default function Explorer() {
             <div className="text-center border-l border-[#1a1a24] pl-6">
               <div className="text-3xl font-bold text-amber-400 font-serif">{stats.bestScore}</div>
               <div className="text-[9px] uppercase tracking-widest text-gray-500">Best Score</div>
+            </div>
+            <div className="text-center border-l border-[#1a1a24] pl-6">
+              <div className="flex items-center justify-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block"></span>
+                <div className="text-3xl font-bold text-emerald-400 font-serif">{stats.newThisWeek}</div>
+              </div>
+              <div className="text-[9px] uppercase tracking-widest text-gray-500">New This Week</div>
             </div>
             <div className="ml-4">
               {!authLoading && (
