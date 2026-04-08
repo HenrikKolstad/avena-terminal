@@ -22,3 +22,5 @@ jobs:
           git add public/data.json
           git diff --staged --quiet || git commit -m "Daily feed sync $(date +%Y-%m-%d)"
           git push
+      - name: Check price drops and send alerts
+        run: curl -s -X POST https://avena-estate.com/api/check-price-drops -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" | cat
