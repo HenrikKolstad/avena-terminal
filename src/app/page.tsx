@@ -859,7 +859,7 @@ export default function Explorer() {
 
       {/* CONTENT — padded top (header height) + left (sidebar width on desktop only) */}
       <div
-        className={`overflow-x-hidden min-w-0 transition-all duration-200 ${preview !== null ? 'md:mr-[480px]' : ''}`}
+        className={`overflow-x-hidden min-w-0 transition-[margin-right] duration-200 ${preview !== null ? 'md:mr-[480px]' : ''}`}
         style={{ paddingTop: headerH, paddingLeft: isDesktop ? (sidebarCollapsed ? 32 : 240) : 0 }}
       >
           {(tab === 'whyavena' || (!user && tab === 'deals')) && (
