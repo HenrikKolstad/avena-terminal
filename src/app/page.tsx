@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useLayoutEffect, useMemo, useCallback, useRef } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { Property, SortKey, SortDir } from '@/lib/types';
 import { loadProperties, syncSnapshots } from '@/lib/data';
@@ -125,16 +125,17 @@ export default function Explorer() {
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
 
-  // Measure header height — use getBoundingClientRect since element is position:fixed
-  const [headerH, setHeaderH] = useState(220);
-  useLayoutEffect(() => {
+  // Measure header height after paint via ResizeObserver
+  const [headerH, setHeaderH] = useState(250);
+  useEffect(() => {
     if (!headerRef.current) return;
-    const update = (el: HTMLDivElement) => {
-      const h = el.getBoundingClientRect().height;
-      if (h > 0) setHeaderH(h);
+    const update = () => {
+      if (!headerRef.current) return;
+      const h = headerRef.current.getBoundingClientRect().height;
+      if (h > 0) setHeaderH(h + 8); // +8px safety buffer
     };
-    update(headerRef.current);
-    const ro = new ResizeObserver(() => { if (headerRef.current) update(headerRef.current); });
+    update();
+    const ro = new ResizeObserver(update);
     ro.observe(headerRef.current);
     return () => ro.disconnect();
   }, []);
