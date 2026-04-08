@@ -749,7 +749,7 @@ export default function Explorer() {
           <>
             {/* ── DESKTOP SIDEBAR — fixed full height, top-0, z-50 (above header) ── */}
             <div
-              className="hidden md:flex flex-col fixed left-0 top-0 z-50 border-r border-[#1a1a24] overflow-y-auto"
+              className="hidden md:flex flex-col fixed left-0 top-0 z-50 border-r border-[#1a1a24] overflow-y-auto overflow-x-hidden"
               style={{
                 background: '#0d0d14',
                 width: sidebarWidth,
