@@ -369,5 +369,9 @@ export function scoreColor(s: number): string {
 }
 
 export function regionLabel(r: string): string {
-  return r === 'cb-south' ? 'CB South' : r === 'cb-north' ? 'CB North' : 'C. Cálida';
+  if (r === 'cb-south') return 'CB South';
+  if (r === 'cb-north') return 'CB North';
+  if (r === 'costa-calida') return 'C. Cálida';
+  if (r === 'costa-del-sol') return 'Costa del Sol';
+  return 'C. Cálida';
 }

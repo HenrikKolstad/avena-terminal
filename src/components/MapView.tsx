@@ -42,10 +42,12 @@ export default function MapView({
   properties,
   onPreview,
   isPaid,
+  headerH = 280,
 }: {
   properties: Property[];
   onPreview: (ref: string) => void;
   isPaid: boolean;
+  headerH?: number;
 }) {
   const [mapFilter, setMapFilter] = useState<MapFilter>('all');
 
@@ -63,7 +65,7 @@ export default function MapView({
       : `€${Math.round(n / 1000)}k`;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-200px)] md:h-[calc(100vh-220px)] min-h-[400px] md:min-h-[500px]">
+    <div className="flex flex-col min-h-[400px] md:min-h-[500px]" style={{ height: `calc(100vh - ${headerH}px)` }}>
       {/* Map controls */}
       <div className="flex flex-col gap-1.5 md:flex-row md:items-center md:gap-3 px-3 md:px-4 py-2 bg-[#111118] border-b border-[#2a2a30]">
         <div className="flex items-center gap-1.5 flex-wrap">

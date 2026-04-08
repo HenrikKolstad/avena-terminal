@@ -111,6 +111,7 @@ function mapRegion(costa) {
   if (c.includes('calida')) return 'costa-calida';
   if (c.includes('almeria')) return 'costa-almeria';
   if (c.includes('valencia')) return 'costa-valencia';
+  if (c.includes('del sol') || c.includes('tropical')) return 'costa-del-sol';
   return 'cb-south';
 }
 
@@ -254,6 +255,31 @@ const areaNBBenchmarks = {
   'Alhama de Murcia':     { apt: 3000, vil: 3000 },
   "El Rafol D'almunia":   { apt: 3000, vil: 3000 },
   'Ráfol de Almunia':     { apt: 3000, vil: 3000 },
+  // COSTA DEL SOL
+  'Marbella':             { apt: 8000, vil: 12000 },
+  'Estepona':             { apt: 5500, vil: 7000 },
+  'Nerja':                { apt: 5500, vil: 6000 },
+  'Fuengirola':           { apt: 5000, vil: 6500 },
+  'Benalmádena':          { apt: 5500, vil: 6500 },
+  'Torremolinos':         { apt: 4500, vil: 5500 },
+  'Málaga':               { apt: 5000, vil: 6000 },
+  'Mijas':                { apt: 5000, vil: 6500 },
+  'Manilva':              { apt: 4000, vil: 4500 },
+  'Sotogrande':           { apt: 6000, vil: 9000 },
+  'Benahavís':            { apt: 7000, vil: 10000 },
+  'Casares':              { apt: 4000, vil: 5000 },
+  'La Duquesa':           { apt: 4500, vil: 5500 },
+  'San Pedro De Alcantara': { apt: 6000, vil: 8000 },
+  'Ojen':                 { apt: 5500, vil: 7000 },
+  'San Roque':            { apt: 4500, vil: 5500 },
+  'La Linea De La Concepcion': { apt: 3500, vil: 4000 },
+  'Almuñecar':            { apt: 4000, vil: 4500 },
+  'Torrox':               { apt: 3800, vil: 4000 },
+  'Vélez Málaga':         { apt: 3500, vil: 4000 },
+  'Monachil':             { apt: 4000, vil: 4500 },
+  'Monda':                { apt: 3500, vil: 4500 },
+  'Istán':                { apt: 5000, vil: 6500 },
+  'rincon de la victoria': { apt: 4000, vil: 4500 },
 };
 
 // Regional fallback new-build benchmarks
@@ -263,6 +289,7 @@ const regionNBFallback = {
   'costa-calida':  { apt: 4000, vil: 4200 },
   'costa-almeria': { apt: 3000, vil: 3000 },
   'costa-valencia':{ apt: 4000, vil: 4000 },
+  'costa-del-sol': { apt: 5500, vil: 7000 },
 };
 
 function getNewBuildBenchmark(town, region, type, cats, beachKm, views) {
@@ -432,7 +459,7 @@ async function main() {
   console.log(`Found ${properties.length} properties in feed`);
 
   // Filter: new builds only + Costa Blanca & Calida only (no Almería, Valencia)
-  const allowedCostas = ['costa blanca south', 'costa blanca north', 'costa calida', 'costa blanca south - inland', 'costa blanca north - inland'];
+  const allowedCostas = ['costa blanca south', 'costa blanca north', 'costa calida', 'costa blanca south - inland', 'costa blanca north - inland', 'costa del sol', 'costa tropical'];
   const parsed = properties
     .filter(p => p.new_build == 1)
     .filter(p => {

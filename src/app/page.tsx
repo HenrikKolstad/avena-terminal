@@ -41,7 +41,7 @@ const FREE_YIELD_LIMIT = 2;
 // 5-year market value forecast helper
 function growthRate5yr(region: string): number {
   const r = (region || '').toLowerCase();
-  if (r.includes('marbella') || r.includes('costa del sol') || r.includes('estepona') || r.includes('benahavis')) return 0.09;
+  if (r.includes('marbella') || r.includes('costa del sol') || r.includes('costa-del-sol') || r.includes('estepona') || r.includes('benahavis')) return 0.09;
   if (r.includes('javea') || r.includes('altea') || r.includes('moraira') || r.includes('denia') || r.includes('cb-north')) return 0.085;
   if (r.includes('mallorca') || r.includes('ibiza') || r.includes('balear')) return 0.10;
   if (r.includes('barcelona') || r.includes('sitges')) return 0.065;
@@ -126,17 +126,17 @@ export default function Explorer() {
   const [emailLoading, setEmailLoading] = useState(false);
 
   // Measure header height after paint via ResizeObserver
-  const [headerH, setHeaderH] = useState(300);
+  const [headerH, setHeaderH] = useState(280);
   useEffect(() => {
-    if (!headerRef.current) return;
-    const update = () => {
+    const measure = () => {
       if (!headerRef.current) return;
       const h = headerRef.current.getBoundingClientRect().height;
       if (h > 0) setHeaderH(h + 8); // +8px safety buffer
     };
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(headerRef.current);
+    measure();
+    setTimeout(measure, 100); // second attempt after full render
+    const ro = new ResizeObserver(measure);
+    if (headerRef.current) ro.observe(headerRef.current);
     return () => ro.disconnect();
   }, []);
 
@@ -391,8 +391,8 @@ export default function Explorer() {
       {/* HEADER — fixed top, full-width on mobile, offset left by sidebar on desktop */}
       <div ref={headerRef} className="fixed top-0 z-40 left-0 right-0"
         style={isDesktop ? {
-          width: `calc(100% - ${sidebarCollapsed ? 60 : 240}px)`,
-          marginLeft: sidebarCollapsed ? 60 : 240,
+          width: `calc(100% - ${sidebarCollapsed ? 32 : 240}px)`,
+          marginLeft: sidebarCollapsed ? 32 : 240,
           left: 'auto',
           right: 0,
         } : {}}>
@@ -559,7 +559,7 @@ export default function Explorer() {
         <div className="md:hidden">
           <div className="grid grid-cols-3 gap-1.5 mb-1.5">
             <FilterSelect label="Region" value={filters.region} onChange={v => setFilters(f => ({...f, region: v}))}
-              options={[['all',t.filter_all_regions],['cb-south',t.filter_cb_south],['cb-north',t.filter_cb_north],['costa-calida',t.filter_calida]]} />
+              options={[['all',t.filter_all_regions],['cb-south',t.filter_cb_south],['cb-north',t.filter_cb_north],['costa-calida',t.filter_calida],['costa-del-sol',t.filter_del_sol]]} />
             <FilterSelect label="Type" value={filters.type} onChange={v => setFilters(f => ({...f, type: v}))}
               options={[['all',t.filter_all_types],['Villa','Villa'],['Apartment','Apartment'],['Townhouse','Townhouse'],['Bungalow','Bungalow']]} />
             <FilterSelect label="Status" value={filters.status} onChange={v => setFilters(f => ({...f, status: v}))}
@@ -588,7 +588,7 @@ export default function Explorer() {
         {/* Desktop filters */}
         <div className="hidden md:flex gap-2 overflow-x-auto items-end scrollbar-none py-0.5">
           <FilterSelect label="Region" value={filters.region} onChange={v => setFilters(f => ({...f, region: v}))}
-            options={[['all',t.filter_all_regions],['cb-south',t.filter_cb_south],['cb-north',t.filter_cb_north],['costa-calida',t.filter_calida]]} />
+            options={[['all',t.filter_all_regions],['cb-south',t.filter_cb_south],['cb-north',t.filter_cb_north],['costa-calida',t.filter_calida],['costa-del-sol',t.filter_del_sol]]} />
           <FilterSelect label="Type" value={filters.type} onChange={v => setFilters(f => ({...f, type: v}))}
             options={[['all',t.filter_all_types],['Villa','Villa'],['Apartment','Apartment'],['Townhouse','Townhouse'],['Bungalow','Bungalow']]} />
           <FilterSelect label="Status" value={filters.status} onChange={v => setFilters(f => ({...f, status: v}))}
@@ -642,7 +642,7 @@ export default function Explorer() {
       {/* ── SIDEBAR (desktop fixed + mobile overlay) ── */}
       {(() => {
         type TabKey = typeof tab;
-        const sidebarWidth = sidebarCollapsed ? 60 : 240;
+        const sidebarWidth = sidebarCollapsed ? 32 : 240;
 
         const NavItem = ({ icon, label, isActive, onClick, disabled, badge }: { icon: string; label: string; isActive?: boolean; onClick?: () => void; disabled?: boolean; badge?: string }) => (
           <button
@@ -682,80 +682,79 @@ export default function Explorer() {
           const go = (t: TabKey) => { setTab(t); onClose?.(); };
           return (
             <div className="flex flex-col h-full overflow-y-auto overflow-x-hidden">
-              {/* Logo */}
               {!sidebarCollapsed && (
-                <div className="px-4 pt-4 pb-2 flex-shrink-0 border-b border-[#1a1a24]">
-                  <div className="text-xs font-bold tracking-[4px] uppercase" style={{ background: 'linear-gradient(90deg, #c9a84c, #e8c96a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>AVENA</div>
-                  <div className="text-[8px] tracking-[3px] uppercase text-[#c9a84c]/40 mt-0.5">TERMINAL</div>
-                </div>
-              )}
-              {sidebarCollapsed && <div className="h-4 flex-shrink-0" />}
+                <>
+                  {/* Logo */}
+                  <div className="px-4 pt-4 pb-2 flex-shrink-0 border-b border-[#1a1a24]">
+                    <div className="text-xs font-bold tracking-[4px] uppercase" style={{ background: 'linear-gradient(90deg, #c9a84c, #e8c96a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>AVENA</div>
+                    <div className="text-[8px] tracking-[3px] uppercase text-[#c9a84c]/40 mt-0.5">TERMINAL</div>
+                  </div>
 
-              <div className="flex-1 py-1">
-                {/* INVEST */}
-                <SectionHeader label="INVEST" />
-                <NavItem icon="📊" label="Deal Rankings" isActive={tab === 'deals'} onClick={() => go('deals')} />
-                <NavItem icon="💶" label="Rental Yield" isActive={tab === 'yield'} onClick={() => go('yield')} badge="2 free" />
-                <NavItem icon="💎" label="Luxury 1M+" isActive={tab === 'luxury'} onClick={() => go('luxury')} badge="PRO" />
-                <NavItem icon="🗺️" label="Map" isActive={tab === 'map'} onClick={() => go('map')} badge="PRO" />
-                <NavItem icon="📁" label="Portfolio" isActive={tab === 'portfolio'} onClick={() => go('portfolio')} badge="PRO" />
+                  <div className="flex-1 py-1">
+                    {/* INVEST */}
+                    <SectionHeader label="INVEST" />
+                    <NavItem icon="📊" label="Deal Rankings" isActive={tab === 'deals'} onClick={() => go('deals')} />
+                    <NavItem icon="💶" label="Rental Yield" isActive={tab === 'yield'} onClick={() => go('yield')} badge="2 free" />
+                    <NavItem icon="💎" label="Luxury 1M+" isActive={tab === 'luxury'} onClick={() => go('luxury')} badge="PRO" />
+                    <NavItem icon="🗺️" label="Map" isActive={tab === 'map'} onClick={() => go('map')} badge="PRO" />
+                    <NavItem icon="📁" label="Portfolio" isActive={tab === 'portfolio'} onClick={() => go('portfolio')} badge="PRO" />
 
-                {/* MARKET */}
-                <SectionHeader label="MARKET" />
-                <NavItem icon="📈" label="Market Overview" isActive={tab === 'market'} onClick={() => go('market')} badge="PRO" />
-                <NavItem icon="⭐" label="Scoring Method" isActive={tab === 'about'} onClick={() => go('about')} />
+                    {/* MARKET */}
+                    <SectionHeader label="MARKET" />
+                    <NavItem icon="📈" label="Market Overview" isActive={tab === 'market'} onClick={() => go('market')} badge="PRO" />
+                    <NavItem icon="⭐" label="Scoring Method" isActive={tab === 'about'} onClick={() => go('about')} />
 
-                {/* TOOLS */}
-                <SectionHeader label="TOOLS" />
-                <NavItem icon="⬇️" label="Export CSV" onClick={() => { exportCSV(); onClose?.(); }} />
-                <NavItem icon="💱" label="Currency Settings" onClick={() => { setShowCurrencyPanel(v => !v); }} />
-                <NavItem icon="❤️" label="Favorites" onClick={() => { setQuickFilter(q => q === 'favs' ? '' : 'favs'); go('deals'); }} />
+                    {/* TOOLS */}
+                    <SectionHeader label="TOOLS" />
+                    <NavItem icon="⬇️" label="Export CSV" onClick={() => { exportCSV(); onClose?.(); }} />
+                    <NavItem icon="💱" label="Currency Settings" onClick={() => { setShowCurrencyPanel(v => !v); }} />
+                    <NavItem icon="❤️" label="Favorites" onClick={() => { setQuickFilter(q => q === 'favs' ? '' : 'favs'); go('deals'); }} />
 
-                {/* ACCOUNT */}
-                <SectionHeader label="ACCOUNT" />
-                <NavItem icon="👑" label="Pro Subscription" onClick={() => { setShowPaywall(true); onClose?.(); }} />
-                <NavItem icon="⚙️" label="Settings" disabled />
+                    {/* ACCOUNT */}
+                    <SectionHeader label="ACCOUNT" />
+                    <NavItem icon="👑" label="Pro Subscription" onClick={() => { setShowPaywall(true); onClose?.(); }} />
+                    <NavItem icon="⚙️" label="Settings" disabled />
 
-                {/* INFO */}
-                <SectionHeader label="INFO" />
-                <NavItem icon="ℹ️" label="Why Avena" isActive={tab === 'whyavena'} onClick={() => go('whyavena')} />
-                <NavItem icon="⚖️" label="Legal and Security" isActive={tab === 'legal'} onClick={() => go('legal')} />
-                <NavItem icon="✉️" label="Contact" isActive={tab === 'contact'} onClick={() => go('contact')} />
-                <NavItem icon="📖" label="About" isActive={tab === 'about'} onClick={() => go('about')} />
-              </div>
+                    {/* INFO */}
+                    <SectionHeader label="INFO" />
+                    <NavItem icon="ℹ️" label="Why Avena" isActive={tab === 'whyavena'} onClick={() => go('whyavena')} />
+                    <NavItem icon="⚖️" label="Legal and Security" isActive={tab === 'legal'} onClick={() => go('legal')} />
+                    <NavItem icon="✉️" label="Contact" isActive={tab === 'contact'} onClick={() => go('contact')} />
+                    <NavItem icon="📖" label="About" isActive={tab === 'about'} onClick={() => go('about')} />
+                  </div>
 
-              {/* User status at bottom */}
-              <div className="flex-shrink-0 border-t border-[#1a1a24] px-2 py-3">
-                {!authLoading && (
-                  user ? (
-                    <div
-                      className="flex items-center gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-all hover:bg-[#ffffff08]"
-                      onClick={() => signOut()}
-                    >
-                      <span className="text-base flex-shrink-0 leading-none">👤</span>
-                      {!sidebarCollapsed && (
-                        <div className="flex-1 min-w-0">
-                          <div className="text-[10px] text-gray-400 truncate">{user.email}</div>
-                          {isPaid ? (
-                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ background: 'rgba(201,168,76,0.2)', color: '#c9a84c' }}>PRO</span>
-                          ) : (
-                            <span className="text-[9px] font-bold text-gray-600">Free</span>
-                          )}
+                  {/* User status at bottom */}
+                  <div className="flex-shrink-0 border-t border-[#1a1a24] px-2 py-3">
+                    {!authLoading && (
+                      user ? (
+                        <div
+                          className="flex items-center gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-all hover:bg-[#ffffff08]"
+                          onClick={() => signOut()}
+                        >
+                          <span className="text-base flex-shrink-0 leading-none">👤</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[10px] text-gray-400 truncate">{user.email}</div>
+                            {isPaid ? (
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ background: 'rgba(201,168,76,0.2)', color: '#c9a84c' }}>PRO</span>
+                            ) : (
+                              <span className="text-[9px] font-bold text-gray-600">Free</span>
+                            )}
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => setShowAuthModal(true)}
-                      className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg transition-all hover:bg-[#ffffff08]"
-                      style={{ color: '#c9a84c' }}
-                    >
-                      <span className="text-base flex-shrink-0 leading-none">🔐</span>
-                      {!sidebarCollapsed && <span className="text-[11px] font-semibold">Sign In</span>}
-                    </button>
-                  )
-                )}
-              </div>
+                      ) : (
+                        <button
+                          onClick={() => setShowAuthModal(true)}
+                          className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg transition-all hover:bg-[#ffffff08]"
+                          style={{ color: '#c9a84c' }}
+                        >
+                          <span className="text-base flex-shrink-0 leading-none">🔐</span>
+                          <span className="text-[11px] font-semibold">Sign In</span>
+                        </button>
+                      )
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           );
         };
@@ -859,7 +858,7 @@ export default function Explorer() {
       {/* CONTENT — padded top (header height) + left (sidebar width on desktop only) */}
       <div
         className={`overflow-x-hidden min-w-0 transition-all duration-200 ${preview !== null ? 'md:mr-[480px]' : ''}`}
-        style={{ paddingTop: headerH, paddingLeft: isDesktop ? (sidebarCollapsed ? 60 : 240) : 0 }}
+        style={{ paddingTop: headerH, paddingLeft: isDesktop ? (sidebarCollapsed ? 32 : 240) : 0 }}
       >
           {(tab === 'whyavena' || (!user && tab === 'deals')) && (
             <div className="px-4 md:px-8 py-8 border-b border-[#1a1a24]">
@@ -1083,7 +1082,7 @@ export default function Explorer() {
                           <div className="text-gray-500 text-[11px]">{d.l}</div>
                         </td>
                         <td className="px-3 py-2.5 border-b border-[#141420]">
-                          <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-semibold ${d.r === 'cb-south' ? 'bg-blue-500/10 text-blue-400' : d.r === 'cb-north' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
+                          <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-semibold ${d.r === 'cb-south' ? 'bg-blue-500/10 text-blue-400' : d.r === 'cb-north' ? 'bg-emerald-500/10 text-emerald-400' : d.r === 'costa-del-sol' ? 'bg-orange-500/10 text-orange-400' : 'bg-amber-500/10 text-amber-400'}`}>
                             {regionLabel(d.r)}
                           </span>
                         </td>
@@ -1201,7 +1200,7 @@ export default function Explorer() {
           {tab === 'portfolio' && !isPaid && <ProGate feature="Portfolio Simulator" onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} />}
           {tab === 'portfolio' && isPaid && <PortfolioTab properties={properties} portfolio={portfolio} onToggle={togglePortfolio} />}
           {tab === 'map' && !isPaid && <ProGate feature="Interactive Map" onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} />}
-          {tab === 'map' && isPaid && <MapView properties={filtered} onPreview={(ref) => { const idx = filtered.findIndex(p => (p.ref || p.p) === ref); if (idx !== -1) { setPreview(idx); setPreviewLuxScore(null); } }} isPaid={isPaid} />}
+          {tab === 'map' && isPaid && <MapView properties={filtered} onPreview={(ref) => { const idx = filtered.findIndex(p => (p.ref || p.p) === ref); if (idx !== -1) { setPreview(idx); setPreviewLuxScore(null); } }} isPaid={isPaid} headerH={headerH} />}
           {tab === 'market' && !isPaid && <ProGate feature="Market Overview" onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} />}
           {tab === 'market' && isPaid && <MarketTab properties={filtered} />}
           {tab === 'luxury' && !isPaid && <ProGate feature="Luxury Portfolio €1M+" onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} />}
@@ -2168,7 +2167,7 @@ function YieldTab({ properties, isPaid, onUpgrade, onCurrencyChange }: { propert
 }
 
 function MarketTab({ properties }: { properties: Property[] }) {
-  const regions = ['cb-south', 'cb-north', 'costa-calida'];
+  const regions = ['cb-south', 'cb-north', 'costa-calida', 'costa-del-sol'];
 
   const regionData = regions.map(r => {
     const props = properties.filter(p => p.r === r);
