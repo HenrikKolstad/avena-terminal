@@ -344,7 +344,7 @@ export default function Explorer() {
   }
 
   return (
-    <div className="min-h-screen bg-[#070709]">
+    <div className="min-h-screen bg-[#070709] overflow-x-hidden">
       {/* TOP BAR */}
       <header ref={(el) => { if (el) document.documentElement.style.setProperty('--header-h', el.offsetHeight + 'px'); }} className="relative sticky top-0 z-50 border-b border-[#1a1a24] px-4 md:px-8 py-3 md:py-6 shadow-2xl" style={{ background: 'linear-gradient(180deg, #0f0e18 0%, #0a0a12 100%)' }}>
         <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(90deg, transparent 0%, #c9a84c 30%, #e8c96a 50%, #c9a84c 70%, transparent 100%)' }} />
@@ -403,7 +403,7 @@ export default function Explorer() {
           <div className="border-t border-[#1a1a24] pt-2">
             <div className="text-[9px] text-gray-400 leading-relaxed">
               <div>{t.hero_scanner}</div>
-              <div className="text-[9px] italic text-[#c9a84c]/60 tracking-wide mt-0.5">The Bloomberg of European property investment</div>
+              <div className="text-[10px] italic text-[#c9a84c] tracking-wide mt-0.5">The Bloomberg of European property investment</div>
               <div className="text-gray-500 mt-0.5">Costa Del Sol properties coming soon ⏳</div>
               <div className="text-gray-600 mt-0.5">⏳ Building ⏳</div>
             </div>
@@ -802,9 +802,9 @@ export default function Explorer() {
       })()}
 
       {/* CONTENT */}
-      <div className="flex">
+      <div className="flex overflow-x-hidden">
         <div
-          className={`flex-1 transition-all duration-200 max-md:!ml-0 ${preview !== null ? 'md:mr-[480px]' : ''}`}
+          className={`flex-1 transition-all duration-200 max-md:!ml-0 overflow-x-hidden min-w-0 ${preview !== null ? 'md:mr-[480px]' : ''}`}
           style={{ marginLeft: sidebarCollapsed ? 60 : 240 }}
         >
           {!user && tab === 'deals' && (
