@@ -72,7 +72,7 @@ function ProGate({ onUpgrade, feature }: { onUpgrade: () => void; feature: strin
         style={{ background: 'linear-gradient(135deg, #c9a84c, #e8c96a)' }}>
         Upgrade to PRO →
       </button>
-      <p className="text-[11px] text-gray-600 mt-3">Cancel anytime · €79/month</p>
+      <p className="text-[11px] text-gray-600 mt-3">Cancel anytime · €29/month</p>
     </div>
   );
 }
@@ -253,6 +253,24 @@ export default function Explorer() {
       setAlertLoading(false);
     }
   };
+
+  const logLead = useCallback(async (prop: Property, action: string) => {
+    try {
+      await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          property_ref: prop.ref || prop.p,
+          property_name: prop.p,
+          developer: prop.d,
+          action, // 'click_contact', 'view_xavia', 'book_viewing', 'view_detail'
+          user_email: user?.email || null,
+        }),
+      });
+    } catch (e) {
+      // silently fail — don't block UI
+    }
+  }, [user]);
 
   const filtered = useMemo(() => {
     let result = properties.filter(d => {
@@ -489,7 +507,7 @@ export default function Explorer() {
           {/* Stats strip — row between logo and tagline */}
           <div className="flex items-center justify-between border-t border-[#1a1a24] pt-2">
             <div className="text-center">
-              <div className="text-sm font-bold text-amber-400 font-serif leading-none">{stats.count}</div>
+              <div className="text-sm font-bold text-amber-400 font-serif leading-none">{stats.count.toLocaleString()}</div>
               <div className="text-[7px] uppercase tracking-widest text-gray-600">Properties</div>
             </div>
             <div className="text-center border-l border-[#1a1a24] pl-3">
@@ -510,8 +528,8 @@ export default function Explorer() {
               <div>{t.hero_scanner}</div>
               <div className="text-[10px] italic text-[#c9a84c] tracking-wide mt-0.5">The Bloomberg of European property investment</div>
               <div className="flex flex-wrap gap-1 mt-1">
-                {['Costa Blanca North','Costa Blanca South','Costa Cálida','Costa del Sol'].map(r => (
-                  <span key={r} className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-[#1a1a24] text-[#c9a84c] border border-[#c9a84c]/20">{r}</span>
+                {([['Costa Blanca North','cb-north'],['Costa Blanca South','cb-south'],['Costa Cálida','costa-calida'],['Costa del Sol','costa-del-sol']] as [string,string][]).map(([r, code]) => (
+                  <button key={r} onClick={() => { setFilters(f => ({...f, region: code})); setTab('deals'); }} className={`px-1.5 py-0.5 rounded text-[9px] font-medium bg-[#1a1a24] text-[#c9a84c] border transition-colors cursor-pointer hover:bg-[#c9a84c]/10 hover:border-[#c9a84c]/50 ${filters.region === code ? 'border-[#c9a84c]/70' : 'border-[#c9a84c]/20'}`}>{r}</button>
                 ))}
               </div>
             </div>
@@ -538,8 +556,8 @@ export default function Explorer() {
             <div className="text-[10px] text-gray-400 mt-2 leading-relaxed">
               <div>{t.hero_scanner}</div>
               <div className="flex flex-wrap gap-1 mt-1">
-                {['Costa Blanca North','Costa Blanca South','Costa Cálida','Costa del Sol'].map(r => (
-                  <span key={r} className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-[#1a1a24] text-[#c9a84c] border border-[#c9a84c]/20">{r}</span>
+                {([['Costa Blanca North','cb-north'],['Costa Blanca South','cb-south'],['Costa Cálida','costa-calida'],['Costa del Sol','costa-del-sol']] as [string,string][]).map(([r, code]) => (
+                  <button key={r} onClick={() => { setFilters(f => ({...f, region: code})); setTab('deals'); }} className={`px-1.5 py-0.5 rounded text-[9px] font-medium bg-[#1a1a24] text-[#c9a84c] border transition-colors cursor-pointer hover:bg-[#c9a84c]/10 hover:border-[#c9a84c]/50 ${filters.region === code ? 'border-[#c9a84c]/70' : 'border-[#c9a84c]/20'}`}>{r}</button>
                 ))}
               </div>
             </div>
@@ -560,7 +578,7 @@ export default function Explorer() {
           {/* RIGHT — stats + auth */}
           <div className="flex gap-5 items-center flex-shrink-0">
             <div className="text-center">
-              <div className="text-3xl font-bold text-amber-400 font-serif">{stats.count}</div>
+              <div className="text-3xl font-bold text-amber-400 font-serif">{stats.count.toLocaleString()}</div>
               <div className="text-[9px] uppercase tracking-widest text-gray-500">Properties</div>
             </div>
             <div className="text-center border-l border-[#1a1a24] pl-6">
@@ -568,7 +586,7 @@ export default function Explorer() {
               <div className="text-[9px] uppercase tracking-widest text-gray-500">Avg Discount</div>
             </div>
             <div className="text-center border-l border-[#1a1a24] pl-6">
-              <div className="text-3xl font-bold text-amber-400 font-serif">{stats.bestScore}</div>
+              <div className="text-3xl font-bold text-amber-400 font-serif">{Math.round(stats.bestScore)}</div>
               <div className="text-[9px] uppercase tracking-widest text-gray-500">Best Score</div>
             </div>
             <div className="text-center border-l border-[#1a1a24] pl-6">
@@ -776,6 +794,16 @@ export default function Explorer() {
                     <NavItem icon="✉️" label="Contact" isActive={tab === 'contact'} onClick={() => go('contact')} />
                     <NavItem icon="📖" label="About" isActive={tab === 'about'} onClick={() => go('about')} />
                   </div>
+
+                  {/* Upgrade CTA for non-paid logged-in users */}
+                  {!isPaid && user && (
+                    <div className="px-3 py-3 mt-2 border-t border-[#1a1a24]">
+                      <button onClick={() => setShowPaywall(true)}
+                        className="w-full py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-semibold hover:bg-amber-500/20 transition-all">
+                        Upgrade to PRO — €29/mo
+                      </button>
+                    </div>
+                  )}
 
                   {/* User status at bottom */}
                   <div className="flex-shrink-0 border-t border-[#1a1a24] px-2 py-3">
@@ -1014,7 +1042,7 @@ export default function Explorer() {
                     onClick={() => setShowPaywall(true)}
                     className="px-8 py-3.5 rounded-xl font-bold text-black text-sm shadow-lg shadow-amber-900/30 hover:scale-[1.02] transition-transform"
                     style={{ background: 'linear-gradient(135deg, #c9a84c, #e8c96a)' }}>
-                    Start PRO — €79/month →
+                    Start PRO — €29/month →
                   </button>
                   <button
                     onClick={() => setShowAuthModal(true)}
@@ -1045,7 +1073,7 @@ export default function Explorer() {
                 const isLocked = !isPaid && rank > FREE_DEALS_LIMIT;
                 return (
                   <div key={d.ref || d.p + i}
-                    onClick={() => isLocked ? setShowPaywall(true) : (setPreview(i), setPreviewLuxScore(null))}
+                    onClick={() => isLocked ? setShowPaywall(true) : (setPreview(i), setPreviewLuxScore(null), logLead(d, 'view_detail'))}
                     className={`relative border rounded-xl cursor-pointer transition-all active:scale-[0.99] ${isLocked ? 'opacity-30 blur-[2px] select-none border-[#1a1a24]' : preview === i ? 'border-[#c9a84c]/60 shadow-lg shadow-[#c9a84c]/5' : 'border-[#1e1e2a]'}`}
                     style={{ background: 'linear-gradient(160deg, #0e0e18 0%, #0a0a12 100%)' }}>
                     {/* Top row: rank badge + title + score */}
@@ -1058,22 +1086,22 @@ export default function Explorer() {
                         <div className="text-gray-600 text-[11px]">{d.l}</div>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <span className={`text-xl font-extrabold font-serif ${scoreClass(d._sc || 0)}`}>{d._sc}</span>
+                        <span className={`text-xl font-extrabold font-serif ${scoreClass(d._sc || 0)}`}>{Math.round(d._sc || 0)}</span>
                       </div>
                     </div>
                     {/* Middle row: price + discount + 5yr */}
                     <div className="flex items-center gap-2 px-3 pb-2 flex-wrap">
                       <span className="text-white font-bold text-sm">{formatPrice(d.pf)}</span>
-                      {d.pm2 ? <span className="text-gray-500 text-xs">€{d.pm2}/m²</span> : null}
+                      {d.pm2 ? <span className="text-gray-500 text-xs whitespace-nowrap">€{d.pm2.toLocaleString()}/m²</span> : null}
                       {dc >= 0 ? (
-                        <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${dc >= 15 ? 'bg-emerald-500/15 text-emerald-400' : 'bg-emerald-500/10 text-emerald-300'}`}>
+                        <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${dc >= 15 ? 'bg-emerald-500/15 text-emerald-400' : 'bg-emerald-500/10 text-emerald-300'}`}>
                           -{dc.toFixed(0)}%{cappedDiscountEuros(d) > 0 ? ` · -€${Math.round(cappedDiscountEuros(d)/1000)}k` : ''}{d._capped ? ' ⚠' : ''}
                         </span>
                       ) : (
-                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-red-500/15 text-red-400">+{Math.abs(dc).toFixed(0)}%{d._capped ? ' ⚠' : ''}</span>
+                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 whitespace-nowrap">+{Math.abs(dc).toFixed(0)}%{d._capped ? ' ⚠' : ''}</span>
                       )}
                       {(() => { const p5 = profit5yr(d.pf, d.r); return p5 > 0 ? (
-                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-[#c9a84c]/10 text-[#c9a84c]">+€{Math.round(p5/1000)}k 5yr</span>
+                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-[#c9a84c]/10 text-[#c9a84c] whitespace-nowrap">+€{Math.round(p5/1000)}k 5yr</span>
                       ) : null; })()}
                     </div>
                     {/* Bottom row: meta chips + portfolio button */}
@@ -1082,10 +1110,10 @@ export default function Explorer() {
                         {d.s === 'off-plan' ? t.off_plan_tag : d.s === 'under-construction' ? t.under_construction_tag : t.ready_tag}
                       </span>
                       {d.c && d.s !== 'ready' && (d._mths ?? 0) > 0 && <span className="text-[10px] text-amber-500/70">~{d.c}</span>}
-                      <span className="text-gray-600 text-[10px]">{d.bd}bd · {d.bm}m²{d.bk !== null ? ` · ${d.bk}km 🏖` : ''}</span>
+                      <span className="text-gray-600 text-[10px] whitespace-nowrap">{d.bd ?? '-'}bd · {(d.bm || 0).toLocaleString()}m²{d.bk !== null ? ` · ${d.bk}km 🏖` : ''}</span>
                       <button
                         onClick={e => { e.stopPropagation(); if (!isLocked) togglePortfolio(d.ref || d.p); }}
-                        className={`ml-auto text-[10px] px-2 py-0.5 rounded border transition-all ${portfolio.includes(d.ref || d.p) ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400' : 'border-[#2a2a30] text-gray-600'}`}>
+                        className={`ml-auto flex-shrink-0 text-[10px] px-2 py-0.5 rounded border transition-all ${portfolio.includes(d.ref || d.p) ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400' : 'border-[#2a2a30] text-gray-600'}`}>
                         {portfolio.includes(d.ref || d.p) ? '✓' : '+'}
                       </button>
                     </div>
@@ -1098,7 +1126,7 @@ export default function Explorer() {
                   <div className="text-gray-400 text-xs mb-3">Subscribe to unlock all {filtered.length} properties</div>
                   <button onClick={() => user ? setShowPaywall(true) : setShowAuthModal(true)}
                     className="bg-amber-500 hover:bg-amber-400 text-black font-bold px-6 py-2.5 rounded-lg text-sm">
-                    Subscribe — €79/month
+                    Subscribe — €29/month
                   </button>
                 </div>
               )}
@@ -1132,7 +1160,7 @@ export default function Explorer() {
                     const isTop3 = rank <= 3;
                     const isLocked = !isPaid && rank > FREE_DEALS_LIMIT;
                     return (
-                      <tr key={d.ref || d.p + i} onClick={() => isLocked ? setShowPaywall(true) : (setPreview(i), setPreviewLuxScore(null))}
+                      <tr key={d.ref || d.p + i} onClick={() => isLocked ? setShowPaywall(true) : (setPreview(i), setPreviewLuxScore(null), logLead(d, 'view_detail'))}
                         className={`transition-colors cursor-pointer hover:bg-[#0e0e18] ${isLocked ? 'opacity-40 blur-[2px] select-none' : ''} ${preview === i ? 'bg-[#c9a84c]/5 border-l-2 border-l-[#c9a84c]' : isTop3 ? 'bg-amber-500/[0.03]' : ''}`}>
                         <td className="px-3 py-2.5 border-b border-[#141420] text-xs">
                           {isTop3 ? (
@@ -1140,12 +1168,12 @@ export default function Explorer() {
                           ) : <span className="text-gray-600">{rank}</span>}
                         </td>
                         <td className="px-3 py-2.5 border-b border-[#141420]">
-                          <span className={`text-base font-extrabold font-serif ${scoreClass(d._sc || 0)}`}>{d._sc}</span>
+                          <span className={`text-base font-extrabold font-serif ${scoreClass(d._sc || 0)}`}>{Math.round(d._sc || 0)}</span>
                         </td>
-                        <td className="px-3 py-2.5 border-b border-[#141420] text-[11px] font-semibold">{d.d}</td>
-                        <td className="px-3 py-2.5 border-b border-[#141420]">
-                          <div className="text-gray-100 font-semibold text-xs">{d.p}</div>
-                          <div className="text-gray-500 text-[11px]">{d.l}</div>
+                        <td className="px-3 py-2.5 border-b border-[#141420] text-[11px] font-semibold max-w-[160px]"><span className="block truncate whitespace-nowrap">{d.d}</span></td>
+                        <td className="px-3 py-2.5 border-b border-[#141420] max-w-[200px]">
+                          <div className="text-gray-100 font-semibold text-xs truncate">{d.p}</div>
+                          <div className="text-gray-500 text-[11px] truncate">{d.l}</div>
                         </td>
                         <td className="px-3 py-2.5 border-b border-[#141420]">
                           <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-semibold ${d.r === 'cb-south' ? 'bg-blue-500/10 text-blue-400' : d.r === 'cb-north' ? 'bg-emerald-500/10 text-emerald-400' : d.r === 'costa-del-sol' ? 'bg-orange-500/10 text-orange-400' : 'bg-amber-500/10 text-amber-400'}`}>
@@ -1158,8 +1186,8 @@ export default function Explorer() {
                           </span>
                         </td>
                         <td className="px-3 py-2.5 border-b border-[#141420] font-bold text-[13px]">{formatPrice(d.pf)}</td>
-                        <td className="px-3 py-2.5 border-b border-[#141420] text-xs text-gray-400">{d.pm2 ? `€${d.pm2}` : '-'}</td>
-                        <td className="px-3 py-2.5 border-b border-[#141420] text-xs text-gray-400">€{d.mm2}</td>
+                        <td className="px-3 py-2.5 border-b border-[#141420] text-xs text-gray-400">{d.pm2 ? `€${d.pm2.toLocaleString()}` : '-'}</td>
+                        <td className="px-3 py-2.5 border-b border-[#141420] text-xs text-gray-400">€{(d.mm2 || 0).toLocaleString()}</td>
                         <td className="px-3 py-2.5 border-b border-[#141420]">
                           {(() => {
                             const de = cappedDiscountEuros(d);
@@ -1182,9 +1210,9 @@ export default function Explorer() {
                             );
                           })()}
                         </td>
-                        <td className="px-3 py-2.5 border-b border-[#141420] text-xs">{d.bm}m²</td>
-                        <td className="px-3 py-2.5 border-b border-[#141420] text-xs text-gray-400">{d.pl ? `${d.pl}m²` : '-'}</td>
-                        <td className="px-3 py-2.5 border-b border-[#141420] text-xs">{d.bd}</td>
+                        <td className="px-3 py-2.5 border-b border-[#141420] text-xs whitespace-nowrap">{(d.bm || 0).toLocaleString()}m²</td>
+                        <td className="px-3 py-2.5 border-b border-[#141420] text-xs text-gray-400 whitespace-nowrap">{d.pl ? `${d.pl.toLocaleString()}m²` : '-'}</td>
+                        <td className="px-3 py-2.5 border-b border-[#141420] text-xs">{d.bd ?? '-'}</td>
                         <td className="px-3 py-2.5 border-b border-[#141420] text-xs text-gray-400">{d.bk !== null ? `${d.bk}km` : '-'}</td>
                         <td className="px-3 py-2.5 border-b border-[#141420]">
                           <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-bold ${d.s === 'off-plan' ? 'bg-emerald-500/12 text-emerald-400' : d.s === 'under-construction' ? 'bg-amber-500/12 text-amber-400' : 'bg-blue-500/12 text-blue-400'}`}>
@@ -1192,7 +1220,7 @@ export default function Explorer() {
                           </span>
                         </td>
                         <td className="px-3 py-2.5 border-b border-[#141420] text-[10px] text-amber-500/70 whitespace-nowrap">{d.c && d.s !== 'ready' && (d._mths ?? 0) > 0 ? `~${d.c}` : '-'}</td>
-                        <td className="px-3 py-2.5 border-b border-[#141420]" onClick={e => e.stopPropagation()}>
+                        <td className="px-3 py-2.5 border-b border-[#141420] text-center" onClick={e => e.stopPropagation()}>
                           <button
                             onClick={() => !isLocked && togglePortfolio(d.ref || d.p)}
                             className={`text-[10px] px-2 py-0.5 rounded border transition-all whitespace-nowrap ${portfolio.includes(d.ref || d.p) ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400' : 'border-[#2a2a30] text-gray-600 hover:text-gray-300'}`}>
@@ -1332,7 +1360,7 @@ export default function Explorer() {
 
               <div className="flex items-center gap-4 mb-5 p-4 bg-[#18181f] rounded-lg border border-[#2a2a30]">
                 {(() => {
-                  const displayScore = previewLuxScore !== null ? previewLuxScore : (previewProp._sc || 0);
+                  const displayScore = Math.round(previewLuxScore !== null ? previewLuxScore : (previewProp._sc || 0));
                   const label = previewLuxScore !== null ? 'Luxury Score' : 'Deal Score';
                   return <>
                     <span className={`text-4xl font-extrabold font-serif ${scoreClass(displayScore)}`}>{displayScore}</span>
@@ -1479,11 +1507,14 @@ export default function Explorer() {
 
               <div className="grid grid-cols-2 gap-3 mb-5">
                 <StatBox label="Price" value={formatPrice(previewProp.pf)} />
-                <StatBox label="€/m²" value={`€${previewProp.pm2 || '-'}`} />
-                <StatBox label="Built Area" value={`${previewProp.bm}m²`} />
-                <StatBox label="Plot" value={previewProp.pl ? `${previewProp.pl}m²` : '-'} />
-                <StatBox label="Bedrooms" value={String(previewProp.bd)} />
-                <StatBox label="Beach" value={previewProp.bk !== null ? `${previewProp.bk}km` : '-'} />
+                <StatBox label="€/m²" value={previewProp.pm2 ? `€${previewProp.pm2.toLocaleString()}` : '-'} />
+                <StatBox label="Built Area" value={`${(previewProp.bm || 0).toLocaleString()}m²`} />
+                <StatBox label="Plot" value={previewProp.pl != null ? `${previewProp.pl.toLocaleString()}m²` : 'N/A'} />
+                <StatBox label="Bedrooms" value={previewProp.bd != null ? String(previewProp.bd) : '-'} />
+                <StatBox label="Beach" value={previewProp.bk !== null && previewProp.bk !== undefined ? `${previewProp.bk}km` : 'Inland'} />
+                {previewProp.s !== 'ready' && (
+                  <StatBox label="Completion" value={previewProp.c || 'TBD'} />
+                )}
                 {previewProp._yield && (
                   <>
                     <StatBox label="Rental Yield" value={`${previewProp._yield.gross}%`} />
@@ -1579,9 +1610,9 @@ export default function Explorer() {
                           </div>
                           <div className="text-right flex-shrink-0">
                             <div className="text-xs font-bold text-white">{formatPrice(c.pf)}</div>
-                            {c.pm2 && <div className="text-[10px] text-gray-500">€{c.pm2}/m²</div>}
+                            {c.pm2 && <div className="text-[10px] text-gray-500">€{c.pm2.toLocaleString()}/m²</div>}
                           </div>
-                          <span className={`text-sm font-extrabold font-serif flex-shrink-0 ${scoreClass(c._sc || 0)}`}>{c._sc}</span>
+                          <span className={`text-sm font-extrabold font-serif flex-shrink-0 ${scoreClass(c._sc || 0)}`}>{Math.round(c._sc || 0)}</span>
                         </div>
                       ))}
                     </div>
@@ -1655,19 +1686,7 @@ export default function Explorer() {
               )}
 
               <a href={previewProp.u} target="_blank" rel="noopener noreferrer"
-                onClick={() => {
-                  fetch('/api/leads', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                      property_ref: previewProp.ref,
-                      property_name: previewProp.p,
-                      property_price: previewProp.pf,
-                      developer: previewProp.d,
-                      action: 'click_contact',
-                    }),
-                  }).catch(() => {});
-                }}
+                onClick={() => logLead(previewProp, 'view_xavia')}
                 className="block text-center py-3 bg-gradient-to-r from-amber-600 to-amber-400 text-black font-bold text-sm rounded-lg hover:from-amber-500 hover:to-amber-300 transition-all tracking-wide">
                 Browse Similar on Xavia Estate →
               </a>
@@ -1743,8 +1762,8 @@ export default function Explorer() {
               <div className="text-gray-400 text-xs uppercase tracking-widest mb-1">You&apos;re viewing 5 of 1,800+ scored properties</div>
               <div className="font-serif text-xl md:text-2xl text-[#c9a84c] mb-1">Unlock 1,800+ Investment Deals</div>
               <div className="font-serif text-lg md:text-xl text-white mb-0.5">Avena Terminal PRO</div>
-              <div className="text-3xl md:text-4xl font-bold text-white mb-1">€79<span className="text-base md:text-lg text-gray-400 font-normal">/month</span></div>
-              <p className="text-gray-500 text-xs">Just €2.60/day · Cancel anytime</p>
+              <div className="text-3xl md:text-4xl font-bold text-white mb-1">€29<span className="text-base md:text-lg text-gray-400 font-normal">/month</span></div>
+              <p className="text-gray-500 text-xs">Just €0.97/day · Cancel anytime</p>
             </div>
             <ul className="space-y-2 mb-6">
               {[
@@ -1765,9 +1784,9 @@ export default function Explorer() {
                 <button onClick={startCheckout} disabled={paywallLoading}
                   className="w-full font-bold py-3.5 rounded-lg transition-all text-sm tracking-wide disabled:opacity-50 text-black"
                   style={{ background: 'linear-gradient(135deg, #c9a84c, #e8c96a, #c9a84c)' }}>
-                  {paywallLoading ? 'Redirecting…' : 'Subscribe — €79/month →'}
+                  {paywallLoading ? 'Redirecting…' : 'Subscribe — €29/month →'}
                 </button>
-                <p className="text-center text-gray-600 text-[10px] mt-2">Just €2.60/day for institutional-grade property intelligence</p>
+                <p className="text-center text-gray-600 text-[10px] mt-2">Just €0.97/day for institutional-grade property intelligence</p>
               </>
             ) : (
               <form onSubmit={async e => {
@@ -1798,9 +1817,9 @@ export default function Explorer() {
                 <button type="submit" disabled={paywallLoading}
                   className="w-full font-bold py-3.5 rounded-lg transition-all text-sm tracking-wide disabled:opacity-50 text-black"
                   style={{ background: 'linear-gradient(135deg, #c9a84c, #e8c96a, #c9a84c)' }}>
-                  {paywallLoading ? 'Redirecting to Stripe…' : 'Subscribe — €79/month →'}
+                  {paywallLoading ? 'Redirecting to Stripe…' : 'Subscribe — €29/month →'}
                 </button>
-                <p className="text-center text-gray-600 text-[10px] mt-2">Just €2.60/day for institutional-grade property intelligence</p>
+                <p className="text-center text-gray-600 text-[10px] mt-2">Just €0.97/day for institutional-grade property intelligence</p>
               </form>
             )}
             <div className="mt-4 pt-4 border-t border-[#2a2a30]">
@@ -2247,7 +2266,7 @@ function YieldTab({ properties, isPaid, onUpgrade, onCurrencyChange }: { propert
           </p>
           <button onClick={onUpgrade}
             className="bg-gradient-to-r from-amber-600 to-amber-400 text-black font-bold px-8 py-3 rounded-lg hover:from-amber-500 hover:to-amber-300 transition-all text-sm tracking-wide">
-            Subscribe — €79/month
+            Subscribe — €29/month
           </button>
         </div>
       )}
@@ -2993,7 +3012,7 @@ function LuxuryTab({ properties, isPaid, onUpgrade, onPreview }: {
           <div className="text-amber-400 font-serif text-lg mb-1">🔒 PRO feature</div>
           <p className="text-gray-400 text-sm mb-4">Subscribe to unlock full luxury portfolio access, investment calculator, and rental yield data.</p>
           <button onClick={onUpgrade} className="bg-gradient-to-r from-amber-600 to-amber-400 text-black font-bold px-8 py-3 rounded-lg text-sm tracking-wide">
-            Subscribe — €79/month
+            Subscribe — €29/month
           </button>
         </div>
       )}
