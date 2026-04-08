@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { Property, SortKey, SortDir } from '@/lib/types';
-import { loadProperties } from '@/lib/data';
+import { loadProperties, syncSnapshots } from '@/lib/data';
 import { formatPrice, scoreClass, scoreColor, regionLabel, discount, displayDiscount, discountEuros, cappedDiscountEuros, calcYield, DISCOUNT_PCT_CAP } from '@/lib/scoring';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
@@ -78,6 +78,8 @@ export default function Explorer() {
   const [showWelcomePro, setShowWelcomePro] = useState(false);
   const [paywallEmail, setPaywallEmail] = useState('');
   const [paywallLoading, setPaywallLoading] = useState(false);
+  // Yield tab currency state (lifted for tab label indicator)
+  const [yieldCurrency, setYieldCurrency] = useState('EUR');
   // AI Memo state
   const [aiMemo, setAiMemo] = useState<AiMemoResult | null>(null);
   const [aiMemoLoading, setAiMemoLoading] = useState(false);
@@ -94,9 +96,14 @@ export default function Explorer() {
     }
     return [];
   });
+  // Email capture popup state
+  const [showEmailCapture, setShowEmailCapture] = useState(false);
+  const [emailInput, setEmailInput] = useState('');
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const [emailLoading, setEmailLoading] = useState(false);
 
   useEffect(() => {
-    loadProperties().then(d => { setProperties(d); setLoading(false); });
+    loadProperties().then(d => { setProperties(d); setLoading(false); syncSnapshots(d); });
     const saved = localStorage.getItem('avena_favs');
     if (saved) setFavs(JSON.parse(saved));
     // Handle Stripe redirect
@@ -108,6 +115,35 @@ export default function Explorer() {
       if (!user) setShowAuthModal(true);
     }
   }, []);
+
+  // Email capture popup: show after 45s for non-logged-in, non-subscribed visitors
+  useEffect(() => {
+    if (user) return;
+    if (localStorage.getItem('avena-email-captured')) return;
+    if (localStorage.getItem('avena-email-dismissed')) return;
+    const timer = setTimeout(() => setShowEmailCapture(true), 45000);
+    return () => clearTimeout(timer);
+  }, [user]);
+
+  const handleEmailSubmit = async () => {
+    if (!emailInput.includes('@')) return;
+    setEmailLoading(true);
+    try {
+      await fetch('/api/email-capture', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailInput }),
+      });
+      setEmailSubmitted(true);
+      localStorage.setItem('avena-email-captured', '1');
+    } catch {
+      // still show success - don't frustrate user
+      setEmailSubmitted(true);
+      localStorage.setItem('avena-email-captured', '1');
+    } finally {
+      setEmailLoading(false);
+    }
+  };
 
   const toggleFav = useCallback((ref: string) => {
     setFavs(prev => {
@@ -392,6 +428,7 @@ export default function Explorer() {
             <div className="text-lg xl:text-xl font-semibold leading-snug text-gray-200">{t.hero_line1}</div>
             <div className="h-px w-16 mx-auto" style={{ background: 'linear-gradient(90deg, transparent, #c9a84c, transparent)' }} />
             <div className="text-lg xl:text-xl font-semibold leading-snug text-gray-200">{t.hero_line2}</div>
+            <p className="text-[10px] text-[#c9a84c]/50 mt-1 italic">The Bloomberg of European property investment</p>
           </div>
 
           {/* RIGHT — stats + auth */}
@@ -528,8 +565,13 @@ export default function Explorer() {
         <div className="flex gap-0 px-2 md:px-8 overflow-x-auto scrollbar-none">
           {([[`deals`,t.tab_deals],[`yield`,t.tab_yield],[`portfolio`,t.tab_portfolio],[`luxury`,t.tab_luxury],[`map`,t.tab_map],[`market`,t.tab_market],[`about`,t.tab_scoring],[`legal`,t.tab_legal],[`contact`,t.tab_contact]] as [typeof tab, string][]).map(([key, label]) => (
             <button key={key} onClick={() => setTab(key)}
-              className={`flex-shrink-0 whitespace-nowrap px-3 md:px-5 py-2.5 text-[10px] md:text-xs font-semibold tracking-wide border-b-2 transition-all min-h-[44px] flex items-center ${tab === key ? 'text-[#c9a84c] border-[#c9a84c]' : 'text-gray-600 border-transparent hover:text-gray-400'}`}>
+              className={`flex-shrink-0 whitespace-nowrap px-3 md:px-5 py-2.5 text-[10px] md:text-xs font-semibold tracking-wide border-b-2 transition-all min-h-[44px] flex items-center gap-1.5 ${tab === key ? 'text-[#c9a84c] border-[#c9a84c]' : 'text-gray-600 border-transparent hover:text-gray-400'}`}>
               {label}
+              {key === 'yield' && yieldCurrency !== 'EUR' && (
+                <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${tab === key ? 'bg-[#c9a84c]/20 text-[#c9a84c]' : 'bg-[#2a2a30] text-gray-500'}`}>
+                  {yieldCurrency}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -538,6 +580,125 @@ export default function Explorer() {
       {/* CONTENT */}
       <div className="flex">
         <div className={`flex-1 transition-all ${preview !== null ? 'md:mr-[480px]' : ''}`}>
+          {!user && tab === 'deals' && (
+            <div className="px-4 md:px-8 py-8 border-b border-[#1a1a24]">
+              {/* Headline */}
+              <div className="text-center mb-8">
+                <h2 className="text-2xl md:text-3xl font-bold font-serif text-white mb-2">
+                  Every question answered before you invest
+                </h2>
+                <p className="text-gray-500 text-sm md:text-base max-w-2xl mx-auto">
+                  Avena Terminal analyses 1,040+ new builds using institutional-grade scoring.
+                  Here&apos;s what you get access to.
+                </p>
+              </div>
+
+              {/* 8 Questions Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+                {[
+                  {
+                    q: 'Is this a good deal?',
+                    a: 'Deal scores powered by hedonic regression — the same pricing model used by institutional investors.',
+                    icon: '📊',
+                    color: '#10b981',
+                  },
+                  {
+                    q: 'Will it make money?',
+                    a: 'Rental yields from real Airbnb & Booking.com data. Gross and net, not guesses.',
+                    icon: '💶',
+                    color: '#3b82f6',
+                  },
+                  {
+                    q: 'Can I afford it?',
+                    a: 'Mortgage simulator with live Spanish rates. See monthly payments, cashflow, and cash-on-cash return.',
+                    icon: '🏦',
+                    color: '#8b5cf6',
+                  },
+                  {
+                    q: 'What should I know?',
+                    a: 'AI investment memo per property — strengths, risks, 5-year price prediction, comparable position.',
+                    icon: '🤖',
+                    color: '#f59e0b',
+                  },
+                  {
+                    q: 'What are the costs?',
+                    a: 'Full Spanish purchase cost breakdown. IVA, notary, legal, ITP. No surprises.',
+                    icon: '📋',
+                    color: '#ef4444',
+                  },
+                  {
+                    q: 'Which area suits me?',
+                    a: 'Interactive map with color-coded deal scores. Find your ideal location fast.',
+                    icon: '🗺️',
+                    color: '#06b6d4',
+                  },
+                  {
+                    q: 'How liquid is it?',
+                    a: 'Risk scoring includes developer track record, off-plan exposure, and market velocity.',
+                    icon: '⚡',
+                    color: '#84cc16',
+                  },
+                  {
+                    q: 'Who do I trust?',
+                    a: 'One platform. One contact. Avena routes your inquiry to the right agency behind the scenes.',
+                    icon: '🤝',
+                    color: '#c9a84c',
+                  },
+                ].map(({ q, a, icon, color }) => (
+                  <div key={q} className="bg-[#0a0a12] border border-[#1a1a24] rounded-xl p-4 hover:border-[#2a2a30] transition-all">
+                    <div className="text-2xl mb-3">{icon}</div>
+                    <div className="font-semibold text-white text-sm mb-1.5" style={{ color }}>{q}</div>
+                    <div className="text-gray-500 text-[11px] leading-relaxed">{a}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Stats bar */}
+              <div className="flex flex-wrap justify-center gap-6 md:gap-12 py-6 border-y border-[#1a1a24] mb-8">
+                {[
+                  { label: 'New Builds Scored', value: '1,040+' },
+                  { label: 'Data Sources', value: '6+' },
+                  { label: 'Scoring Factors', value: '25+' },
+                  { label: 'Avg Time Saved', value: '40hrs' },
+                ].map(({ label, value }) => (
+                  <div key={label} className="text-center">
+                    <div className="text-2xl md:text-3xl font-bold text-amber-400 font-serif">{value}</div>
+                    <div className="text-[10px] uppercase tracking-widest text-gray-600 mt-0.5">{label}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* CTA */}
+              <div className="text-center">
+                <p className="text-gray-500 text-sm mb-4">
+                  Join investors from Norway, UK, Sweden, Netherlands and Germany already using Avena Terminal.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+                  <button
+                    onClick={() => setShowPaywall(true)}
+                    className="px-8 py-3.5 rounded-xl font-bold text-black text-sm shadow-lg shadow-amber-900/30 hover:scale-[1.02] transition-transform"
+                    style={{ background: 'linear-gradient(135deg, #c9a84c, #e8c96a)' }}>
+                    Start PRO — €79/month →
+                  </button>
+                  <button
+                    onClick={() => setShowAuthModal(true)}
+                    className="px-8 py-3.5 rounded-xl font-semibold text-[#c9a84c] text-sm border border-[#c9a84c]/30 hover:border-[#c9a84c]/60 transition-all">
+                    Sign In
+                  </button>
+                </div>
+                <p className="text-[10px] text-gray-700 mt-3">Cancel anytime · Secured by Stripe · First 5 deals free without account</p>
+              </div>
+
+              {/* Blurred preview hint */}
+              <div className="mt-8 text-center">
+                <div className="inline-flex items-center gap-2 text-[11px] text-gray-600 border border-[#1a1a24] rounded-full px-4 py-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block"></span>
+                  {stats.count} properties live · Scroll down for a free preview
+                </div>
+              </div>
+            </div>
+          )}
+
           {tab === 'deals' && (
             <>
             {/* MOBILE CARD LIST */}
@@ -718,7 +879,7 @@ export default function Explorer() {
             </>
           )}
 
-          {tab === 'yield' && <YieldTab properties={filtered} isPaid={isPaid} onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} />}
+          {tab === 'yield' && <YieldTab properties={filtered} isPaid={isPaid} onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} onCurrencyChange={setYieldCurrency} />}
           {tab === 'portfolio' && <PortfolioTab properties={properties} portfolio={portfolio} onToggle={togglePortfolio} />}
           {tab === 'map' && <MapView properties={filtered} onPreview={(ref) => { const idx = filtered.findIndex(p => (p.ref || p.p) === ref); if (idx !== -1) { setPreview(idx); setPreviewLuxScore(null); } }} isPaid={isPaid} />}
           {tab === 'market' && <MarketTab properties={filtered} />}
@@ -789,6 +950,33 @@ export default function Explorer() {
                   </>;
                 })()}
               </div>
+
+              {/* SCORE BREAKDOWN */}
+              {previewProp._scores && (
+                <div className="px-4 py-3 mb-5 border border-[#1a1a24] rounded-lg bg-[#0e0e18]">
+                  <div className="text-[9px] uppercase tracking-widest text-gray-600 mb-2">Score Breakdown</div>
+                  <div className="space-y-1.5">
+                    {[
+                      { label: 'Value', key: 'value', weight: '40%', color: '#10b981' },
+                      { label: 'Yield', key: 'yield', weight: '25%', color: '#3b82f6' },
+                      { label: 'Location', key: 'location', weight: '20%', color: '#8b5cf6' },
+                      { label: 'Quality', key: 'quality', weight: '10%', color: '#f59e0b' },
+                      { label: 'Risk', key: 'risk', weight: '5%', color: '#ef4444' },
+                    ].map(({ label, key, weight, color }) => {
+                      const val = previewProp._scores![key as keyof typeof previewProp._scores];
+                      return (
+                        <div key={key} className="flex items-center gap-2">
+                          <div className="text-[9px] text-gray-500 w-14 flex-shrink-0">{label} <span className="text-gray-700">{weight}</span></div>
+                          <div className="flex-1 h-1.5 bg-[#1a1a24] rounded-full overflow-hidden">
+                            <div className="h-full rounded-full transition-all" style={{ width: `${val}%`, backgroundColor: color, opacity: 0.8 }} />
+                          </div>
+                          <div className="text-[10px] font-bold w-7 text-right" style={{ color }}>{val}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* AI ANALYSIS BUTTON */}
               {isPaid && (
@@ -1224,6 +1412,74 @@ export default function Explorer() {
           </div>
         </div>
       )}
+
+      {/* EMAIL CAPTURE POPUP */}
+      {showEmailCapture && !user && (
+        <div className="fixed inset-0 z-[600] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm"
+          onClick={() => { setShowEmailCapture(false); localStorage.setItem('avena-email-dismissed', '1'); }}>
+          <div className="relative w-full max-w-md bg-[#0e0d18] border border-[#c9a84c]/30 rounded-t-2xl md:rounded-2xl p-6 md:p-8 shadow-2xl shadow-amber-900/20 mx-0 md:mx-4"
+            onClick={e => e.stopPropagation()}>
+            {/* Close */}
+            <button onClick={() => { setShowEmailCapture(false); localStorage.setItem('avena-email-dismissed', '1'); }}
+              className="absolute top-4 right-4 text-gray-600 hover:text-gray-400 text-xl w-8 h-8 flex items-center justify-center">×</button>
+
+            {!emailSubmitted ? (
+              <>
+                {/* Header */}
+                <div className="text-center mb-6">
+                  <div className="text-2xl mb-2">📊</div>
+                  <h2 className="text-xl font-bold text-white font-serif mb-1">Top 5 Deals This Week</h2>
+                  <p className="text-gray-400 text-sm">Free every Monday. The best-scored new builds on the Costa Blanca &amp; Calida — straight to your inbox.</p>
+                </div>
+
+                {/* Stats proof */}
+                <div className="flex justify-center gap-6 mb-6">
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-amber-400 font-serif">1,040+</div>
+                    <div className="text-[9px] text-gray-600 uppercase tracking-wider">Properties</div>
+                  </div>
+                  <div className="text-center border-l border-[#1a1a24] pl-6">
+                    <div className="text-lg font-bold text-amber-400 font-serif">Free</div>
+                    <div className="text-[9px] text-gray-600 uppercase tracking-wider">Weekly</div>
+                  </div>
+                  <div className="text-center border-l border-[#1a1a24] pl-6">
+                    <div className="text-lg font-bold text-amber-400 font-serif">AI</div>
+                    <div className="text-[9px] text-gray-600 uppercase tracking-wider">Scored</div>
+                  </div>
+                </div>
+
+                {/* Form */}
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    value={emailInput}
+                    onChange={e => setEmailInput(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleEmailSubmit()}
+                    placeholder="your@email.com"
+                    className="flex-1 bg-[#0a0a12] border border-[#2a2a30] rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-[#c9a84c]/50 placeholder-gray-700"
+                  />
+                  <button
+                    onClick={handleEmailSubmit}
+                    disabled={emailLoading || !emailInput.includes('@')}
+                    className="px-5 py-3 rounded-lg font-bold text-sm text-black disabled:opacity-50 transition-all"
+                    style={{ background: 'linear-gradient(135deg, #c9a84c, #e8c96a)' }}>
+                    {emailLoading ? '...' : 'Get →'}
+                  </button>
+                </div>
+                <p className="text-center text-[10px] text-gray-700 mt-3">No spam. Unsubscribe anytime.</p>
+              </>
+            ) : (
+              <div className="text-center py-4">
+                <div className="text-4xl mb-3">✓</div>
+                <h2 className="text-xl font-bold text-white font-serif mb-2">You&apos;re in.</h2>
+                <p className="text-gray-400 text-sm">Check your inbox every Monday for the top 5 deals. First edition next week.</p>
+                <button onClick={() => setShowEmailCapture(false)}
+                  className="mt-6 text-[#c9a84c] text-sm hover:underline">View the full terminal →</button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -1417,37 +1673,40 @@ function YieldCard({ d, expanded, onToggle, fmtC, sym }: { d: Property; expanded
 }
 
 const CURRENCIES = [
-  { code: 'EUR', symbol: '€', label: 'EUR €' },
-  { code: 'NOK', symbol: 'kr', label: 'NOK kr' },
-  { code: 'GBP', symbol: '£', label: 'GBP £' },
-  { code: 'SEK', symbol: 'kr', label: 'SEK kr' },
-  { code: 'DKK', symbol: 'kr', label: 'DKK kr' },
+  { code: 'EUR', symbol: '€', label: 'EUR €', flag: '🇪🇺' },
+  { code: 'NOK', symbol: 'kr', label: 'NOK kr', flag: '🇳🇴' },
+  { code: 'GBP', symbol: '£', label: 'GBP £', flag: '🇬🇧' },
+  { code: 'SEK', symbol: 'kr', label: 'SEK kr', flag: '🇸🇪' },
+  { code: 'DKK', symbol: 'kr', label: 'DKK kr', flag: '🇩🇰' },
 ];
 
-function YieldTab({ properties, isPaid, onUpgrade }: { properties: Property[]; isPaid: boolean; onUpgrade: () => void }) {
+function YieldTab({ properties, isPaid, onUpgrade, onCurrencyChange }: { properties: Property[]; isPaid: boolean; onUpgrade: () => void; onCurrencyChange?: (c: string) => void }) {
   const [sortMode, setSortMode] = useState<'yield' | 'income' | 'price'>('yield');
   const [expandedRef, setExpandedRef] = useState<string | null>(null);
   const [currency, setCurrency] = useState<string>(() => {
     if (typeof window !== 'undefined') return localStorage.getItem('avena_currency') || 'EUR';
     return 'EUR';
   });
-  const [rates, setRates] = useState<Record<string, number>>({ EUR: 1 });
+  const [rates, setRates] = useState<Record<string, number>>({ EUR: 1, NOK: 11.8, GBP: 0.86, SEK: 11.4, DKK: 7.46 });
+  const [fxLoading, setFxLoading] = useState(false);
 
   useEffect(() => {
-    fetch('https://api.frankfurter.app/latest?base=EUR&symbols=NOK,GBP,SEK,DKK')
+    setFxLoading(true);
+    fetch('https://open.er-api.com/v6/latest/EUR')
       .then(r => r.json())
       .then(data => {
         if (data?.rates) setRates({ EUR: 1, ...data.rates });
       })
       .catch(() => {
-        // Fallback static rates if API fails
-        setRates({ EUR: 1, NOK: 11.7, GBP: 0.86, SEK: 11.2, DKK: 7.46 });
-      });
+        // Keep default fallback rates on failure
+      })
+      .finally(() => setFxLoading(false));
   }, []);
 
   const handleCurrencyChange = (c: string) => {
     setCurrency(c);
     if (typeof window !== 'undefined') localStorage.setItem('avena_currency', c);
+    onCurrencyChange?.(c);
   };
 
   const convert = (eur: number) => Math.round(eur * (rates[currency] || 1));
@@ -1511,15 +1770,32 @@ function YieldTab({ properties, isPaid, onUpgrade }: { properties: Property[]; i
       </div>
 
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-1.5">
           <h2 className="font-serif text-lg md:text-xl text-amber-400">Estimated Rental Yield</h2>
-          <select
-            value={currency}
-            onChange={e => handleCurrencyChange(e.target.value)}
-            className="bg-[#08080d] border border-[#c9a84c]/40 text-[#c9a84c] px-2 py-1 rounded-lg text-[11px] outline-none focus:border-[#c9a84c] cursor-pointer font-semibold"
-          >
-            {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.label}</option>)}
-          </select>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-gray-500 uppercase tracking-wider">Currency</span>
+            <div className="flex gap-1 flex-wrap">
+              {CURRENCIES.map(c => (
+                <button
+                  key={c.code}
+                  onClick={() => handleCurrencyChange(c.code)}
+                  className={`px-2.5 py-1 rounded text-[10px] font-semibold border transition-all ${
+                    currency === c.code
+                      ? 'bg-[#c9a84c]/15 border-[#c9a84c]/60 text-[#c9a84c]'
+                      : 'border-[#2a2a30] text-gray-500 hover:border-[#c9a84c]/30'
+                  }`}
+                >
+                  {c.flag} {c.code}
+                </button>
+              ))}
+              {fxLoading && <span className="text-[9px] text-gray-600 ml-1 self-center">updating...</span>}
+              {!fxLoading && currency !== 'EUR' && (
+                <span className="text-[9px] text-gray-600 ml-1 self-center">
+                  1 EUR = {(rates[currency] || 1).toFixed(2)} {currency}
+                </span>
+              )}
+            </div>
+          </div>
         </div>
         <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/25 rounded-lg px-3 py-2">
           <span className="text-amber-400 text-sm">💰</span>
