@@ -1163,13 +1163,41 @@ export default function Explorer() {
             <div className="hidden md:block overflow-x-auto overflow-y-visible px-4 pb-6">
               <table className="w-full border-collapse min-w-[1100px]">
                 <thead>
+                  {/* Column labels — sticky, sortable */}
                   <tr>
                     {([['#','',''],['score',t.col_score,''],['developer',t.col_developer,''],['project',t.col_project,''],['',t.col_region,''],['',t.col_type,''],['price',t.col_price,''],['priceM2',t.col_pm2,'Price per m² asked'],['marketM2',t.col_market,'Market benchmark €/m²'],['discount',t.col_discount,'vs market benchmark'],['built',t.col_built,''],['plot',t.col_plot,''],['beds',t.col_beds,''],['beach',t.lbl_beach,''],['','Status',''],['','Completion',''],['','+','']] as [SortKey|'', string, string][]).map(([key, label, tip], i) => (
                       <th key={i} onClick={() => key && handleSort(key as SortKey)}
                         title={tip || undefined}
                         style={{ position: 'sticky', top: 0, background: '#0a0a10' }}
-                        className={`px-3 py-2 text-[10px] uppercase tracking-widest text-left border-b border-t border-[#1a1a24] cursor-pointer hover:text-[#c9a84c] whitespace-nowrap z-10 select-none ${sortKey === key ? 'text-[#c9a84c] font-bold' : 'text-gray-400'}`}>
+                        className={`px-3 py-2 text-[10px] uppercase tracking-widest text-left border-t border-[#1a1a24] cursor-pointer hover:text-[#c9a84c] whitespace-nowrap z-10 select-none ${sortKey === key ? 'text-[#c9a84c] font-bold' : 'text-gray-400'}`}>
                         {label}{sortKey === key ? (sortDir === 'asc' ? ' ▲' : ' ▼') : ''}
+                      </th>
+                    ))}
+                  </tr>
+                  {/* Description sub-row — explains each column in plain English */}
+                  <tr>
+                    {([
+                      'Rank',
+                      'Deal quality 0–100',
+                      'Developer / agency',
+                      'Project name & town',
+                      'Costa region',
+                      'Property type',
+                      'List price',
+                      '€/m² asked',
+                      '€/m² market avg',
+                      'Saving vs market',
+                      'Built area m²',
+                      'Plot size m²',
+                      'Bedrooms',
+                      'Distance to beach',
+                      'Build stage',
+                      'Est. handover',
+                      'Portfolio',
+                    ]).map((desc, i) => (
+                      <th key={i} style={{ position: 'sticky', top: 28, background: '#070710' }}
+                        className="px-3 py-1 text-[9px] text-gray-600 font-normal whitespace-nowrap border-b border-[#1a1a24] z-10">
+                        {desc}
                       </th>
                     ))}
                   </tr>
