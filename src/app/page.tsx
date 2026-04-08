@@ -141,16 +141,19 @@ export default function Explorer() {
   const [alertLoading, setAlertLoading] = useState(false);
 
   // Measure header height after paint via ResizeObserver
-  const [headerH, setHeaderH] = useState(280);
+  // Mobile header is ~480px (stats + tagline + chips + 2 filter rows), desktop ~120px
+  const isMobileInit = typeof window !== 'undefined' && window.innerWidth < 768;
+  const [headerH, setHeaderH] = useState(isMobileInit ? 500 : 280);
   useEffect(() => {
     const measure = () => {
       if (!headerRef.current) return;
       const h = headerRef.current.getBoundingClientRect().height;
-      if (h > 0) setHeaderH(h + 8); // +8px safety buffer
+      if (h > 0) setHeaderH(h + 16); // +16px safety buffer
     };
     measure();
-    setTimeout(measure, 100); // second attempt after full render
-    setTimeout(measure, 500); // extra pass for late renders (filter bar + quick chips)
+    setTimeout(measure, 100);
+    setTimeout(measure, 500);
+    setTimeout(measure, 1200); // extra pass for slow mobile renders
     const ro = new ResizeObserver(measure);
     if (headerRef.current) ro.observe(headerRef.current);
     return () => ro.disconnect();
