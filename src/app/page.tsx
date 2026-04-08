@@ -118,7 +118,7 @@ export default function Explorer() {
   const headerRef = useRef<HTMLDivElement>(null);
 
   // Sidebar state
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [showCurrencyPanel, setShowCurrencyPanel] = useState(false);
   const [emailInput, setEmailInput] = useState('');
@@ -845,7 +845,8 @@ export default function Explorer() {
       {/* CONTENT — main area, offset by fixed sidebar */}
       <div className="flex overflow-x-hidden">
         <div
-          className={`flex-1 overflow-x-hidden min-w-0 transition-all duration-200 ${sidebarCollapsed ? 'md:ml-[60px]' : 'md:ml-[240px]'} ${preview !== null ? 'md:mr-[480px]' : ''}`}
+          className={`flex-1 overflow-x-hidden min-w-0 transition-all duration-200 ${preview !== null ? 'md:mr-[480px]' : ''}`}
+          style={{ marginLeft: typeof window !== 'undefined' && window.innerWidth >= 768 ? (sidebarCollapsed ? 60 : 240) : 0 }}
         >
           {(tab === 'whyavena' || (!user && tab === 'deals')) && (
             <div className="px-4 md:px-8 py-8 border-b border-[#1a1a24]">
