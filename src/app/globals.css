@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 @keyframes slide-in {
   from { transform: translateX(100%); }
   to { transform: translateX(0); }
@@ -19,8 +27,8 @@
 }
 
 @keyframes slide-up {
-  from { transform: translate(-50%, 120%); opacity: 0; }
-  to { transform: translate(-50%, 0); opacity: 1; }
+  from { transform: translateY(120%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 .animate-slide-up {

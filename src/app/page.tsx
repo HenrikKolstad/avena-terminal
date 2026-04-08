@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { Property, SortKey, SortDir } from '@/lib/types';
 import { loadProperties, syncSnapshots } from '@/lib/data';
@@ -114,6 +114,9 @@ export default function Explorer() {
   });
   // Email capture popup state
   const [showEmailCapture, setShowEmailCapture] = useState(false);
+  // Header ref for CSS var
+  const headerRef = useRef<HTMLElement>(null);
+
   // Sidebar state
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -121,6 +124,18 @@ export default function Explorer() {
   const [emailInput, setEmailInput] = useState('');
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
+
+  // Observe header height and keep --header-h CSS var updated
+  useEffect(() => {
+    if (!headerRef.current) return;
+    const updateHeaderH = (el: HTMLElement) => {
+      document.documentElement.style.setProperty('--header-h', el.offsetHeight + 'px');
+    };
+    updateHeaderH(headerRef.current);
+    const ro = new ResizeObserver(() => { if (headerRef.current) updateHeaderH(headerRef.current); });
+    ro.observe(headerRef.current);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     loadProperties().then(d => { setProperties(d); setLoading(false); syncSnapshots(d); });
@@ -362,7 +377,7 @@ export default function Explorer() {
   return (
     <div className="min-h-screen bg-[#070709] overflow-x-hidden">
       {/* TOP BAR */}
-      <header ref={(el) => { if (el) document.documentElement.style.setProperty('--header-h', el.offsetHeight + 'px'); }} className="relative sticky top-0 z-50 border-b border-[#1a1a24] px-4 md:px-8 py-3 md:py-6 shadow-2xl" style={{ background: 'linear-gradient(180deg, #0f0e18 0%, #0a0a12 100%)' }}>
+      <header ref={headerRef} className="relative sticky top-0 z-50 border-b border-[#1a1a24] px-4 md:px-8 py-3 md:py-6 shadow-2xl" style={{ background: 'linear-gradient(180deg, #0f0e18 0%, #0a0a12 100%)' }}>
         <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(90deg, transparent 0%, #c9a84c 30%, #e8c96a 50%, #c9a84c 70%, transparent 100%)' }} />
 
         {/* MOBILE HEADER */}
@@ -400,7 +415,7 @@ export default function Explorer() {
             )}
           </div>
           {/* Stats strip — row between logo and tagline */}
-          <div className="flex items-center gap-3 border-t border-[#1a1a24] pt-2">
+          <div className="flex items-center justify-between border-t border-[#1a1a24] pt-2">
             <div className="text-center">
               <div className="text-sm font-bold text-amber-400 font-serif leading-none">{stats.count}</div>
               <div className="text-[7px] uppercase tracking-widest text-gray-600">Properties</div>
@@ -594,7 +609,7 @@ export default function Explorer() {
       </div>
 
       {/* QUICK FILTERS */}
-      <div className="bg-[#070709] border-b border-[#1a1a24] px-3 md:px-8 py-2 flex gap-1.5 md:gap-2 overflow-x-auto scrollbar-none">
+      <div className="bg-[#070709] border-b border-[#1a1a24] px-3 md:px-8 py-2 flex flex-nowrap gap-1.5 md:gap-2 overflow-x-auto scrollbar-none">
         {([['budget','<€200k'],['mid','€200-400k'],['premium','€400k+'],['beach','Beach'],['golf','Golf'],['cashflow','Cash+'],['favs','Favs']] as [QuickFilter, string][]).map(([key, label]) => (
           <button key={key} onClick={() => { setQuickFilter(q => q === key ? '' : key); }}
             className={`flex-shrink-0 px-2.5 md:px-3 py-1.5 rounded-full text-[10px] md:text-[11px] font-semibold border transition-all min-h-[36px] flex items-center ${quickFilter === key ? 'bg-[#c9a84c]/15 border-[#c9a84c]/60 text-[#c9a84c]' : 'bg-transparent border-[#1f1f28] text-gray-600 hover:border-[#c9a84c]/30 hover:text-gray-400'}`}>
@@ -2419,13 +2434,13 @@ function MarketTab({ properties }: { properties: Property[] }) {
                       <div className="text-sm font-semibold text-amber-300 truncate">{dev.name}</div>
                       <div className="text-[10px] text-gray-500 mt-0.5">{dev.count} propert{dev.count !== 1 ? 'ies' : 'y'}</div>
                     </div>
-                    <span className={`text-xl font-extrabold font-serif flex-shrink-0 ${dev.avgScore >= 70 ? 'text-emerald-400' : dev.avgScore >= 50 ? 'text-amber-400' : 'text-gray-400'}`}>
+                    <span className={`text-xl font-extrabold font-serif flex-shrink-0 ${dev.avgScore >= 70 ? 'text-emerald-400' : dev.avgScore >= 40 ? 'text-amber-400' : 'text-red-400'}`}>
                       {i === 0 ? '🥇 ' : i === 1 ? '🥈 ' : i === 2 ? '🥉 ' : ''}{dev.avgScore}
                     </span>
                   </div>
                   {/* Score bar */}
                   <div className="h-1.5 bg-[#0a0a0f] rounded-full overflow-hidden mb-3">
-                    <div className="h-full rounded-full transition-all" style={{ width: `${dev.avgScore}%`, background: dev.avgScore >= 70 ? '#34d399' : dev.avgScore >= 50 ? '#f59e0b' : '#6b7280' }} />
+                    <div className="h-full rounded-full transition-all" style={{ width: `${dev.avgScore}%`, background: dev.avgScore >= 70 ? '#34d399' : dev.avgScore >= 40 ? '#f59e0b' : '#f87171' }} />
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-center">
                     <div>
@@ -2740,8 +2755,8 @@ function LuxuryTab({ properties, isPaid, onUpgrade, onPreview }: {
           const hasSeaView = p.views?.some(v => v.toLowerCase().includes('sea'));
           const hasFrontline = p.cats?.some(c => c.toLowerCase().includes('frontline') || c.toLowerCase().includes('beach'));
           const isPrivatePool = p.pool === 'private' || p.pool === 'yes';
-          const scoreColor2 = p._lsc >= 70 ? 'text-emerald-400' : p._lsc >= 50 ? 'text-amber-400' : 'text-gray-400';
-          const scoreBg = p._lsc >= 70 ? 'bg-emerald-500/10 border-emerald-500/20' : p._lsc >= 50 ? 'bg-amber-500/10 border-amber-500/20' : 'bg-gray-500/10 border-gray-500/20';
+          const scoreColor2 = p._lsc >= 70 ? 'text-emerald-400' : p._lsc >= 40 ? 'text-amber-400' : 'text-red-400';
+          const scoreBg = p._lsc >= 70 ? 'bg-emerald-400/10 border-emerald-400/30' : p._lsc >= 40 ? 'bg-amber-400/10 border-amber-400/30' : 'bg-red-400/10 border-red-400/30';
 
           return (
             <div key={p.ref || i}
@@ -2829,7 +2844,7 @@ function LuxuryTab({ properties, isPaid, onUpgrade, onPreview }: {
                       <span className={scoreColor2}>{p._lsc}/100</span>
                     </div>
                     <div className="h-1.5 bg-[#0a0a0f] rounded-full overflow-hidden">
-                      <div className="h-full rounded-full transition-all" style={{ width: `${p._lsc}%`, background: p._lsc >= 70 ? '#34d399' : p._lsc >= 50 ? '#f59e0b' : '#6b7280' }} />
+                      <div className="h-full rounded-full transition-all" style={{ width: `${p._lsc}%`, background: p._lsc >= 70 ? '#34d399' : p._lsc >= 40 ? '#f59e0b' : '#f87171' }} />
                     </div>
                   </div>
                   <div className={`text-2xl font-extrabold font-serif ${scoreColor2}`}>{p._lsc}</div>
