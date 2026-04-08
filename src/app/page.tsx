@@ -553,22 +553,24 @@ export default function Explorer() {
               <h1 className="text-4xl font-bold font-serif tracking-[0.2em] bg-gradient-to-r from-amber-300 via-amber-400 to-amber-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity">AVENA</h1>
               <p className="text-[9px] tracking-[6px] uppercase text-[#c9a84c]/60 mt-0.5 font-light">Terminal</p>
             </a>
-            <div className="text-[10px] text-gray-400 mt-2 leading-relaxed">
-              <div>{t.hero_scanner}</div>
-              <div className="flex flex-wrap gap-1 mt-1">
-                {([['Costa Blanca North','cb-north'],['Costa Blanca South','cb-south'],['Costa Cálida','costa-calida'],['Costa del Sol','costa-del-sol']] as [string,string][]).map(([r, code]) => (
-                  <button key={r} onClick={() => { setFilters(f => ({...f, region: code})); setTab('deals'); }} className={`px-1.5 py-0.5 rounded text-[9px] font-medium bg-[#1a1a24] text-[#c9a84c] border transition-colors cursor-pointer hover:bg-[#c9a84c]/10 hover:border-[#c9a84c]/50 ${filters.region === code ? 'border-[#c9a84c]/70' : 'border-[#c9a84c]/20'}`}>{r}</button>
-                ))}
+            {sidebarCollapsed && (
+              <div className="text-[10px] text-gray-400 mt-2 leading-relaxed">
+                <div>{t.hero_scanner}</div>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {([['Costa Blanca North','cb-north'],['Costa Blanca South','cb-south'],['Costa Cálida','costa-calida'],['Costa del Sol','costa-del-sol']] as [string,string][]).map(([r, code]) => (
+                    <button key={r} onClick={() => { setFilters(f => ({...f, region: code})); setTab('deals'); }} className={`px-1.5 py-0.5 rounded text-[9px] font-medium bg-[#1a1a24] text-[#c9a84c] border transition-colors cursor-pointer hover:bg-[#c9a84c]/10 hover:border-[#c9a84c]/50 ${filters.region === code ? 'border-[#c9a84c]/70' : 'border-[#c9a84c]/20'}`}>{r}</button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
             <p className="text-[9px] text-gray-500 mt-1.5 flex items-center gap-1 flex-wrap">
               <span>In partnership with</span>
               <a href="https://www.xaviaestate.com" target="_blank" rel="noopener noreferrer" className="font-semibold hover:opacity-80 transition-opacity" style={{ color: '#F5A623' }}>Xavia Estate</a>
             </p>
           </div>
 
-          {/* CENTER — hero punchlines */}
-          <div className="hidden lg:flex flex-col gap-2 flex-1 max-w-md mx-auto text-center">
+          {/* CENTER — hero punchlines — hidden when sidebar expanded to prevent wrapping */}
+          <div className={`flex-col gap-2 flex-1 max-w-md mx-auto text-center ${sidebarCollapsed ? 'hidden lg:flex' : 'hidden'}`}>
             <div className="text-lg xl:text-xl font-bold leading-snug bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent">{t.hero_line1}</div>
             <div className="h-px w-16 mx-auto" style={{ background: 'linear-gradient(90deg, transparent, #c9a84c, transparent)' }} />
             <div className="text-lg xl:text-xl font-bold leading-snug bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent">{t.hero_line2}</div>
