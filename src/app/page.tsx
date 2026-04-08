@@ -162,6 +162,7 @@ export default function Explorer() {
   // Mobile: auto-hide header on scroll down, show on scroll up
   const [mobileHeaderHidden, setMobileHeaderHidden] = useState(false);
   const lastScrollY = useRef(0);
+  const scrollUpAccum = useRef(0); // accumulate upward scroll distance
   useEffect(() => {
     if (typeof window === 'undefined') return;
     let ticking = false;
@@ -172,11 +173,20 @@ export default function Explorer() {
         const y = window.scrollY;
         const isM = window.innerWidth < 768;
         if (isM) {
-          // Only hide after scrolling past the header
-          if (y > headerH && y > lastScrollY.current + 8) {
-            setMobileHeaderHidden(true);
-          } else if (y < lastScrollY.current - 4) {
-            setMobileHeaderHidden(false);
+          const delta = y - lastScrollY.current;
+          if (delta > 0) {
+            // Scrolling DOWN — hide after passing header, reset up-accumulator
+            scrollUpAccum.current = 0;
+            if (y > headerH && delta > 5) {
+              setMobileHeaderHidden(true);
+            }
+          } else {
+            // Scrolling UP — accumulate distance, only show after 50px of upward scroll
+            scrollUpAccum.current += Math.abs(delta);
+            if (scrollUpAccum.current > 50 || y <= 10) {
+              setMobileHeaderHidden(false);
+              scrollUpAccum.current = 0;
+            }
           }
         } else {
           setMobileHeaderHidden(false);
