@@ -126,7 +126,7 @@ export default function Explorer() {
   const [emailLoading, setEmailLoading] = useState(false);
 
   // Measure header height after paint via ResizeObserver
-  const [headerH, setHeaderH] = useState(250);
+  const [headerH, setHeaderH] = useState(300);
   useEffect(() => {
     if (!headerRef.current) return;
     const update = () => {
