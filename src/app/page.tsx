@@ -1777,7 +1777,22 @@ export default function Explorer() {
                 e.preventDefault();
                 setAuthError('');
                 setAuthLoading2(true);
-                const { error } = await signInWithPassword(authEmail, authPassword);
+                let { error } = await signInWithPassword(authEmail, authPassword);
+                // First time: no password set yet — set it now (admin only) then retry
+                if (error && (error.includes('Invalid login credentials') || error.includes('invalid_credentials'))) {
+                  const res = await fetch('/api/auth/set-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: authEmail, password: authPassword }),
+                  });
+                  const json = await res.json();
+                  if (json.ok) {
+                    const retry = await signInWithPassword(authEmail, authPassword);
+                    error = retry.error;
+                  } else if (json.error !== 'Not allowed') {
+                    error = json.error || error;
+                  }
+                }
                 setAuthLoading2(false);
                 if (error) setAuthError(error);
                 else { setShowAuthModal(false); setAuthPassword(''); }
