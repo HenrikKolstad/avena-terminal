@@ -767,7 +767,7 @@ export default function Explorer() {
               style={{
                 background: '#0d0d14',
                 width: sidebarWidth,
-                transition: 'width 0.2s ease',
+                transition: 'none',
                 height: '100vh',
               }}
             >
