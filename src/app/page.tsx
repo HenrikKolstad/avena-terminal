@@ -140,6 +140,15 @@ export default function Explorer() {
     return () => ro.disconnect();
   }, []);
 
+  // Track desktop vs mobile for sidebar-aware layout
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const check = () => setIsDesktop(window.innerWidth >= 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   useEffect(() => {
     loadProperties().then(d => { setProperties(d); setLoading(false); syncSnapshots(d); });
     const saved = localStorage.getItem('avena_favs');
@@ -379,8 +388,14 @@ export default function Explorer() {
 
   return (
     <div className="min-h-screen bg-[#070709]">
-      {/* HEADER — fixed top, offset left by sidebar on desktop */}
-      <div ref={headerRef} className="fixed top-0 z-40" style={{ width: `calc(100% - ${sidebarCollapsed ? 60 : 240}px)`, marginLeft: sidebarCollapsed ? 60 : 240 }}>
+      {/* HEADER — fixed top, full-width on mobile, offset left by sidebar on desktop */}
+      <div ref={headerRef} className="fixed top-0 z-40 left-0 right-0"
+        style={isDesktop ? {
+          width: `calc(100% - ${sidebarCollapsed ? 60 : 240}px)`,
+          marginLeft: sidebarCollapsed ? 60 : 240,
+          left: 'auto',
+          right: 0,
+        } : {}}>
       {/* TOP BAR */}
       <header className="relative border-b border-[#1a1a24] px-4 md:px-8 py-3 md:py-6 shadow-2xl" style={{ background: 'linear-gradient(180deg, #0f0e18 0%, #0a0a12 100%)' }}>
         <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(90deg, transparent 0%, #c9a84c 30%, #e8c96a 50%, #c9a84c 70%, transparent 100%)' }} />
@@ -841,10 +856,10 @@ export default function Explorer() {
         function go(t: TabKey) { setTab(t); }
       })()}
 
-      {/* CONTENT — padded top (header height) + left (sidebar width) */}
+      {/* CONTENT — padded top (header height) + left (sidebar width on desktop only) */}
       <div
         className={`overflow-x-hidden min-w-0 transition-all duration-200 ${preview !== null ? 'md:mr-[480px]' : ''}`}
-        style={{ paddingTop: headerH, paddingLeft: sidebarCollapsed ? 60 : 240 }}
+        style={{ paddingTop: headerH, paddingLeft: isDesktop ? (sidebarCollapsed ? 60 : 240) : 0 }}
       >
           {(tab === 'whyavena' || (!user && tab === 'deals')) && (
             <div className="px-4 md:px-8 py-8 border-b border-[#1a1a24]">
