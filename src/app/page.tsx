@@ -1734,11 +1734,19 @@ export default function Explorer() {
                 </button>
               )}
 
-              <a href={previewProp.u} target="_blank" rel="noopener noreferrer"
-                onClick={() => logLead(previewProp, 'view_xavia')}
-                className="block text-center py-3 bg-gradient-to-r from-amber-600 to-amber-400 text-black font-bold text-sm rounded-lg hover:from-amber-500 hover:to-amber-300 transition-all tracking-wide">
-                Browse Similar on Xavia Estate →
-              </a>
+              {previewProp.u?.includes('xaviaestate.com') ? (
+                <a href={previewProp.u} target="_blank" rel="noopener noreferrer"
+                  onClick={() => logLead(previewProp, 'view_xavia')}
+                  className="block text-center py-3 bg-gradient-to-r from-amber-600 to-amber-400 text-black font-bold text-sm rounded-lg hover:from-amber-500 hover:to-amber-300 transition-all tracking-wide">
+                  View on Xavia Estate →
+                </a>
+              ) : (
+                <a href="mailto:hello@avena-estate.com"
+                  onClick={() => logLead(previewProp, 'contact_avena')}
+                  className="block text-center py-3 bg-gradient-to-r from-amber-600 to-amber-400 text-black font-bold text-sm rounded-lg hover:from-amber-500 hover:to-amber-300 transition-all tracking-wide">
+                  Contact Avena →
+                </a>
+              )}
             </div>
           </div>
           </>
