@@ -771,15 +771,17 @@ export default function Explorer() {
                 height: '100vh',
               }}
             >
-              {/* Collapse toggle button */}
-              <button
-                onClick={() => setSidebarCollapsed(v => !v)}
-                className="absolute -right-3 top-16 w-6 h-6 rounded-full border border-[#2a2a30] flex items-center justify-center z-50 transition-colors hover:border-amber-500/50 hover:text-amber-400"
-                style={{ background: '#0d0d14', color: '#555' }}
-                title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              >
-                <span className="text-[10px] leading-none">{sidebarCollapsed ? '›' : '‹'}</span>
-              </button>
+              {/* Collapse toggle button — centered in sidebar, no overflow clipping */}
+              <div className="flex justify-center pt-16 pb-2">
+                <button
+                  onClick={() => setSidebarCollapsed(v => !v)}
+                  className="w-6 h-6 rounded-full border border-[#2a2a30] flex items-center justify-center transition-colors hover:border-amber-500/50 hover:text-amber-400"
+                  style={{ background: '#0d0d14', color: '#555' }}
+                  title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                >
+                  <span className="text-[10px] leading-none">{sidebarCollapsed ? '›' : '‹'}</span>
+                </button>
+              </div>
               {/* Tablet overlay: expand on hover */}
               <div
                 className="hidden [@media(min-width:768px)_and_(max-width:1023px)]:block absolute inset-0 pointer-events-none"
