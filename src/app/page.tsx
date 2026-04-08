@@ -98,9 +98,10 @@ export default function Explorer() {
   });
   // Email capture popup state
   const [showEmailCapture, setShowEmailCapture] = useState(false);
-  // Sidebar + mobile more-drawer state
-  const [sidebarExpanded, setSidebarExpanded] = useState(false);
-  const [moreDrawerOpen, setMoreDrawerOpen] = useState(false);
+  // Sidebar state
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [showCurrencyPanel, setShowCurrencyPanel] = useState(false);
   const [emailInput, setEmailInput] = useState('');
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
@@ -350,8 +351,15 @@ export default function Explorer() {
 
         {/* MOBILE HEADER */}
         <div className="flex md:hidden flex-col gap-2">
-          {/* Row 1: logo + stats + auth */}
+          {/* Row 1: hamburger + logo + stats + auth */}
           <div className="flex items-center justify-between gap-3">
+          <button
+            onClick={() => setMobileSidebarOpen(true)}
+            className="flex-shrink-0 w-8 h-8 flex items-center justify-center text-gray-400 hover:text-amber-400 transition-colors"
+            aria-label="Open navigation"
+          >
+            <span className="text-xl leading-none">☰</span>
+          </button>
           <a href="/" className="flex-shrink-0">
             <h1 className="text-2xl font-bold font-serif tracking-[0.2em] bg-gradient-to-r from-amber-300 via-amber-400 to-amber-600 bg-clip-text text-transparent">AVENA</h1>
             <p className="text-[8px] tracking-[5px] uppercase text-[#c9a84c]/60 font-light">Estate</p>
@@ -565,154 +573,234 @@ export default function Explorer() {
         ))}
       </div>
 
-      {/* SIDEBAR NAV (desktop) + BOTTOM NAV (mobile) */}
+      {/* ── SIDEBAR (desktop fixed + mobile overlay) ── */}
       {(() => {
-        const navItems: [typeof tab, string, string][] = [
-          ['deals', t.tab_deals, '📊'],
-          ['yield', t.tab_yield, '💶'],
-          ['portfolio', t.tab_portfolio, '📁'],
-          ['luxury', t.tab_luxury, '💎'],
-          ['map', t.tab_map, '🗺️'],
-          ['market', t.tab_market, '📈'],
-          ['about', t.tab_scoring, 'ℹ️'],
-          ['legal', t.tab_legal, '⚖️'],
-          ['contact', t.tab_contact, '✉️'],
-        ];
-        const primaryNav = navItems.slice(0, 5);
-        const secondaryNav = navItems.slice(5);
+        type TabKey = typeof tab;
+        const sidebarWidth = sidebarCollapsed ? 60 : 240;
+
+        const NavItem = ({ icon, label, isActive, onClick, disabled }: { icon: string; label: string; isActive?: boolean; onClick?: () => void; disabled?: boolean }) => (
+          <button
+            onClick={disabled ? undefined : onClick}
+            title={sidebarCollapsed ? label : undefined}
+            disabled={disabled}
+            className="flex items-center gap-3 w-full transition-all min-h-[40px] px-3 relative group"
+            style={{
+              color: disabled ? '#444' : isActive ? '#c9a84c' : '#cccccc',
+              background: isActive ? 'rgba(201,168,76,0.08)' : 'transparent',
+              borderLeft: isActive ? '3px solid #c9a84c' : '3px solid transparent',
+              cursor: disabled ? 'not-allowed' : 'pointer',
+            }}
+            onMouseEnter={e => { if (!isActive && !disabled) (e.currentTarget as HTMLButtonElement).style.background = '#ffffff08'; }}
+            onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+          >
+            <span className="text-base flex-shrink-0 w-5 text-center leading-none">{icon}</span>
+            {!sidebarCollapsed && (
+              <span className="text-[12px] font-medium tracking-wide whitespace-nowrap overflow-hidden flex-1 text-left">
+                {label}
+                {disabled && <span className="ml-1.5 text-[9px] text-gray-700 font-normal">soon</span>}
+              </span>
+            )}
+          </button>
+        );
+
+        const SectionHeader = ({ label }: { label: string }) => (
+          sidebarCollapsed ? <div className="h-px mx-2 my-1.5 bg-[#1a1a24]" /> : (
+            <div className="px-3 pt-4 pb-1">
+              <span className="text-[9px] font-bold uppercase tracking-[3px]" style={{ color: 'rgba(201,168,76,0.5)' }}>{label}</span>
+            </div>
+          )
+        );
+
+        const SidebarContent = ({ onClose }: { onClose?: () => void }) => {
+          const go = (t: TabKey) => { setTab(t); onClose?.(); };
+          return (
+            <div className="flex flex-col h-full overflow-y-auto overflow-x-hidden">
+              {/* Logo */}
+              {!sidebarCollapsed && (
+                <div className="px-4 pt-4 pb-2 flex-shrink-0 border-b border-[#1a1a24]">
+                  <div className="text-xs font-bold tracking-[4px] uppercase" style={{ background: 'linear-gradient(90deg, #c9a84c, #e8c96a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>AVENA</div>
+                  <div className="text-[8px] tracking-[3px] uppercase text-[#c9a84c]/40 mt-0.5">TERMINAL</div>
+                </div>
+              )}
+              {sidebarCollapsed && <div className="h-4 flex-shrink-0" />}
+
+              <div className="flex-1 py-1">
+                {/* INVEST */}
+                <SectionHeader label="INVEST" />
+                <NavItem icon="📊" label="Deal Rankings" isActive={tab === 'deals'} onClick={() => go('deals')} />
+                <NavItem icon="💶" label="Rental Yield" isActive={tab === 'yield'} onClick={() => go('yield')} />
+                <NavItem icon="💎" label="Luxury 1M+" isActive={tab === 'luxury'} onClick={() => go('luxury')} />
+                <NavItem icon="🗺️" label="Map" isActive={tab === 'map'} onClick={() => go('map')} />
+                <NavItem icon="📁" label="Portfolio" isActive={tab === 'portfolio'} onClick={() => go('portfolio')} />
+
+                {/* MARKET */}
+                <SectionHeader label="MARKET" />
+                <NavItem icon="📈" label="Market Overview" isActive={tab === 'market'} onClick={() => go('market')} />
+                <NavItem icon="⭐" label="Scoring Method" isActive={tab === 'about'} onClick={() => go('about')} />
+
+                {/* TOOLS */}
+                <SectionHeader label="TOOLS" />
+                <NavItem icon="⬇️" label="Export CSV" onClick={() => { exportCSV(); onClose?.(); }} />
+                <NavItem icon="💱" label="Currency Settings" onClick={() => { setShowCurrencyPanel(v => !v); }} />
+                <NavItem icon="❤️" label="Favorites" onClick={() => { setQuickFilter(q => q === 'favs' ? '' : 'favs'); go('deals'); }} />
+
+                {/* ACCOUNT */}
+                <SectionHeader label="ACCOUNT" />
+                <NavItem icon="👑" label="Pro Subscription" onClick={() => { setShowPaywall(true); onClose?.(); }} />
+                <NavItem icon="⚙️" label="Settings" disabled />
+
+                {/* INFO */}
+                <SectionHeader label="INFO" />
+                <NavItem icon="ℹ️" label="Why Avena" onClick={() => go('deals')} />
+                <NavItem icon="⚖️" label="Legal and Security" isActive={tab === 'legal'} onClick={() => go('legal')} />
+                <NavItem icon="✉️" label="Contact" isActive={tab === 'contact'} onClick={() => go('contact')} />
+                <NavItem icon="📖" label="About" isActive={tab === 'about'} onClick={() => go('about')} />
+              </div>
+
+              {/* User status at bottom */}
+              <div className="flex-shrink-0 border-t border-[#1a1a24] px-2 py-3">
+                {!authLoading && (
+                  user ? (
+                    <div
+                      className="flex items-center gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-all hover:bg-[#ffffff08]"
+                      onClick={() => signOut()}
+                    >
+                      <span className="text-base flex-shrink-0 leading-none">👤</span>
+                      {!sidebarCollapsed && (
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[10px] text-gray-400 truncate">{user.email}</div>
+                          {isPaid ? (
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ background: 'rgba(201,168,76,0.2)', color: '#c9a84c' }}>PRO</span>
+                          ) : (
+                            <span className="text-[9px] font-bold text-gray-600">Free</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setShowAuthModal(true)}
+                      className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg transition-all hover:bg-[#ffffff08]"
+                      style={{ color: '#c9a84c' }}
+                    >
+                      <span className="text-base flex-shrink-0 leading-none">🔐</span>
+                      {!sidebarCollapsed && <span className="text-[11px] font-semibold">Sign In</span>}
+                    </button>
+                  )
+                )}
+              </div>
+            </div>
+          );
+        };
+
         return (
           <>
-            {/* DESKTOP SIDEBAR */}
+            {/* ── DESKTOP SIDEBAR (fixed left) ── */}
             <div
-              className="hidden md:flex flex-col fixed left-0 top-0 h-full z-40 border-r border-[#1a1a24] overflow-hidden"
+              className="hidden md:flex flex-col fixed left-0 top-0 h-full z-40 border-r border-[#1a1a24]"
               style={{
-                background: '#070709',
-                width: sidebarExpanded ? 220 : 56,
+                background: '#0d0d14',
+                width: sidebarWidth,
                 transition: 'width 0.2s ease',
-                paddingTop: '80px', // leave room for sticky header
               }}
-              onMouseEnter={() => setSidebarExpanded(true)}
-              onMouseLeave={() => setSidebarExpanded(false)}
             >
-              <div className="flex flex-col gap-0.5 px-1 pt-3 flex-1">
-                {navItems.map(([key, label, icon]) => {
-                  const isActive = tab === key;
-                  return (
-                    <button
-                      key={key}
-                      onClick={() => setTab(key)}
-                      title={!sidebarExpanded ? label : undefined}
-                      className="flex items-center gap-3 rounded-lg transition-all min-h-[44px] px-2 relative"
-                      style={{
-                        color: isActive ? '#c9a84c' : '#6b7280',
-                        background: isActive ? 'rgba(201,168,76,0.1)' : 'transparent',
-                        borderLeft: isActive ? '2px solid #c9a84c' : '2px solid transparent',
-                      }}
-                      onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.color = '#9ca3af'; }}
-                      onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.color = '#6b7280'; }}
-                    >
-                      <span className="text-base flex-shrink-0 w-6 text-center">{icon}</span>
-                      {sidebarExpanded && (
-                        <span className="text-[11px] font-semibold tracking-wide whitespace-nowrap overflow-hidden flex items-center gap-1.5">
-                          {label}
-                          {key === 'yield' && yieldCurrency !== 'EUR' && (
-                            <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isActive ? 'bg-[#c9a84c]/20 text-[#c9a84c]' : 'bg-[#2a2a30] text-gray-500'}`}>
-                              {yieldCurrency}
-                            </span>
-                          )}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-              {/* Bottom: auth indicator */}
-              <div className="px-1 pb-4">
-                <div className="border-t border-[#1a1a24] pt-3">
-                  <div
-                    className="flex items-center gap-3 rounded-lg min-h-[44px] px-2 cursor-pointer"
-                    onClick={() => !user ? setShowAuthModal(true) : undefined}
-                    style={{ color: user ? '#c9a84c' : '#6b7280' }}
-                  >
-                    <span className="text-base flex-shrink-0 w-6 text-center">{user ? '👤' : '🔐'}</span>
-                    {sidebarExpanded && (
-                      <span className="text-[11px] font-semibold tracking-wide whitespace-nowrap overflow-hidden">
-                        {user ? (isPaid ? 'PRO' : 'Free') : t.btn_signin}
-                      </span>
-                    )}
-                  </div>
+              {/* Collapse toggle button */}
+              <button
+                onClick={() => setSidebarCollapsed(v => !v)}
+                className="absolute -right-3 top-16 w-6 h-6 rounded-full border border-[#2a2a30] flex items-center justify-center z-50 transition-colors hover:border-amber-500/50 hover:text-amber-400"
+                style={{ background: '#0d0d14', color: '#555' }}
+                title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                <span className="text-[10px] leading-none">{sidebarCollapsed ? '›' : '‹'}</span>
+              </button>
+              {/* Tablet overlay: expand on hover */}
+              <div
+                className="hidden [@media(min-width:768px)_and_(max-width:1023px)]:block absolute inset-0 pointer-events-none"
+                style={{ zIndex: -1 }}
+              />
+              <SidebarContent />
+            </div>
+
+            {/* ── TABLET hover expand (768–1023px) — uses absolute positioning so it overlays ── */}
+            <div
+              className="hidden md:[@media(min-width:768px)_and_(max-width:1023px)]:flex flex-col fixed left-0 top-0 h-full z-40 border-r border-[#1a1a24]"
+              style={{
+                background: '#0d0d14',
+                width: 60,
+                transition: 'width 0.2s ease',
+              }}
+            />
+
+            {/* ── MOBILE OVERLAY ── */}
+            {mobileSidebarOpen && (
+              <div className="md:hidden fixed inset-0 z-50 flex">
+                {/* Backdrop */}
+                <div
+                  className="absolute inset-0 bg-black/60"
+                  onClick={() => setMobileSidebarOpen(false)}
+                />
+                {/* Drawer */}
+                <div
+                  className="relative flex flex-col h-full border-r border-[#1a1a24] overflow-hidden animate-slide-in-left"
+                  style={{ background: '#0d0d14', width: 240, zIndex: 51 }}
+                >
+                  {/* Close button */}
+                  <button
+                    onClick={() => setMobileSidebarOpen(false)}
+                    className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center text-gray-500 hover:text-white z-10"
+                  >×</button>
+                  <SidebarContent onClose={() => setMobileSidebarOpen(false)} />
                 </div>
               </div>
-            </div>
+            )}
 
-            {/* MOBILE BOTTOM NAV */}
-            <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-[#1a1a24] flex items-center justify-around"
-              style={{ background: '#070709', height: 56 }}>
-              {primaryNav.map(([key, label, icon]) => {
-                const isActive = tab === key;
-                return (
-                  <button key={key} onClick={() => setTab(key)}
-                    className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full"
-                    style={{ color: isActive ? '#c9a84c' : '#4b5563' }}>
-                    <span className="text-lg leading-none">{icon}</span>
-                    <span className="text-[9px] font-semibold tracking-wide">{label}</span>
-                  </button>
-                );
-              })}
-              {/* More button */}
-              <button
-                onClick={() => setMoreDrawerOpen(true)}
-                className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full"
-                style={{ color: secondaryNav.some(([k]) => k === tab) ? '#c9a84c' : '#4b5563' }}>
-                <span className="text-lg leading-none">⋯</span>
-                <span className="text-[9px] font-semibold tracking-wide">More</span>
-              </button>
-            </div>
-
-            {/* MOBILE MORE DRAWER */}
-            {moreDrawerOpen && (
-              <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end" onClick={() => setMoreDrawerOpen(false)}>
-                <div className="absolute inset-0 bg-black/60" />
-                <div
-                  className="relative rounded-t-2xl border-t border-[#1a1a24] px-4 pb-8 pt-4"
-                  style={{ background: '#0a0a12' }}
-                  onClick={e => e.stopPropagation()}
-                >
-                  <div className="w-10 h-1 rounded-full mx-auto mb-4" style={{ background: '#2a2a30' }} />
-                  <div className="flex flex-col gap-1">
-                    {secondaryNav.map(([key, label, icon]) => {
-                      const isActive = tab === key;
-                      return (
-                        <button
-                          key={key}
-                          onClick={() => { setTab(key); setMoreDrawerOpen(false); }}
-                          className="flex items-center gap-4 rounded-xl px-4 py-3.5 text-left transition-all"
-                          style={{
-                            color: isActive ? '#c9a84c' : '#9ca3af',
-                            background: isActive ? 'rgba(201,168,76,0.1)' : 'transparent',
-                          }}
-                        >
-                          <span className="text-xl">{icon}</span>
-                          <span className="text-sm font-semibold">{label}</span>
-                          {key === 'yield' && yieldCurrency !== 'EUR' && (
-                            <span className={`text-[9px] px-1 py-0.5 rounded font-bold ml-auto ${isActive ? 'bg-[#c9a84c]/20 text-[#c9a84c]' : 'bg-[#2a2a30] text-gray-500'}`}>
-                              {yieldCurrency}
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
+            {/* ── CURRENCY PANEL (small floating panel) ── */}
+            {showCurrencyPanel && (
+              <div
+                className="fixed z-50 border border-[#2a2a30] rounded-xl p-4 shadow-2xl"
+                style={{
+                  background: '#0d0d14',
+                  left: sidebarWidth + 8,
+                  top: 200,
+                  width: 220,
+                }}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[10px] uppercase tracking-widest text-[#c9a84c]/60 font-bold">Currency</span>
+                  <button onClick={() => setShowCurrencyPanel(false)} className="text-gray-600 hover:text-white text-sm">×</button>
+                </div>
+                <div className="flex flex-col gap-1">
+                  {[
+                    { code: 'EUR', symbol: '€', flag: '🇪🇺' },
+                    { code: 'NOK', symbol: 'kr', flag: '🇳🇴' },
+                    { code: 'GBP', symbol: '£', flag: '🇬🇧' },
+                    { code: 'SEK', symbol: 'kr', flag: '🇸🇪' },
+                    { code: 'DKK', symbol: 'kr', flag: '🇩🇰' },
+                  ].map(c => (
+                    <button
+                      key={c.code}
+                      onClick={() => { setYieldCurrency(c.code); setShowCurrencyPanel(false); go('yield'); }}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold border transition-all ${yieldCurrency === c.code ? 'bg-[#c9a84c]/15 border-[#c9a84c]/50 text-[#c9a84c]' : 'border-[#2a2a30] text-gray-400 hover:border-[#c9a84c]/30'}`}
+                    >
+                      <span>{c.flag}</span>
+                      <span>{c.code} {c.symbol}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
             )}
           </>
         );
+
+        function go(t: TabKey) { setTab(t); }
       })()}
 
       {/* CONTENT */}
       <div className="flex">
-        <div className={`flex-1 md:ml-14 pb-16 md:pb-0 transition-all ${preview !== null ? 'md:mr-[480px]' : ''}`}>
+        <div
+          className={`flex-1 transition-all duration-200 max-md:!ml-0 ${preview !== null ? 'md:mr-[480px]' : ''}`}
+          style={{ marginLeft: sidebarCollapsed ? 60 : 240 }}
+        >
           {!user && tab === 'deals' && (
             <div className="px-4 md:px-8 py-8 border-b border-[#1a1a24]">
               {/* Headline */}
