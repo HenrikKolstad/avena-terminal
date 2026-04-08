@@ -744,15 +744,15 @@ export default function Explorer() {
 
         return (
           <>
-            {/* ── DESKTOP SIDEBAR (fixed left) ── */}
+            {/* ── DESKTOP SIDEBAR (sticky — sits naturally below sticky header) ── */}
             <div
-              className="hidden md:flex flex-col fixed left-0 z-40 border-r border-[#1a1a24]"
+              className="hidden md:flex flex-col sticky top-0 self-start z-40 border-r border-[#1a1a24] flex-shrink-0"
               style={{
                 background: '#0d0d14',
                 width: sidebarWidth,
                 transition: 'width 0.2s ease',
-                top: headerH,
-                height: `calc(100vh - ${headerH}px)`,
+                height: '100vh',
+                overflowY: 'auto',
               }}
             >
               {/* Collapse toggle button */}
@@ -772,15 +772,15 @@ export default function Explorer() {
               <SidebarContent />
             </div>
 
-            {/* ── TABLET hover expand (768–1023px) — uses absolute positioning so it overlays ── */}
+            {/* ── TABLET hover expand (768–1023px) ── */}
             <div
-              className="hidden md:[@media(min-width:768px)_and_(max-width:1023px)]:flex flex-col fixed left-0 z-40 border-r border-[#1a1a24]"
+              className="hidden md:[@media(min-width:768px)_and_(max-width:1023px)]:flex flex-col sticky top-0 self-start z-40 border-r border-[#1a1a24] flex-shrink-0"
               style={{
                 background: '#0d0d14',
                 width: 60,
                 transition: 'width 0.2s ease',
-                top: headerH,
-                height: `calc(100vh - ${headerH}px)`,
+                height: '100vh',
+                overflowY: 'auto',
               }}
             />
 
@@ -850,10 +850,10 @@ export default function Explorer() {
       })()}
 
       {/* CONTENT */}
-      <div className="flex overflow-x-hidden">
+      <div className="flex overflow-x-hidden items-start">
         <div
-          className={`flex-1 transition-all duration-200 max-md:!ml-0 overflow-x-hidden min-w-0 ${preview !== null ? 'md:mr-[480px]' : ''}`}
-          style={{ marginLeft: sidebarCollapsed ? 60 : 240 }}
+          className={`flex-1 overflow-x-hidden min-w-0 ${preview !== null ? 'md:mr-[480px]' : ''}`}
+          style={{}}
         >
           {(tab === 'whyavena' || (!user && tab === 'deals')) && (
             <div className="px-4 md:px-8 py-8 border-b border-[#1a1a24]">
