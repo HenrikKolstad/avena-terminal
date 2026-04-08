@@ -35,8 +35,8 @@ interface AiMemoResult {
 const LUXURY_THRESHOLD = 1_000_000;
 
 // Free tier limits
-const FREE_DEALS_LIMIT = 5;
-const FREE_YIELD_LIMIT = 3;
+const FREE_DEALS_LIMIT = 3;
+const FREE_YIELD_LIMIT = 2;
 
 // 5-year market value forecast helper
 function growthRate5yr(region: string): number {
@@ -51,6 +51,22 @@ function growthRate5yr(region: string): number {
 }
 function profit5yr(pf: number, region: string): number {
   return Math.round(pf * Math.pow(1 + growthRate5yr(region), 5) - pf);
+}
+
+function ProGate({ onUpgrade, feature }: { onUpgrade: () => void; feature: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[40vh] text-center px-6 py-16">
+      <div className="text-4xl mb-4">🔒</div>
+      <h2 className="text-xl font-bold text-white mb-2">{feature}</h2>
+      <p className="text-gray-400 text-sm mb-6 max-w-sm">This feature is available on Avena Terminal PRO. Upgrade to unlock full access.</p>
+      <button onClick={onUpgrade}
+        className="px-8 py-3 rounded-xl font-bold text-black text-sm shadow-lg"
+        style={{ background: 'linear-gradient(135deg, #c9a84c, #e8c96a)' }}>
+        Upgrade to PRO →
+      </button>
+      <p className="text-[11px] text-gray-600 mt-3">Cancel anytime · €79/month</p>
+    </div>
+  );
 }
 
 export default function Explorer() {
@@ -592,7 +608,7 @@ export default function Explorer() {
         type TabKey = typeof tab;
         const sidebarWidth = sidebarCollapsed ? 60 : 240;
 
-        const NavItem = ({ icon, label, isActive, onClick, disabled }: { icon: string; label: string; isActive?: boolean; onClick?: () => void; disabled?: boolean }) => (
+        const NavItem = ({ icon, label, isActive, onClick, disabled, badge }: { icon: string; label: string; isActive?: boolean; onClick?: () => void; disabled?: boolean; badge?: string }) => (
           <button
             onClick={disabled ? undefined : onClick}
             title={sidebarCollapsed ? label : undefined}
@@ -609,9 +625,10 @@ export default function Explorer() {
           >
             <span className="text-base flex-shrink-0 w-5 text-center leading-none">{icon}</span>
             {!sidebarCollapsed && (
-              <span className="text-[12px] font-medium tracking-wide whitespace-nowrap overflow-hidden flex-1 text-left">
-                {label}
-                {disabled && <span className="ml-1.5 text-[9px] text-gray-700 font-normal">soon</span>}
+              <span className="text-[12px] font-medium tracking-wide whitespace-nowrap overflow-hidden flex-1 text-left flex items-center gap-1.5">
+                <span className="flex-1">{label}</span>
+                {disabled && <span className="text-[9px] text-gray-700 font-normal">soon</span>}
+                {badge && !disabled && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded flex-shrink-0" style={{ background: 'linear-gradient(135deg, #c9a84c33, #c9a84c55)', border: '1px solid rgba(201,168,76,0.4)', color: '#c9a84c' }}>{badge}</span>}
               </span>
             )}
           </button>
@@ -642,14 +659,14 @@ export default function Explorer() {
                 {/* INVEST */}
                 <SectionHeader label="INVEST" />
                 <NavItem icon="📊" label="Deal Rankings" isActive={tab === 'deals'} onClick={() => go('deals')} />
-                <NavItem icon="💶" label="Rental Yield" isActive={tab === 'yield'} onClick={() => go('yield')} />
-                <NavItem icon="💎" label="Luxury 1M+" isActive={tab === 'luxury'} onClick={() => go('luxury')} />
-                <NavItem icon="🗺️" label="Map" isActive={tab === 'map'} onClick={() => go('map')} />
-                <NavItem icon="📁" label="Portfolio" isActive={tab === 'portfolio'} onClick={() => go('portfolio')} />
+                <NavItem icon="💶" label="Rental Yield" isActive={tab === 'yield'} onClick={() => go('yield')} badge="2 free" />
+                <NavItem icon="💎" label="Luxury 1M+" isActive={tab === 'luxury'} onClick={() => go('luxury')} badge="PRO" />
+                <NavItem icon="🗺️" label="Map" isActive={tab === 'map'} onClick={() => go('map')} badge="PRO" />
+                <NavItem icon="📁" label="Portfolio" isActive={tab === 'portfolio'} onClick={() => go('portfolio')} badge="PRO" />
 
                 {/* MARKET */}
                 <SectionHeader label="MARKET" />
-                <NavItem icon="📈" label="Market Overview" isActive={tab === 'market'} onClick={() => go('market')} />
+                <NavItem icon="📈" label="Market Overview" isActive={tab === 'market'} onClick={() => go('market')} badge="PRO" />
                 <NavItem icon="⭐" label="Scoring Method" isActive={tab === 'about'} onClick={() => go('about')} />
 
                 {/* TOOLS */}
@@ -1096,19 +1113,56 @@ export default function Explorer() {
                       </tr>
                     );
                   })}
-                  {/* Paywall CTA row after free limit */}
+                  {/* Paywall blur+upgrade block after free limit */}
                   {!isPaid && filtered.length > FREE_DEALS_LIMIT && (
                     <tr>
-                      <td colSpan={17} className="px-6 py-5 text-center border-b border-[#141420]">
-                        <div className="bg-gradient-to-r from-amber-900/20 via-amber-800/20 to-amber-900/20 border border-amber-600/40 rounded-xl p-5 max-w-xl mx-auto">
-                          <div className="text-amber-400 font-bold text-sm mb-1">
-                            🔒 {filtered.length - FREE_DEALS_LIMIT} more deals locked
+                      <td colSpan={17} className="p-0">
+                        <div className="relative">
+                          {/* Blurred ghost rows */}
+                          <div className="blur-sm pointer-events-none opacity-40">
+                            <table className="w-full border-collapse min-w-[1100px]">
+                              <tbody>
+                                {[
+                                  { p: 'Residencial Vista Mar', l: 'Torrevieja', score: 74, price: '€189,000', dc: '-12%', type: 'Apartment', region: 'CB South' },
+                                  { p: 'Villas del Golf', l: 'Orihuela Costa', score: 81, price: '€345,000', dc: '-18%', type: 'Villa', region: 'CB South' },
+                                  { p: 'Marina Beach Suites', l: 'Denia', score: 68, price: '€224,500', dc: '-9%', type: 'Apartment', region: 'CB North' },
+                                ].map((row, i) => (
+                                  <tr key={i} className="border-b border-[#141420]">
+                                    <td className="px-3 py-2.5 text-xs text-gray-600">{FREE_DEALS_LIMIT + i + 1}</td>
+                                    <td className="px-3 py-2.5"><span className="text-base font-extrabold font-serif text-amber-400">{row.score}</span></td>
+                                    <td className="px-3 py-2.5 text-[11px] font-semibold text-gray-400">Xavia Estate</td>
+                                    <td className="px-3 py-2.5"><div className="text-gray-300 font-semibold text-xs">{row.p}</div><div className="text-gray-600 text-[11px]">{row.l}</div></td>
+                                    <td className="px-3 py-2.5"><span className="inline-block px-1.5 py-0.5 rounded text-[9px] font-semibold bg-blue-500/10 text-blue-400">{row.region}</span></td>
+                                    <td className="px-3 py-2.5"><span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-500/10 text-blue-400">{row.type}</span></td>
+                                    <td className="px-3 py-2.5 font-bold text-[13px] text-gray-300">{row.price}</td>
+                                    <td className="px-3 py-2.5 text-xs text-gray-500">—</td>
+                                    <td className="px-3 py-2.5 text-xs text-gray-500">—</td>
+                                    <td className="px-3 py-2.5"><span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/15 text-emerald-400">{row.dc}</span></td>
+                                    <td className="px-3 py-2.5 text-xs text-gray-500">—</td>
+                                    <td className="px-3 py-2.5 text-xs text-gray-500">—</td>
+                                    <td className="px-3 py-2.5 text-xs text-gray-500">—</td>
+                                    <td className="px-3 py-2.5 text-xs text-gray-500">—</td>
+                                    <td className="px-3 py-2.5 text-xs text-gray-500">—</td>
+                                    <td className="px-3 py-2.5 text-xs text-gray-500">—</td>
+                                    <td className="px-3 py-2.5 text-xs text-gray-500">—</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
                           </div>
-                          <div className="text-gray-400 text-xs mb-3">Subscribe to unlock all {filtered.length} properties, full calculators, and rental yield data</div>
-                          <button onClick={() => user ? setShowPaywall(true) : setShowAuthModal(true)}
-                            className="bg-amber-500 hover:bg-amber-400 text-black font-bold px-6 py-2.5 rounded-lg text-sm transition-colors">
-                            Subscribe — €79/month
-                          </button>
+                          {/* Upgrade overlay */}
+                          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#070709]/80 rounded-xl z-10">
+                            <div className="text-center px-6 py-8">
+                              <div className="text-2xl mb-2">🔒</div>
+                              <div className="text-white font-bold text-lg mb-1">1,040+ deals ranked</div>
+                              <div className="text-gray-400 text-sm mb-4">Upgrade to PRO to unlock all deal rankings</div>
+                              <button onClick={() => user ? setShowPaywall(true) : setShowAuthModal(true)}
+                                className="px-6 py-2.5 rounded-xl font-bold text-black text-sm"
+                                style={{ background: 'linear-gradient(135deg, #c9a84c, #e8c96a)' }}>
+                                {user ? 'Upgrade to PRO →' : 'Sign In / Get PRO →'}
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -1120,10 +1174,14 @@ export default function Explorer() {
           )}
 
           {tab === 'yield' && <YieldTab properties={filtered} isPaid={isPaid} onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} onCurrencyChange={setYieldCurrency} />}
-          {tab === 'portfolio' && <PortfolioTab properties={properties} portfolio={portfolio} onToggle={togglePortfolio} />}
-          {tab === 'map' && <MapView properties={filtered} onPreview={(ref) => { const idx = filtered.findIndex(p => (p.ref || p.p) === ref); if (idx !== -1) { setPreview(idx); setPreviewLuxScore(null); } }} isPaid={isPaid} />}
-          {tab === 'market' && <MarketTab properties={filtered} />}
-          {tab === 'luxury' && <LuxuryTab properties={properties} isPaid={isPaid} onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} onPreview={(ref, lsc) => { const idx = filtered.findIndex(p => p.ref === ref); if (idx !== -1) { setPreview(idx); setPreviewLuxScore(lsc ?? null); } }} />}
+          {tab === 'portfolio' && !isPaid && <ProGate feature="Portfolio Simulator" onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} />}
+          {tab === 'portfolio' && isPaid && <PortfolioTab properties={properties} portfolio={portfolio} onToggle={togglePortfolio} />}
+          {tab === 'map' && !isPaid && <ProGate feature="Interactive Map" onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} />}
+          {tab === 'map' && isPaid && <MapView properties={filtered} onPreview={(ref) => { const idx = filtered.findIndex(p => (p.ref || p.p) === ref); if (idx !== -1) { setPreview(idx); setPreviewLuxScore(null); } }} isPaid={isPaid} />}
+          {tab === 'market' && !isPaid && <ProGate feature="Market Overview" onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} />}
+          {tab === 'market' && isPaid && <MarketTab properties={filtered} />}
+          {tab === 'luxury' && !isPaid && <ProGate feature="Luxury Portfolio €1M+" onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} />}
+          {tab === 'luxury' && isPaid && <LuxuryTab properties={properties} isPaid={isPaid} onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} onPreview={(ref, lsc) => { const idx = filtered.findIndex(p => p.ref === ref); if (idx !== -1) { setPreview(idx); setPreviewLuxScore(lsc ?? null); } }} />}
           {tab === 'about' && <AboutTab />}
           {tab === 'legal' && <LegalTab />}
           {tab === 'contact' && <ContactTab />}
