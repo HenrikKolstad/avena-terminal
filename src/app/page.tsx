@@ -380,7 +380,7 @@ export default function Explorer() {
   return (
     <div className="min-h-screen bg-[#070709]">
       {/* HEADER — fixed top, offset left by sidebar on desktop */}
-      <div ref={headerRef} className={`fixed top-0 right-0 z-40 left-0 ${sidebarCollapsed ? 'md:left-[60px]' : 'md:left-[240px]'}`}>
+      <div ref={headerRef} className="fixed top-0 right-0 z-40" style={{ left: sidebarCollapsed ? 60 : 240 }}>
       {/* TOP BAR */}
       <header className="relative border-b border-[#1a1a24] px-4 md:px-8 py-3 md:py-6 shadow-2xl" style={{ background: 'linear-gradient(180deg, #0f0e18 0%, #0a0a12 100%)' }}>
         <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(90deg, transparent 0%, #c9a84c 30%, #e8c96a 50%, #c9a84c 70%, transparent 100%)' }} />
@@ -843,8 +843,8 @@ export default function Explorer() {
 
       {/* CONTENT — padded top (header height) + left (sidebar width) */}
       <div
-        className={`overflow-x-hidden min-w-0 transition-all duration-200 ${sidebarCollapsed ? 'md:pl-[60px]' : 'md:pl-[240px]'} ${preview !== null ? 'md:mr-[480px]' : ''}`}
-        style={{ paddingTop: headerH }}
+        className={`overflow-x-hidden min-w-0 transition-all duration-200 ${preview !== null ? 'md:mr-[480px]' : ''}`}
+        style={{ paddingTop: headerH, paddingLeft: sidebarCollapsed ? 60 : 240 }}
       >
           {(tab === 'whyavena' || (!user && tab === 'deals')) && (
             <div className="px-4 md:px-8 py-8 border-b border-[#1a1a24]">
