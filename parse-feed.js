@@ -1,5 +1,6 @@
 const fs = require('fs');
 const { XMLParser } = require('fast-xml-parser');
+require('dotenv').config({ path: '.env.production' });
 
 const FEED_URL = 'https://xml.redsp.net/files/915/89215pmi61h/ella-properties-spain-redsp_v4.xml';
 const OUTPUT = 'public/data.json';
@@ -603,14 +604,15 @@ async function main() {
   // r_south is omitted (baseline region since baseline town Torrevieja is cb-south)
   const featureNames = [
     'intercept', 'log_bm', 'beach', 'sea_view', 'golf', 'beds', 'is_villa',
-    'r_north', 'r_calida',
+    'r_north', 'r_calida', 'pool_private', 'energy_high', 'is_frontline',
     ...dummyTowns
   ];
 
   // --- Build feature row for a property ---
   // r_south omitted (baseline region = cb-south, since baseline town Torrevieja is cb-south)
   function buildRow(p) {
-    const bm = p.bm > 0 ? p.bm : 80;
+    // For villas use bm_full if available (includes underground + solarium per Secret Formula)
+    const bm = isVilType(p.t) && p.bm_full > 0 ? p.bm_full : (p.bm > 0 ? p.bm : 80);
     const log_bm = Math.log(bm);
     const beach = p.bk !== null ? Math.min(p.bk, 10) : 5; // null=unknown → 5
     const sea_view = (p.views && p.views.includes('sea')) ? 1 : 0;
@@ -619,15 +621,19 @@ async function main() {
     const is_villa = isVilType(p.t) ? 1 : 0;
     const r_north = p.r === 'cb-north' ? 1 : 0;
     const r_calida = p.r === 'costa-calida' ? 1 : 0;
+    const pool_private = p.pool === 'private' ? 1 : 0;
+    const energy_high = (p.energy === 'A' || p.energy === 'B') ? 1 : 0;
+    const is_frontline = (p.bk !== null && p.bk < 0.5) ? 1 : 0;
     const town = (p.l || '').split(',')[0].trim();
     const townDummies = dummyTowns.map(t => t === town ? 1 : 0);
-    return [1, log_bm, beach, sea_view, golf, beds, is_villa, r_north, r_calida, ...townDummies];
+    return [1, log_bm, beach, sea_view, golf, beds, is_villa, r_north, r_calida, pool_private, energy_high, is_frontline, ...townDummies];
   }
 
   // Tier-level row: core features only (no town dummies) — avoids singularity
   // when a tier has few observations per town.
   function buildRowTier(p) {
-    const bm = p.bm > 0 ? p.bm : 80;
+    // For villas use bm_full if available (includes underground + solarium per Secret Formula)
+    const bm = isVilType(p.t) && p.bm_full > 0 ? p.bm_full : (p.bm > 0 ? p.bm : 80);
     const log_bm = Math.log(bm);
     const beach = p.bk !== null ? Math.min(p.bk, 10) : 5;
     const sea_view = (p.views && p.views.includes('sea')) ? 1 : 0;
@@ -636,7 +642,10 @@ async function main() {
     const is_villa = isVilType(p.t) ? 1 : 0;
     const r_north = p.r === 'cb-north' ? 1 : 0;
     const r_calida = p.r === 'costa-calida' ? 1 : 0;
-    return [1, log_bm, beach, sea_view, golf, beds, is_villa, r_north, r_calida];
+    const pool_private = p.pool === 'private' ? 1 : 0;
+    const energy_high = (p.energy === 'A' || p.energy === 'B') ? 1 : 0;
+    const is_frontline = (p.bk !== null && p.bk < 0.5) ? 1 : 0;
+    return [1, log_bm, beach, sea_view, golf, beds, is_villa, r_north, r_calida, pool_private, energy_high, is_frontline];
   }
 
   // --- Collect training data (properties with valid pm2) ---
@@ -749,6 +758,29 @@ async function main() {
       // Apply type multiplier
       const mult = typeMultiplier[p.t] || 1.0;
       predicted *= mult;
+
+      // Premium location multipliers (Secret Formula spec)
+      // These capture non-linear premium effects on top of OLS
+      let locMult = 1.0;
+
+      // Private pool for villas
+      if (isVilType(p.t) && p.pool === 'private') locMult *= 1.05;
+
+      // Premium urbanization — known prestige developments command a premium
+      const PREMIUM_URBS = [
+        'La Finca Golf', 'Las Colinas', 'Altea Hills', 'Cumbre del Sol',
+        'Sierra Cortina', 'La Manga Club', 'Campoamor', 'Villamartin',
+        'Javea', 'Jávea', 'Moraira', 'Altea'
+      ];
+      const propStr = ((p.p || '') + ' ' + (p.l || '')).toLowerCase();
+      if (PREMIUM_URBS.some(u => propStr.includes(u.toLowerCase()))) locMult *= 1.10;
+
+      // Costa del Sol premium (higher base market)
+      if (p.r === 'costa-del-sol') locMult *= 1.08;
+
+      // Cap total location multiplier at 1.55
+      locMult = Math.min(locMult, 1.55);
+      predicted *= locMult;
 
       let mm2 = Math.round(predicted);
       if (predicted < 1500) { mm2 = 1500; clampLow++; }
