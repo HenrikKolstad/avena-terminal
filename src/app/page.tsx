@@ -747,13 +747,14 @@ export default function Explorer() {
                 {/* Drawer */}
                 <div
                   className="relative flex flex-col h-full border-r border-[#1a1a24] overflow-hidden animate-slide-in-left"
-                  style={{ background: '#0d0d14', width: 240, zIndex: 51 }}
+                  style={{ background: '#0d0d14', width: 'min(90vw, 280px)', zIndex: 51 }}
                 >
-                  {/* Close button */}
+                  {/* Close button — 44px touch target */}
                   <button
                     onClick={() => setMobileSidebarOpen(false)}
-                    className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center text-gray-500 hover:text-white z-10"
-                  >×</button>
+                    className="absolute top-2 right-2 w-11 h-11 flex items-center justify-center text-gray-400 hover:text-white active:scale-90 transition-all z-10 text-lg"
+                    aria-label="Close navigation"
+                  >✕</button>
                   <SidebarContent onClose={() => setMobileSidebarOpen(false)} />
                 </div>
               </div>
