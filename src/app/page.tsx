@@ -617,6 +617,8 @@ export default function Explorer() {
               <a href="https://www.xaviaestate.com" target="_blank" rel="noopener noreferrer" className="font-semibold hover:opacity-80 transition-opacity" style={{ color: '#F5A623' }}>Xavia Estate</a>
               <span className="text-gray-600">·</span>
               <a href="https://stripe.com" target="_blank" rel="noopener noreferrer" className="font-semibold hover:opacity-80 transition-opacity" style={{ color: '#635BFF' }}>stripe</a>
+              <span className="text-gray-600">·</span>
+              <a href="https://redsp.net" target="_blank" rel="noopener noreferrer" className="font-semibold hover:opacity-80 transition-opacity" style={{ color: '#E63946' }}>RedSP</a>
             </p>
           </div>
 
