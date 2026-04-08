@@ -98,6 +98,9 @@ export default function Explorer() {
   });
   // Email capture popup state
   const [showEmailCapture, setShowEmailCapture] = useState(false);
+  // Sidebar + mobile more-drawer state
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  const [moreDrawerOpen, setMoreDrawerOpen] = useState(false);
   const [emailInput, setEmailInput] = useState('');
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
@@ -393,6 +396,7 @@ export default function Explorer() {
             <div className="text-[9px] text-gray-400 leading-relaxed">
               <div>{t.hero_scanner}</div>
               <div className="text-gray-500 mt-0.5">Costa Del Sol properties coming soon ⏳</div>
+              <div className="text-gray-600 mt-0.5">⏳ Building ⏳</div>
             </div>
             <p className="text-[9px] text-gray-500 mt-1 flex items-center gap-1 flex-wrap">
               <span>In partnership with</span>
@@ -414,6 +418,7 @@ export default function Explorer() {
             <div className="text-[10px] text-gray-400 mt-2 leading-relaxed">
               <div>{t.hero_scanner}</div>
               <div className="text-[9px] text-gray-500 mt-0.5">Costa Del Sol properties coming soon ⏳</div>
+              <div className="text-[9px] text-gray-600 mt-0.5">⏳ Building ⏳</div>
             </div>
             <p className="text-[9px] text-gray-500 mt-1.5 flex items-center gap-1 flex-wrap">
               <span>In partnership with</span>
@@ -560,26 +565,154 @@ export default function Explorer() {
         ))}
       </div>
 
-      {/* TABS — mobile: horizontally scrollable, desktop: scrollable row */}
-      <div className="bg-[#070709] border-b border-[#1a1a24]">
-        <div className="flex gap-0 px-2 md:px-8 overflow-x-auto scrollbar-none">
-          {([[`deals`,t.tab_deals],[`yield`,t.tab_yield],[`portfolio`,t.tab_portfolio],[`luxury`,t.tab_luxury],[`map`,t.tab_map],[`market`,t.tab_market],[`about`,t.tab_scoring],[`legal`,t.tab_legal],[`contact`,t.tab_contact]] as [typeof tab, string][]).map(([key, label]) => (
-            <button key={key} onClick={() => setTab(key)}
-              className={`flex-shrink-0 whitespace-nowrap px-3 md:px-5 py-2.5 text-[10px] md:text-xs font-semibold tracking-wide border-b-2 transition-all min-h-[44px] flex items-center gap-1.5 ${tab === key ? 'text-[#c9a84c] border-[#c9a84c]' : 'text-gray-600 border-transparent hover:text-gray-400'}`}>
-              {label}
-              {key === 'yield' && yieldCurrency !== 'EUR' && (
-                <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${tab === key ? 'bg-[#c9a84c]/20 text-[#c9a84c]' : 'bg-[#2a2a30] text-gray-500'}`}>
-                  {yieldCurrency}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* SIDEBAR NAV (desktop) + BOTTOM NAV (mobile) */}
+      {(() => {
+        const navItems: [typeof tab, string, string][] = [
+          ['deals', t.tab_deals, '📊'],
+          ['yield', t.tab_yield, '💶'],
+          ['portfolio', t.tab_portfolio, '📁'],
+          ['luxury', t.tab_luxury, '💎'],
+          ['map', t.tab_map, '🗺️'],
+          ['market', t.tab_market, '📈'],
+          ['about', t.tab_scoring, 'ℹ️'],
+          ['legal', t.tab_legal, '⚖️'],
+          ['contact', t.tab_contact, '✉️'],
+        ];
+        const primaryNav = navItems.slice(0, 5);
+        const secondaryNav = navItems.slice(5);
+        return (
+          <>
+            {/* DESKTOP SIDEBAR */}
+            <div
+              className="hidden md:flex flex-col fixed left-0 top-0 h-full z-40 border-r border-[#1a1a24] overflow-hidden"
+              style={{
+                background: '#070709',
+                width: sidebarExpanded ? 220 : 56,
+                transition: 'width 0.2s ease',
+                paddingTop: '80px', // leave room for sticky header
+              }}
+              onMouseEnter={() => setSidebarExpanded(true)}
+              onMouseLeave={() => setSidebarExpanded(false)}
+            >
+              <div className="flex flex-col gap-0.5 px-1 pt-3 flex-1">
+                {navItems.map(([key, label, icon]) => {
+                  const isActive = tab === key;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => setTab(key)}
+                      title={!sidebarExpanded ? label : undefined}
+                      className="flex items-center gap-3 rounded-lg transition-all min-h-[44px] px-2 relative"
+                      style={{
+                        color: isActive ? '#c9a84c' : '#6b7280',
+                        background: isActive ? 'rgba(201,168,76,0.1)' : 'transparent',
+                        borderLeft: isActive ? '2px solid #c9a84c' : '2px solid transparent',
+                      }}
+                      onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.color = '#9ca3af'; }}
+                      onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.color = '#6b7280'; }}
+                    >
+                      <span className="text-base flex-shrink-0 w-6 text-center">{icon}</span>
+                      {sidebarExpanded && (
+                        <span className="text-[11px] font-semibold tracking-wide whitespace-nowrap overflow-hidden flex items-center gap-1.5">
+                          {label}
+                          {key === 'yield' && yieldCurrency !== 'EUR' && (
+                            <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isActive ? 'bg-[#c9a84c]/20 text-[#c9a84c]' : 'bg-[#2a2a30] text-gray-500'}`}>
+                              {yieldCurrency}
+                            </span>
+                          )}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+              {/* Bottom: auth indicator */}
+              <div className="px-1 pb-4">
+                <div className="border-t border-[#1a1a24] pt-3">
+                  <div
+                    className="flex items-center gap-3 rounded-lg min-h-[44px] px-2 cursor-pointer"
+                    onClick={() => !user ? setShowAuthModal(true) : undefined}
+                    style={{ color: user ? '#c9a84c' : '#6b7280' }}
+                  >
+                    <span className="text-base flex-shrink-0 w-6 text-center">{user ? '👤' : '🔐'}</span>
+                    {sidebarExpanded && (
+                      <span className="text-[11px] font-semibold tracking-wide whitespace-nowrap overflow-hidden">
+                        {user ? (isPaid ? 'PRO' : 'Free') : t.btn_signin}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* MOBILE BOTTOM NAV */}
+            <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-[#1a1a24] flex items-center justify-around"
+              style={{ background: '#070709', height: 56 }}>
+              {primaryNav.map(([key, label, icon]) => {
+                const isActive = tab === key;
+                return (
+                  <button key={key} onClick={() => setTab(key)}
+                    className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full"
+                    style={{ color: isActive ? '#c9a84c' : '#4b5563' }}>
+                    <span className="text-lg leading-none">{icon}</span>
+                    <span className="text-[9px] font-semibold tracking-wide">{label}</span>
+                  </button>
+                );
+              })}
+              {/* More button */}
+              <button
+                onClick={() => setMoreDrawerOpen(true)}
+                className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full"
+                style={{ color: secondaryNav.some(([k]) => k === tab) ? '#c9a84c' : '#4b5563' }}>
+                <span className="text-lg leading-none">⋯</span>
+                <span className="text-[9px] font-semibold tracking-wide">More</span>
+              </button>
+            </div>
+
+            {/* MOBILE MORE DRAWER */}
+            {moreDrawerOpen && (
+              <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end" onClick={() => setMoreDrawerOpen(false)}>
+                <div className="absolute inset-0 bg-black/60" />
+                <div
+                  className="relative rounded-t-2xl border-t border-[#1a1a24] px-4 pb-8 pt-4"
+                  style={{ background: '#0a0a12' }}
+                  onClick={e => e.stopPropagation()}
+                >
+                  <div className="w-10 h-1 rounded-full mx-auto mb-4" style={{ background: '#2a2a30' }} />
+                  <div className="flex flex-col gap-1">
+                    {secondaryNav.map(([key, label, icon]) => {
+                      const isActive = tab === key;
+                      return (
+                        <button
+                          key={key}
+                          onClick={() => { setTab(key); setMoreDrawerOpen(false); }}
+                          className="flex items-center gap-4 rounded-xl px-4 py-3.5 text-left transition-all"
+                          style={{
+                            color: isActive ? '#c9a84c' : '#9ca3af',
+                            background: isActive ? 'rgba(201,168,76,0.1)' : 'transparent',
+                          }}
+                        >
+                          <span className="text-xl">{icon}</span>
+                          <span className="text-sm font-semibold">{label}</span>
+                          {key === 'yield' && yieldCurrency !== 'EUR' && (
+                            <span className={`text-[9px] px-1 py-0.5 rounded font-bold ml-auto ${isActive ? 'bg-[#c9a84c]/20 text-[#c9a84c]' : 'bg-[#2a2a30] text-gray-500'}`}>
+                              {yieldCurrency}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        );
+      })()}
 
       {/* CONTENT */}
       <div className="flex">
-        <div className={`flex-1 transition-all ${preview !== null ? 'md:mr-[480px]' : ''}`}>
+        <div className={`flex-1 md:ml-14 pb-16 md:pb-0 transition-all ${preview !== null ? 'md:mr-[480px]' : ''}`}>
           {!user && tab === 'deals' && (
             <div className="px-4 md:px-8 py-8 border-b border-[#1a1a24]">
               {/* Headline */}
