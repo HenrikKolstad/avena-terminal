@@ -378,9 +378,9 @@ export default function Explorer() {
   }
 
   return (
-    <div className="min-h-screen bg-[#070709] overflow-x-hidden">
-      {/* STICKY TOP ZONE — header + filter bar + quick chips, measured for sidebar offset */}
-      <div ref={headerRef} className="sticky top-0 z-50">
+    <div className="min-h-screen bg-[#070709]">
+      {/* HEADER — fixed top, spans full width, z-index below sidebar (z-40) */}
+      <div ref={headerRef} className="fixed top-0 left-0 right-0 z-40">
       {/* TOP BAR */}
       <header className="relative border-b border-[#1a1a24] px-4 md:px-8 py-3 md:py-6 shadow-2xl" style={{ background: 'linear-gradient(180deg, #0f0e18 0%, #0a0a12 100%)' }}>
         <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(90deg, transparent 0%, #c9a84c 30%, #e8c96a 50%, #c9a84c 70%, transparent 100%)' }} />
@@ -747,15 +747,14 @@ export default function Explorer() {
 
         return (
           <>
-            {/* ── DESKTOP SIDEBAR ── */}
+            {/* ── DESKTOP SIDEBAR — fixed full height, top-0, z-50 (above header) ── */}
             <div
-              className="hidden md:flex flex-col fixed left-0 z-40 border-r border-[#1a1a24] overflow-y-auto"
+              className="hidden md:flex flex-col fixed left-0 top-0 z-50 border-r border-[#1a1a24] overflow-y-auto"
               style={{
                 background: '#0d0d14',
                 width: sidebarWidth,
                 transition: 'width 0.2s ease',
-                top: headerH,
-                height: `calc(100vh - ${headerH}px)`,
+                height: '100vh',
               }}
             >
               {/* Collapse toggle button */}
@@ -842,12 +841,14 @@ export default function Explorer() {
         function go(t: TabKey) { setTab(t); }
       })()}
 
-      {/* CONTENT — main area, offset by fixed sidebar */}
-      <div className="flex overflow-x-hidden">
-        <div
-          className={`flex-1 overflow-x-hidden min-w-0 transition-all duration-200 ${preview !== null ? 'md:mr-[480px]' : ''}`}
-          style={{ marginLeft: typeof window !== 'undefined' && window.innerWidth >= 768 ? (sidebarCollapsed ? 60 : 240) : 0 }}
-        >
+      {/* CONTENT — padded top (header height) + left (sidebar width) */}
+      <div
+        className={`overflow-x-hidden min-w-0 transition-all duration-200 ${preview !== null ? 'md:mr-[480px]' : ''}`}
+        style={{
+          paddingTop: headerH,
+          paddingLeft: typeof window !== 'undefined' && window.innerWidth >= 768 ? (sidebarCollapsed ? 60 : 240) : 0,
+        }}
+      >
           {(tab === 'whyavena' || (!user && tab === 'deals')) && (
             <div className="px-4 md:px-8 py-8 border-b border-[#1a1a24]">
               {/* Headline */}
@@ -1574,7 +1575,6 @@ export default function Explorer() {
           </div>
           </>
         )}
-      </div>
 
       {/* WELCOME PRO TOAST */}
       {showWelcomePro && (
