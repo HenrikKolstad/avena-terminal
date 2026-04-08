@@ -407,8 +407,10 @@ function parseProperty(prop) {
     }
   }
 
+  const isAvenaSource = region === 'costa-del-sol';
+
   return {
-    d: 'Via Xavia Estate',
+    d: isAvenaSource ? 'Via Avena Estate' : 'Via Xavia Estate',
     p: title || `${type} in ${town}`,
     l: province ? `${town}, ${province}` : town,
     r: region,
@@ -429,7 +431,7 @@ function parseProperty(prop) {
     s: getStatus(prop),
     dy: 0,
     f: desc.substring(0, 400),
-    u: getXaviaUrl(town),
+    u: isAvenaSource ? 'mailto:henrik@xaviaestate.com' : getXaviaUrl(town),
     ref: prop.ref || prop.id,
     dev_ref: prop.development_ref || null,
     imgs: images,
