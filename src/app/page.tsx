@@ -53,12 +53,20 @@ function profit5yr(pf: number, region: string): number {
   return Math.round(pf * Math.pow(1 + growthRate5yr(region), 5) - pf);
 }
 
+const PRO_GATE_DESCRIPTIONS: Record<string, string> = {
+  'Portfolio Simulator': 'Build a multi-property portfolio, run combined mortgage calculations, and track blended yield across all your shortlisted deals.',
+  'Interactive Map': 'See every property plotted on a live map with beach distance, region overlays, and one-click detail previews.',
+  'Market Overview': 'Access region-by-region price trends, average €/m² benchmarks, and supply breakdowns to time your purchase.',
+  'Luxury Portfolio €1M+': 'Browse and compare premium properties above €1M ranked by value-within-segment — not by list price alone.',
+};
+
 function ProGate({ onUpgrade, feature }: { onUpgrade: () => void; feature: string }) {
+  const description = PRO_GATE_DESCRIPTIONS[feature] || 'Unlock full access to all analysis tools and data on Avena Terminal PRO.';
   return (
     <div className="flex flex-col items-center justify-center min-h-[40vh] text-center px-6 py-16">
       <div className="text-4xl mb-4">🔒</div>
-      <h2 className="text-xl font-bold text-white mb-2">{feature}</h2>
-      <p className="text-gray-400 text-sm mb-6 max-w-sm">This feature is available on Avena Terminal PRO. Upgrade to unlock full access.</p>
+      <h2 className="text-xl font-bold text-white mb-2">Unlock {feature}</h2>
+      <p className="text-gray-400 text-sm mb-6 max-w-sm">{description}</p>
       <button onClick={onUpgrade}
         className="px-8 py-3 rounded-xl font-bold text-black text-sm shadow-lg"
         style={{ background: 'linear-gradient(135deg, #c9a84c, #e8c96a)' }}>
@@ -466,8 +474,6 @@ export default function Explorer() {
             <p className="text-[9px] text-gray-500 mt-1 flex items-center gap-1 flex-wrap">
               <span>In partnership with</span>
               <a href="https://www.xaviaestate.com" target="_blank" rel="noopener noreferrer" className="font-semibold" style={{ color: '#F5A623' }}>Xavia Estate</a>
-              <span className="text-gray-400">&</span>
-              <a href="https://stripe.com" target="_blank" rel="noopener noreferrer" className="font-semibold" style={{ color: '#635BFF' }}>Stripe</a>
               <a href="https://instagram.com/avenaestate" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-[#E1306C] transition-colors ml-0.5" title="@avenaestate">
                 <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
@@ -496,8 +502,6 @@ export default function Explorer() {
             <p className="text-[9px] text-gray-500 mt-1.5 flex items-center gap-1 flex-wrap">
               <span>In partnership with</span>
               <a href="https://www.xaviaestate.com" target="_blank" rel="noopener noreferrer" className="font-semibold hover:opacity-80 transition-opacity" style={{ color: '#F5A623' }}>Xavia Estate</a>
-              <span className="text-gray-400">&</span>
-              <a href="https://stripe.com" target="_blank" rel="noopener noreferrer" className="font-semibold hover:opacity-80 transition-opacity" style={{ color: '#635BFF' }}>Stripe</a>
             </p>
           </div>
 
@@ -876,7 +880,7 @@ export default function Explorer() {
                   Every question answered before you invest
                 </h2>
                 <p className="text-gray-500 text-sm md:text-base max-w-2xl mx-auto">
-                  Avena Terminal analyses 1,040+ new builds using institutional-grade scoring.
+                  Avena Terminal analyses 1,800+ new builds using institutional-grade scoring.
                   Here&apos;s what you get access to.
                 </p>
               </div>
@@ -944,7 +948,7 @@ export default function Explorer() {
               {/* Stats bar */}
               <div className="flex flex-wrap justify-center gap-6 md:gap-12 py-6 border-y border-[#1a1a24] mb-8">
                 {[
-                  { label: 'New Builds Scored', value: '1,040+' },
+                  { label: 'New Builds Scored', value: '1,800+' },
                   { label: 'Data Sources', value: '6+' },
                   { label: 'Scoring Factors', value: '25+' },
                   { label: 'Avg Time Saved', value: '40hrs' },
@@ -1059,8 +1063,9 @@ export default function Explorer() {
               <table className="w-full border-collapse min-w-[1100px]">
                 <thead>
                   <tr>
-                    {([['#',''],['score',t.col_score],['developer',t.col_developer],['project',t.col_project],['',t.col_region],['',t.col_type],['price',t.col_price],['priceM2',t.col_pm2],['marketM2',t.col_market],['discount',t.col_discount],['built',t.col_built],['plot',t.col_plot],['beds',t.col_beds],['beach',t.lbl_beach],['','Status'],['','Completion'],['','+']] as [SortKey|'', string][]).map(([key, label], i) => (
+                    {([['#','',''],['score',t.col_score,''],['developer',t.col_developer,''],['project',t.col_project,''],['',t.col_region,''],['',t.col_type,''],['price',t.col_price,''],['priceM2',t.col_pm2,'Price per m² asked'],['marketM2',t.col_market,'Market benchmark €/m²'],['discount',t.col_discount,'vs market benchmark'],['built',t.col_built,''],['plot',t.col_plot,''],['beds',t.col_beds,''],['beach',t.lbl_beach,''],['','Status',''],['','Completion',''],['','+','']] as [SortKey|'', string, string][]).map(([key, label, tip], i) => (
                       <th key={i} onClick={() => key && handleSort(key as SortKey)}
+                        title={tip || undefined}
                         style={{ position: 'sticky', top: headerH, background: '#0a0a10' }}
                         className={`px-3 py-2 text-[10px] uppercase tracking-widest text-left border-b border-t border-[#1a1a24] cursor-pointer hover:text-[#c9a84c] whitespace-nowrap z-10 select-none ${sortKey === key ? 'text-[#c9a84c] font-bold' : 'text-gray-400'}`}>
                         {label}{sortKey === key ? (sortDir === 'asc' ? ' ▲' : ' ▼') : ''}
@@ -1186,7 +1191,7 @@ export default function Explorer() {
                           <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#070709]/80 rounded-xl z-10">
                             <div className="text-center px-6 py-8">
                               <div className="text-2xl mb-2">🔒</div>
-                              <div className="text-white font-bold text-lg mb-1">1,040+ deals ranked</div>
+                              <div className="text-white font-bold text-lg mb-1">1,800+ deals ranked</div>
                               <div className="text-gray-400 text-sm mb-4">Upgrade to PRO to unlock all deal rankings</div>
                               <button onClick={() => user ? setShowPaywall(true) : setShowAuthModal(true)}
                                 className="px-6 py-2.5 rounded-xl font-bold text-black text-sm"
@@ -1660,15 +1665,15 @@ export default function Explorer() {
             <button onClick={() => setShowPaywall(false)} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-gray-500 hover:text-white text-xl">×</button>
             <div className="text-center mb-4 md:mb-6">
               <div className="text-2xl md:text-3xl mb-2">🔒</div>
-              <div className="text-gray-400 text-xs uppercase tracking-widest mb-1">You&apos;re viewing 5 of 1,040+ scored properties</div>
-              <div className="font-serif text-xl md:text-2xl text-[#c9a84c] mb-1">Unlock 1,040+ Investment Deals</div>
+              <div className="text-gray-400 text-xs uppercase tracking-widest mb-1">You&apos;re viewing 5 of 1,800+ scored properties</div>
+              <div className="font-serif text-xl md:text-2xl text-[#c9a84c] mb-1">Unlock 1,800+ Investment Deals</div>
               <div className="font-serif text-lg md:text-xl text-white mb-0.5">Avena Terminal PRO</div>
               <div className="text-3xl md:text-4xl font-bold text-white mb-1">€79<span className="text-base md:text-lg text-gray-400 font-normal">/month</span></div>
               <p className="text-gray-500 text-xs">Just €2.60/day · Cancel anytime</p>
             </div>
             <ul className="space-y-2 mb-6">
               {[
-                ['✓', 'All 1,040+ properties unlocked'],
+                ['✓', 'All 1,800+ properties unlocked'],
                 ['✓', 'Save up to 30% vs market price'],
                 ['✓', 'Full rental yield analysis for every property'],
                 ['✓', 'Cash-on-cash return & mortgage calculator'],
@@ -1764,7 +1769,7 @@ export default function Explorer() {
                 {/* Stats proof */}
                 <div className="flex justify-center gap-6 mb-6">
                   <div className="text-center">
-                    <div className="text-lg font-bold text-amber-400 font-serif">1,040+</div>
+                    <div className="text-lg font-bold text-amber-400 font-serif">1,800+</div>
                     <div className="text-[9px] text-gray-600 uppercase tracking-wider">Properties</div>
                   </div>
                   <div className="text-center border-l border-[#1a1a24] pl-6">
@@ -1889,21 +1894,21 @@ function YieldCard({ d, expanded, onToggle, fmtC, sym }: { d: Property; expanded
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3 pt-3 border-t border-[#1e1e28]">
           <div>
-            <div className="text-[9px] text-gray-500 uppercase tracking-wide mb-0.5">Avg Night</div>
+            <div className="text-[9px] text-gray-500 uppercase tracking-wide mb-0.5">Nightly Rate</div>
             <div className="text-sm font-bold">{fmt(d._yield.rate)}</div>
           </div>
           <div>
-            <div className="text-[9px] text-gray-500 uppercase tracking-wide mb-0.5">Annual Gross</div>
+            <div className="text-[9px] text-gray-500 uppercase tracking-wide mb-0.5">Annual Income</div>
             <div className="text-sm font-bold">{fmt(d._yield.annual)}</div>
           </div>
           <div>
-            <div className="text-[9px] text-gray-500 uppercase tracking-wide mb-0.5">Annual Profit</div>
+            <div className="text-[9px] text-gray-500 uppercase tracking-wide mb-0.5">Cashflow/yr</div>
             <div className={`text-sm font-bold ${annualCashflow >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>{fmt(annualCashflow)}</div>
             <div className={`text-[10px] font-semibold mt-0.5 ${annualCashflow >= 0 ? 'text-emerald-500/70' : 'text-red-500/70'}`}>{fmt(Math.round(annualCashflow / 12))}/mo</div>
             <div className="text-[8px] text-gray-600">after costs &amp; mortgage</div>
           </div>
           <div>
-            <div className="text-[9px] text-gray-500 uppercase tracking-wide mb-0.5">Avg Price</div>
+            <div className="text-[9px] text-gray-500 uppercase tracking-wide mb-0.5">List Price</div>
             <div className="text-sm font-bold">{fmt(d.pf)}</div>
           </div>
         </div>
@@ -2269,10 +2274,14 @@ function MarketTab({ properties }: { properties: Property[] }) {
               <div className="h-5 bg-[#1e1e28] rounded overflow-hidden">
                 <div className="h-full bg-amber-500/50 rounded transition-all" style={{ width: `${maxAvgPrice ? (r.avgPrice / maxAvgPrice) * 100 : 0}%` }} />
               </div>
-              <div className="flex justify-between text-[10px] text-gray-600 mt-0.5">
-                <span>Min {formatPrice(r.minPrice)}</span>
-                <span>Max {formatPrice(r.maxPrice)}</span>
-              </div>
+              {r.count > 0 ? (
+                <div className="flex justify-between text-[10px] text-gray-600 mt-0.5">
+                  <span>Min {formatPrice(r.minPrice)}</span>
+                  <span>Max {formatPrice(r.maxPrice)}</span>
+                </div>
+              ) : (
+                <div className="text-[10px] text-gray-700 mt-0.5 italic">No listings yet</div>
+              )}
             </div>
           ))}
         </div>
@@ -2329,6 +2338,28 @@ function MarketTab({ properties }: { properties: Property[] }) {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* 5-Year Growth Forecast by Region */}
+      <div className="bg-[#111118] border border-[#2a2a30] rounded-lg p-5">
+        <h3 className="text-[11px] uppercase tracking-widest text-gray-500 mb-4">5-Year Growth Forecast by Region</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {regions.map(r => {
+            const rate = growthRate5yr(r);
+            const pct = (rate * 100).toFixed(1);
+            const maxRate = 0.10;
+            return (
+              <div key={r} className="flex items-center gap-3">
+                <div className="w-28 flex-shrink-0 text-xs text-gray-300">{regionLabel(r)}</div>
+                <div className="flex-1 h-4 bg-[#1e1e28] rounded overflow-hidden">
+                  <div className="h-full bg-amber-400/50 rounded transition-all" style={{ width: `${(rate / maxRate) * 100}%` }} />
+                </div>
+                <div className="w-16 text-right text-xs font-semibold text-amber-400">{pct}% / yr</div>
+              </div>
+            );
+          })}
+        </div>
+        <div className="text-[9px] text-gray-600 mt-3">Annualised avg capital appreciation forecast. 5-yr cumulative shown in property detail view.</div>
       </div>
 
       {/* Price distribution */}
@@ -2557,7 +2588,7 @@ function PortfolioTab({ properties, portfolio, onToggle }: {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
           { label: 'Total Investment', value: formatPrice(totalInvestment) },
-          { label: 'Annual Income', value: formatPrice(totalAnnualIncome) },
+          { label: 'Gross Rental Income', value: formatPrice(totalAnnualIncome) },
           { label: 'Blended Yield', value: `${blendedYield}%` },
           { label: 'Discount Saved', value: totalDiscountSaved > 0 ? formatPrice(totalDiscountSaved) : 'N/A' },
         ].map(s => (
@@ -2733,6 +2764,7 @@ function LuxuryTab({ properties, isPaid, onUpgrade, onPreview }: {
               <option value="cb-north">CB North</option>
               <option value="cb-south">CB South</option>
               <option value="costa-calida">Costa Cálida</option>
+              <option value="costa-del-sol">Costa del Sol</option>
             </select>
           </div>
           <div className="flex flex-col gap-1 flex-1 min-w-[120px]">
@@ -2850,6 +2882,7 @@ function LuxuryTab({ properties, isPaid, onUpgrade, onPreview }: {
                   {p.ba > 0 && <span className="text-[10px] bg-[#18181f] border border-[#2a2a30] px-2 py-1 rounded-lg text-gray-400">Baths: <span className="text-white font-semibold">{p.ba}</span></span>}
                   {p.parking && p.parking > 0 ? <span className="text-[10px] bg-[#18181f] border border-[#2a2a30] px-2 py-1 rounded-lg text-gray-400">Parking: <span className="text-white font-semibold">{p.parking}</span></span> : null}
                   {p.energy && <span className="text-[10px] bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded-lg text-amber-500">Energy {p.energy}</span>}
+                  {(() => { const de = cappedDiscountEuros(p); if (de > 0) return <span className="text-[10px] bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-lg text-emerald-400">~€{Math.round(de/1000)}k below market</span>; if (de < 0) return <span className="text-[10px] bg-red-500/10 border border-red-500/20 px-2 py-1 rounded-lg text-red-400">~€{Math.round(Math.abs(de)/1000)}k above market</span>; return null; })()}
                 </div>
 
                 {/* Luxury score bar */}
