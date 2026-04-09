@@ -144,6 +144,16 @@ export default function Explorer() {
   const [alertedRefs, setAlertedRefs] = useState<Set<string>>(new Set());
   const [alertLoading, setAlertLoading] = useState(false);
 
+  // Exit intent popup state
+  const [showExitIntent, setShowExitIntent] = useState(false);
+  const [exitEmail, setExitEmail] = useState('');
+  const [exitSubmitted, setExitSubmitted] = useState(false);
+  const [exitLoading, setExitLoading] = useState(false);
+
+  // Pro upgrade prompt — view count tracking
+  const [viewCount, setViewCount] = useState(0);
+  const [proPromptDismissed, setProPromptDismissed] = useState(false);
+
   // Measure header height after paint via ResizeObserver
   // Mobile header is ~480px (stats + tagline + chips + 2 filter rows), desktop ~120px
   const isMobileInit = typeof window !== 'undefined' && window.innerWidth < 768;
@@ -230,6 +240,20 @@ export default function Explorer() {
     const timer = setTimeout(() => setShowEmailCapture(true), 45000);
     return () => clearTimeout(timer);
   }, [user]);
+
+  // Exit intent: detect mouse leaving viewport (toward browser close/back)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handler = (e: MouseEvent) => {
+      if (e.clientY > 0) return; // only trigger when mouse moves above viewport
+      if (sessionStorage.getItem('avena-exit-shown')) return;
+      setShowExitIntent(true);
+      sessionStorage.setItem('avena-exit-shown', '1');
+      document.documentElement.removeEventListener('mouseleave', handler);
+    };
+    document.documentElement.addEventListener('mouseleave', handler);
+    return () => document.documentElement.removeEventListener('mouseleave', handler);
+  }, []);
 
   useEffect(() => {
     if (!user) { setAlertedRefs(new Set()); return; }
@@ -405,13 +429,14 @@ export default function Explorer() {
 
   const previewProp = preview !== null ? filtered[preview] : null;
 
-  // Reset image index and AI memo when preview changes
+  // Reset image index and AI memo when preview changes + track view count
   useEffect(() => {
     setImgIdx(0);
     setAiMemo(null);
     setAiMemoError(null);
     setNote('');
     setNoteSaved(false);
+    if (preview !== null) setViewCount(c => c + 1);
   }, [preview]);
 
   // Load note for current preview property from Supabase
@@ -578,6 +603,8 @@ export default function Explorer() {
               <div className="text-[7px] uppercase tracking-widest text-gray-600">New This Week</div>
             </div>
           </div>
+          {/* Social proof */}
+          <p className="text-[9px] text-gray-400 text-center">Join 430+ investors already tracking deals</p>
           {/* Row 2: tagline + partnership */}
           <div className="border-t border-[#1c2333] pt-2">
             <div className="text-[9px] text-gray-400 leading-relaxed">
@@ -673,6 +700,9 @@ export default function Explorer() {
                 <div className={`font-bold font-serif ${sidebarCollapsed ? 'text-3xl' : 'text-base'}`} style={{ color: '#ffffff' }}>{stats.newThisWeek}</div>
               </div>
               <div className="text-[9px] uppercase tracking-widest text-gray-500">New/Week</div>
+            </div>
+            <div className="text-center border-l border-[#1c2333] pl-4">
+              <div className="text-[10px] text-gray-400 leading-tight">Join 430+ investors<br />already tracking deals</div>
             </div>
             {sidebarCollapsed && (
               <a href="https://instagram.com/avenaestate" target="_blank" rel="noopener noreferrer"
@@ -1476,6 +1506,14 @@ export default function Explorer() {
               </div>
             )}
             <div className="p-3 md:p-6">
+              {/* Pro upgrade prompt after 5 views */}
+              {viewCount >= 5 && !isPaid && !proPromptDismissed && (
+                <div className="flex items-center justify-between gap-2 mb-3 px-3 py-2 rounded-lg border border-emerald-500/30 bg-emerald-500/5">
+                  <p className="text-[11px] text-gray-300 flex-1">You&apos;ve viewed {viewCount} properties. Pro unlocks all 1,867 + yield analysis + map.</p>
+                  <button onClick={() => setShowPaywall(true)} className="text-[11px] font-bold px-3 py-1 rounded-md flex-shrink-0 text-black" style={{ background: '#10B981' }}>Upgrade for &euro;79/month</button>
+                  <button onClick={() => setProPromptDismissed(true)} className="text-gray-500 hover:text-gray-300 flex-shrink-0 text-sm">&times;</button>
+                </div>
+              )}
               <h2 className="font-serif text-base md:text-xl text-emerald-300 mb-0.5 pr-8">{previewProp.p}</h2>
               <p className="text-gray-500 text-xs md:text-sm mb-3">{previewProp.l}</p>
 
@@ -2070,6 +2108,59 @@ export default function Explorer() {
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* EXIT INTENT POPUP */}
+      {showExitIntent && (
+        <div className="fixed inset-0 z-[700] flex items-center justify-center bg-black/70 backdrop-blur-sm" onClick={() => setShowExitIntent(false)}>
+          <div className="relative w-full max-w-md bg-[#0e0d18] border border-emerald-500/30 rounded-2xl p-6 md:p-8 shadow-2xl mx-4" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setShowExitIntent(false)} className="absolute top-4 right-4 text-gray-600 hover:text-gray-400 text-xl w-8 h-8 flex items-center justify-center">&times;</button>
+            {!exitSubmitted ? (
+              <>
+                <div className="text-center mb-5">
+                  <h2 className="text-xl font-bold text-white font-serif mb-2">Before you go</h2>
+                  <p className="text-gray-400 text-sm">Get the top 10 scored new builds in Spain delivered to your inbox. Free.</p>
+                </div>
+                <div className="flex gap-2">
+                  <input type="email" value={exitEmail} onChange={e => setExitEmail(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && exitEmail.includes('@') && (async () => {
+                      setExitLoading(true);
+                      try { await fetch('/api/email-capture', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: exitEmail, source: 'exit-intent' }) }); } catch {}
+                      setExitSubmitted(true); setExitLoading(false);
+                    })()}
+                    placeholder="your@email.com"
+                    className="flex-1 bg-[#0d1117] border border-[#1c2333] rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-emerald-500/50 placeholder-gray-700" />
+                  <button onClick={async () => {
+                    if (!exitEmail.includes('@')) return;
+                    setExitLoading(true);
+                    try { await fetch('/api/email-capture', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: exitEmail, source: 'exit-intent' }) }); } catch {}
+                    setExitSubmitted(true); setExitLoading(false);
+                  }} disabled={exitLoading || !exitEmail.includes('@')}
+                    className="px-5 py-3 rounded-lg font-bold text-sm text-black disabled:opacity-50 transition-all flex-shrink-0" style={{ background: '#10B981' }}>
+                    {exitLoading ? '...' : 'Send me the list'}
+                  </button>
+                </div>
+                <p className="text-center text-[10px] text-gray-700 mt-3">No spam. Unsubscribe anytime.</p>
+              </>
+            ) : (
+              <div className="text-center py-4">
+                <div className="mb-3"><Check size={36} className="text-emerald-400 mx-auto" /></div>
+                <h2 className="text-xl font-bold text-white font-serif mb-2">You&apos;re in.</h2>
+                <p className="text-gray-400 text-sm">Check your inbox for the top 10 list.</p>
+                <button onClick={() => setShowExitIntent(false)} className="mt-4 text-emerald-400 text-sm hover:underline">Back to terminal &rarr;</button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* STICKY BOTTOM BAR — mobile only */}
+      {tab !== 'deals' && preview === null && (
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-[200] border-t px-4 py-2.5" style={{ background: '#0d1117', borderColor: '#1c2333' }}>
+          <button onClick={() => { setTab('deals'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-full text-center text-[12px] font-semibold" style={{ color: '#10B981' }}>
+            1,867 new builds ranked. See the top 10 free &rarr;
+          </button>
         </div>
       )}
 
