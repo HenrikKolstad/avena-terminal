@@ -134,11 +134,18 @@ export default function CoreOrb({ size, fillPct }: { size: number; fillPct: numb
       ctx!.fillRect(0, 0, size, size);
 
       // === LIGHTNING ===
-      const spawnInterval = 2000 + Math.random() * 2000;
+      const spawnInterval = 1200 + Math.random() * 1500;
       if (now - lastSpawnRef.current > spawnInterval) {
-        const count = 1 + Math.floor(Math.random() * 2);
+        const count = 2 + Math.floor(Math.random() * 2); // 2-3 bolts
+        const baseAngle = Math.random() * Math.PI * 2;
         for (let i = 0; i < count; i++) {
-          boltsRef.current.push({ segments: makeBolt(cx, cy, r), birth: now, life: 280 + Math.random() * 220 });
+          // Spread bolts ~120 degrees apart from center
+          const angle = baseAngle + (i * Math.PI * 2) / count + (Math.random() - 0.5) * 0.5;
+          const sx = cx + Math.cos(angle) * r * 0.08;
+          const sy = cy + Math.sin(angle) * r * 0.08;
+          const segs: Bolt['segments'] = [];
+          branch(segs, sx, sy, angle, 8 + Math.floor(Math.random() * 7), 2 + Math.random(), cx, cy, r);
+          boltsRef.current.push({ segments: segs, birth: now, life: 300 + Math.random() * 200 });
         }
         lastSpawnRef.current = now;
       }
@@ -196,12 +203,12 @@ export default function CoreOrb({ size, fillPct }: { size: number; fillPct: numb
       ctx!.stroke();
 
       // === PERCENTAGE TEXT ===
-      ctx!.fillStyle = 'white';
       ctx!.font = `300 ${size * 0.14}px ui-sans-serif, system-ui, sans-serif`;
       ctx!.textAlign = 'center';
       ctx!.textBaseline = 'middle';
-      ctx!.shadowColor = 'rgba(168,85,247,0.6)';
-      ctx!.shadowBlur = 25;
+      ctx!.shadowColor = 'rgba(168,85,247,0.8)';
+      ctx!.shadowBlur = 30;
+      ctx!.fillStyle = '#c4b5fd';
       ctx!.fillText(`${fillPct}%`, cx, cy);
       ctx!.shadowBlur = 0;
 
