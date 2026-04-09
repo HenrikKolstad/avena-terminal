@@ -3905,6 +3905,16 @@ function CryptoTab({ properties }: { properties: Property[] }) {
         </div>
       </div>
 
+      {/* ── MANIFESTO ── */}
+      <div className="px-4 md:px-10 py-10" style={{ background: '#090d12' }}>
+        <div className="max-w-[680px] mx-auto text-center">
+          <div className="h-px w-full mb-10" style={{ background: '#1a2332' }} />
+          <p className="text-gray-300 text-base md:text-lg leading-relaxed mb-6">180 people. One wallet. One villa. Every euro visible on-chain. No fund manager. No bank. No bullshit.</p>
+          <p className="text-white text-base md:text-lg leading-relaxed">We own properties in Spain. We built the engine that finds the best ones. Now we&apos;re opening it up. 180 spots. One raise. If it works — and it will — this is Round 1 of something much bigger.</p>
+          <div className="h-px w-full mt-10" style={{ background: '#1a2332' }} />
+        </div>
+      </div>
+
       {/* ── 9 INFO BOXES ── */}
       <div className="px-4 md:px-10 pt-16 pb-12" style={{ background: '#0d1117' }}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 max-w-5xl mx-auto">
