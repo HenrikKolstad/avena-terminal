@@ -1099,6 +1099,15 @@ export default function Explorer() {
             const [whyOpen, setWhyOpen] = [showWelcomePro, setShowWelcomePro]; // reuse existing state
             return (
             <div className="px-4 md:px-8 py-6 border-b border-[#1c2333]">
+              {/* PropTech manifesto */}
+              <div className="text-center mb-6 max-w-2xl mx-auto">
+                <p className="text-sm md:text-base leading-relaxed mb-3 bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(135deg, #00b9ff, #9fe870)' }}>
+                  While the industry was building listing portals, we built a terminal.<br />
+                  While they were adding mortgage calculators, we built a scoring engine.<br />
+                  While they were sending email newsletters, we opened a blockchain raise.
+                </p>
+                <p className="text-lg md:text-xl font-bold bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(135deg, #00b9ff, #9fe870)' }}>This is PropTech.</p>
+              </div>
               {/* Collapsible headline — only collapses on mobile */}
               <button onClick={() => setWhyOpen(!whyOpen)} className="w-full text-center group cursor-pointer">
                 <h2 className="text-xl md:text-2xl font-bold font-serif text-white mb-1 inline-flex items-center gap-2">
