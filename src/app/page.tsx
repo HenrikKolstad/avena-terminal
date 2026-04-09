@@ -193,11 +193,9 @@ export default function Explorer() {
             setMobileHeaderHidden(true);
           }
         } else {
-          // Scrolling UP — accumulate distance, only show after 800px of deliberate upward scroll
-          scrollUpAccum.current += Math.abs(delta);
-          if (scrollUpAccum.current > 800 || y <= 10) {
+          // Scrolling UP — only show header when at the very top
+          if (y <= 10) {
             setMobileHeaderHidden(false);
-            scrollUpAccum.current = 0;
           }
         }
         lastScrollY.current = y;
