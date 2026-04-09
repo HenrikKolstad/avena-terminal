@@ -44,6 +44,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entries.push({ url: `${base}/budget/${range}`, changeFrequency: 'weekly', priority: 0.7 });
   }
 
+  // SEO landing pages
+  for (const page of [
+    'new-builds-costa-blanca-under-200k', 'best-new-build-villas-spain-2025', 'spanish-property-investment-calculator',
+    'torrevieja-new-builds', 'alicante-new-build-apartments', 'costa-calida-property-investment',
+    'murcia-new-build-villas', 'orihuela-costa-new-developments', 'benidorm-new-build-apartments',
+    'javea-new-build-villas', 'spain-property-discount-finder', 'spain-rental-yield-calculator',
+    'british-buyers-spain-2025', 'norwegian-property-investment-spain', 'off-plan-vs-key-ready-spain',
+  ]) {
+    entries.push({ url: `${base}/seo/${page}.html`, changeFrequency: 'monthly', priority: 0.6 });
+  }
+
   // Property pages
   for (const p of getAllProperties()) {
     if (p.ref) {
