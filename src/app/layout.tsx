@@ -7,7 +7,7 @@ import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Avena Terminal — Spain New Build Property Investment Scanner | 1,867 Properties",
-  verification: { google: "197e3d48f8d51384" },
+  verification: { google: "DGv4LcZcrNU5mn_wXz8-vAErjw0oSxLMN-7KHqdDSd4" },
   description: "Score and rank 1,867 new build properties across Costa Blanca, Costa Cálida and Costa del Sol. Rental yield, price per m², investment score. Spain's first PropTech terminal.",
   metadataBase: new URL("https://avenaterminal.com"),
   alternates: { canonical: 'https://avenaterminal.com' },
