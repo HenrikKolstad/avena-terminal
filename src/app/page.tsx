@@ -177,7 +177,8 @@ export default function Explorer() {
   // Mobile: auto-hide header on scroll down, show on scroll up
   const [mobileHeaderHidden, setMobileHeaderHidden] = useState(false);
   const lastScrollY = useRef(0);
-  const scrollUpAccum = useRef(0); // accumulate upward scroll distance
+  const scrollUpAccum = useRef(0);
+  const topTouchCount = useRef(0);
   useEffect(() => {
     if (typeof window === 'undefined') return;
     let ticking = false;
@@ -188,15 +189,19 @@ export default function Explorer() {
         const y = window.scrollY;
         const delta = y - lastScrollY.current;
         if (delta > 0) {
-          // Scrolling DOWN — hide after passing header, reset up-accumulator
           scrollUpAccum.current = 0;
+          topTouchCount.current = 0;
           if (y > headerH && delta > 5) {
             setMobileHeaderHidden(true);
           }
         } else {
-          // Scrolling UP — only show header when at the very top
+          // Must reach top twice (double swipe) to reveal header
           if (y <= 10) {
-            setMobileHeaderHidden(false);
+            topTouchCount.current++;
+            if (topTouchCount.current >= 2) {
+              setMobileHeaderHidden(false);
+              topTouchCount.current = 0;
+            }
           }
         }
         lastScrollY.current = y;
@@ -556,7 +561,7 @@ export default function Explorer() {
               <Menu size={20} />
             </button>
             <a href="/" className="flex-shrink-0">
-              <h1 className="text-2xl font-bold font-serif tracking-[0.2em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">AVENA</h1>
+              <h1 className="text-2xl font-bold font-serif tracking-[0.2em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent animate-logo-pulse">AVENA</h1>
               <p className="text-[8px] tracking-[5px] uppercase text-emerald-400/60 font-light">Terminal</p>
             </a>
             {/* Auth — right side, full space */}
@@ -642,7 +647,7 @@ export default function Explorer() {
           {/* LEFT — logo */}
           <div className="flex-shrink-0">
             <a href="/" className="block cursor-pointer">
-              <h1 className={`font-bold font-serif tracking-[0.2em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity ${sidebarCollapsed ? 'text-4xl' : 'text-2xl'}`}>AVENA</h1>
+              <h1 className={`font-bold font-serif tracking-[0.2em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity animate-logo-pulse ${sidebarCollapsed ? 'text-4xl' : 'text-2xl'}`}>AVENA</h1>
               <p className="text-[9px] tracking-[6px] uppercase text-emerald-400/60 mt-0.5 font-light">Terminal</p>
             </a>
             {sidebarCollapsed && (
