@@ -51,9 +51,13 @@ export default async function BlogPage() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-12">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Investment Blog</h1>
-        <p className="text-gray-400 mb-10">Weekly insights on Spanish new build investment and market analysis.</p>
+      <main className="max-w-4xl mx-auto px-4">
+        {/* Hero */}
+        <div className="py-12 md:py-16 text-center border-b" style={{ borderColor: '#1c2333' }}>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Spain Property Investment Insights</h1>
+          <p className="text-gray-400 text-sm md:text-base max-w-xl mx-auto">Data-driven analysis from 1,867 scored new builds across Costa Blanca, Costa del Sol, and Costa Calida.</p>
+        </div>
+        <div className="py-10">
 
         {posts.length === 0 ? (
           <div className="text-center py-20">
@@ -87,6 +91,7 @@ export default async function BlogPage() {
             ))}
           </div>
         )}
+        </div>{/* end content section */}
       </main>
 
       {/* Divider */}

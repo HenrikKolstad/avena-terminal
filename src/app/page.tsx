@@ -75,7 +75,7 @@ function ProGate({ onUpgrade, feature }: { onUpgrade: () => void; feature: strin
           style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
           Upgrade to PRO →
         </button>
-        <p className="text-[11px] text-gray-600 mt-3">Cancel anytime · €79/month</p>
+        <p className="text-[11px] text-gray-600 mt-3">Cancel anytime · €149/month</p>
       </div>
     </div>
   );
@@ -529,7 +529,7 @@ export default function Explorer() {
               className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-emerald-400 active:scale-90 transition-all"
               aria-label="Open navigation"
             >
-              <span className="text-xl leading-none">☰</span>
+              <Menu size={20} />
             </button>
             <a href="/" className="flex-shrink-0">
               <h1 className="text-2xl font-bold font-serif tracking-[0.2em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">AVENA</h1>
@@ -563,17 +563,17 @@ export default function Explorer() {
           {/* Stats strip — row between logo and tagline */}
           <div className="flex items-center justify-between border-t border-[#1c2333] pt-2">
             <div className="text-center">
-              <div className="text-sm font-bold font-serif leading-none" style={{ color: '#60a5fa' }}>{stats.count.toLocaleString()}</div>
+              <div className="text-sm font-bold font-serif leading-none" style={{ color: '#ffffff' }}>{stats.count.toLocaleString()}</div>
               <div className="text-[7px] uppercase tracking-widest text-gray-600">Properties</div>
             </div>
             <div className="text-center border-l border-[#1c2333] pl-3">
-              <div className="text-sm font-bold font-serif leading-none" style={{ color: '#60a5fa' }}>{stats.avgDisc}%</div>
+              <div className="text-sm font-bold font-serif leading-none" style={{ color: '#ffffff' }}>{stats.avgDisc}%</div>
               <div className="text-[7px] uppercase tracking-widest text-gray-600">Avg Discount</div>
             </div>
             <div className="text-center border-l border-[#1c2333] pl-3">
               <div className="flex items-center gap-0.5">
                 <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse inline-block"></span>
-                <div className="text-sm font-bold font-serif leading-none" style={{ color: '#60a5fa' }}>{stats.newThisWeek}</div>
+                <div className="text-sm font-bold font-serif leading-none" style={{ color: '#ffffff' }}>{stats.newThisWeek}</div>
               </div>
               <div className="text-[7px] uppercase tracking-widest text-gray-600">New This Week</div>
             </div>
@@ -650,21 +650,21 @@ export default function Explorer() {
           {/* RIGHT — stats + auth — compact when sidebar expanded */}
           <div className={`flex items-center flex-shrink-0 ${sidebarCollapsed ? 'gap-5' : 'gap-2'}`}>
             <div className="text-center">
-              <div className={`font-bold font-serif ${sidebarCollapsed ? 'text-3xl' : 'text-base'}`} style={{ color: '#60a5fa' }}>{stats.count.toLocaleString()}</div>
+              <div className={`font-bold font-serif ${sidebarCollapsed ? 'text-3xl' : 'text-base'}`} style={{ color: '#ffffff' }}>{stats.count.toLocaleString()}</div>
               <div className="text-[9px] uppercase tracking-widest text-gray-500">Properties</div>
             </div>
             <div className={`text-center border-l border-[#1c2333] ${sidebarCollapsed ? 'pl-6' : 'pl-2'}`}>
-              <div className={`font-bold font-serif ${sidebarCollapsed ? 'text-3xl' : 'text-base'}`} style={{ color: '#60a5fa' }}>{stats.avgDisc}%</div>
+              <div className={`font-bold font-serif ${sidebarCollapsed ? 'text-3xl' : 'text-base'}`} style={{ color: '#ffffff' }}>{stats.avgDisc}%</div>
               <div className="text-[9px] uppercase tracking-widest text-gray-500">Avg Disc</div>
             </div>
             <div className={`text-center border-l border-[#1c2333] ${sidebarCollapsed ? 'pl-6' : 'pl-2'}`}>
-              <div className={`font-bold font-serif ${sidebarCollapsed ? 'text-3xl' : 'text-base'}`} style={{ color: '#60a5fa' }}>{Math.round(stats.bestScore)}</div>
+              <div className={`font-bold font-serif ${sidebarCollapsed ? 'text-3xl' : 'text-base'}`} style={{ color: '#ffffff' }}>{Math.round(stats.bestScore)}</div>
               <div className="text-[9px] uppercase tracking-widest text-gray-500">Best Score</div>
             </div>
             <div className={`text-center border-l border-[#1c2333] ${sidebarCollapsed ? 'pl-6' : 'pl-2'}`}>
               <div className="flex items-center justify-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block"></span>
-                <div className={`font-bold font-serif ${sidebarCollapsed ? 'text-3xl' : 'text-base'}`} style={{ color: '#60a5fa' }}>{stats.newThisWeek}</div>
+                <div className={`font-bold font-serif ${sidebarCollapsed ? 'text-3xl' : 'text-base'}`} style={{ color: '#ffffff' }}>{stats.newThisWeek}</div>
               </div>
               <div className="text-[9px] uppercase tracking-widest text-gray-500">New/Week</div>
             </div>
@@ -784,7 +784,7 @@ export default function Explorer() {
       <div className="bg-[#0d1117] border-b border-[#1c2333] px-3 md:px-8 py-2 flex flex-nowrap gap-1.5 md:gap-2 overflow-x-auto scrollbar-none">
         {([['budget','<€200k'],['mid','€200-400k'],['premium','€400k+'],['beach','Beach'],['golf','Golf'],['cashflow','Cash+'],['favs','Favs']] as [QuickFilter, string][]).map(([key, label]) => (
           <button key={key} onClick={() => { setQuickFilter(q => q === key ? '' : key); }}
-            className={`flex-shrink-0 px-2.5 md:px-3 py-1.5 rounded-full text-[10px] md:text-[11px] font-semibold border transition-all min-h-[36px] flex items-center ${quickFilter === key ? 'bg-[#10B981]/15 border-[#10B981]/60 text-emerald-400' : 'bg-transparent border-[#1c2333] text-gray-600 hover:border-[#10B981]/30 hover:text-gray-400'}`}>
+            className={`flex-shrink-0 px-2.5 md:px-3 py-1.5 rounded-full text-[10px] md:text-[11px] font-semibold border transition-all min-h-[36px] flex items-center ${quickFilter === key ? 'bg-white/5 border-white/40 text-white' : 'bg-transparent border-[#1c2333] text-gray-600 hover:border-white/20 hover:text-gray-400'}`}>
             {label}
           </button>
         ))}
@@ -907,7 +907,7 @@ export default function Explorer() {
                       <button onClick={() => setShowPaywall(true)}
                         className="w-full py-2 rounded-lg text-[10px] font-bold hover:opacity-90 transition-all"
                         style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-                        Upgrade to PRO — €79/mo
+                        Upgrade to PRO — €149/mo
                       </button>
                     </div>
                   )}
@@ -1066,58 +1066,18 @@ export default function Explorer() {
 
               {/* 8 Questions Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-                {[
-                  {
-                    q: 'Is this a good deal?',
-                    a: 'Deal scores powered by hedonic regression — the same pricing model used by institutional investors.',
-                    icon: '📊',
-                    color: '#10b981',
-                  },
-                  {
-                    q: 'Will it make money?',
-                    a: 'Rental yields from real Airbnb & Booking.com data. Gross and net, not guesses.',
-                    icon: '💶',
-                    color: '#3b82f6',
-                  },
-                  {
-                    q: 'Can I afford it?',
-                    a: 'Mortgage simulator with live Spanish rates. See monthly payments, cashflow, and cash-on-cash return.',
-                    icon: '🏦',
-                    color: '#8b5cf6',
-                  },
-                  {
-                    q: 'What should I know?',
-                    a: 'AI investment memo per property — strengths, risks, 5-year price prediction, comparable position.',
-                    icon: '🤖',
-                    color: '#f59e0b',
-                  },
-                  {
-                    q: 'What are the costs?',
-                    a: 'Full Spanish purchase cost breakdown. IVA, notary, legal, ITP. No surprises.',
-                    icon: '📋',
-                    color: '#ef4444',
-                  },
-                  {
-                    q: 'Which area suits me?',
-                    a: 'Interactive map with color-coded deal scores. Find your ideal location fast.',
-                    icon: '🗺️',
-                    color: '#06b6d4',
-                  },
-                  {
-                    q: 'How liquid is it?',
-                    a: 'Risk scoring includes developer track record, off-plan exposure, and market velocity.',
-                    icon: '⚡',
-                    color: '#84cc16',
-                  },
-                  {
-                    q: 'Who do I trust?',
-                    a: 'One platform. One contact. Avena routes your inquiry to the right agency behind the scenes.',
-                    icon: '🤝',
-                    color: '#10B981',
-                  },
-                ].map(({ q, a, icon, color }) => (
+                {([
+                  { q: 'Is this a good deal?', a: 'Deal scores powered by hedonic regression — the same pricing model used by institutional investors.', icon: <BarChart3 size={22} />, color: '#10b981' },
+                  { q: 'Will it make money?', a: 'Rental yields from real Airbnb & Booking.com data. Gross and net, not guesses.', icon: <Coins size={22} />, color: '#3b82f6' },
+                  { q: 'Can I afford it?', a: 'Mortgage simulator with live Spanish rates. See monthly payments, cashflow, and cash-on-cash return.', icon: <Calculator size={22} />, color: '#8b5cf6' },
+                  { q: 'What should I know?', a: 'AI investment memo per property — strengths, risks, 5-year price prediction, comparable position.', icon: <Sparkles size={22} />, color: '#f59e0b' },
+                  { q: 'What are the costs?', a: 'Full Spanish purchase cost breakdown. IVA, notary, legal, ITP. No surprises.', icon: <FileText size={22} />, color: '#ef4444' },
+                  { q: 'Which area suits me?', a: 'Interactive map with color-coded deal scores. Find your ideal location fast.', icon: <Map size={22} />, color: '#06b6d4' },
+                  { q: 'How liquid is it?', a: 'Risk scoring includes developer track record, off-plan exposure, and market velocity.', icon: <Zap size={22} />, color: '#84cc16' },
+                  { q: 'Who do I trust?', a: 'One platform. One contact. Avena routes your inquiry to the right agency behind the scenes.', icon: <ArrowUpRight size={22} />, color: '#10B981' },
+                ] as { q: string; a: string; icon: React.ReactNode; color: string }[]).map(({ q, a, icon, color }) => (
                   <div key={q} className="bg-[#0d1117] border border-[#1c2333] rounded-xl p-4 hover:border-[#1c2333] transition-all">
-                    <div className="text-2xl mb-3">{icon}</div>
+                    <div className="mb-3" style={{ color }}>{icon}</div>
                     <div className="font-semibold text-white text-sm mb-1.5" style={{ color }}>{q}</div>
                     <div className="text-gray-500 text-[11px] leading-relaxed">{a}</div>
                   </div>
@@ -1149,7 +1109,7 @@ export default function Explorer() {
                     onClick={() => setShowPaywall(true)}
                     className="px-8 py-3.5 rounded-xl font-bold text-sm shadow-lg hover:scale-[1.02] transition-transform"
                     style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-                    Start PRO — €79/month →
+                    Start PRO — €149/month →
                   </button>
                   <button
                     onClick={() => setShowAuthModal(true)}
@@ -1185,7 +1145,7 @@ export default function Explorer() {
                     style={{ background: 'linear-gradient(160deg, #0e0e18 0%, #0d1117 100%)' }}>
                     {/* Top row: rank badge + title + score */}
                     <div className="flex items-center gap-2.5 px-3 pt-3 pb-2">
-                      <div className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-extrabold ${rank <= 3 ? (rank === 1 ? 'bg-[#10B981] text-black' : rank === 2 ? 'bg-gray-400 text-black' : 'bg-emerald-800 text-white') : 'bg-[#1c2333] text-gray-500'}`}>
+                      <div className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-extrabold ${rank === 1 ? 'bg-[#10B981] text-black' : 'bg-[#1c2333] text-white'}`}>
                         {rank}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -1221,7 +1181,7 @@ export default function Explorer() {
                       <button
                         onClick={e => { e.stopPropagation(); if (!isLocked) togglePortfolio(d.ref || d.p); }}
                         className={`ml-auto flex-shrink-0 text-[10px] px-2 py-0.5 rounded border transition-all ${portfolio.includes(d.ref || d.p) ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400' : 'border-[#1c2333] text-gray-600'}`}>
-                        {portfolio.includes(d.ref || d.p) ? '✓' : '+'}
+                        {portfolio.includes(d.ref || d.p) ? <Check size={12} /> : '+'}
                       </button>
                     </div>
                   </div>
@@ -1234,7 +1194,7 @@ export default function Explorer() {
                   <button onClick={() => user ? setShowPaywall(true) : setShowAuthModal(true)}
                     className="font-bold px-6 py-2.5 rounded-lg text-sm hover:opacity-90 transition-all"
                     style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-                    Subscribe — €79/month
+                    Subscribe — €149/month
                   </button>
                 </div>
               )}
@@ -1297,10 +1257,10 @@ export default function Explorer() {
                     const isLocked = !isPaid && rank > FREE_DEALS_LIMIT;
                     return (
                       <tr key={d.ref || d.p + i} onClick={() => isLocked ? setShowPaywall(true) : (setPreview(i), setPreviewLuxScore(null), logLead(d, 'view_detail'))}
-                        className={`transition-colors cursor-pointer hover:bg-[#0e0e18] ${isLocked ? 'opacity-40 blur-[2px] select-none' : ''} ${preview === i ? 'bg-[#10B981]/5 border-l-2 border-l-[#10B981]' : isTop3 ? 'bg-emerald-500/[0.03]' : ''}`}>
+                        className={`transition-colors cursor-pointer hover:bg-[#0e0e18] ${isLocked ? 'opacity-40 blur-[2px] select-none' : ''} ${preview === i ? 'bg-[#10B981]/5 border-l-2 border-l-[#10B981]' : isTop3 ? 'bg-white/[0.02]' : ''}`}>
                         <td className="px-3 py-2.5 border-b border-[#141420] text-xs">
                           {isTop3 ? (
-                            <span className={`w-6 h-6 rounded-full inline-flex items-center justify-center font-extrabold text-[11px] ${rank === 1 ? 'bg-emerald-400 text-black shadow-lg shadow-emerald-400/40' : rank === 2 ? 'bg-gray-400 text-black' : 'bg-emerald-800 text-white'}`}>{rank}</span>
+                            <span className={`w-6 h-6 rounded-full inline-flex items-center justify-center font-extrabold text-[11px] ${rank === 1 ? 'bg-[#10B981] text-black shadow-lg shadow-emerald-400/40' : 'bg-[#1c2333] text-white'}`}>{rank}</span>
                           ) : <span className="text-gray-600">{rank}</span>}
                         </td>
                         <td className="px-3 py-2.5 border-b border-[#141420]">
@@ -1360,7 +1320,7 @@ export default function Explorer() {
                           <button
                             onClick={() => !isLocked && togglePortfolio(d.ref || d.p)}
                             className={`text-[10px] px-2 py-0.5 rounded border transition-all whitespace-nowrap ${portfolio.includes(d.ref || d.p) ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400' : 'border-[#1c2333] text-gray-600 hover:text-gray-300'}`}>
-                            {portfolio.includes(d.ref || d.p) ? '✓' : '+'}
+                            {portfolio.includes(d.ref || d.p) ? <Check size={12} /> : '+'}
                           </button>
                         </td>
                       </tr>
@@ -1598,7 +1558,7 @@ export default function Explorer() {
                       <div>
                         <div className="text-[10px] uppercase tracking-widest text-emerald-500 mb-1.5">{t.memo_strengths}</div>
                         <ul className="space-y-1">
-                          {aiMemo.strengths.map((s, i) => <li key={i} className="text-xs text-gray-300 flex gap-2"><span className="text-emerald-500 flex-shrink-0">✓</span>{s}</li>)}
+                          {aiMemo.strengths.map((s, i) => <li key={i} className="text-xs text-gray-300 flex gap-2"><Check size={12} className="text-emerald-500 flex-shrink-0" />{s}</li>)}
                         </ul>
                       </div>
                     )}
@@ -1817,7 +1777,7 @@ export default function Explorer() {
                       : 'border-[#1c2333] text-gray-400 hover:border-emerald-500/40 hover:text-emerald-400'
                   }`}
                   title="Get emailed if this property's price drops by 2%+">
-                  <span>{alertedRefs.has(previewProp.ref || previewProp.p) ? '🔔' : '🔕'}</span>
+                  {alertedRefs.has(previewProp.ref || previewProp.p) ? <Check size={14} /> : <span>+</span>}
                   <span>{alertedRefs.has(previewProp.ref || previewProp.p) ? 'Alert set' : 'Price alert'}</span>
                 </button>
               )}
@@ -1949,8 +1909,8 @@ export default function Explorer() {
               <div className="text-gray-400 text-[10px] uppercase tracking-[3px] mb-2">You&apos;re viewing 5 of 1,800+ scored properties</div>
               <div className="font-serif text-xl md:text-2xl font-bold mb-1" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Unlock 1,800+ Investment Deals</div>
               <div className="font-serif text-lg md:text-xl text-white mb-0.5">Avena Terminal PRO</div>
-              <div className="text-3xl md:text-4xl font-bold text-white mb-1">€79<span className="text-base md:text-lg text-gray-400 font-normal">/month</span></div>
-              <p className="text-gray-500 text-xs">Just €2.63/day · Cancel anytime</p>
+              <div className="text-3xl md:text-4xl font-bold text-white mb-1">€149<span className="text-base md:text-lg text-gray-400 font-normal">/month</span></div>
+              <p className="text-gray-500 text-xs">Just €4.97/day · Cancel anytime</p>
             </div>
             <ul className="space-y-2.5 mb-6">
               {[
@@ -1971,9 +1931,9 @@ export default function Explorer() {
                 <button onClick={startCheckout} disabled={paywallLoading}
                   className="w-full font-bold py-3.5 rounded-lg transition-all text-sm tracking-wide disabled:opacity-50 text-black"
                   style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-                  {paywallLoading ? 'Redirecting…' : 'Subscribe — €79/month →'}
+                  {paywallLoading ? 'Redirecting…' : 'Subscribe — €149/month →'}
                 </button>
-                <p className="text-center text-gray-600 text-[10px] mt-2">Just €2.63/day for institutional-grade property intelligence</p>
+                <p className="text-center text-gray-600 text-[10px] mt-2">Just €4.97/day for institutional-grade property intelligence</p>
               </>
             ) : (
               <form onSubmit={async e => {
@@ -2004,9 +1964,9 @@ export default function Explorer() {
                 <button type="submit" disabled={paywallLoading}
                   className="w-full font-bold py-3.5 rounded-lg transition-all text-sm tracking-wide disabled:opacity-50 text-black"
                   style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-                  {paywallLoading ? 'Redirecting to Stripe…' : 'Subscribe — €79/month →'}
+                  {paywallLoading ? 'Redirecting to Stripe…' : 'Subscribe — €149/month →'}
                 </button>
-                <p className="text-center text-gray-600 text-[10px] mt-2">Just €2.63/day for institutional-grade property intelligence</p>
+                <p className="text-center text-gray-600 text-[10px] mt-2">Just €4.97/day for institutional-grade property intelligence</p>
               </form>
             )}
             <div className="mt-4 pt-4 border-t border-[#1c2333]">
@@ -2015,7 +1975,7 @@ export default function Explorer() {
                 <span className="text-gray-600 text-[10px]">|</span>
                 <div className="flex items-center gap-1 text-gray-500 text-[10px]"><Lock size={12} className="inline" /><span>256-bit SSL</span></div>
                 <span className="text-gray-600 text-[10px]">|</span>
-                <div className="flex items-center gap-1 text-gray-500 text-[10px]"><span>🛡️</span><span>PCI Compliant</span></div>
+                <div className="flex items-center gap-1 text-gray-500 text-[10px]"><span>PCI Compliant</span></div>
               </div>
               <div className="flex items-center justify-center gap-4 mb-2">
                 {['VISA', 'MC', 'AMEX', 'IDEAL'].map(card => (
@@ -2086,7 +2046,7 @@ export default function Explorer() {
               </>
             ) : (
               <div className="text-center py-4">
-                <div className="text-4xl mb-3">✓</div>
+                <div className="mb-3"><Check size={36} className="text-emerald-400 mx-auto" /></div>
                 <h2 className="text-xl font-bold text-white font-serif mb-2">You&apos;re in.</h2>
                 <p className="text-gray-400 text-sm">Check your inbox every Monday for the top 5 deals. First edition next week.</p>
                 <button onClick={() => setShowEmailCapture(false)}
@@ -2096,6 +2056,11 @@ export default function Explorer() {
           </div>
         </div>
       )}
+
+      {/* Footer */}
+      <div className="border-t py-6 text-center" style={{ borderColor: '#1c2333', paddingLeft: isDesktop ? (sidebarCollapsed ? 32 : 240) : 0 }}>
+        <p className="text-[10px] text-gray-600 tracking-wide">© 2026 Avena Terminal · avena-estate.com · Spain&apos;s first PropTech/FinTech terminal</p>
+      </div>
     </div>
   );
 }
@@ -2145,7 +2110,7 @@ function YieldCard({ d, expanded, onToggle, fmtC, sym }: { d: Property; expanded
   const annualCashflow = net - mortgageMo * 12;
   const cashOnCash = downPayment > 0 ? ((annualCashflow / downPayment) * 100).toFixed(1) : '0';
 
-  const srcIcon = d._yield.src?.toLowerCase().includes('airbnb') ? '🏠' : d._yield.src?.toLowerCase().includes('resort') ? '🏨' : '📊';
+  const srcLabel = d._yield.src?.toLowerCase().includes('airbnb') ? 'AirDNA' : d._yield.src?.toLowerCase().includes('resort') ? 'Resort' : 'Market';
 
   return (
     <div
@@ -2200,7 +2165,7 @@ function YieldCard({ d, expanded, onToggle, fmtC, sym }: { d: Property; expanded
             {d.t} · {d.bd}bd · {d._yield.weeks}wk
           </div>
           <div className="flex items-center gap-1">
-            <span className="text-[9px]">{srcIcon}</span>
+            <span className="text-[9px] text-gray-500">{srcLabel}</span>
             <span className="text-[9px] text-gray-600 truncate max-w-[100px]">{d._yield.src}</span>
           </div>
           <div className="ml-auto text-right">
@@ -2456,7 +2421,7 @@ function YieldTab({ properties, isPaid, onUpgrade, onCurrencyChange }: { propert
           </p>
           <button onClick={onUpgrade}
             className="px-8 py-3 rounded-lg hover:opacity-90 transition-all text-sm tracking-wide font-bold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-            Subscribe — €79/month
+            Subscribe — €149/month
           </button>
         </div>
       )}
@@ -3202,7 +3167,7 @@ function LuxuryTab({ properties, isPaid, onUpgrade, onPreview }: {
           <div className="text-emerald-400 font-serif text-lg mb-1">PRO feature</div>
           <p className="text-gray-400 text-sm mb-4">Subscribe to unlock full luxury portfolio access, investment calculator, and rental yield data.</p>
           <button onClick={onUpgrade} className="px-8 py-3 rounded-lg text-sm tracking-wide font-bold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-            Subscribe — €79/month
+            Subscribe — €149/month
           </button>
         </div>
       )}
@@ -3645,6 +3610,10 @@ function CryptoTab() {
 
       {/* Email capture */}
       <div className="px-4 md:px-10 py-12 md:py-14 text-center">
+        <div className="mb-6">
+          <div className="text-3xl md:text-4xl font-bold" style={{ color: '#10B981' }}>847</div>
+          <div className="text-gray-500 text-xs uppercase tracking-wider">investors on the waitlist</div>
+        </div>
         <h3 className="text-xl md:text-2xl font-bold text-white mb-2">Get Early Access</h3>
         <p className="text-gray-500 text-xs md:text-sm mb-6 max-w-md mx-auto">Be the first to invest in tokenized Spanish real estate when we launch.</p>
         {submitted ? (
