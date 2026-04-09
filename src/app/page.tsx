@@ -3833,16 +3833,7 @@ function CryptoTab() {
 
       {/* ── THE CORE ── */}
       <div className="flex flex-col items-center justify-center py-12 md:py-20 relative">
-        {/* Sonar rings */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          {[0, 0.8, 1.6].map((delay, i) => (
-            <div key={i} className="absolute rounded-full" style={{
-              width: 280, height: 280,
-              border: '1px solid rgba(16,185,129,0.2)',
-              animation: `core-sonar 3.5s ease-out ${delay}s infinite`,
-            }} />
-          ))}
-        </div>
+        {/* Glow backdrop only — no sonar rings */}
 
         {/* Orb container */}
         <div className="relative animate-core-breathe" style={{
