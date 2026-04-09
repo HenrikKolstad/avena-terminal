@@ -3567,8 +3567,8 @@ function MarketIndexTab({ properties }: { properties: Property[] }) {
     <div className="px-4 md:px-8 py-8 max-w-6xl mx-auto">
       {/* Title */}
       <div className="mb-8">
-        <h1 className="text-2xl md:text-4xl font-extralight tracking-[0.2em] text-white mb-2">SPAIN NEW BUILD PRICE INDEX</h1>
-        <p className="text-xs md:text-sm text-emerald-400 tracking-wide mb-1">Live data &middot; {totalProps.toLocaleString()} properties tracked &middot; Updated daily</p>
+        <h1 className="text-2xl md:text-4xl font-extralight tracking-[0.2em] mb-2" style={{ background: 'linear-gradient(135deg, #00b9ff, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>SPAIN NEW BUILD PRICE INDEX</h1>
+        <p className="text-xs md:text-sm tracking-wide mb-1" style={{ color: '#a78bfa' }}>Live data &middot; {totalProps.toLocaleString()} properties tracked &middot; Updated daily</p>
         <p className="text-[10px] text-gray-600">The only real-time index tracking new build prices, discounts and yields across Spain&apos;s costas.</p>
       </div>
 
@@ -3581,14 +3581,14 @@ function MarketIndexTab({ properties }: { properties: Property[] }) {
           { label: 'Highest Score', value: `${Math.round(bestProp?._sc ?? 0)} — ${bestProp?.l?.split(',')[0] || ''}` },
         ].map(s => (
           <div key={s.label} className="rounded-lg p-3 md:p-4 border text-center" style={{ background: '#0f1419', borderColor: '#1c2333' }}>
-            <div className="text-emerald-400 font-bold text-lg md:text-xl">{s.value}</div>
+            <div className="font-bold text-lg md:text-xl" style={{ background: 'linear-gradient(135deg, #00b9ff, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{s.value}</div>
             <div className="text-gray-500 text-[9px] md:text-[10px] uppercase tracking-wider">{s.label}</div>
           </div>
         ))}
       </div>
 
       {/* Regional breakdown */}
-      <h2 className="text-lg font-bold text-white mb-4">Regional Breakdown</h2>
+      <h2 className="text-lg font-bold mb-4" style={{ color: '#a78bfa' }}>Regional Breakdown</h2>
       <div className="space-y-2 mb-8">
         {regions.map(r => (
           <div key={r.code}>
@@ -3628,7 +3628,7 @@ function MarketIndexTab({ properties }: { properties: Property[] }) {
       </div>
 
       {/* Town table */}
-      <h2 className="text-lg font-bold text-white mb-3">All Towns</h2>
+      <h2 className="text-lg font-bold mb-3" style={{ color: '#a78bfa' }}>All Towns</h2>
       <input
         type="text"
         placeholder="Filter towns..."
@@ -3683,8 +3683,8 @@ function MarketIndexTab({ properties }: { properties: Property[] }) {
           { title: 'HIGHEST YIELD REGION', value: `${highestYieldRegion?.name}`, sub: `${highestYieldRegion?.avgYield}% gross yield` },
           { title: 'MOST LISTINGS', value: `${mostListingsRegion?.name}`, sub: `${mostListingsRegion?.count} properties` },
         ].map(card => (
-          <div key={card.title} className="rounded-lg p-5" style={{ background: '#0d1117', border: '1px solid #1c2333', borderTop: '2px solid #10B981' }}>
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: '#10B981' }}>{card.title}</h3>
+          <div key={card.title} className="rounded-lg p-5" style={{ background: '#0d1117', border: '1px solid #1c2333', borderTop: '2px solid #a78bfa' }}>
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2" style={{ background: 'linear-gradient(135deg, #00b9ff, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{card.title}</h3>
             <div className="text-white font-bold text-lg">{card.value}</div>
             <div className="text-gray-400 text-xs">{card.sub}</div>
           </div>
