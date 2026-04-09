@@ -55,6 +55,42 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entries.push({ url: `${base}/seo/${page}.html`, changeFrequency: 'monthly', priority: 0.6 });
   }
 
+  // Question pages (5 patterns x all towns)
+  const questionPatterns = ['is-{slug}-good-for-property-investment', 'how-much-does-new-build-cost-in-{slug}', 'average-rental-yield-{slug}-spain', 'can-foreigners-buy-property-in-{slug}', 'best-areas-to-invest-near-{slug}'];
+  for (const t of getUniqueTowns()) {
+    for (const pattern of questionPatterns) {
+      entries.push({ url: `${base}/questions/${pattern.replace('{slug}', t.slug)}`, changeFrequency: 'monthly', priority: 0.6 });
+    }
+  }
+
+  // Comparison pages (top 30 towns paired)
+  const top30 = getUniqueTowns().slice(0, 30);
+  for (let i = 0; i < top30.length; i++) {
+    for (let j = i + 1; j < top30.length; j++) {
+      entries.push({ url: `${base}/compare/${top30[i].slug}-vs-${top30[j].slug}`, changeFrequency: 'monthly', priority: 0.5 });
+    }
+  }
+
+  // Developer pages
+  const devs = [...new Set(getAllProperties().map(p => slugify(p.d)).filter(Boolean))];
+  for (const d of devs) {
+    entries.push({ url: `${base}/developer/${d}`, changeFrequency: 'weekly', priority: 0.6 });
+  }
+
+  // Price per m2 pages (towns + costas)
+  for (const t of getUniqueTowns()) {
+    entries.push({ url: `${base}/price-per-m2/${t.slug}`, changeFrequency: 'monthly', priority: 0.6 });
+  }
+  for (const c of getUniqueCostas()) {
+    entries.push({ url: `${base}/price-per-m2/${c.slug}`, changeFrequency: 'monthly', priority: 0.6 });
+  }
+
+  // Area/neighborhood pages
+  const areas = ['la-zenia','cabo-roig','punta-prima','playa-flamenca','villamartin','los-dolses','la-florida','blue-lagoon','las-ramblas-golf','campoamor','pilar-de-la-horadada','torre-de-la-horadada','san-pedro-del-pinatar','lo-pagan','la-manga','mar-menor','los-alcazares','benidorm-old-town','finestrat','la-nucia','calpe-old-town','moraira','javea-port','altea-hills','gran-alacant','guardamar','ciudad-quesada','rojales','san-miguel-de-salinas','estepona-port'];
+  for (const a of areas) {
+    entries.push({ url: `${base}/area/${a}`, changeFrequency: 'monthly', priority: 0.6 });
+  }
+
   // Property pages
   for (const p of getAllProperties()) {
     if (p.ref) {
