@@ -581,7 +581,7 @@ export default function Explorer() {
           <div className="border-t border-[#1a1a24] pt-2">
             <div className="text-[9px] text-gray-400 leading-relaxed">
               <div>{t.hero_scanner}</div>
-              <div className="text-[10px] italic text-[#c9a84c] tracking-wide mt-0.5">The Bloomberg of European property investment</div>
+              <div className="text-[10px] italic tracking-wide mt-0.5 font-semibold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>The Bloomberg of European property investment</div>
               <div className="flex flex-wrap gap-1 mt-1">
                 {([['Costa Blanca North','cb-north'],['Costa Blanca South','cb-south'],['Costa Cálida','costa-calida'],['Costa del Sol','costa-del-sol']] as [string,string][]).map(([r, code]) => (
                   <button key={r} onClick={() => { setFilters(f => ({...f, region: code})); setTab('deals'); }} className={`px-1.5 py-0.5 rounded text-[9px] font-medium bg-[#1a1a24] text-[#c9a84c] border transition-colors cursor-pointer hover:bg-[#c9a84c]/10 hover:border-[#c9a84c]/50 ${filters.region === code ? 'border-[#c9a84c]/70' : 'border-[#c9a84c]/20'}`}>{r}</button>
