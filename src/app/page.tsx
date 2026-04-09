@@ -1062,19 +1062,19 @@ export default function Explorer() {
             return (
             <div className="px-4 md:px-8 py-6 border-b border-[#1c2333]">
               {/* Collapsible headline — only collapses on mobile */}
-              <button onClick={() => !isDesktop && setWhyOpen(!whyOpen)} className="w-full text-center group" style={{ cursor: isDesktop ? 'default' : 'pointer' }}>
+              <button onClick={() => setWhyOpen(!whyOpen)} className="w-full text-center group cursor-pointer">
                 <h2 className="text-xl md:text-2xl font-bold font-serif text-white mb-1 inline-flex items-center gap-2">
                   Every question answered before you invest
-                  <ChevronRight size={18} className={`transition-transform duration-200 md:hidden ${whyOpen ? 'rotate-90' : ''}`} style={{ color: '#60a5fa' }} />
+                  <ChevronRight size={18} className={`transition-transform duration-200 ${whyOpen ? 'rotate-90' : ''}`} style={{ color: '#60a5fa' }} />
                 </h2>
                 <p className="text-gray-500 text-xs md:text-sm max-w-2xl mx-auto">
                   Avena Terminal analyses 1,800+ new builds using institutional-grade scoring.
-                  {!whyOpen && !isDesktop && <span className="text-gray-600 ml-1">Tap to learn more.</span>}
+                  {!whyOpen && <span className="text-gray-600 ml-1">Click to learn more.</span>}
                 </p>
               </button>
 
-              {/* Expandable on mobile, always open on desktop */}
-              {(whyOpen || isDesktop) && (
+              {/* Expandable on both mobile and desktop */}
+              {whyOpen && (
                 <div className="mt-6 animate-slide-up">
                   {/* 8 Questions Grid */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
