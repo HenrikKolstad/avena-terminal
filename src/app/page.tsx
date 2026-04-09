@@ -75,7 +75,7 @@ function ProGate({ onUpgrade, feature }: { onUpgrade: () => void; feature: strin
           style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
           Upgrade to PRO →
         </button>
-        <p className="text-[11px] text-gray-600 mt-3">Cancel anytime · €149/month</p>
+        <p className="text-[11px] text-gray-600 mt-3">Cancel anytime · €79/month</p>
       </div>
     </div>
   );
@@ -907,7 +907,7 @@ export default function Explorer() {
                       <button onClick={() => setShowPaywall(true)}
                         className="w-full py-2 rounded-lg text-[10px] font-bold hover:opacity-90 transition-all"
                         style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-                        Upgrade to PRO — €149/mo
+                        Upgrade to PRO — €79/mo
                       </button>
                     </div>
                   )}
@@ -1114,7 +1114,7 @@ export default function Explorer() {
                     onClick={() => setShowPaywall(true)}
                     className="px-8 py-3 rounded-xl font-bold text-sm shadow-lg hover:scale-[1.02] transition-transform"
                     style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-                    Start PRO — €149/month →
+                    Start PRO — €79/month →
                   </button>
                   <button
                     onClick={() => setShowAuthModal(true)}
@@ -1200,7 +1200,7 @@ export default function Explorer() {
                   <button onClick={() => user ? setShowPaywall(true) : setShowAuthModal(true)}
                     className="font-bold px-6 py-2.5 rounded-lg text-sm hover:opacity-90 transition-all"
                     style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-                    Subscribe — €149/month
+                    Subscribe — €79/month
                   </button>
                 </div>
               )}
@@ -1915,8 +1915,8 @@ export default function Explorer() {
               <div className="text-gray-400 text-[10px] uppercase tracking-[3px] mb-2">You&apos;re viewing 5 of 1,800+ scored properties</div>
               <div className="font-serif text-xl md:text-2xl font-bold mb-1" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Unlock 1,800+ Investment Deals</div>
               <div className="font-serif text-lg md:text-xl text-white mb-0.5">Avena Terminal PRO</div>
-              <div className="text-3xl md:text-4xl font-bold text-white mb-1">€149<span className="text-base md:text-lg text-gray-400 font-normal">/month</span></div>
-              <p className="text-gray-500 text-xs">Just €4.97/day · Cancel anytime</p>
+              <div className="text-3xl md:text-4xl font-bold text-white mb-1">€79<span className="text-base md:text-lg text-gray-400 font-normal">/month</span></div>
+              <p className="text-gray-500 text-xs">Just €2.63/day · Cancel anytime</p>
             </div>
             <ul className="space-y-2.5 mb-6">
               {[
@@ -1937,9 +1937,9 @@ export default function Explorer() {
                 <button onClick={startCheckout} disabled={paywallLoading}
                   className="w-full font-bold py-3.5 rounded-lg transition-all text-sm tracking-wide disabled:opacity-50 text-black"
                   style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-                  {paywallLoading ? 'Redirecting…' : 'Subscribe — €149/month →'}
+                  {paywallLoading ? 'Redirecting…' : 'Subscribe — €79/month →'}
                 </button>
-                <p className="text-center text-gray-600 text-[10px] mt-2">Just €4.97/day for institutional-grade property intelligence</p>
+                <p className="text-center text-gray-600 text-[10px] mt-2">Just €2.63/day for institutional-grade property intelligence</p>
               </>
             ) : (
               <form onSubmit={async e => {
@@ -1970,9 +1970,9 @@ export default function Explorer() {
                 <button type="submit" disabled={paywallLoading}
                   className="w-full font-bold py-3.5 rounded-lg transition-all text-sm tracking-wide disabled:opacity-50 text-black"
                   style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-                  {paywallLoading ? 'Redirecting to Stripe…' : 'Subscribe — €149/month →'}
+                  {paywallLoading ? 'Redirecting to Stripe…' : 'Subscribe — €79/month →'}
                 </button>
-                <p className="text-center text-gray-600 text-[10px] mt-2">Just €4.97/day for institutional-grade property intelligence</p>
+                <p className="text-center text-gray-600 text-[10px] mt-2">Just €2.63/day for institutional-grade property intelligence</p>
               </form>
             )}
             <div className="mt-4 pt-4 border-t border-[#1c2333]">
@@ -2427,7 +2427,7 @@ function YieldTab({ properties, isPaid, onUpgrade, onCurrencyChange }: { propert
           </p>
           <button onClick={onUpgrade}
             className="px-8 py-3 rounded-lg hover:opacity-90 transition-all text-sm tracking-wide font-bold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-            Subscribe — €149/month
+            Subscribe — €79/month
           </button>
         </div>
       )}
@@ -3173,7 +3173,7 @@ function LuxuryTab({ properties, isPaid, onUpgrade, onPreview }: {
           <div className="text-emerald-400 font-serif text-lg mb-1">PRO feature</div>
           <p className="text-gray-400 text-sm mb-4">Subscribe to unlock full luxury portfolio access, investment calculator, and rental yield data.</p>
           <button onClick={onUpgrade} className="px-8 py-3 rounded-lg text-sm tracking-wide font-bold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-            Subscribe — €149/month
+            Subscribe — €79/month
           </button>
         </div>
       )}
