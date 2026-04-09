@@ -52,12 +52,13 @@ Month 6+    → Monthly USDT yield distributed to all holders.
 Month 12    → First quarterly exit window opens.
 
 ### Yield Distribution
+- Target gross yield: 6-8%
+- Estimated net yield after all costs: 4-5.5%
+- Costs include: property management (15-20%), IBI tax, community fees, insurance, maintenance reserve
 - Rental income collected monthly
-- Management fees deducted (est. 15-20% of rental)
-- Remaining converted to USDT
+- Costs deducted, remaining converted to USDT
 - Distributed pro-rata to all $AVY holders
 - Paid directly to connected wallet
-- Target net yield: 5-6% annually
 
 ### Exit Mechanics
 - Quarterly exit windows from month 12

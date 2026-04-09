@@ -177,6 +177,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                 <div className="text-white font-bold text-2xl">&euro;{Math.round(p._yield.rate * 7).toLocaleString()}</div>
               </div>
             </div>
+            <p className="text-[9px] text-gray-600 mt-3">Gross yield estimate. Net typically 30–35% lower after management fees, IBI tax, community fees &amp; insurance.</p>
           </section>
         )}
 

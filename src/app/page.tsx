@@ -2242,7 +2242,7 @@ function YieldCard({ d, expanded, onToggle, fmtC, sym }: { d: Property; expanded
             <div className={`text-2xl font-bold ${(d._yield.gross || 0) >= 7 ? 'text-emerald-400' : (d._yield.gross || 0) >= 5 ? 'text-emerald-400' : 'text-gray-400'}`}>
               {d._yield.gross}%
             </div>
-            <div className="text-[9px] text-gray-500 uppercase tracking-wide">Gross Yield</div>
+            <div className="text-[9px] text-gray-500 uppercase tracking-wide inline-flex items-center gap-1">Gross Yield <span className="relative group cursor-help"><Info size={10} className="text-gray-600" /><span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 w-52 p-2 rounded text-[9px] text-gray-300 leading-relaxed hidden group-hover:block z-50" style={{ background: '#0d1117', border: '1px solid #1c2333' }}>Gross yield estimate. Does not include management fees (15-20%), IBI tax, community fees, insurance or vacancy. Est. net 30-35% lower.</span></span></div>
           </div>
         </div>
 
@@ -2407,6 +2407,10 @@ function YieldTab({ properties, isPaid, onUpgrade, onCurrencyChange }: { propert
 
   return (
     <div className="pt-4 px-3 pb-3 md:p-6">
+      {/* Yield disclaimer */}
+      <div className="mb-4 rounded-lg p-3 md:p-4 text-xs text-gray-400 leading-relaxed" style={{ background: '#0f1419', borderLeft: '4px solid #ca8a04' }}>
+        Yields displayed are gross estimates based on market rental data. Net yield after property management (15–20%), IBI tax, community fees, insurance and typical vacancy is approximately 30–35% lower. Example: 7% gross &asymp; 4.5–5% net.
+      </div>
       {/* Three info boxes */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mb-4 md:mb-5">
         <div className="bg-[#0f1419] border border-[#1c2333] rounded-lg p-4">
@@ -3615,48 +3619,39 @@ function MarketIndexTab({ properties }: { properties: Property[] }) {
           </div>
         ))}
       </div>
+      <p className="text-[9px] text-gray-600 -mt-6 mb-8">Gross yield. Net typically 30–35% lower after fees &amp; tax.</p>
 
-      {/* ── SPAIN HEAT MAP ── */}
-      <div className="mb-8 rounded-xl overflow-hidden border" style={{ background: '#080c11', borderColor: '#1c2333' }}>
-        <div className="p-4 md:p-6">
-          <h2 className="text-sm font-bold uppercase tracking-[0.15em] mb-4" style={{ color: '#a78bfa' }}>Regional Heat Map</h2>
-          <div className="relative w-full" style={{ height: 280 }}>
-            {/* Spain outline — simplified SVG */}
-            <svg viewBox="0 0 600 400" className="w-full h-full" style={{ opacity: 0.15 }}>
-              <path d="M150,50 L450,30 L520,80 L550,180 L500,280 L420,350 L300,380 L180,350 L80,280 L50,180 L80,100 Z" fill="none" stroke="#4a5568" strokeWidth="1" />
-            </svg>
-            {/* Region zones */}
-            {regions.map(r => {
-              const score = Number(r.avgYield) || 3;
-              const intensity = Math.min(score / 10, 1);
-              const positions: Record<string, { x: number; y: number }> = {
-                'cb-north': { x: 72, y: 30 },
-                'cb-south': { x: 65, y: 52 },
-                'costa-calida': { x: 52, y: 62 },
-                'costa-del-sol': { x: 35, y: 75 },
-              };
-              const pos = positions[r.code] || { x: 50, y: 50 };
-              const size = 60 + r.count / 15;
-              const color = intensity > 0.6 ? '#10B981' : intensity > 0.4 ? '#00b9ff' : '#6366f1';
-              return (
-                <div key={r.code} className="absolute animate-region-pulse" style={{
-                  left: `${pos.x}%`, top: `${pos.y}%`, transform: 'translate(-50%, -50%)',
-                  width: size, height: size, borderRadius: '50%',
-                  background: `radial-gradient(circle, ${color}40 0%, ${color}10 50%, transparent 70%)`,
-                  boxShadow: `0 0 ${20 + intensity * 40}px ${color}30`,
-                  animationDelay: `${Math.random() * 2}s`,
-                  animationDuration: `${2.5 + Math.random()}s`,
+      {/* ── REGIONAL HEAT MAP ── */}
+      <div className="mb-8">
+        <h2 className="text-sm font-bold uppercase tracking-[0.15em] mb-4" style={{ color: '#a78bfa' }}>Regional Heat Map</h2>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+          {regions.map((r, idx) => {
+            const yld = Number(r.avgYield) || 3;
+            const intensity = Math.min(yld / 10, 1);
+            const color = intensity > 0.6 ? '#10B981' : intensity > 0.4 ? '#00b9ff' : '#6366f1';
+            return (
+              <div key={r.code} className="group relative rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.03]"
+                style={{
+                  minHeight: 200, background: '#080c11', border: '1px solid #1c2333',
+                  boxShadow: `inset 0 0 ${40 + intensity * 80}px ${color}15, 0 0 ${20 + intensity * 40}px ${color}10`,
+                  animation: `region-pulse ${2.5 + idx * 0.3}s ease-in-out infinite`,
+                  animationDelay: `${idx * 0.6}s`,
                 }}>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="text-[8px] md:text-[10px] font-bold text-white whitespace-nowrap" style={{ textShadow: `0 0 10px ${color}` }}>{r.name.replace('Costa ', '')}</div>
-                      <div className="text-[7px] md:text-[9px] font-semibold" style={{ color }}>{r.avgYield}%</div>
-                    </div>
+                <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse at 50% 80%, ${color}20 0%, transparent 70%)` }} />
+                <div className="relative z-10 flex flex-col items-center justify-center h-full p-6 text-center" style={{ minHeight: 200 }}>
+                  <div className="text-lg md:text-xl font-extralight tracking-[0.25em] text-white mb-2" style={{ textShadow: `0 0 20px ${color}60` }}>{r.name.toUpperCase()}</div>
+                  <div className="text-3xl md:text-4xl font-bold mb-1" style={{ color, textShadow: `0 0 30px ${color}40` }}>{r.avgYield}%</div>
+                  <div className="text-[10px] text-gray-500 tracking-wider">{r.count} properties</div>
+                  {/* Hover detail */}
+                  <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-[10px] space-y-0.5">
+                    <div className="text-gray-400">Best town: <span className="text-white font-semibold">{r.bestTown?.split(',')[0]}</span></div>
+                    <div className="text-gray-400">Avg discount: <span style={{ color }}>{r.avgDisc}%</span></div>
+                    <div className="text-gray-400">Avg score: <span className="text-white font-semibold">{r.bestTownScore}</span></div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
