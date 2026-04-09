@@ -2356,39 +2356,40 @@ function YieldTab({ properties, isPaid, onUpgrade, onCurrencyChange }: { propert
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
-        <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-3 mb-4">
+        <div className="flex flex-col md:flex-row md:items-center gap-2">
           <h2 className="font-serif text-lg md:text-xl text-amber-400">Estimated Rental Yield</h2>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] text-gray-500 uppercase tracking-wider">Currency</span>
-            <div className="flex gap-1 flex-wrap">
-              {CURRENCIES.map(c => (
-                <button
-                  key={c.code}
-                  onClick={() => handleCurrencyChange(c.code)}
-                  className={`px-2.5 py-1 rounded text-[10px] font-semibold border transition-all ${
-                    currency === c.code
-                      ? 'bg-[#c9a84c]/15 border-[#c9a84c]/60 text-[#c9a84c]'
-                      : 'border-[#2a2a30] text-gray-500 hover:border-[#c9a84c]/30'
-                  }`}
-                >
-                  {c.flag} {c.code}
-                </button>
-              ))}
-              {fxLoading && <span className="text-[9px] text-gray-600 ml-1 self-center">updating...</span>}
-              {!fxLoading && currency !== 'EUR' && (
-                <span className="text-[9px] text-gray-600 ml-1 self-center">
-                  1 EUR = {(rates[currency] || 1).toFixed(2)} {currency}
-                </span>
-              )}
-            </div>
+          <a href="https://wise.com/invite/u/henrikk" target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:opacity-90 w-fit"
+            style={{ background: '#9fe870', color: '#163300' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12.5 2L6.5 22h3l2-7h5l-1.5 7h3L22 8.5 12.5 2zm1 11h-3.5l2-7L17 10.5 13.5 13z" fill="#163300"/></svg>
+            Transfer your investment funds fee-free with Wise →
+          </a>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-gray-500 uppercase tracking-wider">Currency</span>
+          <div className="flex gap-1 flex-wrap">
+            {CURRENCIES.map(c => (
+              <button
+                key={c.code}
+                onClick={() => handleCurrencyChange(c.code)}
+                className={`px-2.5 py-1 rounded text-[10px] font-semibold border transition-all ${
+                  currency === c.code
+                    ? 'bg-[#c9a84c]/15 border-[#c9a84c]/60 text-[#c9a84c]'
+                    : 'border-[#2a2a30] text-gray-500 hover:border-[#c9a84c]/30'
+                }`}
+              >
+                {c.flag} {c.code}
+              </button>
+            ))}
+            {fxLoading && <span className="text-[9px] text-gray-600 ml-1 self-center">updating...</span>}
+            {!fxLoading && currency !== 'EUR' && (
+              <span className="text-[9px] text-gray-600 ml-1 self-center">
+                1 EUR = {(rates[currency] || 1).toFixed(2)} {currency}
+              </span>
+            )}
           </div>
         </div>
-        <a href="https://wise.com/invite/u/henrikk" target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all hover:opacity-90"
-          style={{ background: '#9fe870', color: '#163300' }}>
-          💸 Transfer your investment funds fee-free with Wise →
-        </a>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {sorted.slice(0, isPaid ? 30 : FREE_YIELD_LIMIT).map((d, i) => (
