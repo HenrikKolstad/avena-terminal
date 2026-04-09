@@ -540,9 +540,9 @@ export default function Explorer() {
               user ? (
                 <div className="flex items-center gap-2 flex-shrink-0">
                   {isPaid ? (
-                    <span className="text-[11px] px-3 py-1 rounded-full font-bold" style={{ background: 'linear-gradient(135deg, #10B98122, #10B98144)', border: '1px solid rgba(16,185,129,0.5)', color: '#10B981' }}>PRO</span>
+                    <span className="text-[11px] px-3 py-1 rounded-full font-bold" style={{ background: 'linear-gradient(135deg, rgba(0,185,255,0.12), rgba(159,232,112,0.15))', border: '1px solid rgba(0,185,255,0.4)', color: '#00b9ff' }}>PRO</span>
                   ) : (
-                    <button onClick={() => setShowPaywall(true)} className="text-[11px] font-bold px-3 py-1.5 rounded-lg" style={{ background: 'linear-gradient(135deg, #10B981, #34d399)', color: '#000' }}>Go PRO</button>
+                    <button onClick={() => setShowPaywall(true)} className="text-[11px] font-bold px-3 py-1.5 rounded-lg" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>Go PRO</button>
                   )}
                   {user.email?.toLowerCase() === 'henrik@xaviaestate.com' && (
                     <>
@@ -555,7 +555,7 @@ export default function Explorer() {
               ) : (
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button onClick={() => setShowAuthModal(true)} className="text-[11px] border border-[#10B981]/50 text-emerald-400 font-semibold px-3 py-1.5 rounded-lg">Sign In</button>
-                  <button onClick={() => setShowPaywall(true)} className="text-[11px] text-black font-bold px-3 py-1.5 rounded-lg" style={{ background: 'linear-gradient(135deg, #10B981, #34d399)' }}>PRO</button>
+                  <button onClick={() => setShowPaywall(true)} className="text-[11px] font-bold px-3 py-1.5 rounded-lg" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>PRO</button>
                 </div>
               )
             )}
@@ -681,7 +681,7 @@ export default function Explorer() {
                 user ? (
                   <div className="flex items-center gap-2">
                     {isPaid ? (
-                      <span className="text-[10px] px-2.5 py-1 rounded-full font-bold tracking-wide" style={{ background: 'linear-gradient(135deg, #10B98122, #10B98144)', border: '1px solid rgba(16,185,129,0.5)', color: '#10B981' }}>PRO</span>
+                      <span className="text-[10px] px-2.5 py-1 rounded-full font-bold tracking-wide" style={{ background: 'linear-gradient(135deg, rgba(0,185,255,0.12), rgba(159,232,112,0.15))', border: '1px solid rgba(0,185,255,0.4)', color: '#00b9ff' }}>PRO</span>
                     ) : (
                       <button onClick={() => setShowPaywall(true)} className="text-[11px] bg-emerald-600 hover:bg-emerald-500 text-black font-bold px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap">Upgrade →</button>
                     )}
