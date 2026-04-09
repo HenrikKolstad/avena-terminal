@@ -81,6 +81,14 @@ Per investor at €2,500:
 → ~€165/year
 → Est. exit value at 15% appreciation: €2,875
 
+### The Vault
+- Safe Multisig Address: 0x86D14d0d4a8B5934CC432689fB1415100d5021Cd
+- Network: BNB Smart Chain (BSC)
+- BSCScan: https://bscscan.com/address/0x86D14d0d4a8B5934CC432689fB1415100d5021Cd
+- Structure: 2/3 signers required (upgrading from 1/1 before launch)
+- 48hr timelock on all fund movements
+- All transactions publicly visible on-chain
+
 ### Security
 - Smart contract audited before launch (Hacken or equivalent)
 - Multisig wallet — Avena + 2 independent signers

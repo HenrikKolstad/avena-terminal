@@ -3534,6 +3534,42 @@ function CryptoTab() {
         </div>
       </div>
 
+      {/* ── THE VAULT ── */}
+      <div className="px-4 md:px-10 pt-12 pb-8" style={{ background: '#0d1117' }}>
+        <div className="max-w-5xl mx-auto">
+          <div className="rounded-lg p-6" style={{ background: '#0d1117', border: '1px solid #1a2332', borderTop: '2px solid #10B981' }}>
+            <h3 className="text-xs font-bold uppercase tracking-[0.2em] mb-5" style={{ color: '#10B981' }}>THE VAULT</h3>
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                <span className="text-gray-500 text-xs font-medium w-32 flex-shrink-0">Multisig Address</span>
+                <div className="flex items-center gap-2">
+                  <code className="text-white text-xs bg-[#090d12] px-2 py-1 rounded border border-[#1a2332] break-all">0x86D14d0d4a8B5934CC432689fB1415100d5021Cd</code>
+                  <button onClick={() => navigator.clipboard.writeText('0x86D14d0d4a8B5934CC432689fB1415100d5021Cd')} className="text-gray-500 hover:text-white text-xs flex-shrink-0 transition-colors" title="Copy address">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  </button>
+                  <a href="https://bscscan.com/address/0x86D14d0d4a8B5934CC432689fB1415100d5021Cd" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white text-xs flex-shrink-0 transition-colors" title="View on BSCScan">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  </a>
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                <span className="text-gray-500 text-xs font-medium w-32 flex-shrink-0">Structure</span>
+                <span className="text-gray-300 text-xs">2/3 signers required &middot; 48hr timelock on all movements</span>
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                <span className="text-gray-500 text-xs font-medium w-32 flex-shrink-0">Signers</span>
+                <span className="text-gray-300 text-xs">Founder &middot; Co-signer &middot; Cold storage</span>
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                <span className="text-gray-500 text-xs font-medium w-32 flex-shrink-0">Transparency</span>
+                <a href="https://bscscan.com/address/0x86D14d0d4a8B5934CC432689fB1415100d5021Cd" target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: '#10B981' }}>View all transactions on BSCScan &rarr;</a>
+              </div>
+            </div>
+            <p className="text-gray-600 text-[10px] mt-5">Every euro that enters The Core is visible on-chain. No single person can move funds alone.</p>
+          </div>
+        </div>
+      </div>
+
       {/* ── EMAIL CAPTURE ── */}
       <div className="px-4 md:px-10 py-12 text-center" style={{ background: '#0d1117' }}>
         <p className="text-gray-500 text-sm italic mb-6">Round 1 opens when The Core is ready. Get notified.</p>
