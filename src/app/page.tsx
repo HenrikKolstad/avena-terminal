@@ -10,7 +10,7 @@ import { supabase } from '@/lib/supabase';
 import { useLanguage } from '@/context/LanguageContext';
 import { LANGUAGES } from '@/lib/translations';
 import { BarChart3, Coins, Gem, Map, FolderOpen, TrendingUp, Star, Download, DollarSign, Heart, Crown, Settings, Info, Scale, Mail, BookOpen, Bitcoin, Menu, X, ChevronLeft, ChevronRight, Lock, User, ExternalLink, AlertTriangle, Check, Sparkles, FileText, Calculator, ArrowUpRight, Zap } from 'lucide-react';
-import OrbLightning from '@/components/OrbLightning';
+import CoreOrb from '@/components/OrbLightning';
 
 const MapView = dynamic(() => import('@/components/MapView'), { ssr: false });
 
@@ -3820,7 +3820,7 @@ function CryptoTab({ properties }: { properties: Property[] }) {
   };
 
   const fillPct = 0;
-  const fillY = 100 - fillPct;
+
 
   return (
     <div className="w-full" style={{ background: '#090d12' }}>
@@ -3836,56 +3836,8 @@ function CryptoTab({ properties }: { properties: Property[] }) {
       <div className="flex flex-col items-center justify-center py-12 md:py-20 relative">
         {/* Glow backdrop only — no sonar rings */}
 
-        {/* Orb container */}
-        <div className="relative animate-core-breathe" style={{
-          width: 280, height: 280,
-          boxShadow: '0 0 40px #10B98155, 0 0 80px #10B98133, 0 0 120px #10B98122',
-          borderRadius: '50%',
-        }}>
-          <svg viewBox="0 0 200 200" className="w-full h-full">
-            <defs>
-              <clipPath id="orbClip"><circle cx="100" cy="100" r="98" /></clipPath>
-              <linearGradient id="fillGrad" x1="0" y1="1" x2="0" y2="0">
-                <stop offset="0%" stopColor="#10B981" stopOpacity="0.9" />
-                <stop offset="100%" stopColor="#059669" stopOpacity="0.7" />
-              </linearGradient>
-              <radialGradient id="orbSheen" cx="40%" cy="35%" r="50%">
-                <stop offset="0%" stopColor="white" stopOpacity="0.06" />
-                <stop offset="100%" stopColor="white" stopOpacity="0" />
-              </radialGradient>
-            </defs>
-
-            {/* Dark base */}
-            <circle cx="100" cy="100" r="98" fill="#0d1117" />
-
-            {/* Liquid fill */}
-            <g clipPath="url(#orbClip)">
-              <rect x="0" y={fillY * 2} width="200" height={200 - fillY * 2 + 4} fill="url(#fillGrad)" />
-              {/* Animated wave */}
-              <path fill="#10B981" opacity="0.35">
-                <animate
-                  attributeName="d"
-                  values={`M0,${fillY * 2} Q50,${fillY * 2 - 5} 100,${fillY * 2} Q150,${fillY * 2 + 5} 200,${fillY * 2} L200,${fillY * 2 + 8} Q150,${fillY * 2 + 3} 100,${fillY * 2 + 8} Q50,${fillY * 2 + 13} 0,${fillY * 2 + 8} Z;M0,${fillY * 2} Q50,${fillY * 2 + 5} 100,${fillY * 2} Q150,${fillY * 2 - 5} 200,${fillY * 2} L200,${fillY * 2 + 8} Q150,${fillY * 2 + 13} 100,${fillY * 2 + 8} Q50,${fillY * 2 + 3} 0,${fillY * 2 + 8} Z;M0,${fillY * 2} Q50,${fillY * 2 - 5} 100,${fillY * 2} Q150,${fillY * 2 + 5} 200,${fillY * 2} L200,${fillY * 2 + 8} Q150,${fillY * 2 + 3} 100,${fillY * 2 + 8} Q50,${fillY * 2 + 13} 0,${fillY * 2 + 8} Z`}
-                  dur="3s" repeatCount="indefinite"
-                />
-              </path>
-            </g>
-
-            {/* Sheen overlay */}
-            <circle cx="100" cy="100" r="98" fill="url(#orbSheen)" />
-
-            {/* Outer ring */}
-            <circle cx="100" cy="100" r="99" fill="none" stroke="#10B981" strokeWidth="0.5" opacity="0.3" />
-          </svg>
-
-          {/* Lightning effect */}
-          <OrbLightning size={280} />
-
-          {/* Percentage inside orb */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-4xl font-light text-white tracking-wider" style={{ textShadow: '0 0 30px rgba(16,185,129,0.6)' }}>{fillPct}%</span>
-          </div>
-        </div>
+        {/* The Core — unified canvas orb */}
+        <CoreOrb size={280} fillPct={fillPct} />
 
         {/* Text below orb */}
         <div className="mt-8 text-center relative z-10">
