@@ -648,8 +648,6 @@ export default function Explorer() {
           {/* CENTER — hero punchlines — only when sidebar collapsed */}
           {sidebarCollapsed && (
             <div className="hidden lg:flex flex-col gap-2 flex-1 max-w-md mx-auto text-center">
-              <div className="text-lg xl:text-xl font-bold leading-snug" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t.hero_line1}</div>
-              <div className="h-px w-16 mx-auto" style={{ background: 'linear-gradient(90deg, transparent, #00b9ff, transparent)' }} />
               <div className="text-lg xl:text-xl font-bold leading-snug" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t.hero_line2}</div>
               <p className="text-[11px] mt-1 italic tracking-wide font-semibold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>The Bloomberg of European property investment</p>
             </div>
