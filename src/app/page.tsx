@@ -1421,8 +1421,8 @@ export default function Explorer() {
           {tab === 'crypto' && (
             <div className="relative">
               <div className="absolute inset-0 z-20 flex flex-col items-center justify-center backdrop-blur-md" style={{ background: 'rgba(9,13,18,0.85)' }}>
-                <div className="text-2xl md:text-3xl font-extralight tracking-[0.3em] text-white mb-3">COMING SOON</div>
-                <p className="text-gray-500 text-sm tracking-wide">The Avena Experiment is being prepared.</p>
+                <div className="text-2xl md:text-3xl font-extralight tracking-[0.3em] mb-3" style={{ color: '#93c5fd' }}>COMING SOON</div>
+                <p className="text-sm tracking-wide" style={{ color: '#3b82f6' }}>The Avena Experiment is being prepared.</p>
               </div>
               <div className="pointer-events-none select-none">
                 <CryptoTab />
@@ -2073,7 +2073,7 @@ export default function Explorer() {
 
       {/* Footer */}
       <div className="border-t py-6 text-center" style={{ borderColor: '#1c2333', paddingLeft: isDesktop ? (sidebarCollapsed ? 32 : 240) : 0 }}>
-        <p className="text-[10px] text-gray-600 tracking-wide">© 2026 Avena Terminal · avena-estate.com · Spain&apos;s first PropTech/FinTech terminal</p>
+        <p className="text-[10px] text-gray-600 tracking-wide">© 2026 Avena Terminal · avenaterminal.com · Spain&apos;s first PropTech/FinTech terminal</p>
       </div>
     </div>
   );

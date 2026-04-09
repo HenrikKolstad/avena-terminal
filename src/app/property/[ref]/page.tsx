@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ ref: stri
     title, description,
     openGraph: {
       title, description,
-      url: `https://avena-estate.com/property/${encodeURIComponent(p.ref ?? '')}`,
+      url: `https://avenaterminal.com/property/${encodeURIComponent(p.ref ?? '')}`,
       siteName: 'Avena Estate',
       images: p.imgs?.[0] ? [{ url: p.imgs[0], width: 1200, height: 630 }] : [{ url: '/opengraph-image', width: 1200, height: 630 }],
       type: 'website',
@@ -66,9 +66,9 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
   const breadcrumb = {
     '@context': 'https://schema.org', '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://avena-estate.com' },
-      { '@type': 'ListItem', position: 2, name: 'Towns', item: 'https://avena-estate.com/towns' },
-      { '@type': 'ListItem', position: 3, name: p.l, item: `https://avena-estate.com/towns/${townSlug}` },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://avenaterminal.com' },
+      { '@type': 'ListItem', position: 2, name: 'Towns', item: 'https://avenaterminal.com/towns' },
+      { '@type': 'ListItem', position: 3, name: p.l, item: `https://avenaterminal.com/towns/${townSlug}` },
       { '@type': 'ListItem', position: 4, name: p.p },
     ],
   };
@@ -199,7 +199,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
       </main>
 
       <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>
-        &copy; 2026 Avena Estate &middot; <a href="https://avena-estate.com" className="text-gray-500 hover:text-gray-300">avena-estate.com</a>
+        &copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
       </footer>
     </div>
   );

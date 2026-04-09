@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Spain Property Investment Blog | Avena Estate',
     description: 'Weekly insights on Spanish new build investment, rental yields, and market analysis.',
-    url: 'https://avena-estate.com/blog',
+    url: 'https://avenaterminal.com/blog',
     siteName: 'Avena Estate',
     type: 'website',
   },
@@ -98,7 +98,7 @@ export default async function BlogPage() {
       <div className="h-px w-full" style={{ background: 'linear-gradient(90deg, transparent, #00b9ff40, #9fe87040, transparent)' }} />
 
       <footer className="py-6 text-center text-gray-600 text-xs">
-        © 2026 Avena Estate · <a href="https://avena-estate.com" className="text-gray-500 hover:text-gray-300">avena-estate.com</a>
+        © 2026 Avena Estate · <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
       </footer>
     </div>
   );

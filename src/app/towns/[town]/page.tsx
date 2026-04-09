@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ town: str
   const description = `Browse ${props.length} scored new build properties in ${name}, Spain. Average investment score ${avgScore}/100. Rental yields up to ${maxYield.toFixed(1)}%. Data updated weekly.`;
   return {
     title, description,
-    openGraph: { title, description, url: `https://avena-estate.com/towns/${town}`, siteName: 'Avena Estate', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] },
+    openGraph: { title, description, url: `https://avenaterminal.com/towns/${town}`, siteName: 'Avena Estate', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] },
   };
 }
 
@@ -41,7 +41,7 @@ export default async function TownPage({ params }: { params: Promise<{ town: str
     itemListElement: top10.slice(0, 5).map((p, i) => ({
       '@type': 'ListItem',
       position: i + 1,
-      url: `https://avena-estate.com/property/${encodeURIComponent(p.ref ?? '')}`,
+      url: `https://avenaterminal.com/property/${encodeURIComponent(p.ref ?? '')}`,
       name: p.p,
     })),
   };
@@ -50,8 +50,8 @@ export default async function TownPage({ params }: { params: Promise<{ town: str
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://avena-estate.com' },
-      { '@type': 'ListItem', position: 2, name: 'Towns', item: 'https://avena-estate.com/towns' },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://avenaterminal.com' },
+      { '@type': 'ListItem', position: 2, name: 'Towns', item: 'https://avenaterminal.com/towns' },
       { '@type': 'ListItem', position: 3, name },
     ],
   };
@@ -115,7 +115,7 @@ export default async function TownPage({ params }: { params: Promise<{ town: str
       </main>
 
       <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>
-        &copy; 2026 Avena Estate &middot; <a href="https://avena-estate.com" className="text-gray-500 hover:text-gray-300">avena-estate.com</a>
+        &copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
       </footer>
     </div>
   );

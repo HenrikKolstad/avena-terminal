@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: { params: Promise<{ costa: st
   if (!data) return { title: 'Costa Not Found | Avena Estate' };
   const title = `New Build Investments on ${data.costa} — Ranked by Data | Avena Estate`;
   const description = `${data.properties.length} scored new build properties on ${data.costa}. Average score ${Math.round(avg(data.properties.filter(p => p._sc).map(p => p._sc!)))}/100.`;
-  return { title, description, openGraph: { title, description, url: `https://avena-estate.com/costas/${costa}`, siteName: 'Avena Estate', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] } };
+  return { title, description, openGraph: { title, description, url: `https://avenaterminal.com/costas/${costa}`, siteName: 'Avena Estate', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] } };
 }
 
 export default async function CostaPage({ params }: { params: Promise<{ costa: string }> }) {
@@ -26,8 +26,8 @@ export default async function CostaPage({ params }: { params: Promise<{ costa: s
   const top20 = props.slice(0, 20);
 
   const jsonLd = [
-    { '@context': 'https://schema.org', '@type': 'ItemList', name: `New Builds on ${name}`, numberOfItems: top20.length, itemListElement: top20.slice(0, 5).map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: `https://avena-estate.com/property/${encodeURIComponent(p.ref ?? '')}`, name: p.p })) },
-    { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://avena-estate.com' }, { '@type': 'ListItem', position: 2, name: 'Costas', item: 'https://avena-estate.com/costas' }, { '@type': 'ListItem', position: 3, name }] },
+    { '@context': 'https://schema.org', '@type': 'ItemList', name: `New Builds on ${name}`, numberOfItems: top20.length, itemListElement: top20.slice(0, 5).map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: `https://avenaterminal.com/property/${encodeURIComponent(p.ref ?? '')}`, name: p.p })) },
+    { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://avenaterminal.com' }, { '@type': 'ListItem', position: 2, name: 'Costas', item: 'https://avenaterminal.com/costas' }, { '@type': 'ListItem', position: 3, name }] },
   ];
 
   return (
@@ -77,7 +77,7 @@ export default async function CostaPage({ params }: { params: Promise<{ costa: s
         </div>
       </main>
 
-      <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>&copy; 2026 Avena Estate &middot; <a href="https://avena-estate.com" className="text-gray-500 hover:text-gray-300">avena-estate.com</a></footer>
+      <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>&copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a></footer>
     </div>
   );
 }

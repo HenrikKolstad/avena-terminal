@@ -9,7 +9,7 @@ const supabase = createClient(
 );
 
 const DROP_THRESHOLD_PCT = 2; // trigger when price drops >= 2%
-const APP_URL = 'https://avena-estate.com';
+const APP_URL = 'https://avenaterminal.com';
 
 async function sendEmailViaResend(
   to: string,
@@ -38,7 +38,7 @@ async function sendEmailViaResend(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Avena Terminal <alerts@avena-estate.com>',
+        from: 'Avena Terminal <alerts@avenaterminal.com>',
         to: [to],
         subject,
         html: `<!DOCTYPE html><html><body>${body}</body></html>`,

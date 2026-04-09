@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     openGraph: {
       title: post.title,
       description: post.meta_description || post.excerpt || '',
-      url: `https://avena-estate.com/blog/${post.slug}`,
+      url: `https://avenaterminal.com/blog/${post.slug}`,
       siteName: 'Avena Estate',
       images: post.cover_image ? [{ url: post.cover_image, width: 1200, height: 630 }] : [],
       type: 'article',
@@ -117,7 +117,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           <h2 className="text-xl font-bold text-white mb-3">Find the best deals in Spain</h2>
           <p className="text-gray-400 text-sm mb-6">1,800+ new builds ranked by investment score, rental yield, and value.</p>
           <a
-            href="https://avena-estate.com"
+            href="https://avenaterminal.com"
             className="inline-block px-8 py-3 rounded-xl font-bold text-sm shadow-lg hover:opacity-90 hover:scale-[1.02] transition-all"
             style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}
           >
@@ -130,7 +130,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <div className="h-px w-full" style={{ background: 'linear-gradient(90deg, transparent, #00b9ff40, #9fe87040, transparent)' }} />
 
       <footer className="py-6 text-center text-gray-600 text-xs">
-        © 2026 Avena Estate · <a href="https://avena-estate.com" className="text-gray-500 hover:text-gray-300">avena-estate.com</a>
+        © 2026 Avena Estate · <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
       </footer>
     </div>
   );

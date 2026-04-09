@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     const { email } = await req.json();
     if (!email) return NextResponse.json({ error: 'Email required' }, { status: 400 });
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://avena-estate.com';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://avenaterminal.com';
     const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_ID!;
 
     // Search for existing customer

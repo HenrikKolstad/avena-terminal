@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, slugify } from '@/lib/properties';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = 'https://avena-estate.com';
+  const base = 'https://avenaterminal.com';
   const now = new Date();
 
   const entries: MetadataRoute.Sitemap = [

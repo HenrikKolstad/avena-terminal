@@ -70,7 +70,7 @@ export default function Image() {
             </div>
           ))}
           <div style={{ marginLeft: 'auto', fontSize: 16, color: '#374151', fontFamily: 'sans-serif' }}>
-            avena-estate.com
+            avenaterminal.com
           </div>
         </div>
       </div>

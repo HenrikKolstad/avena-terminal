@@ -5,6 +5,6 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       { userAgent: '*', allow: '/', disallow: ['/api/', '/admin/'] },
     ],
-    sitemap: 'https://avena-estate.com/sitemap.xml',
+    sitemap: 'https://avenaterminal.com/sitemap.xml',
   };
 }

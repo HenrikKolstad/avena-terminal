@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'New Build Property Investment by Town — Spain | Avena Estate',
     description: 'Browse new build investment properties by town across Spain\'s costas. Ranked by investment score and rental yield.',
-    url: 'https://avena-estate.com/towns',
+    url: 'https://avenaterminal.com/towns',
     siteName: 'Avena Estate',
     images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
   },
@@ -52,7 +52,7 @@ export default function TownsPage() {
       </main>
 
       <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>
-        &copy; 2026 Avena Estate &middot; <a href="https://avena-estate.com" className="text-gray-500 hover:text-gray-300">avena-estate.com</a>
+        &copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
       </footer>
     </div>
   );

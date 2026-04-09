@@ -5,7 +5,7 @@ import { getUniqueCostas } from '@/lib/properties';
 export const metadata: Metadata = {
   title: 'New Build Investment by Costa — Spain | Avena Estate',
   description: 'Compare new build property investments across Spain\'s costas. Costa Blanca, Costa del Sol, Costa Calida — ranked by score and rental yield.',
-  openGraph: { title: 'New Build Investment by Costa — Spain | Avena Estate', description: 'Compare new build property investments across Spain\'s costas.', url: 'https://avena-estate.com/costas', siteName: 'Avena Estate', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] },
+  openGraph: { title: 'New Build Investment by Costa — Spain | Avena Estate', description: 'Compare new build property investments across Spain\'s costas.', url: 'https://avenaterminal.com/costas', siteName: 'Avena Estate', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] },
 };
 
 export default function CostasPage() {
@@ -44,7 +44,7 @@ export default function CostasPage() {
         </div>
       </main>
 
-      <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>&copy; 2026 Avena Estate &middot; <a href="https://avena-estate.com" className="text-gray-500 hover:text-gray-300">avena-estate.com</a></footer>
+      <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>&copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a></footer>
     </div>
   );
 }
