@@ -178,7 +178,7 @@ export default function Explorer() {
   const [mobileHeaderHidden, setMobileHeaderHidden] = useState(false);
   const lastScrollY = useRef(0);
   const scrollUpAccum = useRef(0);
-  const topTouchCount = useRef(0);
+  const topTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (typeof window === 'undefined') return;
     let ticking = false;
@@ -190,18 +190,17 @@ export default function Explorer() {
         const delta = y - lastScrollY.current;
         if (delta > 0) {
           scrollUpAccum.current = 0;
-          topTouchCount.current = 0;
+          if (topTimer.current) { clearTimeout(topTimer.current); topTimer.current = null; }
           if (y > headerH && delta > 5) {
             setMobileHeaderHidden(true);
           }
         } else {
-          // Must reach top twice (double swipe) to reveal header
-          if (y <= 10) {
-            topTouchCount.current++;
-            if (topTouchCount.current >= 2) {
-              setMobileHeaderHidden(false);
-              topTouchCount.current = 0;
-            }
+          // Must stay at top for 1.5s to reveal header
+          if (y <= 5 && !topTimer.current && mobileHeaderHidden) {
+            topTimer.current = setTimeout(() => {
+              if (window.scrollY <= 5) setMobileHeaderHidden(false);
+              topTimer.current = null;
+            }, 1500);
           }
         }
         lastScrollY.current = y;
