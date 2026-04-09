@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { getAllProperties, slugify } from '@/lib/properties';
 import { Property } from '@/lib/types';
+import PropertyGallery from '@/components/PropertyGallery';
+import BackButton from '@/components/BackButton';
 
 function findProperty(ref: string): Property | null {
   return getAllProperties().find((p) => p.ref === ref) ?? null;
@@ -80,7 +82,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
       <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}>
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">AVENA</Link>
-          <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">Back to Terminal</Link>
+          <BackButton />
         </div>
       </header>
 
@@ -94,13 +96,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
 
         {/* Hero */}
         <div className="grid md:grid-cols-2 gap-8 mb-10">
-          <div className="aspect-[4/3] rounded-2xl overflow-hidden border" style={{ background: '#0f1419', borderColor: '#1c2333' }}>
-            {p.imgs?.[0] ? (
-              <img src={p.imgs[0]} alt={`${p.p} in ${p.l}`} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-600 text-4xl">No image</div>
-            )}
-          </div>
+          <PropertyGallery images={p.imgs || []} alt={`${p.p} in ${p.l}`} />
 
           <div className="flex flex-col justify-center">
             <div className="flex items-start gap-4 mb-4">

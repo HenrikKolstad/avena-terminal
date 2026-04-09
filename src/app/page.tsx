@@ -3885,7 +3885,7 @@ function CryptoTab({ properties }: { properties: Property[] }) {
 
         {/* Text below orb */}
         <div className="mt-8 text-center relative z-10">
-          <h2 className="tracking-[0.4em] mb-2" style={{ fontSize: '2rem', fontWeight: 300, background: 'linear-gradient(135deg, #93c5fd, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>AVENA VAULT</h2>
+          <h2 className="tracking-[0.4em] mb-2" style={{ fontSize: '2rem', fontWeight: 300, background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>AVENA VAULT</h2>
           <div className="tracking-[0.15em] text-sm mb-4" style={{ color: '#10B981' }}>&euro;0 / &euro;450,000</div>
 
           {/* Progress bar */}
@@ -4180,7 +4180,7 @@ function CryptoTab({ properties }: { properties: Property[] }) {
           <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-none">
             {(() => {
               const candidates = properties
-                .filter(p => p.pf >= 410000 && p.pf <= 440000 && p.s === 'ready')
+                .filter(p => p.pf >= 410000 && p.pf <= 440000 && p.s === 'ready' && (p.r === 'cb-south' || p.r === 'cb-north' || p.r === 'costa-calida'))
                 .sort((a, b) => (b._sc ?? 0) - (a._sc ?? 0))
                 .slice(0, 6);
               if (!candidates.length) return (
@@ -4189,7 +4189,7 @@ function CryptoTab({ properties }: { properties: Property[] }) {
                 </div>
               );
               return candidates.map(p => (
-                <a key={p.ref} href={`/property/${encodeURIComponent(p.ref ?? '')}`} className="flex-shrink-0 w-64 rounded-lg p-4 border hover:border-emerald-500/30 transition-all block" style={{ background: '#090d12', borderColor: '#1c2333' }}>
+                <a key={p.ref} href={`/property/${encodeURIComponent(p.ref ?? '')}`} className="flex-shrink-0 w-72 rounded-lg p-4 border hover:border-emerald-500/30 transition-all block" style={{ background: '#090d12', borderColor: '#1c2333' }}>
                   <div className="flex justify-between items-start mb-2">
                     <div className="text-white font-semibold text-xs truncate pr-2">{p.p}</div>
                     <span className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-500 text-black text-xs font-bold flex items-center justify-center">{Math.round(p._sc ?? 0)}</span>
