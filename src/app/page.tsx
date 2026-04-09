@@ -1208,7 +1208,7 @@ export default function Explorer() {
                         <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 whitespace-nowrap">+{Math.abs(dc).toFixed(0)}%{d._capped ? ' ⚠' : ''}</span>
                       )}
                       {(() => { const p5 = profit5yr(d.pf, d.r); return p5 > 0 ? (
-                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-[#10B981]/10 text-emerald-400 whitespace-nowrap">+€{Math.round(p5/1000)}k 5yr</span>
+                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full whitespace-nowrap" style={{ background: 'rgba(96,165,250,0.1)', color: '#60a5fa' }}>+€{Math.round(p5/1000)}k 5yr</span>
                       ) : null; })()}
                     </div>
                     {/* Bottom row: meta chips + portfolio button */}
@@ -1333,7 +1333,7 @@ export default function Explorer() {
                                   -{dc.toFixed(0)}%{d._capped ? <span className="ml-0.5 text-emerald-400" title="Under review — benchmark may need adjustment">⚠</span> : null}
                                 </span>
                                 {de > 0 && <div className="text-[9px] text-emerald-500/70 mt-0.5">{d._capReason === 'luxury_review' ? '~' : ''}-€{(de/1000).toFixed(0)}k{d._capped && d._capReason !== 'luxury_review' ? ' (cap)' : ''}</div>}
-                                <div className="text-[9px] text-emerald-400/80 mt-0.5 font-semibold">+€{(profit5yr(d.pf, d.r)/1000).toFixed(0)}k 5yr</div>
+                                <div className="text-[9px] mt-0.5 font-semibold" style={{ color: '#60a5fa' }}>+€{(profit5yr(d.pf, d.r)/1000).toFixed(0)}k 5yr</div>
                               </div>
                             ) : (
                               <div>
@@ -1341,7 +1341,7 @@ export default function Explorer() {
                                   +{Math.abs(dc).toFixed(0)}%{d._capped ? <span className="ml-0.5 text-emerald-400" title="Under review">⚠</span> : null}
                                 </span>
                                 {de < 0 && <div className="text-[9px] text-red-500/70 mt-0.5">{d._capReason === 'luxury_review' ? '~' : ''}+€{(Math.abs(de)/1000).toFixed(0)}k{d._capped && d._capReason !== 'luxury_review' ? ' (cap)' : ''}</div>}
-                                <div className="text-[9px] text-emerald-400/80 mt-0.5 font-semibold">+€{(profit5yr(d.pf, d.r)/1000).toFixed(0)}k 5yr</div>
+                                <div className="text-[9px] mt-0.5 font-semibold" style={{ color: '#60a5fa' }}>+€{(profit5yr(d.pf, d.r)/1000).toFixed(0)}k 5yr</div>
                               </div>
                             );
                           })()}
