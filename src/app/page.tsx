@@ -3625,22 +3625,31 @@ function MarketIndexTab({ properties }: { properties: Property[] }) {
       <div className="mb-8">
         <h2 className="text-sm font-bold uppercase tracking-[0.15em] mb-4" style={{ color: '#a78bfa' }}>Regional Heat Map</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-          {regions.map((r, idx) => {
-            const yld = Number(r.avgYield) || 3;
-            const intensity = Math.min(yld / 10, 1);
-            const color = intensity > 0.6 ? '#10B981' : intensity > 0.4 ? '#00b9ff' : '#6366f1';
+          {(() => {
+            const yields = regions.map(r => Number(r.avgYield) || 0);
+            const maxY = Math.max(...yields, 1);
+            const minY = Math.min(...yields);
+            return regions.map((r, idx) => {
+            const yld = Number(r.avgYield) || 0;
+            const intensity = maxY > minY ? (yld - minY) / (maxY - minY) : 0.5;
+            const color = intensity > 0.6 ? '#10B981' : intensity > 0.3 ? '#00b9ff' : '#6366f1';
+            const glowStrength = Math.round(30 + intensity * 70);
+            const outerGlow = Math.round(15 + intensity * 50);
+            const bgOpacity = Math.round(5 + intensity * 35).toString(16).padStart(2, '0');
+            const innerOpacity = Math.round(10 + intensity * 40).toString(16).padStart(2, '0');
             return (
-              <div key={r.code} className="group relative rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.03]"
+              <div key={r.code} className="group relative rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.05]"
                 style={{
-                  minHeight: 200, background: '#080c11', border: '1px solid #1c2333',
-                  boxShadow: `inset 0 0 ${40 + intensity * 80}px ${color}15, 0 0 ${20 + intensity * 40}px ${color}10`,
-                  animation: `region-pulse ${2.5 + idx * 0.3}s ease-in-out infinite`,
-                  animationDelay: `${idx * 0.6}s`,
+                  minHeight: 200, background: '#080c11',
+                  border: `1px solid ${color}${Math.round(20 + intensity * 30).toString(16)}`,
+                  boxShadow: `inset 0 0 ${glowStrength}px ${color}${innerOpacity}, 0 0 ${outerGlow}px ${color}${bgOpacity}, 0 0 ${outerGlow * 2}px ${color}${Math.round(intensity * 15).toString(16).padStart(2, '0')}`,
+                  animation: `core-breathe ${2.5 + idx * 0.35}s ease-in-out infinite`,
+                  animationDelay: `${idx * 0.7}s`,
                 }}>
-                <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse at 50% 80%, ${color}20 0%, transparent 70%)` }} />
+                <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse at 50% 70%, ${color}${innerOpacity} 0%, ${color}08 50%, transparent 80%)` }} />
                 <div className="relative z-10 flex flex-col items-center justify-center h-full p-6 text-center" style={{ minHeight: 200 }}>
-                  <div className="text-lg md:text-xl font-extralight tracking-[0.25em] text-white mb-2" style={{ textShadow: `0 0 20px ${color}60` }}>{r.name.toUpperCase()}</div>
-                  <div className="text-3xl md:text-4xl font-bold mb-1" style={{ color, textShadow: `0 0 30px ${color}40` }}>{r.avgYield}%</div>
+                  <div className="text-lg md:text-xl font-extralight tracking-[0.25em] text-white mb-2" style={{ textShadow: `0 0 ${15 + intensity * 25}px ${color}` }}>{r.name.toUpperCase()}</div>
+                  <div className="text-3xl md:text-4xl font-bold mb-1" style={{ color, textShadow: `0 0 ${20 + intensity * 40}px ${color}` }}>{r.avgYield}%</div>
                   <div className="text-[10px] text-gray-500 tracking-wider">{r.count} properties</div>
                   {/* Hover detail */}
                   <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-[10px] space-y-0.5">
@@ -3651,7 +3660,8 @@ function MarketIndexTab({ properties }: { properties: Property[] }) {
                 </div>
               </div>
             );
-          })}
+          });
+          })()}
         </div>
       </div>
 
