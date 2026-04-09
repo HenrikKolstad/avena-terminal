@@ -3400,28 +3400,90 @@ function CryptoTab() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      {/* Hero */}
-      <div className="px-4 md:px-10 pt-8 md:pt-14 pb-10 md:pb-16 text-center relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 50% 30%, #00b9ff 0%, transparent 70%)' }} />
-        <div className="relative z-10">
-          <div className="inline-block px-3 py-1 rounded-full text-[8px] md:text-[9px] font-bold uppercase tracking-[3px] mb-4 md:mb-6 border" style={{ borderColor: 'rgba(0,185,255,0.3)', color: '#00b9ff', background: 'rgba(0,185,255,0.06)' }}>
-            Coming 2026
+      {/* The Core — animated orb hero */}
+      {(() => {
+        const fillPct = 34;
+        const fillY = 100 - fillPct;
+        return (
+          <div className="flex flex-col items-center justify-center py-16 md:py-24 relative" style={{ background: '#090d12' }}>
+            {/* Sonar rings */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              {[0, 0.8, 1.6].map((delay, i) => (
+                <div key={i} className="absolute rounded-full border" style={{
+                  width: 220, height: 220,
+                  borderColor: 'rgba(16,185,129,0.25)',
+                  animation: `core-sonar 3s ease-out ${delay}s infinite`,
+                }} />
+              ))}
+            </div>
+
+            {/* Orb */}
+            <div className="relative animate-core-breathe animate-core-glow" style={{ width: 200, height: 200 }}>
+              <svg viewBox="0 0 200 200" className="w-full h-full">
+                <defs>
+                  <clipPath id="orbClip"><circle cx="100" cy="100" r="95" /></clipPath>
+                  <radialGradient id="orbGlow" cx="50%" cy="40%" r="50%">
+                    <stop offset="0%" stopColor="#10B981" stopOpacity="0.4" />
+                    <stop offset="100%" stopColor="#10B981" stopOpacity="0" />
+                  </radialGradient>
+                  <linearGradient id="fillGrad" x1="0" y1="1" x2="0" y2="0">
+                    <stop offset="0%" stopColor="#10B981" />
+                    <stop offset="100%" stopColor="#059669" />
+                  </linearGradient>
+                </defs>
+
+                {/* Outer ring */}
+                <circle cx="100" cy="100" r="97" fill="none" stroke="#10B981" strokeWidth="1" opacity="0.2" />
+
+                {/* Dark unfilled background */}
+                <circle cx="100" cy="100" r="95" fill="#0d1117" clipPath="url(#orbClip)" />
+
+                {/* Liquid fill */}
+                <g clipPath="url(#orbClip)">
+                  <rect x="0" y={fillY * 2} width="200" height={200 - fillY * 2 + 10} fill="url(#fillGrad)" opacity="0.85" />
+                  {/* Wave effect on top of fill */}
+                  <path
+                    d={`M 0,${fillY * 2} Q 50,${fillY * 2 - 6} 100,${fillY * 2} Q 150,${fillY * 2 + 6} 200,${fillY * 2} L 200,${fillY * 2 + 2} Q 150,${fillY * 2 + 8} 100,${fillY * 2 + 2} Q 50,${fillY * 2 - 4} 0,${fillY * 2 + 2} Z`}
+                    fill="url(#fillGrad)" opacity="0.5">
+                    <animate attributeName="d"
+                      values={`M 0,${fillY * 2} Q 50,${fillY * 2 - 6} 100,${fillY * 2} Q 150,${fillY * 2 + 6} 200,${fillY * 2};M 0,${fillY * 2} Q 50,${fillY * 2 + 6} 100,${fillY * 2} Q 150,${fillY * 2 - 6} 200,${fillY * 2};M 0,${fillY * 2} Q 50,${fillY * 2 - 6} 100,${fillY * 2} Q 150,${fillY * 2 + 6} 200,${fillY * 2}`}
+                      dur="3s" repeatCount="indefinite" />
+                  </path>
+                </g>
+
+                {/* Inner glow */}
+                <circle cx="100" cy="100" r="95" fill="url(#orbGlow)" clipPath="url(#orbClip)" />
+
+                {/* Specular highlight */}
+                <ellipse cx="80" cy="65" rx="30" ry="20" fill="white" opacity="0.04" />
+              </svg>
+
+              {/* Percentage text inside orb */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-3xl font-bold text-white" style={{ textShadow: '0 0 20px rgba(16,185,129,0.5)' }}>{fillPct}%</span>
+              </div>
+            </div>
+
+            {/* Text below orb */}
+            <div className="mt-8 text-center relative z-10">
+              <h2 className="text-2xl md:text-3xl font-bold text-white tracking-[0.25em] mb-2">AVENA</h2>
+              <div className="text-sm font-semibold mb-6" style={{ color: '#10B981' }}>&euro;85,000 / &euro;250,000</div>
+              <button className="px-8 py-3 rounded-xl text-sm font-bold border transition-all hover:text-black" style={{ borderColor: '#10B981', color: '#10B981', background: 'transparent' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#10B981'; e.currentTarget.style.color = '#0d1117'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#10B981'; }}>
+                Connect Wallet
+              </button>
+            </div>
+
+            {/* Market stats below */}
+            <div className="mt-8 flex flex-wrap justify-center gap-3 text-[10px] md:text-[11px] text-gray-500 relative z-10">
+              <span>Deloitte projects <span className="text-white font-semibold">$4T</span> tokenized RE by 2035</span>
+              <span className="text-gray-700">|</span>
+              <span>Spain&apos;s digital RE market: <span className="text-white font-semibold">$1.6B</span></span>
+            </div>
           </div>
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 leading-tight">
-            <span className="text-white">Tokenized Real Estate</span><br />
-            <span style={gt}>on Avena Terminal</span>
-          </h2>
-          <p className="text-gray-400 text-xs md:text-base max-w-2xl mx-auto leading-relaxed">
-            Fractional ownership of scored Spanish new builds. Property-backed ERC-3643 security tokens
-            on Polygon. Rental yield distributed in EURC stablecoin. Built for the MiCA era.
-          </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-3 text-[10px] md:text-[11px] text-gray-500">
-            <span>Deloitte projects <span className="text-white font-semibold">$4T</span> tokenized RE by 2035</span>
-            <span className="text-gray-700">|</span>
-            <span>Spain&apos;s digital RE market: <span className="text-white font-semibold">$1.6B</span></span>
-          </div>
-        </div>
-      </div>
+        );
+      })()}
 
       {divider}
 
