@@ -1788,19 +1788,11 @@ export default function Explorer() {
                 </button>
               )}
 
-              {previewProp.u?.includes('xaviaestate.com') ? (
-                <a href={previewProp.u} target="_blank" rel="noopener noreferrer"
-                  onClick={() => logLead(previewProp, 'view_xavia')}
-                  className="block text-center py-3 text-sm rounded-lg hover:opacity-90 transition-all tracking-wide font-bold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-                  View on Xavia Estate →
-                </a>
-              ) : (
-                <a href={`mailto:henrik@xaviaestate.com?subject=${encodeURIComponent(`Inquiry: ${previewProp.p}`)}&body=${encodeURIComponent(`Hi Avena,\n\nI'm interested in the following property:\n\n${previewProp.p}\nLocation: ${previewProp.l}\nPrice: €${previewProp.pf?.toLocaleString()}\nRef: ${previewProp.ref || ''}\n\nPlease send me more details.\n\nBest regards`)}`}
-                  onClick={() => logLead(previewProp, 'contact_avena')}
-                  className="block text-center py-3 text-sm rounded-lg hover:opacity-90 transition-all tracking-wide font-bold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-                  Contact Avena →
-                </a>
-              )}
+              <a href={`mailto:henrik@xaviaestate.com?subject=${encodeURIComponent(`Inquiry: ${previewProp.p}`)}&body=${encodeURIComponent(`Hi Avena,\n\nI'm interested in the following property:\n\n${previewProp.p}\nLocation: ${previewProp.l}\nPrice: €${previewProp.pf?.toLocaleString()}\nRef: ${previewProp.ref || ''}\n\nPlease send me more details.\n\nBest regards`)}`}
+                onClick={() => logLead(previewProp, 'contact_avena')}
+                className="block text-center py-3 text-sm rounded-lg hover:opacity-90 transition-all tracking-wide font-bold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
+                Contact Avena Team
+              </a>
             </div>
           </div>
           </>
@@ -2247,12 +2239,10 @@ function YieldCard({ d, expanded, onToggle, fmtC, sym }: { d: Property; expanded
             </div>
           </div>
 
-          {d.u && (
-            <a href={d.u} target="_blank" rel="noopener noreferrer"
-              className="mt-3 block text-center text-xs bg-emerald-600 hover:bg-emerald-500 text-black font-semibold py-2 rounded transition-colors">
-              View on Xavia Estate →
-            </a>
-          )}
+          <a href={`mailto:henrik@xaviaestate.com?subject=${encodeURIComponent(`Inquiry: ${d.p}`)}&body=${encodeURIComponent(`Hi Avena,\n\nI'm interested in:\n\n${d.p}\nLocation: ${d.l}\nPrice: €${d.pf?.toLocaleString()}\nRef: ${d.ref || ''}\n\nPlease send me more details.\n\nBest regards`)}`}
+            className="mt-3 block text-center text-xs font-semibold py-2 rounded transition-colors hover:opacity-90" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
+            Contact Avena Team
+          </a>
         </div>
       )}
     </div>
@@ -3155,13 +3145,11 @@ function LuxuryTab({ properties, isPaid, onUpgrade, onPreview }: {
                 </div>
 
                 {/* CTA */}
-                {p.u && (
-                  <a href={p.u} target="_blank" rel="noopener noreferrer"
-                    onClick={e => e.stopPropagation()}
-                    className="mt-3 flex items-center justify-center gap-2 py-2.5 text-xs rounded-xl hover:opacity-90 transition-all tracking-wide font-bold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-                    View on Xavia Estate ↗
-                  </a>
-                )}
+                <a href={`mailto:henrik@xaviaestate.com?subject=${encodeURIComponent(`Inquiry: ${p.p}`)}&body=${encodeURIComponent(`Hi Avena,\n\nI'm interested in:\n\n${p.p}\nLocation: ${p.l}\nPrice: €${p.pf?.toLocaleString()}\nRef: ${p.ref || ''}\n\nPlease send me more details.\n\nBest regards`)}`}
+                  onClick={e => e.stopPropagation()}
+                  className="mt-3 flex items-center justify-center gap-2 py-2.5 text-xs rounded-xl hover:opacity-90 transition-all tracking-wide font-bold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
+                  Contact Avena Team
+                </a>
               </div>
             </div>
           );
