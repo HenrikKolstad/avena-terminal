@@ -3799,6 +3799,12 @@ function CryptoTab() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [walletModal, setWalletModal] = useState(false);
+  const [openModal, setOpenModal] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpenModal(null); };
+    if (openModal) { window.addEventListener('keydown', handleEsc); return () => window.removeEventListener('keydown', handleEsc); }
+  }, [openModal]);
 
   const handleSubmit = async () => {
     if (!email.includes('@') || submitting) return;
@@ -3908,42 +3914,236 @@ function CryptoTab() {
         </div>
       </div>
 
-      {/* ── 3 INFO BLOCKS ── */}
+      {/* ── 9 INFO BOXES ── */}
       <div className="px-4 md:px-10 pt-16 pb-12" style={{ background: '#0d1117' }}>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {[
-            {
-              title: 'THE RAISE',
-              body: 'Hard cap \u20AC450,000 USDT \u00B7 Minimum buy-in \u20AC2,500 \u00B7 90 day window to fill The Core \u00B7 If target not reached \u2014 100% refunded, no exceptions \u00B7 If filled \u2014 capital locks and we deploy immediately',
-            },
-            {
-              title: 'THE PROPERTY',
-              body: '1 property \u00B7 Key-ready or near key-ready only \u00B7 Highest scored on Avena engine at raise close \u00B7 Costa Blanca / Costa C\u00E1lida \u00B7 New build only \u00B7 No off-plan waiting games',
-            },
-            {
-              title: 'THE YIELD',
-              body: 'Est. 6\u20138% gross \u00B7 Yield begins within 6 months of raise close \u00B7 Paid monthly in USDT \u00B7 Direct to your wallet \u00B7 First exit window at 12 months',
-            },
-            {
-              title: 'THE MARKET',
-              body: 'Spanish new builds appreciate 8\u201312% annually in Costa Blanca. Supply is constrained. Demand from Northern Europe is accelerating. Key-ready stock sells fast. The Avena engine scores 1,000+ properties in real time \u2014 The Core deploys into the single highest ranked asset at raise close.',
-            },
-            {
-              title: 'THE RULES',
-              body: 'Minimum entry \u20AC2,500 USDT \u00B7 180 spots maximum \u00B7 Capital locked 12 months minimum \u00B7 Key-ready properties only \u2014 yield starts within 6 months \u00B7 Quarterly exit windows after lock period \u00B7 100% refunded if hard cap not reached in 90 days \u00B7 No early withdrawals \u00B7 No exceptions \u00B7 This is a commitment \u2014 not a trade',
-            },
-            {
-              title: 'THE NUMBERS',
-              body: '\u20AC450,000 raised \u2192 \u20AC420,000 key-ready property + \u20AC30,000 reserve \u00B7 Est. rental income \u20AC2,500/month \u2192 \u20AC30,000/year \u00B7 6.6% gross yield \u00B7 Est. 5.2% net after fees \u00B7 \u20AC2,500 invested = approx \u20AC13.75/month in USDT \u00B7 180 spots only \u00B7 First come first served \u00B7 Paid directly to your wallet every 30 days',
-            },
-          ].map((card) => (
-            <div key={card.title} className="rounded-lg p-6" style={{ background: '#0d1117', border: '1px solid #1a2332', borderTop: '2px solid #10B981' }}>
-              <h3 className="text-xs font-bold uppercase tracking-[0.2em] mb-3" style={{ color: '#10B981' }}>{card.title}</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">{card.body}</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 max-w-5xl mx-auto">
+          {([
+            { id: 'raise', title: 'THE RAISE', stat: '\u20AC450,000', subtitle: 'Hard cap \u00B7 180 spots', amber: false },
+            { id: 'property', title: 'THE PROPERTY', stat: '1 Villa', subtitle: 'Key-ready \u00B7 Highest scored', amber: false },
+            { id: 'yield', title: 'THE YIELD', stat: '6\u20138%', subtitle: 'Gross \u00B7 Paid in USDT', amber: false },
+            { id: 'market', title: 'THE MARKET', stat: '8\u201312%', subtitle: 'Annual appreciation \u00B7 Costa Blanca', amber: false },
+            { id: 'rules', title: 'THE RULES', stat: '12 months', subtitle: 'Minimum lock \u00B7 No exceptions', amber: false },
+            { id: 'numbers', title: 'THE NUMBERS', stat: '\u20AC2,500', subtitle: 'Minimum \u00B7 0.55% ownership', amber: false },
+            { id: 'token', title: 'THE TOKEN', stat: '$AVY', subtitle: 'BEP-20 \u00B7 BSC \u00B7 450,000 supply', amber: false },
+            { id: 'vault', title: 'THE VAULT', stat: '2/3', subtitle: 'Signers required \u00B7 48hr timelock', amber: false },
+            { id: 'risk', title: 'THE RISK', stat: '!', subtitle: 'Read this. Seriously.', amber: true },
+          ] as const).map((box) => (
+            <div
+              key={box.id}
+              onClick={() => setOpenModal(box.id)}
+              className="relative rounded-lg p-5 cursor-pointer transition-all duration-200 group"
+              style={{
+                background: '#0d1117',
+                border: '1px solid #1c2333',
+                borderTop: `2px solid ${box.amber ? '#ca8a04' : '#00b9ff'}`,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(16,185,129,0.15)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+            >
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: box.amber ? '#ca8a04' : '#00b9ff', fontVariant: 'small-caps' }}>{box.title}</h3>
+              <div className="text-white text-2xl font-bold mb-1">{box.stat}</div>
+              <p className="text-gray-400 text-xs">{box.subtitle}</p>
+              <ChevronRight size={14} className="absolute bottom-4 right-4 text-gray-600 group-hover:text-gray-400 transition-colors" />
             </div>
           ))}
         </div>
       </div>
+
+      {/* ── INFO MODALS ── */}
+      {openModal && (
+        <div className="fixed inset-0 z-[500] flex items-center justify-center bg-black/85 backdrop-blur-sm" onClick={() => setOpenModal(null)}>
+          <div
+            className="relative rounded-lg w-full max-w-[600px] mx-4 overflow-hidden"
+            style={{ background: '#0d1117', border: '1px solid #1c2333', borderTop: `4px solid ${openModal === 'risk' ? '#ca8a04' : '#00b9ff'}` }}
+            onClick={e => e.stopPropagation()}
+          >
+            <button onClick={() => setOpenModal(null)} className="absolute top-4 right-4 text-gray-500 hover:text-white text-lg z-10">&times;</button>
+            <div className="p-6 max-h-[80vh] overflow-y-auto">
+
+              {openModal === 'raise' && (
+                <>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: '#00b9ff', fontVariant: 'small-caps' }}>THE RAISE</h3>
+                  <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+                    <p>Hard cap: <span className="text-white font-semibold">&euro;450,000 USDT</span></p>
+                    <p>Minimum contribution: &euro;2,500 USDT. Maximum spots: 180. Raise window: 90 days from open. Chain: Binance Smart Chain (BSC). Currency: USDT (BEP-20).</p>
+                    <p><span className="text-white font-semibold">If The Core fills:</span> Capital locks. Property acquisition begins within 30 days of raise close.</p>
+                    <p><span className="text-white font-semibold">If The Core does not fill:</span> 100% of funds returned to contributors via smart contract. No fees. No deductions. No exceptions.</p>
+                  </div>
+                </>
+              )}
+
+              {openModal === 'property' && (
+                <>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: '#00b9ff', fontVariant: 'small-caps' }}>THE PROPERTY</h3>
+                  <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+                    <p>One property. The highest scored asset on the Avena engine at the moment The Core locks.</p>
+                    <p className="text-white font-semibold">Selection criteria:</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-400">
+                      <li>Key-ready only &mdash; no off-plan, no waiting</li>
+                      <li>New build only</li>
+                      <li>Costa Blanca or Costa C&aacute;lida</li>
+                      <li>Minimum Avena Score: 65/100</li>
+                      <li>Minimum estimated gross yield: 6%</li>
+                    </ul>
+                    <p className="text-white font-semibold">5 scoring dimensions:</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-400">
+                      <li>Price per m&sup2; vs. market average</li>
+                      <li>Estimated rental yield</li>
+                      <li>Location demand &amp; occupancy data</li>
+                      <li>Build quality &amp; developer track record</li>
+                      <li>Resale liquidity &amp; appreciation potential</li>
+                    </ul>
+                    <p className="text-gray-500 text-xs mt-4">The specific property is revealed when The Core locks. Not before.</p>
+                  </div>
+                </>
+              )}
+
+              {openModal === 'yield' && (
+                <>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: '#00b9ff', fontVariant: 'small-caps' }}>THE YIELD</h3>
+                  <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+                    <p>Estimated gross yield: <span className="text-white font-semibold">6&ndash;8%</span>. Estimated net yield: <span className="text-white font-semibold">4&ndash;5.5%</span> after all costs.</p>
+                    <p>Distribution: Monthly in USDT, direct to your connected wallet.</p>
+                    <p>At &euro;2,500 contribution (0.55% ownership): approximately &euro;13.75/month gross.</p>
+                    <p className="text-white font-semibold">Costs deducted before net distribution:</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-400">
+                      <li>Property management: 15&ndash;20%</li>
+                      <li>IBI (local property tax)</li>
+                      <li>Community fees</li>
+                      <li>Building insurance</li>
+                      <li>Maintenance reserve</li>
+                    </ul>
+                    <p className="text-gray-500 text-xs mt-4">Yield is estimated, not guaranteed. Actual returns depend on occupancy, rental rates, and operating costs.</p>
+                  </div>
+                </>
+              )}
+
+              {openModal === 'market' && (
+                <>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: '#00b9ff', fontVariant: 'small-caps' }}>THE MARKET</h3>
+                  <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+                    <p>Spanish new builds in Costa Blanca have appreciated <span className="text-white font-semibold">8&ndash;12% annually</span> in recent years.</p>
+                    <p>The Avena engine currently tracks <span className="text-white font-semibold">1,881 properties</span> across Costa Blanca South, Costa Blanca North, and Costa C&aacute;lida.</p>
+                    <p>Costa Blanca South average gross yield: <span className="text-white font-semibold">5.5%</span>.</p>
+                    <p>Key-ready properties command a premium because they generate income immediately. No construction delays. No developer risk.</p>
+                    <p>Demand from Northern European buyers continues to accelerate. Supply of quality new builds remains constrained.</p>
+                    <p className="mt-4"><a href="/market-index" className="text-xs hover:underline" style={{ color: '#00b9ff' }}>View the full Avena Market Index &rarr;</a></p>
+                  </div>
+                </>
+              )}
+
+              {openModal === 'rules' && (
+                <>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: '#00b9ff', fontVariant: 'small-caps' }}>THE RULES</h3>
+                  <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+                    <p>Minimum contribution: <span className="text-white font-semibold">&euro;2,500 USDT</span>. Maximum spots: <span className="text-white font-semibold">180</span>.</p>
+                    <p>Lock period: <span className="text-white font-semibold">12 months minimum</span>. No early withdrawals. No exceptions.</p>
+                    <p>Exit windows: Quarterly from month 12 onward. $AVY tokens are burned on redemption.</p>
+                    <p>If the hard cap is not reached within 90 days: 100% refund via smart contract.</p>
+                    <p>Force majeure: In the event of circumstances beyond reasonable control (regulatory changes, natural disasters, etc.), the multisig committee will determine the best course of action for all participants.</p>
+                    <p className="text-amber-400 font-semibold mt-4">Do not invest money you cannot lock for 12 months. Do not invest money you cannot afford to lose. This is not a savings account.</p>
+                  </div>
+                </>
+              )}
+
+              {openModal === 'numbers' && (
+                <>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: '#00b9ff', fontVariant: 'small-caps' }}>THE NUMBERS</h3>
+                  <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+                    <p>Total raise: &euro;450,000. Allocation: <span className="text-white font-semibold">&euro;420,000</span> property + <span className="text-white font-semibold">&euro;30,000</span> reserve.</p>
+                    <div className="overflow-x-auto mt-3">
+                      <table className="w-full text-xs border-collapse">
+                        <thead>
+                          <tr className="text-left" style={{ borderBottom: '1px solid #1c2333' }}>
+                            <th className="py-2 pr-4 text-gray-500 font-medium">Investment</th>
+                            <th className="py-2 pr-4 text-gray-500 font-medium">Ownership</th>
+                            <th className="py-2 pr-4 text-gray-500 font-medium">Monthly (est.)</th>
+                            <th className="py-2 text-gray-500 font-medium">Annual (est.)</th>
+                          </tr>
+                        </thead>
+                        <tbody className="text-gray-300">
+                          <tr style={{ borderBottom: '1px solid #1c233366' }}><td className="py-2 pr-4">&euro;2,500</td><td className="py-2 pr-4">0.55%</td><td className="py-2 pr-4">&euro;13.75</td><td className="py-2">&euro;165</td></tr>
+                          <tr style={{ borderBottom: '1px solid #1c233366' }}><td className="py-2 pr-4">&euro;5,000</td><td className="py-2 pr-4">1.11%</td><td className="py-2 pr-4">&euro;27.50</td><td className="py-2">&euro;330</td></tr>
+                          <tr style={{ borderBottom: '1px solid #1c233366' }}><td className="py-2 pr-4">&euro;10,000</td><td className="py-2 pr-4">2.22%</td><td className="py-2 pr-4">&euro;55</td><td className="py-2">&euro;660</td></tr>
+                          <tr style={{ borderBottom: '1px solid #1c233366' }}><td className="py-2 pr-4">&euro;25,000</td><td className="py-2 pr-4">5.55%</td><td className="py-2 pr-4">&euro;137.50</td><td className="py-2">&euro;1,650</td></tr>
+                          <tr><td className="py-2 pr-4">&euro;100,000</td><td className="py-2 pr-4">22.22%</td><td className="py-2 pr-4">&euro;550</td><td className="py-2">&euro;6,600</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <p className="text-gray-500 text-xs mt-3">Exit value estimate: at 15% total appreciation over hold period, &euro;2,500 position would be worth approximately &euro;2,875 at redemption.</p>
+                  </div>
+                </>
+              )}
+
+              {openModal === 'token' && (
+                <>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: '#00b9ff', fontVariant: 'small-caps' }}>THE TOKEN</h3>
+                  <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+                    <p>Token: <span className="text-white font-semibold">$AVY</span>. Standard: BEP-20. Chain: Binance Smart Chain (BSC).</p>
+                    <p>Total supply: <span className="text-white font-semibold">450,000 $AVY</span> (1 $AVY = 1 USDT contributed).</p>
+                    <p>Non-transferable during the 12-month lock period. Tokens are burned on redemption &mdash; they do not re-enter circulation.</p>
+                    <p>No team allocation. No advisor tokens. No pre-mine. 100% of supply represents contributor capital.</p>
+                  </div>
+                </>
+              )}
+
+              {openModal === 'vault' && (
+                <>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: '#00b9ff', fontVariant: 'small-caps' }}>THE VAULT</h3>
+                  <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+                    <p>Gnosis Safe multisig address:</p>
+                    <div className="flex items-center gap-2 my-2">
+                      <code className="text-white text-xs bg-[#090d12] px-2 py-1 rounded border border-[#1c2333] break-all">0x86D14d0d4a8B5934CC432689fB1415100d5021Cd</code>
+                      <button onClick={() => navigator.clipboard.writeText('0x86D14d0d4a8B5934CC432689fB1415100d5021Cd')} className="text-gray-500 hover:text-white text-xs flex-shrink-0 transition-colors" title="Copy address">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                      </button>
+                    </div>
+                    <p><a href="https://bscscan.com/address/0x86D14d0d4a8B5934CC432689fB1415100d5021Cd" target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: '#00b9ff' }}>View on BSCScan &rarr;</a></p>
+                    <p>Signers required: <span className="text-white font-semibold">2 of 3</span>. Timelock: <span className="text-white font-semibold">48 hours</span> on all outbound movements.</p>
+                    <p>All funds held in escrow until the hard cap is reached. No single person can move funds alone.</p>
+                  </div>
+                </>
+              )}
+
+              {openModal === 'risk' && (
+                <>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color: '#ca8a04', fontVariant: 'small-caps' }}>THE RISK</h3>
+                  <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+                    <p className="text-amber-400 font-semibold">This is not a bank product. There is no deposit guarantee. You can lose some or all of your money.</p>
+                    <p className="text-white font-semibold">Property risks:</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-400">
+                      <li>Property values can fall as well as rise</li>
+                      <li>Rental income is not guaranteed</li>
+                      <li>Vacancy, damage, and maintenance costs can exceed estimates</li>
+                    </ul>
+                    <p className="text-white font-semibold">Crypto risks:</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-400">
+                      <li>Smart contract bugs or exploits</li>
+                      <li>USDT depeg risk</li>
+                      <li>BSC network disruptions</li>
+                    </ul>
+                    <p className="text-white font-semibold">Regulatory risks:</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-400">
+                      <li>Changes in Spanish property law or tax treatment</li>
+                      <li>Changes in crypto regulation in your jurisdiction</li>
+                    </ul>
+                    <p className="text-white font-semibold">Liquidity risk:</p>
+                    <p className="text-gray-400">Your capital is locked for 12 months minimum. Exit windows are quarterly after that, but redemption depends on available liquidity.</p>
+                    <p className="text-white font-semibold mt-4">Who should not invest:</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-400">
+                      <li>Anyone who cannot afford to lose their entire contribution</li>
+                      <li>Anyone who needs access to their funds within 12 months</li>
+                      <li>Anyone looking for a guaranteed return</li>
+                    </ul>
+                    <p className="text-amber-400 text-xs mt-4 font-semibold">This is not financial advice. Do your own research. Consult a qualified financial advisor.</p>
+                  </div>
+                </>
+              )}
+
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── THE VAULT ── */}
       <div className="px-4 md:px-10 pt-12 pb-8" style={{ background: '#0d1117' }}>
