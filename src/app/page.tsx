@@ -195,16 +195,12 @@ export default function Explorer() {
             setMobileHeaderHidden(true);
           }
         } else {
-          // Reveal header: at top for 0.5s OR deliberate 300px upward scroll
-          scrollUpAccum.current += Math.abs(delta);
-          if (y <= 20 && !topTimer.current) {
+          // Reveal header when at top for 0.8s
+          if (y <= 15 && !topTimer.current) {
             topTimer.current = setTimeout(() => {
-              if (window.scrollY <= 20) setMobileHeaderHidden(false);
+              if (window.scrollY <= 15) setMobileHeaderHidden(false);
               topTimer.current = null;
-            }, 500);
-          } else if (scrollUpAccum.current > 300) {
-            setMobileHeaderHidden(false);
-            scrollUpAccum.current = 0;
+            }, 800);
           }
         }
         lastScrollY.current = y;
@@ -834,6 +830,7 @@ export default function Explorer() {
       </div>
       </div>{/* end sticky top zone */}
 
+
       {/* ── SIDEBAR (desktop fixed + mobile overlay) ── */}
       {(() => {
         type TabKey = typeof tab;
@@ -1099,15 +1096,6 @@ export default function Explorer() {
             const [whyOpen, setWhyOpen] = [showWelcomePro, setShowWelcomePro]; // reuse existing state
             return (
             <div className="px-4 md:px-8 py-6 border-b border-[#1c2333]">
-              {/* PropTech manifesto */}
-              <div className="text-center mb-6 max-w-2xl mx-auto">
-                <p className="text-sm md:text-base leading-relaxed mb-3 bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(135deg, #00b9ff, #9fe870)' }}>
-                  While the industry was building listing portals, we built a terminal.<br />
-                  While they were adding mortgage calculators, we built a scoring engine.<br />
-                  While they were sending email newsletters, we opened a blockchain raise.
-                </p>
-                <p className="text-lg md:text-xl font-bold bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(135deg, #00b9ff, #9fe870)' }}>This is PropTech.</p>
-              </div>
               {/* Collapsible headline — only collapses on mobile */}
               <button onClick={() => setWhyOpen(!whyOpen)} className="w-full text-center group cursor-pointer">
                 <h2 className="text-xl md:text-2xl font-bold font-serif text-white mb-1 inline-flex items-center gap-2">
