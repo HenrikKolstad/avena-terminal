@@ -1449,14 +1449,14 @@ export default function Explorer() {
           {tab === 'legal' && <LegalTab />}
           {tab === 'contact' && <ContactTab />}
           {tab === 'crypto' && (
-            isPaid ? <CryptoTab /> : (
+            isPaid ? <CryptoTab properties={properties} /> : (
               <div className="relative">
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center backdrop-blur-md" style={{ background: 'rgba(9,13,18,0.85)' }}>
                   <div className="text-2xl md:text-3xl font-extralight tracking-[0.3em] mb-3" style={{ color: '#93c5fd' }}>COMING SOON</div>
                   <p className="text-sm tracking-wide" style={{ color: '#3b82f6' }}>The Avena Experiment is being prepared.</p>
                 </div>
                 <div className="pointer-events-none select-none">
-                  <CryptoTab />
+                  <CryptoTab properties={properties} />
                 </div>
               </div>
             )
@@ -3794,7 +3794,7 @@ function MarketIndexTab({ properties }: { properties: Property[] }) {
   );
 }
 
-function CryptoTab() {
+function CryptoTab({ properties }: { properties: Property[] }) {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -4169,6 +4169,40 @@ function CryptoTab() {
             </div>
             <p className="text-gray-600 text-[10px] mt-5">Every euro that enters The Core is visible on-chain. No single person can move funds alone.</p>
           </div>
+        </div>
+      </div>
+
+      {/* ── THE CANDIDATES ── */}
+      <div className="px-4 md:px-10 py-12" style={{ background: '#0d1117' }}>
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-xs font-bold uppercase tracking-[0.2em] mb-2" style={{ color: '#00b9ff' }}>THE CANDIDATES</h2>
+          <p className="text-gray-400 text-sm mb-6">Key-ready properties currently eligible for Round 1. The engine selects the highest scored at raise close.</p>
+          <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-none">
+            {(() => {
+              const candidates = properties
+                .filter(p => p.pf >= 410000 && p.pf <= 440000 && p.s === 'ready')
+                .sort((a, b) => (b._sc ?? 0) - (a._sc ?? 0))
+                .slice(0, 6);
+              if (!candidates.length) return (
+                <div className="flex-shrink-0 w-64 rounded-lg p-5 text-center border" style={{ background: '#090d12', borderColor: '#1c2333' }}>
+                  <p className="text-gray-500 text-sm">Candidates loading — raise opens soon.</p>
+                </div>
+              );
+              return candidates.map(p => (
+                <a key={p.ref} href={`/property/${encodeURIComponent(p.ref ?? '')}`} className="flex-shrink-0 w-64 rounded-lg p-4 border hover:border-emerald-500/30 transition-all block" style={{ background: '#090d12', borderColor: '#1c2333' }}>
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="text-white font-semibold text-xs truncate pr-2">{p.p}</div>
+                    <span className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-500 text-black text-xs font-bold flex items-center justify-center">{Math.round(p._sc ?? 0)}</span>
+                  </div>
+                  <div className="text-gray-500 text-[10px] mb-2">{p.l}</div>
+                  <div className="text-white font-bold text-sm mb-1">&euro;{p.pf.toLocaleString()}</div>
+                  {p._yield && <div className="text-emerald-400 text-[10px] font-semibold mb-2">{p._yield.gross.toFixed(1)}% gross yield</div>}
+                  <div className="text-[10px] text-gray-500 hover:text-emerald-400 transition-colors">View property &rarr;</div>
+                </a>
+              ));
+            })()}
+          </div>
+          <p className="text-[9px] text-gray-600 mt-3">Candidate list updates in real time as new key-ready properties are added. Final selection made by Avena engine at raise close.</p>
         </div>
       </div>
 
