@@ -2360,9 +2360,9 @@ function YieldTab({ properties, isPaid, onUpgrade, onCurrencyChange }: { propert
         <div className="flex flex-col md:flex-row md:items-center gap-2">
           <h2 className="font-serif text-lg md:text-xl text-amber-400">Estimated Rental Yield</h2>
           <a href="https://wise.com/invite/u/henrikk" target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:opacity-90 w-fit"
-            style={{ background: '#9fe870', color: '#163300' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12.5 2L6.5 22h3l2-7h5l-1.5 7h3L22 8.5 12.5 2zm1 11h-3.5l2-7L17 10.5 13.5 13z" fill="#163300"/></svg>
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all hover:scale-[1.02] hover:shadow-lg w-fit"
+            style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#163300' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12.5 2L6.5 22h3l2-7h5l-1.5 7h3L22 8.5 12.5 2zm1 11h-3.5l2-7L17 10.5 13.5 13z" fill="#163300"/></svg>
             Transfer your funds fee-free with worldwide trusted Wise →
           </a>
         </div>
