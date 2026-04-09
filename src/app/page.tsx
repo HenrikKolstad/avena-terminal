@@ -1213,7 +1213,7 @@ export default function Explorer() {
                 </div>
               )}
             </div>
-            <div className="hidden md:block px-4 pb-6" style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: `calc(100vh - ${headerH + 48}px)` }}>
+            <div className="hidden md:block px-4 pb-6" style={{ overflowX: 'auto' }}>
               <table className="w-full border-collapse min-w-[1100px]">
                 <thead>
                   {/* Column labels — sticky, sortable */}
