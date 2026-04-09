@@ -602,10 +602,6 @@ export default function Explorer() {
               <span className="inline-flex items-center gap-0.5">
                 <svg width="28" height="12" viewBox="0 0 50 21" fill="none"><path d="M9.4 2.3a2.7 2.7 0 00-3.2.6L.4 10l5.8 7.1a2.7 2.7 0 003.2.6l.8-.4a2.7 2.7 0 001.3-3.3L9.8 10l1.7-4a2.7 2.7 0 00-1.3-3.3l-.8-.4z" fill="#000"/><text x="14" y="14.5" fontSize="11" fontWeight="600" fill="#fff" fontFamily="system-ui">Pay</text></svg>
               </span>
-              <span>·</span>
-              <span className="inline-flex items-center">
-                <svg width="32" height="12" viewBox="0 0 56 22"><rect width="56" height="22" rx="3" fill="#fff"/><text x="4" y="15.5" fontSize="10" fontWeight="600" fill="#4285F4" fontFamily="system-ui">G</text><text x="13" y="15.5" fontSize="10" fontWeight="500" fill="#333" fontFamily="system-ui">Pay</text></svg>
-              </span>
               <a href="https://instagram.com/avenaestate" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-[#E1306C] transition-colors ml-0.5" title="@avenaestate">
                 <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
@@ -645,10 +641,6 @@ export default function Explorer() {
               <span className="text-gray-600">·</span>
               <span className="inline-flex items-center gap-0.5">
                 <svg width="28" height="12" viewBox="0 0 50 21" fill="none"><path d="M9.4 2.3a2.7 2.7 0 00-3.2.6L.4 10l5.8 7.1a2.7 2.7 0 003.2.6l.8-.4a2.7 2.7 0 001.3-3.3L9.8 10l1.7-4a2.7 2.7 0 00-1.3-3.3l-.8-.4z" fill="#000"/><text x="14" y="14.5" fontSize="11" fontWeight="600" fill="#fff" fontFamily="system-ui">Pay</text></svg>
-              </span>
-              <span className="text-gray-600">·</span>
-              <span className="inline-flex items-center">
-                <svg width="32" height="12" viewBox="0 0 56 22"><rect width="56" height="22" rx="3" fill="#fff"/><text x="4" y="15.5" fontSize="10" fontWeight="600" fill="#4285F4" fontFamily="system-ui">G</text><text x="13" y="15.5" fontSize="10" fontWeight="500" fill="#333" fontFamily="system-ui">Pay</text></svg>
               </span>
             </p>
           </div>
