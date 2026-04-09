@@ -850,7 +850,26 @@ export default function Explorer() {
                     <NavItem icon={<Gem size={16} />} label="Luxury 1M+" isActive={tab === 'luxury'} onClick={() => go('luxury')} badge="PRO" />
                     <NavItem icon={<Map size={16} />} label="Map" isActive={tab === 'map'} onClick={() => go('map')} badge="PRO" />
                     <NavItem icon={<FolderOpen size={16} />} label="Portfolio" isActive={tab === 'portfolio'} onClick={() => go('portfolio')} badge="PRO" />
-                    <NavItem icon={<Bitcoin size={16} />} label="Crypto" isActive={tab === 'crypto'} onClick={() => go('crypto')} badge="Soon" />
+                    <button
+                      onClick={() => go('crypto')}
+                      title={sidebarCollapsed ? 'Crypto' : undefined}
+                      className="flex items-center gap-3 w-full transition-all min-h-[40px] px-3 relative group"
+                      style={{
+                        background: tab === 'crypto' ? 'rgba(0,185,255,0.08)' : 'transparent',
+                        borderLeft: tab === 'crypto' ? '3px solid #00b9ff' : '3px solid transparent',
+                        cursor: 'pointer',
+                      }}
+                      onMouseEnter={e => { if (tab !== 'crypto') e.currentTarget.style.background = '#ffffff08'; }}
+                      onMouseLeave={e => { if (tab !== 'crypto') e.currentTarget.style.background = 'transparent'; }}
+                    >
+                      <span className="flex-shrink-0 w-5 text-center leading-none"><Bitcoin size={16} style={tab === 'crypto' ? { color: '#00b9ff' } : { color: '#4a5568' }} /></span>
+                      {(!sidebarCollapsed || mobileSidebarOpen) && (
+                        <span className="text-[12px] font-bold tracking-wide whitespace-nowrap overflow-hidden flex-1 text-left flex items-center gap-1.5" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                          <span className="flex-1">Crypto</span>
+                          <span className="text-[8px] font-bold px-1.5 py-0.5 rounded flex-shrink-0" style={{ background: 'rgba(0,185,255,0.1)', border: '1px solid rgba(0,185,255,0.3)', color: '#00b9ff', WebkitTextFillColor: '#00b9ff' }}>Soon</span>
+                        </span>
+                      )}
+                    </button>
 
                     {/* MARKET */}
                     <SectionHeader label="MARKET" />
@@ -2136,7 +2155,7 @@ function YieldCard({ d, expanded, onToggle, fmtC, sym }: { d: Property; expanded
       <div className="p-4">
         <div className="flex justify-between items-start mb-1">
           <div className="flex-1 pr-2">
-            <div className="text-emerald-300 font-semibold text-sm leading-tight">{d.p}</div>
+            <div className="font-semibold text-sm leading-tight" style={{ color: '#60a5fa' }}>{d.p}</div>
             <div className="text-[10px] text-gray-500 mt-0.5">Via Xavia Estate — {d.l}</div>
             {d.u && (
               <span className="mt-0.5 block" onClick={e => e.stopPropagation()}>
