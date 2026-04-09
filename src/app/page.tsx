@@ -3493,7 +3493,7 @@ function CryptoTab() {
           {[
             {
               title: 'THE RAISE',
-              body: 'Hard cap \u20AC450,000 USDT \u00B7 Minimum buy-in \u20AC500 \u00B7 90 day window to fill The Core \u00B7 If target not reached \u2014 100% refunded, no exceptions \u00B7 If filled \u2014 capital locks and we deploy immediately',
+              body: 'Hard cap \u20AC450,000 USDT \u00B7 Minimum buy-in \u20AC2,500 \u00B7 90 day window to fill The Core \u00B7 If target not reached \u2014 100% refunded, no exceptions \u00B7 If filled \u2014 capital locks and we deploy immediately',
             },
             {
               title: 'THE PROPERTY',
@@ -3509,11 +3509,11 @@ function CryptoTab() {
             },
             {
               title: 'THE RULES',
-              body: 'Capital locked 12 months minimum \u00B7 Key-ready properties only \u2014 yield starts within 6 months \u00B7 Quarterly exit windows after lock period \u00B7 100% refunded if hard cap not reached in 90 days \u00B7 No early withdrawals \u00B7 No exceptions \u00B7 This is a commitment \u2014 not a trade',
+              body: 'Minimum entry \u20AC2,500 USDT \u00B7 180 spots maximum \u00B7 Capital locked 12 months minimum \u00B7 Key-ready properties only \u2014 yield starts within 6 months \u00B7 Quarterly exit windows after lock period \u00B7 100% refunded if hard cap not reached in 90 days \u00B7 No early withdrawals \u00B7 No exceptions \u00B7 This is a commitment \u2014 not a trade',
             },
             {
               title: 'THE NUMBERS',
-              body: '\u20AC450,000 raised \u2192 \u20AC420,000 property + \u20AC30,000 reserve \u00B7 Est. rental income \u20AC2,500/month \u2192 \u20AC30,000/year \u00B7 6.6% gross yield \u00B7 Est. 5.2% net after fees \u00B7 \u20AC500 invested = approx \u20AC26/month in USDT \u00B7 Paid directly to your wallet every 30 days',
+              body: '\u20AC450,000 raised \u2192 \u20AC420,000 key-ready property + \u20AC30,000 reserve \u00B7 Est. rental income \u20AC2,500/month \u2192 \u20AC30,000/year \u00B7 6.6% gross yield \u00B7 Est. 5.2% net after fees \u00B7 \u20AC2,500 invested = approx \u20AC13.75/month in USDT \u00B7 180 spots only \u00B7 First come first served \u00B7 Paid directly to your wallet every 30 days',
             },
           ].map((card) => (
             <div key={card.title} className="rounded-lg p-6" style={{ background: '#0d1117', border: '1px solid #1a2332', borderTop: '2px solid #10B981' }}>
