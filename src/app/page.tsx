@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase';
 import { useLanguage } from '@/context/LanguageContext';
 import { LANGUAGES } from '@/lib/translations';
 import { BarChart3, Coins, Gem, Map, FolderOpen, TrendingUp, Star, Download, DollarSign, Heart, Crown, Settings, Info, Scale, Mail, BookOpen, Bitcoin, Menu, X, ChevronLeft, ChevronRight, Lock, User, ExternalLink, AlertTriangle, Check, Sparkles, FileText, Calculator, ArrowUpRight, Zap } from 'lucide-react';
+import OrbLightning from '@/components/OrbLightning';
 
 const MapView = dynamic(() => import('@/components/MapView'), { ssr: false });
 
@@ -3876,6 +3877,9 @@ function CryptoTab({ properties }: { properties: Property[] }) {
             {/* Outer ring */}
             <circle cx="100" cy="100" r="99" fill="none" stroke="#10B981" strokeWidth="0.5" opacity="0.3" />
           </svg>
+
+          {/* Lightning effect */}
+          <OrbLightning size={280} />
 
           {/* Percentage inside orb */}
           <div className="absolute inset-0 flex items-center justify-center">
