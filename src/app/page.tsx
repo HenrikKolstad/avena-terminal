@@ -647,7 +647,8 @@ export default function Explorer() {
 
           {/* CENTER — hero punchlines — only when sidebar collapsed */}
           {sidebarCollapsed && (
-            <div className="hidden lg:flex flex-col gap-2 flex-1 max-w-md mx-auto text-center">
+            <div className="hidden lg:flex flex-col gap-1 flex-1 max-w-md mx-auto text-center">
+              <div className="text-[11px] text-gray-400 tracking-wide">Find undervalued new builds before anyone else</div>
               <p className="text-[11px] italic tracking-wide font-semibold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>The Bloomberg of European property investment</p>
             </div>
           )}
