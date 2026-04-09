@@ -96,7 +96,7 @@ export default function Explorer() {
   const [preview, setPreview] = useState<number | null>(null);
   const [previewLuxScore, setPreviewLuxScore] = useState<number | null>(null);
   const [favs, setFavs] = useState<string[]>([]);
-  const [tab, setTab] = useState<'deals' | 'yield' | 'portfolio' | 'map' | 'market' | 'luxury' | 'about' | 'legal' | 'contact' | 'whyavena' | 'crypto'>('deals');
+  const [tab, setTab] = useState<'deals' | 'yield' | 'portfolio' | 'map' | 'market' | 'marketindex' | 'luxury' | 'about' | 'legal' | 'contact' | 'whyavena' | 'crypto'>('deals');
   const [imgIdx, setImgIdx] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
@@ -910,6 +910,7 @@ export default function Explorer() {
                     {/* MARKET */}
                     <SectionHeader label="MARKET" />
                     <NavItem icon={<TrendingUp size={16} />} label="Market Overview" isActive={tab === 'market'} onClick={() => go('market')} badge="PRO" />
+                    <NavItem icon={<BarChart3 size={16} />} label="Market Index" isActive={tab === 'marketindex'} onClick={() => go('marketindex')} />
                     <NavItem icon={<Star size={16} />} label="Scoring Method" isActive={tab === 'about'} onClick={() => go('about')} />
 
                     {/* TOOLS */}
@@ -1443,6 +1444,7 @@ export default function Explorer() {
           {tab === 'map' && isPaid && <MapView properties={filtered} onPreview={(ref) => { const idx = filtered.findIndex(p => (p.ref || p.p) === ref); if (idx !== -1) { setPreview(idx); setPreviewLuxScore(null); } }} isPaid={isPaid} headerH={headerH} />}
           {tab === 'market' && !isPaid && <ProGate feature="Market Overview" onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} />}
           {tab === 'market' && isPaid && <MarketTab properties={filtered} />}
+          {tab === 'marketindex' && <MarketIndexTab properties={properties} />}
           {tab === 'luxury' && !isPaid && <ProGate feature="Luxury Portfolio €1M+" onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} />}
           {tab === 'luxury' && isPaid && <LuxuryTab properties={properties} isPaid={isPaid} onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} onPreview={(ref, lsc) => { const idx = filtered.findIndex(p => p.ref === ref); if (idx !== -1) { setPreview(idx); setPreviewLuxScore(lsc ?? null); } }} />}
           {tab === 'about' && <AboutTab />}
@@ -3475,6 +3477,224 @@ function ContactTab() {
   );
 }
 
+
+function MarketIndexTab({ properties }: { properties: Property[] }) {
+  const [expandedRegion, setExpandedRegion] = useState<string | null>(null);
+  const [townSort, setTownSort] = useState<{ key: string; dir: 'asc' | 'desc' }>({ key: 'avgScore', dir: 'desc' });
+  const [townFilter, setTownFilter] = useState('');
+
+  // Compute regional data
+  const regionMap = useMemo(() => {
+    const map: Record<string, Property[]> = {};
+    for (const p of properties) {
+      const r = p.r || 'unknown';
+      if (!map[r]) map[r] = [];
+      map[r].push(p);
+    }
+    return map;
+  }, [properties]);
+
+  const regionLabels: Record<string, string> = { 'cb-south': 'Costa Blanca South', 'cb-north': 'Costa Blanca North', 'costa-calida': 'Costa Calida', 'costa-del-sol': 'Costa del Sol' };
+
+  const regions = useMemo(() => {
+    return Object.entries(regionMap).map(([code, props]) => {
+      const withYield = props.filter(p => p._yield);
+      const withScore = props.filter(p => p._sc);
+      const avgPm2 = props.length ? Math.round(props.reduce((s, p) => s + (p.pm2 || (p.bm > 0 ? p.pf / p.bm : 0)), 0) / props.length) : 0;
+      const avgDisc = props.length ? (props.reduce((s, p) => { const d = p.mm2 && p.pm2 ? ((p.mm2 - p.pm2) / p.mm2) * 100 : 0; return s + d; }, 0) / props.length).toFixed(1) : '0';
+      const avgYield = withYield.length ? (withYield.reduce((s, p) => s + p._yield!.gross, 0) / withYield.length).toFixed(1) : '0';
+      const townScores: Record<string, { total: number; count: number }> = {};
+      for (const p of withScore) {
+        const t = p.l;
+        if (!townScores[t]) townScores[t] = { total: 0, count: 0 };
+        townScores[t].total += p._sc!;
+        townScores[t].count++;
+      }
+      let bestTown = '';
+      let bestTownScore = 0;
+      for (const [town, { total, count }] of Object.entries(townScores)) {
+        const avg = total / count;
+        if (avg > bestTownScore) { bestTownScore = avg; bestTown = town; }
+      }
+      return { code, name: regionLabels[code] || code, count: props.length, avgPm2, avgDisc, avgYield, bestTown, bestTownScore: Math.round(bestTownScore), props };
+    }).sort((a, b) => b.count - a.count);
+  }, [regionMap]);
+
+  // Town data
+  const towns = useMemo(() => {
+    const map: Record<string, { props: Property[]; region: string }> = {};
+    for (const p of properties) {
+      const t = p.l;
+      if (!t) continue;
+      if (!map[t]) map[t] = { props: [], region: p.r };
+      map[t].props.push(p);
+    }
+    return Object.entries(map).map(([town, { props, region }]) => {
+      const withYield = props.filter(p => p._yield);
+      const withScore = props.filter(p => p._sc);
+      const avgPrice = Math.round(props.reduce((s, p) => s + p.pf, 0) / props.length);
+      const avgDisc = props.length ? Number((props.reduce((s, p) => { const d = p.mm2 && p.pm2 ? ((p.mm2 - p.pm2) / p.mm2) * 100 : 0; return s + d; }, 0) / props.length).toFixed(1)) : 0;
+      const avgYield = withYield.length ? Number((withYield.reduce((s, p) => s + p._yield!.gross, 0) / withYield.length).toFixed(1)) : 0;
+      const avgScore = withScore.length ? Math.round(withScore.reduce((s, p) => s + p._sc!, 0) / withScore.length) : 0;
+      return { town, region: regionLabels[region] || region, regionCode: region, count: props.length, avgPrice, avgDisc, avgYield, avgScore };
+    }).filter(t => !townFilter || t.town.toLowerCase().includes(townFilter.toLowerCase()));
+  }, [properties, townFilter]);
+
+  const sortedTowns = useMemo(() => {
+    const key = townSort.key as keyof typeof towns[0];
+    return [...towns].sort((a, b) => {
+      const av = a[key] as number, bv = b[key] as number;
+      return townSort.dir === 'desc' ? bv - av : av - bv;
+    });
+  }, [towns, townSort]);
+
+  const toggleSort = (key: string) => {
+    setTownSort(prev => prev.key === key ? { key, dir: prev.dir === 'desc' ? 'asc' : 'desc' } : { key, dir: 'desc' });
+  };
+
+  // Global stats
+  const totalProps = properties.length;
+  const nationalDisc = regions.length ? (regions.reduce((s, r) => s + Number(r.avgDisc) * r.count, 0) / totalProps).toFixed(1) : '0';
+  const nationalYield = (() => { const wy = properties.filter(p => p._yield); return wy.length ? (wy.reduce((s, p) => s + p._yield!.gross, 0) / wy.length).toFixed(1) : '0'; })();
+  const bestProp = properties.reduce((best, p) => (p._sc ?? 0) > (best._sc ?? 0) ? p : best, properties[0]);
+
+  // Insight cards
+  const bestValueRegion = regions.reduce((best, r) => Number(r.avgDisc) > Number(best.avgDisc) ? r : best, regions[0]);
+  const highestYieldRegion = regions.reduce((best, r) => Number(r.avgYield) > Number(best.avgYield) ? r : best, regions[0]);
+  const mostListingsRegion = regions.reduce((best, r) => r.count > best.count ? r : best, regions[0]);
+
+  return (
+    <div className="px-4 md:px-8 py-8 max-w-6xl mx-auto">
+      {/* Title */}
+      <div className="mb-8">
+        <h1 className="text-2xl md:text-4xl font-extralight tracking-[0.2em] text-white mb-2">SPAIN NEW BUILD PRICE INDEX</h1>
+        <p className="text-xs md:text-sm text-emerald-400 tracking-wide mb-1">Live data &middot; {totalProps.toLocaleString()} properties tracked &middot; Updated daily</p>
+        <p className="text-[10px] text-gray-600">The only real-time index tracking new build prices, discounts and yields across Spain&apos;s costas.</p>
+      </div>
+
+      {/* Top stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+        {[
+          { label: 'Properties Tracked', value: totalProps.toLocaleString() },
+          { label: 'National Avg Discount', value: `${nationalDisc}%` },
+          { label: 'National Avg Yield', value: `${nationalYield}%` },
+          { label: 'Highest Score', value: `${Math.round(bestProp?._sc ?? 0)} — ${bestProp?.l?.split(',')[0] || ''}` },
+        ].map(s => (
+          <div key={s.label} className="rounded-lg p-3 md:p-4 border text-center" style={{ background: '#0f1419', borderColor: '#1c2333' }}>
+            <div className="text-emerald-400 font-bold text-lg md:text-xl">{s.value}</div>
+            <div className="text-gray-500 text-[9px] md:text-[10px] uppercase tracking-wider">{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Regional breakdown */}
+      <h2 className="text-lg font-bold text-white mb-4">Regional Breakdown</h2>
+      <div className="space-y-2 mb-8">
+        {regions.map(r => (
+          <div key={r.code}>
+            <button onClick={() => setExpandedRegion(expandedRegion === r.code ? null : r.code)}
+              className="w-full flex items-center gap-3 p-3 rounded-lg border text-left transition-all hover:border-emerald-500/30"
+              style={{ background: '#0f1419', borderColor: expandedRegion === r.code ? '#10B981' : '#1c2333', borderLeftWidth: expandedRegion === r.code ? 3 : 1 }}>
+              <ChevronRight size={14} className={`text-gray-500 transition-transform ${expandedRegion === r.code ? 'rotate-90' : ''}`} />
+              <span className="text-white font-medium text-sm flex-1">{r.name}</span>
+              <span className="text-gray-400 text-xs">{r.count} props</span>
+              <span className="text-emerald-400 text-xs font-semibold">{r.avgPm2 ? `\u20AC${r.avgPm2.toLocaleString()}/m\u00B2` : ''}</span>
+              <span className="text-emerald-400 text-xs font-semibold">{r.avgDisc}% disc</span>
+              <span className="text-emerald-400 text-xs font-semibold">{r.avgYield}% yield</span>
+              <span className="text-gray-400 text-xs hidden md:inline">{r.bestTown?.split(',')[0]}</span>
+            </button>
+            {expandedRegion === r.code && (
+              <div className="ml-6 mt-2 space-y-1 mb-3">
+                {(() => {
+                  const townMap: Record<string, Property[]> = {};
+                  for (const p of r.props) { if (!townMap[p.l]) townMap[p.l] = []; townMap[p.l].push(p); }
+                  return Object.entries(townMap).map(([town, props]) => {
+                    const wy = props.filter(p => p._yield);
+                    const ws = props.filter(p => p._sc);
+                    return { town, count: props.length, avgYield: wy.length ? (wy.reduce((s, p) => s + p._yield!.gross, 0) / wy.length).toFixed(1) : '0', avgScore: ws.length ? Math.round(ws.reduce((s, p) => s + p._sc!, 0) / ws.length) : 0 };
+                  }).sort((a, b) => b.avgScore - a.avgScore).map(t => (
+                    <div key={t.town} className="flex items-center gap-3 px-3 py-2 rounded text-xs" style={{ background: '#0d1117', border: '1px solid #1c2333' }}>
+                      <span className="text-white flex-1">{t.town}</span>
+                      <span className="text-gray-400">{t.count}</span>
+                      <span className="text-emerald-400 font-semibold">{t.avgYield}%</span>
+                      <span className="text-white font-bold">{t.avgScore}</span>
+                    </div>
+                  ));
+                })()}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Town table */}
+      <h2 className="text-lg font-bold text-white mb-3">All Towns</h2>
+      <input
+        type="text"
+        placeholder="Filter towns..."
+        value={townFilter}
+        onChange={e => setTownFilter(e.target.value)}
+        className="w-full md:w-64 px-3 py-2 rounded-lg text-sm text-white placeholder-gray-600 mb-3 outline-none"
+        style={{ background: '#0f1419', border: '1px solid #1c2333' }}
+        onFocus={e => { e.currentTarget.style.borderColor = '#10B981'; }}
+        onBlur={e => { e.currentTarget.style.borderColor = '#1c2333'; }}
+      />
+      <div className="overflow-x-auto mb-8">
+        <table className="w-full min-w-[700px] border-collapse">
+          <thead>
+            <tr>
+              {[
+                { key: 'town', label: 'Town' },
+                { key: 'region', label: 'Region' },
+                { key: 'count', label: 'Properties' },
+                { key: 'avgPrice', label: 'Avg Price' },
+                { key: 'avgDisc', label: 'Avg Discount' },
+                { key: 'avgYield', label: 'Avg Yield' },
+                { key: 'avgScore', label: 'Avg Score' },
+              ].map(col => (
+                <th key={col.key} onClick={() => toggleSort(col.key)}
+                  className={`px-3 py-2 text-[10px] uppercase tracking-widest text-left cursor-pointer hover:text-emerald-400 whitespace-nowrap ${townSort.key === col.key ? 'text-emerald-400 font-bold' : 'text-gray-500'}`}
+                  style={{ background: '#0d1117', position: 'sticky', top: 0 }}>
+                  {col.label}{townSort.key === col.key ? (townSort.dir === 'desc' ? ' \u25BC' : ' \u25B2') : ''}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {sortedTowns.map((t, i) => (
+              <tr key={t.town} className="transition-colors hover:bg-emerald-500/5" style={{ background: i % 2 === 0 ? '#0d1117' : '#0a0f15' }}>
+                <td className="px-3 py-2 text-xs"><a href={`/towns/${t.town.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`} className="text-white hover:text-emerald-400 transition-colors">{t.town}</a></td>
+                <td className="px-3 py-2 text-xs text-gray-400">{t.region}</td>
+                <td className="px-3 py-2 text-xs text-gray-400">{t.count}</td>
+                <td className="px-3 py-2 text-xs text-white">\u20AC{t.avgPrice.toLocaleString()}</td>
+                <td className="px-3 py-2 text-xs text-emerald-400 font-semibold">{t.avgDisc}%</td>
+                <td className="px-3 py-2 text-xs text-emerald-400 font-semibold">{t.avgYield}%</td>
+                <td className="px-3 py-2 text-xs text-white font-bold">{t.avgScore}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Insight cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        {[
+          { title: 'BEST VALUE REGION', value: `${bestValueRegion?.name}`, sub: `${bestValueRegion?.avgDisc}% avg discount` },
+          { title: 'HIGHEST YIELD REGION', value: `${highestYieldRegion?.name}`, sub: `${highestYieldRegion?.avgYield}% gross yield` },
+          { title: 'MOST LISTINGS', value: `${mostListingsRegion?.name}`, sub: `${mostListingsRegion?.count} properties` },
+        ].map(card => (
+          <div key={card.title} className="rounded-lg p-5" style={{ background: '#0d1117', border: '1px solid #1c2333', borderTop: '2px solid #10B981' }}>
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: '#10B981' }}>{card.title}</h3>
+            <div className="text-white font-bold text-lg">{card.value}</div>
+            <div className="text-gray-400 text-xs">{card.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      <p className="text-[9px] text-gray-600 text-right">Last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+    </div>
+  );
+}
 
 function CryptoTab() {
   const [email, setEmail] = useState('');
