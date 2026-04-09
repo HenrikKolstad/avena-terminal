@@ -3391,7 +3391,7 @@ function CryptoTab() {
     setSubmitting(false);
   };
 
-  const fillPct = 40;
+  const fillPct = 0;
   const fillY = 100 - fillPct;
 
   return (
@@ -3468,7 +3468,7 @@ function CryptoTab() {
         {/* Text below orb */}
         <div className="mt-8 text-center relative z-10">
           <h2 className="text-white tracking-[0.4em] mb-2" style={{ fontSize: '2rem', fontWeight: 300 }}>AVENA</h2>
-          <div className="tracking-[0.15em] text-sm mb-4" style={{ color: '#10B981' }}>&euro;182,000 / &euro;450,000</div>
+          <div className="tracking-[0.15em] text-sm mb-4" style={{ color: '#10B981' }}>&euro;0 / &euro;450,000</div>
 
           {/* Progress bar */}
           <div className="mx-auto rounded-full overflow-hidden mb-6" style={{ width: 280, height: 4, background: '#1a2332' }}>
@@ -3493,15 +3493,27 @@ function CryptoTab() {
           {[
             {
               title: 'THE RAISE',
-              body: 'Hard cap \u20AC450,000 USDT \u00B7 Min buy-in \u20AC500 \u00B7 3 month window \u00B7 Full refund if target not met',
+              body: 'Hard cap \u20AC450,000 USDT \u00B7 Minimum buy-in \u20AC500 \u00B7 90 day window to fill The Core \u00B7 If target not reached \u2014 100% refunded, no exceptions \u00B7 If filled \u2014 capital locks and we deploy immediately',
             },
             {
               title: 'THE PROPERTY',
-              body: '1 property \u00B7 Highest scored on Avena engine \u00B7 Costa Blanca / Costa C\u00E1lida \u00B7 New build only',
+              body: '1 property \u00B7 Key-ready or near key-ready only \u00B7 Highest scored on Avena engine at raise close \u00B7 Costa Blanca / Costa C\u00E1lida \u00B7 New build only \u00B7 No off-plan waiting games',
             },
             {
               title: 'THE YIELD',
-              body: 'Est. 6\u20138% gross \u00B7 Paid monthly in USDT \u00B7 Direct to your wallet \u00B7 Quarterly exit windows',
+              body: 'Est. 6\u20138% gross \u00B7 Yield begins within 6 months of raise close \u00B7 Paid monthly in USDT \u00B7 Direct to your wallet \u00B7 First exit window at 12 months',
+            },
+            {
+              title: 'THE MARKET',
+              body: 'Spanish new builds appreciate 8\u201312% annually in Costa Blanca. Supply is constrained. Demand from Northern Europe is accelerating. Key-ready stock sells fast. The Avena engine scores 1,000+ properties in real time \u2014 The Core deploys into the single highest ranked asset at raise close.',
+            },
+            {
+              title: 'THE RULES',
+              body: 'Capital locked 12 months minimum \u00B7 Key-ready properties only \u2014 yield starts within 6 months \u00B7 Quarterly exit windows after lock period \u00B7 100% refunded if hard cap not reached in 90 days \u00B7 No early withdrawals \u00B7 No exceptions \u00B7 This is a commitment \u2014 not a trade',
+            },
+            {
+              title: 'THE NUMBERS',
+              body: '\u20AC450,000 raised \u2192 \u20AC420,000 property + \u20AC30,000 reserve \u00B7 Est. rental income \u20AC2,500/month \u2192 \u20AC30,000/year \u00B7 6.6% gross yield \u00B7 Est. 5.2% net after fees \u00B7 \u20AC500 invested = approx \u20AC26/month in USDT \u00B7 Paid directly to your wallet every 30 days',
             },
           ].map((card) => (
             <div key={card.title} className="rounded-lg p-6" style={{ background: '#0d1117', border: '1px solid #1a2332', borderTop: '2px solid #10B981' }}>
