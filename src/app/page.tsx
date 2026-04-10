@@ -10,7 +10,7 @@ import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { useLanguage } from '@/context/LanguageContext';
 import { LANGUAGES } from '@/lib/translations';
-import { BarChart3, Coins, Gem, Map, FolderOpen, TrendingUp, Star, Download, DollarSign, Heart, Crown, Settings, Info, Scale, Mail, BookOpen, Bitcoin, Menu, X, ChevronLeft, ChevronRight, Lock, User, ExternalLink, AlertTriangle, Check, Sparkles, FileText, Calculator, ArrowUpRight, Zap, MessageCircle } from 'lucide-react';
+import { BarChart3, Coins, Gem, Map, FolderOpen, TrendingUp, Star, Download, DollarSign, Heart, Crown, Settings, Info, Scale, Mail, BookOpen, Bitcoin, Menu, X, ChevronLeft, ChevronRight, Lock, User, ExternalLink, AlertTriangle, Check, Sparkles, FileText, Calculator, ArrowUpRight, Zap, MessageCircle, Search } from 'lucide-react';
 import CoreOrb from '@/components/OrbLightning';
 
 const MapView = dynamic(() => import('@/components/MapView'), { ssr: false });
@@ -98,7 +98,7 @@ export default function Explorer() {
   const [preview, setPreview] = useState<number | null>(null);
   const [previewLuxScore, setPreviewLuxScore] = useState<number | null>(null);
   const [favs, setFavs] = useState<string[]>([]);
-  const [tab, setTab] = useState<'deals' | 'yield' | 'portfolio' | 'map' | 'market' | 'marketindex' | 'luxury' | 'about' | 'legal' | 'contact' | 'whyavena' | 'crypto'>('deals');
+  const [tab, setTab] = useState<'deals' | 'yield' | 'portfolio' | 'map' | 'market' | 'marketindex' | 'luxury' | 'about' | 'legal' | 'contact' | 'whyavena' | 'crypto' | 'analyzer'>('deals');
   const [imgIdx, setImgIdx] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
@@ -901,6 +901,7 @@ export default function Explorer() {
                     <SectionHeader label="INVEST" />
                     <NavItem icon={<BarChart3 size={16} />} label="Deal Rankings" isActive={tab === 'deals'} onClick={() => go('deals')} />
                     <NavItem icon={<Coins size={16} />} label="Rental Yield" isActive={tab === 'yield'} onClick={() => go('yield')} badge="2 free" />
+                    <NavItem icon={<Search size={16} />} label="Property Analyzer" isActive={tab === 'analyzer'} onClick={() => go('analyzer')} badge="NEW" />
                     <NavItem icon={<Gem size={16} />} label="Luxury 1M+" isActive={tab === 'luxury'} onClick={() => go('luxury')} badge="PRO" />
                     <NavItem icon={<Map size={16} />} label="Map" isActive={tab === 'map'} onClick={() => go('map')} badge="PRO" />
                     <NavItem icon={<FolderOpen size={16} />} label="Portfolio" isActive={tab === 'portfolio'} onClick={() => go('portfolio')} badge="PRO" />
@@ -1465,6 +1466,7 @@ export default function Explorer() {
           )}
 
           {tab === 'yield' && <YieldTab properties={filtered} isPaid={isPaid} onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} onCurrencyChange={setYieldCurrency} />}
+          {tab === 'analyzer' && <AnalyzerTab isPaid={isPaid} onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} />}
           {tab === 'portfolio' && !isPaid && <ProGate feature="Portfolio Simulator" onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} />}
           {tab === 'portfolio' && isPaid && <PortfolioTab properties={properties} portfolio={portfolio} onToggle={togglePortfolio} />}
           {tab === 'map' && !isPaid && <ProGate feature="Interactive Map" onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} />}
@@ -3859,6 +3861,239 @@ function MarketIndexTab({ properties }: { properties: Property[] }) {
 
       <p className="text-[9px] text-gray-600 text-right">Last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
     </div>
+    </div>
+  );
+}
+
+function AnalyzerTab({ isPaid, onUpgrade }: { isPaid: boolean; onUpgrade: () => void }) {
+  const [url, setUrl] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState('');
+  const [loadingText, setLoadingText] = useState('');
+  const [scoreAnim, setScoreAnim] = useState(0);
+
+  // Track free usage
+  const [usedFree, setUsedFree] = useState(false);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const count = parseInt(localStorage.getItem('avena_analyzer_count') || '0');
+      if (count >= 1 && !isPaid) setUsedFree(true);
+    }
+  }, [isPaid]);
+
+  const analyze = async () => {
+    if (!url.trim() || loading) return;
+    setLoading(true);
+    setResult(null);
+    setError('');
+    setScoreAnim(0);
+
+    // Animated loading text
+    const texts = ['Fetching listing data...', 'Running hedonic regression...', 'Comparing to 1,881 properties...', 'Generating Avena score...'];
+    let i = 0;
+    setLoadingText(texts[0]);
+    const interval = setInterval(() => { i = (i + 1) % texts.length; setLoadingText(texts[i]); }, 1500);
+
+    try {
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url.trim() }),
+      });
+      const data = await res.json();
+      clearInterval(interval);
+
+      if (data.success) {
+        setResult(data);
+        // Animate score counting up
+        const target = data.analysis.avenaScore;
+        let current = 0;
+        const scoreInterval = setInterval(() => {
+          current += 2;
+          if (current >= target) { current = target; clearInterval(scoreInterval); }
+          setScoreAnim(current);
+        }, 20);
+        // Track usage
+        if (typeof window !== 'undefined') {
+          const count = parseInt(localStorage.getItem('avena_analyzer_count') || '0');
+          localStorage.setItem('avena_analyzer_count', String(count + 1));
+          if (count + 1 >= 1 && !isPaid) setUsedFree(true);
+        }
+      } else {
+        setError(data.error || 'Analysis failed');
+      }
+    } catch {
+      clearInterval(interval);
+      setError('Connection error. Try again.');
+    }
+    setLoading(false);
+  };
+
+  const scoreColor = (s: number) => s >= 70 ? '#10B981' : s >= 55 ? '#F59E0B' : '#EF4444';
+  const tierColor = (t: string) => t === 'STRONG BUY' ? '#10B981' : t === 'BUY' ? '#34D399' : t === 'CONSIDER' ? '#F59E0B' : '#EF4444';
+
+  return (
+    <div className="relative">
+      <div className="px-4 md:px-8 py-8 max-w-5xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold tracking-[0.2em] mb-4" style={{ background: 'rgba(16,185,129,0.1)', color: '#10B981', border: '1px solid rgba(16,185,129,0.2)' }}>
+            <Search size={12} /> PROPERTY ANALYZER
+          </div>
+          <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Analyze Any Spanish Listing</h1>
+          <p className="text-gray-400 text-sm max-w-lg mx-auto">Paste a property URL from any portal. Avena scores it against 1,881 comparable properties using hedonic regression pricing.</p>
+        </div>
+
+        {/* Input */}
+        <div className="rounded-xl p-6 mb-6" style={{ background: '#0f1419', border: '1px solid #1c2333' }}>
+          <div className="flex gap-3">
+            <input
+              type="url"
+              value={url}
+              onChange={e => setUrl(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && analyze()}
+              placeholder="https://idealista.com/inmueble/12345678/"
+              className="flex-1 px-4 py-3 rounded-lg text-sm text-white placeholder-gray-500 outline-none transition-all"
+              style={{ background: '#0d1117', border: '1px solid #1c2333' }}
+              onFocus={e => { e.target.style.borderColor = '#10B981'; e.target.style.boxShadow = '0 0 0 2px rgba(16,185,129,0.15)'; }}
+              onBlur={e => { e.target.style.borderColor = '#1c2333'; e.target.style.boxShadow = 'none'; }}
+            />
+            <button
+              onClick={analyze}
+              disabled={loading || !url.trim()}
+              className="px-6 py-3 rounded-lg font-bold text-sm transition-all hover:opacity-90 disabled:opacity-40"
+              style={{ background: 'linear-gradient(135deg, #10B981, #059669)', color: '#0d1117' }}
+            >
+              {loading ? 'Analyzing...' : 'Analyze'}
+            </button>
+          </div>
+          <div className="flex gap-2 mt-3 flex-wrap">
+            {['Idealista', 'Kyero', 'ThinkSpain', 'Rightmove'].map(s => (
+              <span key={s} className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: 'rgba(16,185,129,0.08)', color: '#6EE7B7', border: '1px solid rgba(16,185,129,0.15)' }}>{s}</span>
+            ))}
+            <span className="text-[10px] text-gray-600 ml-1">+ most listing portals</span>
+          </div>
+        </div>
+
+        {/* Loading */}
+        {loading && (
+          <div className="rounded-xl p-12 text-center mb-6" style={{ background: '#0f1419', border: '1px solid #1c2333' }}>
+            <div className="inline-block w-8 h-8 border-2 border-t-transparent rounded-full animate-spin mb-4" style={{ borderColor: '#10B981', borderTopColor: 'transparent' }} />
+            <p className="text-sm text-gray-300 animate-pulse">{loadingText}</p>
+          </div>
+        )}
+
+        {/* Error */}
+        {error && (
+          <div className="rounded-xl p-6 mb-6 text-center" style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.2)' }}>
+            <AlertTriangle size={20} className="mx-auto mb-2" style={{ color: '#EF4444' }} />
+            <p className="text-sm" style={{ color: '#FCA5A5' }}>{error}</p>
+          </div>
+        )}
+
+        {/* Results */}
+        {result && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Left: Listing Info */}
+            <div className="rounded-xl p-6" style={{ background: '#0f1419', border: '1px solid #1c2333' }}>
+              <h3 className="text-xs font-bold tracking-[0.15em] text-gray-500 mb-4">LISTING DETAILS</h3>
+              <h2 className="text-lg font-bold text-white mb-3 leading-snug">{result.listing.title || 'Property Listing'}</h2>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between"><span className="text-gray-500">Price</span><span className="text-white font-bold">{'\u20AC'}{result.listing.price.toLocaleString()}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">Location</span><span className="text-gray-300">{result.listing.location}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">Type</span><span className="text-gray-300">{result.listing.type}</span></div>
+                {result.listing.m2 > 0 && <div className="flex justify-between"><span className="text-gray-500">Built Area</span><span className="text-gray-300">{result.listing.m2} m{'\u00B2'}</span></div>}
+                {result.listing.beds > 0 && <div className="flex justify-between"><span className="text-gray-500">Bedrooms</span><span className="text-gray-300">{result.listing.beds}</span></div>}
+                {result.listing.baths > 0 && <div className="flex justify-between"><span className="text-gray-500">Bathrooms</span><span className="text-gray-300">{result.listing.baths}</span></div>}
+                {result.analysis.pricePerM2 > 0 && <div className="flex justify-between"><span className="text-gray-500">Price/m{'\u00B2'}</span><span className="text-gray-300">{'\u20AC'}{result.analysis.pricePerM2.toLocaleString()}</span></div>}
+              </div>
+              {result.listing.description && (
+                <p className="text-xs text-gray-500 mt-4 leading-relaxed">{result.listing.description}</p>
+              )}
+              <a href={result.listing.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs mt-4 hover:underline" style={{ color: '#10B981' }}>
+                View original listing <ExternalLink size={10} />
+              </a>
+            </div>
+
+            {/* Right: Analysis */}
+            <div className="space-y-4">
+              {/* Score Circle */}
+              <div className="rounded-xl p-6 text-center" style={{ background: '#0f1419', border: '1px solid #1c2333' }}>
+                <div className="relative inline-flex items-center justify-center w-28 h-28 mb-3">
+                  <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="#1c2333" strokeWidth="6" />
+                    <circle cx="50" cy="50" r="42" fill="none" stroke={scoreColor(scoreAnim)} strokeWidth="6" strokeLinecap="round"
+                      strokeDasharray={`${(scoreAnim / 100) * 264} 264`} className="transition-all duration-300" />
+                  </svg>
+                  <span className="text-3xl font-bold" style={{ color: scoreColor(scoreAnim) }}>{scoreAnim}</span>
+                </div>
+                <div className="text-xs font-bold tracking-[0.15em] text-gray-500 mb-2">AVENA SCORE</div>
+                <span className="inline-block px-3 py-1 rounded-full text-xs font-bold" style={{ background: `${tierColor(result.analysis.dealTier)}15`, color: tierColor(result.analysis.dealTier), border: `1px solid ${tierColor(result.analysis.dealTier)}30` }}>
+                  {result.analysis.dealTier}
+                </span>
+              </div>
+
+              {/* Stats */}
+              <div className="rounded-xl p-5" style={{ background: '#0f1419', border: '1px solid #1c2333' }}>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div><span className="text-gray-500 text-xs block">Gross Yield</span><span className="text-white font-bold">{result.analysis.estimatedGrossYield}%</span></div>
+                  <div><span className="text-gray-500 text-xs block">Net Yield</span><span className="text-white font-bold">{result.analysis.estimatedNetYield}%</span></div>
+                  <div><span className="text-gray-500 text-xs block">vs. Market</span><span className="text-white font-bold text-xs">{result.analysis.marketComparison}</span></div>
+                  <div><span className="text-gray-500 text-xs block">Area Listings</span><span className="text-white font-bold">{result.analysis.townProperties}</span></div>
+                </div>
+              </div>
+
+              {/* Verdict */}
+              <div className="rounded-xl p-5" style={{ background: '#0f1419', border: '1px solid #1c2333' }}>
+                <p className="text-sm text-gray-300 leading-relaxed">{result.analysis.verdict}</p>
+              </div>
+
+              {/* Strengths & Risks */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="rounded-xl p-4" style={{ background: '#0f1419', border: '1px solid #1c2333' }}>
+                  <h4 className="text-[10px] font-bold tracking-[0.15em] mb-2" style={{ color: '#10B981' }}>STRENGTHS</h4>
+                  {result.analysis.strengths.map((s: string, i: number) => (
+                    <div key={i} className="flex items-start gap-2 text-xs text-gray-400 mb-1.5">
+                      <Check size={10} className="mt-0.5 flex-shrink-0" style={{ color: '#10B981' }} />
+                      <span>{s}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="rounded-xl p-4" style={{ background: '#0f1419', border: '1px solid #1c2333' }}>
+                  <h4 className="text-[10px] font-bold tracking-[0.15em] mb-2" style={{ color: '#F59E0B' }}>RISKS</h4>
+                  {result.analysis.risks.map((r: string, i: number) => (
+                    <div key={i} className="flex items-start gap-2 text-xs text-gray-400 mb-1.5">
+                      <AlertTriangle size={10} className="mt-0.5 flex-shrink-0" style={{ color: '#F59E0B' }} />
+                      <span>{r}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Disclaimer */}
+        {result && (
+          <p className="text-[10px] text-gray-600 text-center mt-6 max-w-2xl mx-auto leading-relaxed">
+            {result.analysis.disclaimer}
+          </p>
+        )}
+      </div>
+
+      {/* Paywall overlay */}
+      {usedFree && !isPaid && (
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center" style={{ background: 'rgba(13,17,23,0.92)', backdropFilter: 'blur(6px)' }}>
+          <Lock size={32} className="mb-4" style={{ color: '#10B981' }} />
+          <h3 className="text-xl font-bold text-white mb-2">Free Analysis Used</h3>
+          <p className="text-gray-400 text-sm mb-6 max-w-sm text-center">You have used your free property analysis. Upgrade to PRO for unlimited analyses.</p>
+          <button onClick={onUpgrade} className="px-8 py-3.5 rounded-xl font-bold text-sm shadow-lg hover:scale-[1.02] transition-all" style={{ background: 'linear-gradient(135deg, #10B981, #059669)', color: '#0d1117' }}>
+            Upgrade to PRO
+          </button>
+          <p className="text-[11px] text-gray-600 mt-3">Cancel anytime</p>
+        </div>
+      )}
     </div>
   );
 }
