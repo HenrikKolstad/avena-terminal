@@ -22,6 +22,11 @@ export function getStructuredData() {
       foundingDate: '2025',
       areaServed: 'Spain',
       knowsAbout: ['Spanish property investment', 'New build properties Spain', 'PropTech'],
+      sameAs: [
+        'https://www.linkedin.com/company/avena-terminal',
+        'https://x.com/avenaterminal',
+        'https://www.instagram.com/avenaestate',
+      ],
     },
   ];
 }

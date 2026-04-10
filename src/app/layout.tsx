@@ -36,6 +36,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="preconnect" href="https://apinmo.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://apinmo.com" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(getStructuredData()) }}

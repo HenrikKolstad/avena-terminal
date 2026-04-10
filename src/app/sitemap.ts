@@ -138,6 +138,36 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   entries.push({ url: `${base}/data/spain-property-index`, lastModified: now, changeFrequency: 'daily', priority: 0.8 });
   entries.push({ url: `${base}/embed`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 });
 
+  // Insight articles (50)
+  for (const topic of ['spanish-property-market-outlook-2026','costa-blanca-rental-yield-analysis','new-build-vs-resale-spain-roi','best-spanish-property-for-airbnb','spain-golden-visa-property','non-resident-property-tax-spain','spanish-mortgage-rates-foreigners','costa-blanca-price-history','murcia-property-investment-guide','alicante-new-build-market','torrevieja-rental-market','benidorm-investment-returns','orihuela-costa-new-build-guide','javea-luxury-property','altea-property-prices','moraira-real-estate-investment','calpe-new-build-apartments','marbella-new-build-investment','estepona-property-market','fuengirola-new-builds','costa-del-sol-vs-costa-blanca','spain-property-buying-process','nie-number-spain-guide','spanish-property-taxes-complete','costa-calida-investment-guide','mar-menor-property-market','san-pedro-del-pinatar-investment','guardamar-property-guide','finestrat-new-builds','benalmadena-property-investment','mijas-costa-new-builds','nerja-property-market','la-manga-investment-guide','spain-off-plan-vs-key-ready','best-rental-yield-spain-2026','cheapest-new-builds-spain','luxury-property-spain-analysis','spain-property-for-retirement','british-buyers-spain-guide','norwegian-buyers-spain-guide','swedish-buyers-spain-guide','german-buyers-spain-guide','dutch-buyers-spain-guide','spain-community-fees-explained','spanish-energy-ratings-guide','pool-property-spain-premium','beach-distance-property-value','golf-property-spain-investment','spain-property-management-guide','furnished-vs-unfurnished-rental-spain']) {
+    entries.push({ url: `${base}/insights/${topic}`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+  }
+
+  // Live feed
+  entries.push({ url: `${base}/live`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+
+  // Weekly reports
+  for (let w = 1; w <= 15; w++) {
+    entries.push({ url: `${base}/weekly/2026/week-${w}`, lastModified: now, changeFrequency: 'daily', priority: 0.7 });
+  }
+
+  // Competitor comparison pages
+  for (const comp of ['idealista','rightmove','kyero','a-place-in-the-sun','fotocasa','thinkspain','propertyguides','spanishpropertychoice']) {
+    entries.push({ url: `${base}/vs/${comp}`, lastModified: now, changeFrequency: 'daily', priority: 0.7 });
+  }
+  entries.push({ url: `${base}/alternatives`, lastModified: now, changeFrequency: 'daily', priority: 0.7 });
+
+  // Tools
+  entries.push({ url: `${base}/tools`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
+  for (const tool of ['mortgage-calculator','tax-calculator','roi-calculator']) {
+    entries.push({ url: `${base}/tools/${tool}`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
+  }
+
+  // Entity pages
+  for (const page of ['about/methodology','about/data-sources','about/accuracy','citations']) {
+    entries.push({ url: `${base}/${page}`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 });
+  }
+
   // Property pages
   for (const p of getAllProperties()) {
     if (p.ref) {

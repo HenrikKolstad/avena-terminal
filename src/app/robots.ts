@@ -5,7 +5,11 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       { userAgent: '*', allow: '/', disallow: ['/api/', '/admin/'] },
     ],
-    sitemap: 'https://avenaterminal.com/sitemap.xml',
+    sitemap: [
+      'https://avenaterminal.com/sitemap.xml',
+      'https://avenaterminal.com/sitemap-news.xml',
+      'https://avenaterminal.com/sitemap-images.xml',
+    ],
     host: 'https://avenaterminal.com',
   };
 }
