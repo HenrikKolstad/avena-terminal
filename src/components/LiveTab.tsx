@@ -115,11 +115,11 @@ export default function LiveTab() {
                   <p className="text-sm text-gray-300">{ev.message}</p>
                   {ev.change_pct !== 0 && (
                     <div className="flex items-center gap-2 mt-1 text-xs font-mono">
-                      {ev.old_value > 0 && <span className="text-gray-500">{ev.event_type.includes('YIELD') ? `${ev.old_value}%` : ev.old_value > 100 ? `\u20AC${ev.old_value.toLocaleString()}` : ev.old_value}</span>}
-                      {ev.old_value > 0 && <span className="text-gray-600">\u2192</span>}
-                      <span className="text-white font-bold">{ev.event_type.includes('YIELD') ? `${ev.new_value}%` : ev.new_value > 100 ? `\u20AC${ev.new_value.toLocaleString()}` : ev.new_value}</span>
+                      {ev.old_value > 0 && <span className="text-gray-500">{ev.event_type.includes('YIELD') ? `${ev.old_value}%` : ev.old_value > 100 ? `\€${ev.old_value.toLocaleString()}` : ev.old_value}</span>}
+                      {ev.old_value > 0 && <span className="text-gray-600">\→</span>}
+                      <span className="text-white font-bold">{ev.event_type.includes('YIELD') ? `${ev.new_value}%` : ev.new_value > 100 ? `\€${ev.new_value.toLocaleString()}` : ev.new_value}</span>
                       <span className="font-bold" style={{ color: ev.change_pct > 0 ? '#4ade80' : '#f87171' }}>
-                        {ev.change_pct > 0 ? '\u25B2' : '\u25BC'} {Math.abs(ev.change_pct)}%
+                        {ev.change_pct > 0 ? '\▲' : '\▼'} {Math.abs(ev.change_pct)}%
                       </span>
                     </div>
                   )}
@@ -141,14 +141,15 @@ export default function LiveTab() {
                   const sold = events.filter(e => e.event_type === 'SOLD').length;
                   const avgDrop = events.filter(e => e.event_type === 'PRICE_DROP' && e.change_pct).length > 0
                     ? (events.filter(e => e.event_type === 'PRICE_DROP').reduce((s, e) => s + Math.abs(e.change_pct || 0), 0) / drops).toFixed(1) : '0';
-                  const bigDrop = Math.max(...events.filter(e => e.event_type === 'PRICE_DROP' && e.old_value && e.new_value).map(e => e.old_value - e.new_value), 0);
+                  const dropAmounts = events.filter(e => e.event_type === 'PRICE_DROP' && e.old_value > 0 && e.new_value > 0).map(e => e.old_value - e.new_value);
+                  const bigDrop = dropAmounts.length > 0 ? Math.max(...dropAmounts) : 0;
                   return (
                     <>
                       <div className="flex justify-between"><span>Price Drops</span><span className="text-red-400 font-bold">{drops}</span></div>
                       <div className="flex justify-between"><span>New Listings</span><span className="text-green-400 font-bold">{listings}</span></div>
                       <div className="flex justify-between"><span>Properties Sold</span><span className="text-purple-400 font-bold">{sold}</span></div>
                       <div className="flex justify-between"><span>Avg Drop</span><span className="text-red-400">-{avgDrop}%</span></div>
-                      <div className="flex justify-between"><span>Biggest Drop</span><span className="text-red-400">-\u20AC{Math.round(bigDrop / 1000)}k</span></div>
+                      <div className="flex justify-between"><span>Biggest Drop</span><span className="text-red-400">{bigDrop > 0 ? `-€${Math.round(bigDrop / 1000)}k` : '—'}</span></div>
                     </>
                   );
                 })()}
