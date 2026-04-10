@@ -62,27 +62,40 @@ export default function CryptoTab({ properties }: { properties: Property[] }) {
     } catch { /* silent */ }
   };
 
-  const connectWallet = async () => {
+  const connectWallet = async (wallet: 'metamask' | 'trust') => {
     setConnectError('');
     try {
-      const eth = (window as any).ethereum;
-      if (!eth) {
-        setConnectError('no-wallet');
-        alert('No wallet detected. Make sure MetaMask is installed and enabled.');
-        return;
+      let eth: any = null;
+      const w = window as any;
+
+      if (wallet === 'metamask') {
+        // MetaMask sets isMetaMask flag — find it specifically
+        if (w.ethereum?.providers) {
+          eth = w.ethereum.providers.find((p: any) => p.isMetaMask && !p.isTrust);
+        } else if (w.ethereum?.isMetaMask && !w.ethereum?.isTrust) {
+          eth = w.ethereum;
+        }
+        if (!eth) { setConnectError('MetaMask not found. Is the extension installed?'); return; }
+      } else {
+        // Trust Wallet
+        if (w.ethereum?.providers) {
+          eth = w.ethereum.providers.find((p: any) => p.isTrust);
+        } else if (w.trustwallet) {
+          eth = w.trustwallet;
+        } else if (w.ethereum?.isTrust) {
+          eth = w.ethereum;
+        }
+        if (!eth) eth = w.ethereum; // fallback
+        if (!eth) { setConnectError('no-wallet'); return; }
       }
+
       const accounts = await eth.request({ method: 'eth_requestAccounts' });
-      if (!accounts || !accounts[0]) {
-        setConnectError('No account returned');
-        return;
-      }
+      if (!accounts || !accounts[0]) { setConnectError('No account returned'); return; }
       const addr = accounts[0];
       setWalletAddress(addr);
       await checkChainAndBalance(addr);
     } catch (err: any) {
-      const msg = err?.message || 'Connection rejected';
-      setConnectError(msg);
-      alert('Wallet error: ' + msg);
+      setConnectError(err?.message || 'Connection rejected');
     }
   };
 
@@ -174,12 +187,12 @@ export default function CryptoTab({ properties }: { properties: Property[] }) {
           ) : !walletAddress ? (
             <div className="flex flex-col items-center gap-3">
               <div className="flex gap-3">
-                <button onClick={connectWallet} className="px-5 py-2.5 rounded-lg text-xs font-bold border transition-all" style={{ borderColor: '#F6851B', color: '#F6851B' }}
+                <button onClick={() => connectWallet('metamask')} className="px-5 py-2.5 rounded-lg text-xs font-bold border transition-all" style={{ borderColor: '#F6851B', color: '#F6851B' }}
                   onMouseEnter={e => { e.currentTarget.style.background = '#F6851B'; e.currentTarget.style.color = '#0d1117'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#F6851B'; }}>
                   Connect MetaMask
                 </button>
-                <button onClick={connectWallet} className="px-5 py-2.5 rounded-lg text-xs font-bold border transition-all" style={{ borderColor: '#3375BB', color: '#3375BB' }}
+                <button onClick={() => connectWallet('trust')} className="px-5 py-2.5 rounded-lg text-xs font-bold border transition-all" style={{ borderColor: '#3375BB', color: '#3375BB' }}
                   onMouseEnter={e => { e.currentTarget.style.background = '#3375BB'; e.currentTarget.style.color = '#fff'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#3375BB'; }}>
                   Connect Trust Wallet
