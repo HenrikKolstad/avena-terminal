@@ -3953,7 +3953,7 @@ function AnalyzerTab({ isPaid, onUpgrade }: { isPaid: boolean; onUpgrade: () => 
               value={url}
               onChange={e => setUrl(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && analyze()}
-              placeholder="https://idealista.com/inmueble/12345678/"
+              placeholder="https://kyero.com/property/... or any Spanish listing URL"
               className="flex-1 px-4 py-3 rounded-lg text-sm text-white placeholder-gray-500 outline-none transition-all"
               style={{ background: '#0d1117', border: '1px solid #1c2333' }}
               onFocus={e => { e.target.style.borderColor = '#10B981'; e.target.style.boxShadow = '0 0 0 2px rgba(16,185,129,0.15)'; }}

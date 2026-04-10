@@ -8,13 +8,33 @@ export async function POST(req: NextRequest) {
     const { url } = await req.json();
     if (!url || typeof url !== 'string') return NextResponse.json({ success: false, error: 'URL required' }, { status: 400 });
 
-    // Fetch the listing page
-    const res = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' },
-      redirect: 'follow',
-    });
-    if (!res.ok) return NextResponse.json({ success: false, error: 'Could not fetch this listing.' }, { status: 400 });
-    const html = await res.text();
+    // Fetch the listing page with multiple fallback strategies
+    let html = '';
+    const headers: Record<string, string> = {
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      'Accept-Language': 'en-US,en;q=0.9,es;q=0.8',
+      'Accept-Encoding': 'identity',
+      'Cache-Control': 'no-cache',
+    };
+
+    try {
+      const res = await fetch(url, { headers, redirect: 'follow' });
+      html = await res.text();
+    } catch {
+      // Try Google cache as fallback
+      try {
+        const cacheUrl = `https://webcache.googleusercontent.com/search?q=cache:${encodeURIComponent(url)}`;
+        const res2 = await fetch(cacheUrl, { headers });
+        html = await res2.text();
+      } catch {
+        return NextResponse.json({ success: false, error: 'Could not fetch this listing. The portal may be blocking automated requests. Try pasting a Kyero or ThinkSpain link instead.' }, { status: 400 });
+      }
+    }
+
+    if (!html || html.length < 500) {
+      return NextResponse.json({ success: false, error: 'Portal returned an empty or blocked page. Try Kyero, ThinkSpain, or Rightmove — they work best.' }, { status: 400 });
+    }
 
     // Extract data using regex patterns
     const extract = (patterns: RegExp[]): string => {
