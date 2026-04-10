@@ -21,6 +21,7 @@ import LegalTab from '@/components/LegalTab';
 import ContactTab from '@/components/ContactTab';
 import MarketIndexTab from '@/components/MarketIndexTab';
 import AnalyzerTab from '@/components/AnalyzerTab';
+import LiveTab from '@/components/LiveTab';
 
 const MapView = dynamic(() => import('@/components/MapView'), { ssr: false });
 
@@ -107,7 +108,7 @@ export default function Explorer() {
   const [preview, setPreview] = useState<number | null>(null);
   const [previewLuxScore, setPreviewLuxScore] = useState<number | null>(null);
   const [favs, setFavs] = useState<string[]>([]);
-  const [tab, setTab] = useState<'deals' | 'yield' | 'portfolio' | 'map' | 'market' | 'marketindex' | 'luxury' | 'about' | 'legal' | 'contact' | 'whyavena' | 'crypto' | 'analyzer'>('deals');
+  const [tab, setTab] = useState<'deals' | 'yield' | 'portfolio' | 'map' | 'market' | 'marketindex' | 'luxury' | 'about' | 'legal' | 'contact' | 'whyavena' | 'crypto' | 'analyzer' | 'live'>('deals');
   const [imgIdx, setImgIdx] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
@@ -880,7 +881,7 @@ export default function Explorer() {
               <span className="text-[12px] font-medium tracking-wide whitespace-nowrap overflow-hidden flex-1 text-left flex items-center gap-1.5">
                 <span className="flex-1">{label}</span>
                 {disabled && <span className="text-[9px] text-gray-700 font-normal">soon</span>}
-                {badge && !disabled && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded flex-shrink-0" style={{ background: 'linear-gradient(135deg, #10B98133, #10B98155)', border: '1px solid rgba(16,185,129,0.4)', color: '#10B981' }}>{badge}</span>}
+                {badge && !disabled && <span className={badge === 'LIVE' ? 'text-[8px] font-bold px-1.5 py-0.5 rounded flex-shrink-0 bg-red-500/20 text-red-400 animate-pulse border border-red-500/30' : 'text-[8px] font-bold px-1.5 py-0.5 rounded flex-shrink-0'} style={badge === 'LIVE' ? undefined : { background: 'linear-gradient(135deg, #10B98133, #10B98155)', border: '1px solid rgba(16,185,129,0.4)', color: '#10B981' }}>{badge}</span>}
               </span>
             )}
           </button>
@@ -937,6 +938,7 @@ export default function Explorer() {
 
                     {/* MARKET */}
                     <SectionHeader label="MARKET" />
+                    <NavItem icon={<Zap size={16} />} label="Avena Live" isActive={tab === 'live'} onClick={() => go('live')} badge="LIVE" />
                     <NavItem icon={<TrendingUp size={16} />} label="Market Overview" isActive={tab === 'market'} onClick={() => go('market')} badge="PRO" />
                     <NavItem icon={<BarChart3 size={16} />} label="Market Index" isActive={tab === 'marketindex'} onClick={() => go('marketindex')} />
                     <NavItem icon={<Star size={16} />} label="Scoring Method" isActive={tab === 'about'} onClick={() => go('about')} />
@@ -1478,6 +1480,7 @@ export default function Explorer() {
           {tab === 'map' && isPaid && <MapView properties={filtered} onPreview={(ref) => { const idx = filtered.findIndex(p => (p.ref || p.p) === ref); if (idx !== -1) { setPreview(idx); setPreviewLuxScore(null); } }} isPaid={isPaid} headerH={headerH} />}
           {tab === 'market' && !isPaid && <ProGate feature="Market Overview" onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} />}
           {tab === 'market' && isPaid && <MarketTab properties={filtered} />}
+          {tab === 'live' && <LiveTab />}
           {tab === 'marketindex' && <MarketIndexTab properties={properties} />}
           {tab === 'luxury' && !isPaid && <ProGate feature="Luxury Portfolio €1M+" onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} />}
           {tab === 'luxury' && isPaid && <LuxuryTab properties={properties} isPaid={isPaid} onUpgrade={() => user ? setShowPaywall(true) : setShowAuthModal(true)} onPreview={(ref, lsc) => { const idx = filtered.findIndex(p => p.ref === ref); if (idx !== -1) { setPreview(idx); setPreviewLuxScore(lsc ?? null); } }} />}
