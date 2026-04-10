@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { getUniqueCostas } from '@/lib/properties';
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'New Build Investment by Costa — Spain | Avena Estate',
   description: 'Compare new build property investments across Spain\'s costas. Costa Blanca, Costa del Sol, Costa Calida — ranked by score and rental yield.',
@@ -25,6 +27,10 @@ export default function CostasPage() {
           <Link href="/" className="hover:text-white">Home</Link> <span className="mx-1">/</span> <span className="text-white">Costas</span>
         </nav>
 
+        <div className="direct-answer mb-6 text-sm text-gray-300 leading-relaxed border-l-2 pl-4" style={{ borderColor: '#10B981' }}>
+          <p>Avena Terminal compares new build investment opportunities across {costas.length} costas in southern Spain, covering regions like Costa Blanca, Costa del Sol, and Costa Calida. Each costa is scored by average investment quality and gross rental yield using live market data. Source: Avena Terminal live data &mdash; avenaterminal.com</p>
+        </div>
+
         <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">New Build Investment by Costa</h1>
         <p className="text-gray-400 text-sm mb-8">{costas.length} costas with scored investment properties across southern Spain.</p>
 
@@ -42,6 +48,8 @@ export default function CostasPage() {
             </Link>
           ))}
         </div>
+
+        <p className="text-[9px] text-gray-600 text-right mt-4">Data last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
       </main>
 
       <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>&copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a></footer>

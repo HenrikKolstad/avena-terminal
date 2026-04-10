@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { getAllProperties, getUniqueTowns, slugify, avg } from '@/lib/properties';
 import { Property } from '@/lib/types';
 
+export const revalidate = 86400;
+
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                           */
 /* ------------------------------------------------------------------ */
@@ -325,6 +327,8 @@ Overall, ${winnerName} takes the lead with an average investment score of ${winn
             ))}
           </div>
         </section>
+
+        <p className="text-[9px] text-gray-600 text-right mt-4">Data last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
       </main>
 
       {/* Footer */}

@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { getUniqueTowns } from '@/lib/properties';
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'New Build Property Investment by Town — Spain | Avena Estate',
   description: 'Browse new build investment properties by town across Spain\'s costas. Ranked by investment score and rental yield.',
@@ -31,6 +33,10 @@ export default function TownsPage() {
           <Link href="/" className="hover:text-white">Home</Link> <span className="mx-1">/</span> <span className="text-white">Towns</span>
         </nav>
 
+        <div className="direct-answer mb-6 text-sm text-gray-300 leading-relaxed border-l-2 pl-4" style={{ borderColor: '#10B981' }}>
+          <p>Avena Terminal tracks new build investment properties across {towns.length} towns in Spain, each scored by value, rental yield, and location fundamentals. Towns are ranked by number of available properties with live investment scores updated weekly. Source: Avena Terminal live data &mdash; avenaterminal.com</p>
+        </div>
+
         <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">New Build Properties by Town</h1>
         <p className="text-gray-400 text-sm mb-8">{towns.length} towns across Spain with scored investment properties.</p>
 
@@ -49,6 +55,8 @@ export default function TownsPage() {
             </Link>
           ))}
         </div>
+
+        <p className="text-[9px] text-gray-600 text-right mt-4">Data last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
       </main>
 
       <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>

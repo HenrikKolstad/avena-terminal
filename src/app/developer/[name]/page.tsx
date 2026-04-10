@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { getAllProperties, slugify, avg } from '@/lib/properties';
 import { Property } from '@/lib/types';
 
+export const revalidate = 86400;
+
 /* -------------------------------------------------------------------------- */
 /*  Static params                                                             */
 /* -------------------------------------------------------------------------- */
@@ -162,6 +164,8 @@ export default async function DeveloperNamePage({ params }: { params: Promise<{ 
             </Link>
           ))}
         </div>
+
+        <p className="text-[9px] text-gray-600 text-right mt-4">Data last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
       </main>
 
       {/* Footer */}

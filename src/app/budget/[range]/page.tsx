@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { getAllProperties, avg } from '@/lib/properties';
 
+export const revalidate = 86400;
+
 const RANGES: Record<string, { label: string; filter: (pf: number) => boolean; desc: string }> = {
   'under-200k': { label: 'Under \u20AC200,000', filter: (pf) => pf < 200000, desc: 'Budget-friendly new builds under \u20AC200k' },
   '200k-400k': { label: '\u20AC200,000 \u2013 \u20AC400,000', filter: (pf) => pf >= 200000 && pf <= 400000, desc: 'Mid-range new builds \u20AC200k\u2013\u20AC400k' },
@@ -68,6 +70,8 @@ export default async function BudgetPage({ params }: { params: Promise<{ range: 
             </Link>
           ))}
         </div>
+
+        <p className="text-[9px] text-gray-600 text-right mt-4">Data last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
       </main>
 
       <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>&copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a></footer>

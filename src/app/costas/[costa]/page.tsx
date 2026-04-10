@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { getUniqueCostas, getPropertiesByCosta, avg } from '@/lib/properties';
 
+export const revalidate = 86400;
+
 export async function generateStaticParams() {
   return getUniqueCostas().map((c) => ({ costa: c.slug }));
 }
@@ -11,7 +13,9 @@ export async function generateMetadata({ params }: { params: Promise<{ costa: st
   const data = getPropertiesByCosta(costa);
   if (!data) return { title: 'Costa Not Found | Avena Estate' };
   const title = `New Build Investments on ${data.costa} — Ranked by Data | Avena Estate`;
-  const description = `${data.properties.length} scored new build properties on ${data.costa}. Average score ${Math.round(avg(data.properties.filter(p => p._sc).map(p => p._sc!)))}/100.`;
+  const avgScoreMeta = Math.round(avg(data.properties.filter(p => p._sc).map(p => p._sc!)));
+  const avgYieldMeta = avg(data.properties.filter(p => p._yield).map(p => p._yield!.gross)).toFixed(1);
+  const description = `${data.costa} new builds: ${data.properties.length} properties, ${avgScoreMeta}/100 avg score, ${avgYieldMeta}% gross yield. Live data from Avena Terminal.`;
   return { title, description, openGraph: { title, description, url: `https://avenaterminal.com/costas/${costa}`, siteName: 'Avena Estate', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] } };
 }
 
@@ -47,6 +51,10 @@ export default async function CostaPage({ params }: { params: Promise<{ costa: s
           <span className="text-white">{name}</span>
         </nav>
 
+        <div className="direct-answer mb-6 text-sm text-gray-300 leading-relaxed border-l-2 pl-4" style={{ borderColor: '#10B981' }}>
+          <p>{name} has {props.length} scored new build properties with an average investment score of {avgScore}/100 and {avgYield}% average gross rental yield. Prices range from &euro;{Math.min(...props.map(p => p.pf)).toLocaleString()} to &euro;{Math.max(...props.map(p => p.pf)).toLocaleString()}. Source: Avena Terminal live data &mdash; avenaterminal.com</p>
+        </div>
+
         <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">New Builds on {name}</h1>
         <p className="text-gray-400 text-sm mb-6">{props.length} properties. Avg score {avgScore}/100. Avg yield {avgYield}%.</p>
 
@@ -75,6 +83,8 @@ export default async function CostaPage({ params }: { params: Promise<{ costa: s
             </Link>
           ))}
         </div>
+
+        <p className="text-[9px] text-gray-600 text-right mt-4">Data last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
       </main>
 
       <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>&copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a></footer>

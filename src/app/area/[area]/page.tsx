@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { getAllProperties, slugify, avg } from '@/lib/properties';
 import { Property } from '@/lib/types';
 
+export const revalidate = 86400;
+
 const AREAS = [
   { name: 'La Zenia', parent: 'Orihuela Costa, Alicante', search: ['la zenia', 'zenia'] },
   { name: 'Cabo Roig', parent: 'Orihuela Costa, Alicante', search: ['cabo roig'] },
@@ -231,6 +233,8 @@ export default async function AreaPage({ params }: { params: Promise<{ area: str
             View all properties in {area.parent.split(', ')[0]} &rarr;
           </Link>
         </div>
+
+        <p className="text-[9px] text-gray-600 text-right mt-4">Data last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
       </main>
 
       {/* Footer */}

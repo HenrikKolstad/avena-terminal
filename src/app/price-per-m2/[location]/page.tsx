@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, slugify, avg } from '@/lib/properties';
 import { Property } from '@/lib/types';
 
+export const revalidate = 86400;
+
 /* ---------- helpers ---------- */
 
 function pricePerM2(p: Property): number | null {
@@ -276,6 +278,8 @@ export default async function PricePerM2Page({ params }: { params: Promise<{ loc
             </div>
           )}
         </section>
+
+        <p className="text-[9px] text-gray-600 text-right mt-4">Data last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
       </main>
 
       {/* Footer */}

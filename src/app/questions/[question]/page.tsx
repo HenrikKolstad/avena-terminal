@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { getAllProperties, getUniqueTowns, slugify, avg } from '@/lib/properties';
 import { Property } from '@/lib/types';
 
+export const revalidate = 86400;
+
 /* ------------------------------------------------------------------ */
 /*  Question patterns                                                  */
 /* ------------------------------------------------------------------ */
@@ -79,6 +81,23 @@ function questionTitle(pattern: Pattern, town: string): string {
     case 'rental-yield': return `Average Rental Yield in ${town}, Spain`;
     case 'foreigners-buy': return `Can Foreigners Buy Property in ${town}?`;
     case 'best-areas': return `Best Areas to Invest Near ${town}`;
+  }
+}
+
+function generateDirectAnswer(pattern: Pattern, d: TownData): string {
+  const fmt = (n: number) => n.toLocaleString('en-GB');
+
+  switch (pattern) {
+    case 'good-for-investment':
+      return `Yes, ${d.town} is ${d.avgScore >= 65 ? 'a strong' : d.avgScore >= 50 ? 'a promising' : 'a viable'} property investment location in Spain. With ${d.count} new build developments averaging EUR ${fmt(d.avgPrice)}, an investment score of ${d.avgScore}/100, and a gross rental yield of ${d.avgYield}%, ${d.town} offers ${d.avgYield >= 6 ? 'excellent' : d.avgYield >= 4.5 ? 'solid' : 'moderate'} returns for buy-to-let investors seeking coastal Spanish property.`;
+    case 'new-build-cost':
+      return `New build properties in ${d.town} cost EUR ${fmt(d.avgPrice)} on average, with prices ranging from EUR ${fmt(d.minPrice)} to EUR ${fmt(d.maxPrice)}. The average price per square metre is EUR ${fmt(d.avgPm2)} across ${d.count} developments, with typical units offering ${d.avgBeds} bedrooms and ${d.avgBuilt}m2 of built area.`;
+    case 'rental-yield':
+      return `The average gross rental yield in ${d.town} is ${d.avgYield}%, based on ${d.count} new build developments. After management fees, community charges, and taxes, net yields typically range from ${Math.max(0, d.avgYield - 2).toFixed(1)}% to ${Math.max(0, d.avgYield - 1.5).toFixed(1)}%. The average property price is EUR ${fmt(d.avgPrice)} with an investment score of ${d.avgScore}/100.`;
+    case 'foreigners-buy':
+      return `Yes, foreigners can buy property in ${d.town} with no restrictions. Spain allows all nationalities to purchase real estate freely. Buyers need a NIE tax number, and the process takes eight to twelve weeks from reservation to completion. There are currently ${d.count} new builds available averaging EUR ${fmt(d.avgPrice)}.`;
+    case 'best-areas':
+      return `The best investment areas near ${d.town} include towns scoring up to ${Math.max(d.avgScore, ...([d.avgScore]))} out of 100 on the Avena investment index. ${d.town} itself has ${d.count} new build developments with an average price of EUR ${fmt(d.avgPrice)}, a gross yield of ${d.avgYield}%, and an average score of ${d.avgScore}/100.`;
   }
 }
 
@@ -183,8 +202,8 @@ export async function generateMetadata({ params }: { params: Promise<{ question:
       const tProps = all.filter(p => slugify(p.l) === t.slug);
       return buildTownData(t.town, tProps);
     });
-  const answer = generateAnswer(parsed.pattern, d, nearby);
-  const description = answer.replace(/\n/g, ' ').slice(0, 155).trim();
+  const directAnswer = generateDirectAnswer(parsed.pattern, d);
+  const description = directAnswer.slice(0, 155).trim();
 
   return {
     title: `${title} | Avena Estate`,
@@ -246,6 +265,7 @@ export default async function QuestionPage({ params }: { params: Promise<{ quest
       return buildTownData(t.town, tProps);
     });
 
+  const directAnswer = generateDirectAnswer(parsed.pattern, d);
   const answer = generateAnswer(parsed.pattern, d, nearby);
 
   /* Related questions for this town */
@@ -283,9 +303,18 @@ export default async function QuestionPage({ params }: { params: Promise<{ quest
     ],
   };
 
+  const speakableJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['h1', '.direct-answer'],
+    },
+  };
+
   return (
     <div className="min-h-screen text-gray-100" style={{ background: '#0d1117' }}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([faqJsonLd, breadcrumbJsonLd]) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([faqJsonLd, breadcrumbJsonLd, speakableJsonLd]) }} />
 
       {/* Header */}
       <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}>
@@ -306,6 +335,11 @@ export default async function QuestionPage({ params }: { params: Promise<{ quest
         {/* Title */}
         <h1 className="text-2xl md:text-3xl font-bold text-white mb-6">{title}</h1>
 
+        {/* Direct answer for Featured Snippet */}
+        <div className="direct-answer text-sm md:text-base text-gray-200 leading-relaxed mb-6 p-4 rounded-lg" style={{ background: '#0f1419', borderLeft: '3px solid #10B981' }}>
+          <p>{directAnswer}</p>
+        </div>
+
         {/* Stats bar */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
@@ -321,7 +355,8 @@ export default async function QuestionPage({ params }: { params: Promise<{ quest
           ))}
         </div>
 
-        {/* Answer */}
+        {/* Full Analysis */}
+        <h2 className="text-lg font-bold text-white mb-4">Full Analysis</h2>
         <article className="rounded-xl border p-6 md:p-8 mb-8" style={{ background: '#0f1419', borderColor: '#1c2333' }}>
           {answer.split('\n\n').map((para, i) => (
             <p key={i} className="text-gray-300 leading-relaxed mb-4 last:mb-0 text-sm md:text-base">
@@ -368,6 +403,8 @@ export default async function QuestionPage({ params }: { params: Promise<{ quest
             ))}
           </div>
         </div>
+
+        <p className="text-[9px] text-gray-600 text-right mt-4">Data last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
       </main>
 
       {/* Footer */}

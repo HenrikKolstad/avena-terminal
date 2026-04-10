@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { getAllProperties, slugify, avg } from '@/lib/properties';
 
+export const revalidate = 86400;
+
 const TYPES = ['Villa', 'Apartment', 'Penthouse', 'Townhouse', 'Bungalow', 'Studio'];
 
 export async function generateStaticParams() {
@@ -61,6 +63,8 @@ export default async function TypePage({ params }: { params: Promise<{ type: str
             </Link>
           ))}
         </div>
+
+        <p className="text-[9px] text-gray-600 text-right mt-4">Data last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
       </main>
 
       <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>&copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a></footer>

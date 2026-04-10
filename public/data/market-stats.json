@@ -1,0 +1,51 @@
+{
+  "generated": "2026-04-10",
+  "national": {
+    "totalProperties": 1881,
+    "avgPrice": 289500,
+    "avgPricePerM2": 2845,
+    "avgScore": 58,
+    "avgGrossYield": 7.2,
+    "avgDiscount": 12.4,
+    "bestYieldTown": "Torrevieja",
+    "bestYieldValue": 9.8,
+    "highestScoredTown": "San Pedro del Pinatar",
+    "highestScoreValue": 74,
+    "regions": 4,
+    "towns": 112
+  },
+  "regions": [
+    {
+      "name": "Costa Blanca",
+      "properties": 743,
+      "avgPrice": 275000,
+      "avgScore": 60,
+      "avgYield": 7.5,
+      "topTown": "Torrevieja"
+    },
+    {
+      "name": "Costa Blanca North",
+      "properties": 312,
+      "avgPrice": 345000,
+      "avgScore": 55,
+      "avgYield": 6.4,
+      "topTown": "Denia"
+    },
+    {
+      "name": "Costa Calida",
+      "properties": 421,
+      "avgPrice": 215000,
+      "avgScore": 62,
+      "avgYield": 8.1,
+      "topTown": "San Pedro del Pinatar"
+    },
+    {
+      "name": "Costa del Sol",
+      "properties": 405,
+      "avgPrice": 385000,
+      "avgScore": 54,
+      "avgYield": 6.2,
+      "topTown": "Marbella"
+    }
+  ]
+}

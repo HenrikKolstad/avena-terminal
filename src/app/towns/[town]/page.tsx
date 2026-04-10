@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { getUniqueTowns, getPropertiesByTown, avg, slugify } from '@/lib/properties';
 
+export const revalidate = 86400;
+
 export async function generateStaticParams() {
   return getUniqueTowns().map((t) => ({ town: t.slug }));
 }
@@ -14,7 +16,9 @@ export async function generateMetadata({ params }: { params: Promise<{ town: str
   const avgScore = Math.round(avg(props.filter(p => p._sc).map(p => p._sc!)));
   const maxYield = Math.max(...props.filter(p => p._yield).map(p => p._yield!.gross), 0);
   const title = `New Build Properties in ${name} — Investment Scores & Rental Yield | Avena Estate`;
-  const description = `Browse ${props.length} scored new build properties in ${name}, Spain. Average investment score ${avgScore}/100. Rental yields up to ${maxYield.toFixed(1)}%. Data updated weekly.`;
+  const avgPm2Meta = Math.round(avg(props.filter(p => p.pm2).map(p => p.pm2!)));
+  const avgYieldMeta = avg(props.filter(p => p._yield).map(p => p._yield!.gross)).toFixed(1);
+  const description = `${name} new builds: avg \u20AC${avgPm2Meta.toLocaleString()}/m\u00B2, ${avgScore}/100 score, ${avgYieldMeta}% gross yield. Live data from Avena Terminal.`;
   return {
     title, description,
     openGraph: { title, description, url: `https://avenaterminal.com/towns/${town}`, siteName: 'Avena Estate', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] },
@@ -73,6 +77,10 @@ export default async function TownPage({ params }: { params: Promise<{ town: str
           <span className="text-white">{name}</span>
         </nav>
 
+        <div className="direct-answer mb-6 text-sm text-gray-300 leading-relaxed border-l-2 pl-4" style={{ borderColor: '#10B981' }}>
+          <p>{name} has {props.length} scored new build properties averaging &euro;{avgPm2.toLocaleString()}/m&sup2; with a {avgYield}% gross rental yield. The average investment score is {avgScore}/100, ranking properties by value, rental income, and location fundamentals. Source: Avena Terminal live data &mdash; avenaterminal.com</p>
+        </div>
+
         <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">New Build Properties in {name}</h1>
         <p className="text-gray-400 text-sm mb-6">{props.length} scored properties. Average score {avgScore}/100. Avg yield {avgYield}%.</p>
 
@@ -112,6 +120,8 @@ export default async function TownPage({ params }: { params: Promise<{ town: str
             <Link href={`/costas/${slugify(costa)}`} className="text-emerald-400 text-sm hover:underline">View all {costa} properties &rarr;</Link>
           </div>
         )}
+
+        <p className="text-[9px] text-gray-600 text-right mt-4">Data last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
       </main>
 
       <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>
