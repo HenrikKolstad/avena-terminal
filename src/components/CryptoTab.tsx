@@ -230,7 +230,7 @@ export default function CryptoTab({ properties }: { properties: Property[] }) {
                     <p className="text-[10px] text-gray-600">Minimum: 2,500 USDT</p>
                     <button onClick={reserveSlot} disabled={parseInt(contributionAmount) < 2500}
                       className="px-6 py-2.5 rounded-lg text-sm font-bold transition-all disabled:opacity-30" style={{ background: '#10B981', color: '#0d1117' }}>
-                      RESERVE MY SLOT →
+                      REGISTER INTEREST →
                     </button>
                   </div>
                 </div>
@@ -682,13 +682,16 @@ export default function CryptoTab({ properties }: { properties: Property[] }) {
         <div className="fixed inset-0 z-[600] flex items-center justify-center bg-black/80 backdrop-blur-sm" onClick={() => setShowConfirmModal(false)}>
           <div className="relative rounded-2xl p-6 md:p-8 w-full max-w-md mx-4" style={{ background: '#0d1117', border: '1px solid #1c2333' }} onClick={e => e.stopPropagation()}>
             <button onClick={() => setShowConfirmModal(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white">&times;</button>
-            <h3 className="text-lg font-bold text-emerald-400 mb-3">SLOT RESERVED</h3>
-            <p className="text-sm text-gray-300 mb-4">Your wallet address has been recorded. Send exactly <span className="text-white font-bold">{contributionAmount} USDT</span> to The Vault address below within 24 hours to secure your position.</p>
-            <div className="flex items-center gap-2 mb-4 p-3 rounded-lg" style={{ background: '#090d12', border: '1px solid #1c2333' }}>
-              <code className="text-xs text-white break-all flex-1 font-mono">{VAULT_ADDRESS}</code>
-              <button onClick={() => navigator.clipboard.writeText(VAULT_ADDRESS)} className="text-gray-500 hover:text-white flex-shrink-0 text-xs">Copy</button>
+            <h3 className="text-lg font-bold text-emerald-400 mb-3">INTEREST REGISTERED</h3>
+            <p className="text-sm text-gray-300 mb-4">Your wallet address has been recorded for <span className="text-white font-bold">{contributionAmount} USDT</span>. Round 1 is not yet open — you will be notified when The Core goes live.</p>
+            <div className="rounded-lg p-3 mb-4" style={{ background: '#090d12', border: '1px solid #1c2333' }}>
+              <p className="text-[10px] text-gray-500 mb-2">Vault address (for reference only — do not send funds yet):</p>
+              <div className="flex items-center gap-2">
+                <code className="text-xs text-white break-all flex-1 font-mono">{VAULT_ADDRESS}</code>
+                <button onClick={() => navigator.clipboard.writeText(VAULT_ADDRESS)} className="text-gray-500 hover:text-white flex-shrink-0 text-xs">Copy</button>
+              </div>
             </div>
-            <p className="text-xs text-gray-500 mb-4">We will confirm your contribution via email within 24 hours.</p>
+            <p className="text-xs text-yellow-500 mb-4 font-semibold">Do not send funds until Round 1 is officially open. We will confirm via email.</p>
             <button onClick={() => setShowConfirmModal(false)} className="w-full py-2.5 rounded-lg text-sm font-bold" style={{ background: '#10B981', color: '#0d1117' }}>Close</button>
           </div>
         </div>
