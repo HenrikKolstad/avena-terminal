@@ -64,15 +64,25 @@ export default function CryptoTab({ properties }: { properties: Property[] }) {
 
   const connectWallet = async () => {
     setConnectError('');
-    const eth = (window as any).ethereum;
-    if (!eth) { setConnectError('no-wallet'); return; }
     try {
+      const eth = (window as any).ethereum;
+      if (!eth) {
+        setConnectError('no-wallet');
+        alert('No wallet detected. Make sure MetaMask is installed and enabled.');
+        return;
+      }
       const accounts = await eth.request({ method: 'eth_requestAccounts' });
+      if (!accounts || !accounts[0]) {
+        setConnectError('No account returned');
+        return;
+      }
       const addr = accounts[0];
       setWalletAddress(addr);
       await checkChainAndBalance(addr);
     } catch (err: any) {
-      setConnectError(err.message || 'Connection rejected');
+      const msg = err?.message || 'Connection rejected';
+      setConnectError(msg);
+      alert('Wallet error: ' + msg);
     }
   };
 
