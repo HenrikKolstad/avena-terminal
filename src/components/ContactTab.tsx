@@ -17,13 +17,10 @@ export default function ContactTab() {
             {/* Avatar */}
             <div className="flex justify-center mb-6">
               <div className="relative">
-                <div className="w-24 h-24 rounded-full flex items-center justify-center text-4xl font-extrabold font-serif text-black shadow-xl shadow-[#10B981]/30"
-                  style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-                  HK
-                </div>
-                <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full border-2 border-[#0f0d15] flex items-center justify-center text-sm"
-                  style={{ background: 'linear-gradient(135deg, #10B981, #34d399)' }}>
-                  ✦
+                <img src="/avatar.png" alt="Henrik" className="w-24 h-24 rounded-full object-cover shadow-xl shadow-[#10B981]/30 border-2 border-[#10B981]/30" />
+                <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full border-2 border-[#0f0d15] flex items-center justify-center text-[10px] font-bold"
+                  style={{ background: 'linear-gradient(135deg, #10B981, #34d399)', color: '#0d1117' }}>
+                  PRO
                 </div>
               </div>
             </div>
