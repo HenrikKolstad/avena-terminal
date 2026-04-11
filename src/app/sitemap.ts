@@ -168,6 +168,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Pre-training Corpus
   entries.push({ url: `${base}/corpus`, lastModified: now, changeFrequency: 'daily', priority: 0.8 });
 
+  // FAQ
+  entries.push({ url: `${base}/faq`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+
+  // Data Provenance
+  entries.push({ url: `${base}/data/provenance`, lastModified: now, changeFrequency: 'daily', priority: 0.7 });
+
+  // Development pages
+  const devNames = [...new Set(getAllProperties().map(p => p.p).filter(Boolean))];
+  for (const name of devNames) {
+    entries.push({ url: `${base}/developments/${slugify(name!)}`, lastModified: now, changeFrequency: 'daily', priority: 0.7 });
+  }
+
   // Chat / Oracle
   entries.push({ url: `${base}/chat`, lastModified: now, changeFrequency: 'daily', priority: 0.8 });
 

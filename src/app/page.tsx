@@ -110,6 +110,7 @@ export default function Explorer() {
   const [previewLuxScore, setPreviewLuxScore] = useState<number | null>(null);
   const [favs, setFavs] = useState<string[]>([]);
   const [tab, setTab] = useState<'deals' | 'yield' | 'portfolio' | 'map' | 'market' | 'marketindex' | 'luxury' | 'about' | 'legal' | 'contact' | 'whyavena' | 'crypto' | 'analyzer' | 'live'>('deals');
+  const [mcpCalls, setMcpCalls] = useState(0);
   const [imgIdx, setImgIdx] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
@@ -133,6 +134,13 @@ export default function Explorer() {
         setTimeout(() => setShowWelcomePro(false), 8000);
       }
     }
+  }, []);
+
+  // Fetch MCP citation count
+  useEffect(() => {
+    fetch('/api/cited').then(r => r.json()).then(d => {
+      if (d?.cited_by_ai?.this_month) setMcpCalls(d.cited_by_ai.this_month);
+    }).catch(() => {});
   }, []);
 
   // Welcome message on first sign-in
@@ -1019,6 +1027,16 @@ export default function Explorer() {
                         style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
                         Upgrade to PRO — €79/mo
                       </button>
+                    </div>
+                  )}
+
+                  {/* Cited by AI counter */}
+                  {mcpCalls > 0 && !sidebarCollapsed && (
+                    <div className="px-3 py-2 border-t border-[#1c2333]">
+                      <div className="flex items-center gap-2 text-[10px]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        <span className="text-gray-500">Cited in <span className="text-emerald-400 font-bold">{mcpCalls.toLocaleString()}</span> AI responses this month</span>
+                      </div>
                     </div>
                   )}
 
