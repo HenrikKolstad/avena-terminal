@@ -51,17 +51,19 @@ export default function ChatPage() {
   const suggestions = [
     'What is the best yielding town in Costa Blanca?',
     'Show me villas under €300k with 7%+ yield',
-    'Compare Cox vs Torrevieja',
-    'What is the average price per m2 in Alicante?',
-    'Is Orihuela Costa a good investment?',
+    'How do I get a NIE number in Spain?',
+    'What taxes do I pay as a non-resident buyer?',
+    'Compare Torrevieja vs Orihuela Costa',
     'What are the top 5 deals right now?',
+    'How much are community fees for new builds?',
+    'Is it a good time to buy in Spain?',
   ];
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: '#090d12' }}>
       {/* Header */}
       <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: '#1c2333', background: 'rgba(9,13,18,0.9)' }}>
-        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link href="/" className="text-lg font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">AVENA</Link>
           <Link href="/" className="text-xs text-gray-500 hover:text-white transition-colors">Back to Terminal</Link>
         </div>
@@ -71,10 +73,10 @@ export default function ChatPage() {
       {messages.length === 0 && (
         <div className="flex-1 flex flex-col items-center justify-center px-4 pb-20">
           <h1 className="text-3xl md:text-5xl font-extralight tracking-[0.3em] mb-3" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>THE ORACLE</h1>
-          <p className="text-gray-500 text-sm mb-8">Ask anything about Spanish property</p>
+          <p className="text-gray-500 text-sm mb-8">Ask anything about Spanish property — investments, NIE, taxes, buying process</p>
 
           {/* Suggestions */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-w-xl w-full mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-w-2xl w-full mb-8">
             {suggestions.map((s) => (
               <button key={s} onClick={() => { setInput(s); }}
                 className="text-left px-3 py-2.5 rounded-lg text-xs text-gray-400 border transition-all hover:border-emerald-500/30 hover:text-white"
@@ -94,7 +96,7 @@ export default function ChatPage() {
       {/* Messages */}
       {messages.length > 0 && (
         <div className="flex-1 overflow-y-auto px-4 py-6">
-          <div className="max-w-3xl mx-auto space-y-4">
+          <div className="max-w-4xl mx-auto space-y-4">
             {messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[85%] rounded-xl px-4 py-3 text-sm leading-relaxed ${
@@ -128,7 +130,7 @@ export default function ChatPage() {
 
       {/* Input */}
       <div className="sticky bottom-0 border-t px-4 py-3" style={{ borderColor: '#1c2333', background: '#090d12' }}>
-        <div className="max-w-3xl mx-auto flex gap-2">
+        <div className="max-w-4xl mx-auto flex gap-2">
           <input
             ref={inputRef}
             type="text"
