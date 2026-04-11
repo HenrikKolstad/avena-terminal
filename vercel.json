@@ -7,8 +7,18 @@
       "maxDuration": 60
     }
   },
-  "crons": [{
-    "path": "/api/cron/pulse",
-    "schedule": "0 7 * * *"
-  }]
+  "crons": [
+    {
+      "path": "/api/cron/pulse",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/auto-post",
+      "schedule": "0 9,13,18 * * *"
+    },
+    {
+      "path": "/api/deal-alerts/check",
+      "schedule": "0 8 * * *"
+    }
+  ]
 }
