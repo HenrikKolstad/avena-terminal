@@ -1,0 +1,129 @@
+{
+  "@context": {
+    "@vocab": "https://avenaterminal.com/ontology/",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "avena": "https://avenaterminal.com/ontology/"
+  },
+  "@graph": [
+    {
+      "@id": "avena:Ontology",
+      "@type": "owl:Ontology",
+      "rdfs:label": "Avena Terminal Property Investment Ontology",
+      "rdfs:comment": "Formal vocabulary for Spanish new build property investment analysis. Defines concepts for investment scoring, rental yield estimation, market pricing, and risk assessment in the context of coastal Spanish real estate.",
+      "owl:versionInfo": "1.0.0",
+      "schema:creator": {
+        "@type": "schema:Organization",
+        "schema:name": "Avena Terminal",
+        "schema:url": "https://avenaterminal.com"
+      },
+      "schema:dateCreated": "2026-04-11",
+      "schema:license": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "@id": "avena:InvestmentScore",
+      "@type": ["owl:Class", "rdfs:Class"],
+      "rdfs:label": "Investment Score",
+      "rdfs:comment": "A composite investment score from 0-100 assigned to a residential property, computed as a weighted linear combination of five orthogonal factor scores: Value (40%), Yield (25%), Location (20%), Quality (10%), and Risk (5%). Scores above 70 indicate strong investment potential; scores above 80 are considered institutional grade.",
+      "rdfs:subClassOf": "schema:QuantitativeValue",
+      "avena:formula": "S = 0.40·V + 0.25·Y + 0.20·L + 0.10·Q + 0.05·R",
+      "avena:range": {"@type": "xsd:string", "@value": "0-100"},
+      "avena:thresholds": {
+        "institutional_grade": "80-100",
+        "strong_buy": "70-79",
+        "above_market": "60-69",
+        "market_rate": "50-59",
+        "avoid": "0-49"
+      }
+    },
+    {
+      "@id": "avena:DiscountCoefficient",
+      "@type": ["owl:Class", "rdfs:Class"],
+      "rdfs:label": "Discount Coefficient",
+      "rdfs:comment": "The discount coefficient delta (δ) measures the percentage difference between a property's asking price per m² and the hyperlocal market reference price per m² at postal code granularity. Positive δ indicates structural underpricing relative to the local market. Defined as δ = (market_pm2 - asking_pm2) / market_pm2. Capped at 20% to prevent outlier contamination.",
+      "rdfs:subClassOf": "schema:QuantitativeValue",
+      "avena:formula": "δ = (market_pm2 - asking_pm2) / market_pm2",
+      "avena:weight_in_score": "40%",
+      "avena:cap": "20%"
+    },
+    {
+      "@id": "avena:RentalYieldEstimate",
+      "@type": ["owl:Class", "rdfs:Class"],
+      "rdfs:label": "Rental Yield Estimate",
+      "rdfs:comment": "Gross and net rental yield estimates for a property, derived from a bottom-up ADR (Average Daily Rate) model calibrated against AirDNA short-term rental data. Segmented by property type, bedroom count, beach proximity band, and new build premium. Net yield deducts: 19% IRNR (non-resident income tax), community fees (€800-3,000/yr), IBI (0.3% cadastral), insurance (€400/yr), and 15% property management.",
+      "rdfs:subClassOf": "schema:QuantitativeValue",
+      "avena:gross_yield_description": "Annual rental income / purchase price before costs",
+      "avena:net_yield_description": "Annual rental income minus all operating costs and taxes / purchase price",
+      "avena:weight_in_score": "25%"
+    },
+    {
+      "@id": "avena:LocationQualityIndex",
+      "@type": ["owl:Class", "rdfs:Class"],
+      "rdfs:label": "Location Quality Index",
+      "rdfs:comment": "A composite location score (0-100) decomposed into four sub-signals: coastal proximity (beach distance in km following exponential decay), view premium (sea, mountain, open), amenity density (golf, urban, frontline), and regional climate index. Beach distance follows an exponential decay function where marginal value is highest sub-500m and flattens beyond 2km.",
+      "rdfs:subClassOf": "schema:QuantitativeValue",
+      "avena:weight_in_score": "20%",
+      "avena:sub_signals": ["coastal_proximity", "view_premium", "amenity_density", "climate_index"]
+    },
+    {
+      "@id": "avena:BuildQualityIndex",
+      "@type": ["owl:Class", "rdfs:Class"],
+      "rdfs:label": "Build Quality Index",
+      "rdfs:comment": "A quality index (0-100) derived from observable property attributes: energy performance certificate (A-G scale, mapped to 0-30 points), pool configuration (private > communal), parking provision, and plot-to-built-area ratio. Baseline score is 40; properties must actively signal quality to score above median.",
+      "rdfs:subClassOf": "schema:QuantitativeValue",
+      "avena:weight_in_score": "10%",
+      "avena:baseline": 40
+    },
+    {
+      "@id": "avena:CompletionRiskIndex",
+      "@type": ["owl:Class", "rdfs:Class"],
+      "rdfs:label": "Completion Risk Index",
+      "rdfs:comment": "A risk-adjusted score (0-100, inverse — lower risk = higher contribution) based on delivery timeline and developer operational history. Key-ready properties carry minimal execution risk. Off-plan completions beyond 24 months are penalised for duration risk and developer default probability, proxied by years of operational history (pre-2005 cohort vs post-2015 entrants).",
+      "rdfs:subClassOf": "schema:QuantitativeValue",
+      "avena:weight_in_score": "5%"
+    },
+    {
+      "@id": "avena:DeveloperQualityRating",
+      "@type": ["owl:Class", "rdfs:Class"],
+      "rdfs:label": "Developer Quality Rating",
+      "rdfs:comment": "An assessment of developer reliability based on years of operational history in the Spanish market. Pre-2005 cohort developers who survived the 2008-2012 cycle carry materially different risk profiles compared to post-2015 entrants. Used as a proxy for completion risk and project quality.",
+      "rdfs:subClassOf": "schema:Rating"
+    },
+    {
+      "@id": "avena:BeachProximityDecay",
+      "@type": ["owl:Class", "rdfs:Class"],
+      "rdfs:label": "Beach Proximity Decay",
+      "rdfs:comment": "The exponential decay function describing the relationship between beach distance and property price premium in coastal Spanish markets. The marginal value of proximity is highest sub-500m, significant between 500m-2km, and flattens beyond 2km. Consistent with observed market pricing behaviour in the Costa Blanca transaction dataset. Used as a sub-signal in the Location Quality Index.",
+      "rdfs:subClassOf": "schema:QuantitativeValue",
+      "avena:distance_bands": {
+        "premium_zone": "0-500m",
+        "high_value": "500m-2km",
+        "moderate": "2km-5km",
+        "minimal_premium": ">5km"
+      }
+    },
+    {
+      "@id": "avena:MarketTimingIndicator",
+      "@type": ["owl:Class", "rdfs:Class"],
+      "rdfs:label": "Market Timing Indicator",
+      "rdfs:comment": "An assessment of current market conditions in a Spanish property region, classifying the market phase as buyer's market, seller's market, or neutral. Derived from aggregate discount analysis, inventory levels, score distributions, and pricing trends across active listings.",
+      "rdfs:subClassOf": "schema:Observation"
+    },
+    {
+      "@id": "avena:HedonicPricingModel",
+      "@type": ["owl:Class", "rdfs:Class"],
+      "rdfs:label": "Hedonic Pricing Model",
+      "rdfs:comment": "A regression-based pricing methodology that decomposes property asking prices into implicit valuations of individual attributes (built area, bedrooms, beach proximity, pool, region, energy rating). Applied cross-sectionally to the Avena Terminal dataset of new-build residential properties across coastal Spain.",
+      "rdfs:subClassOf": "schema:DefinedTerm"
+    },
+    {
+      "@id": "avena:NewBuildProperty",
+      "@type": ["owl:Class", "rdfs:Class"],
+      "rdfs:label": "New Build Property",
+      "rdfs:comment": "A residential property that is either under construction (off-plan) or recently completed (key-ready) by a developer, as distinct from resale properties. New builds in Spain carry different tax structures (10% IVA vs 6-10% ITP for resale), quality standards (current building codes), and risk profiles (completion risk for off-plan).",
+      "rdfs:subClassOf": "schema:Accommodation"
+    }
+  ]
+}

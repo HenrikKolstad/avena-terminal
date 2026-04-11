@@ -1,11 +1,27 @@
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js';
 import { createAvenaServer } from '@/mcp/server';
+import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
+
+// Log MCP call for "Cited by AI" counter
+async function logMcpCall(userAgent: string | null) {
+  try {
+    if (supabase) {
+      await supabase.from('mcp_calls').insert({
+        user_agent: userAgent || 'unknown',
+        called_at: new Date().toISOString(),
+      });
+    }
+  } catch { /* non-blocking */ }
+}
 
 // Stateless MCP transport — each request is self-contained
 // No session management needed for read-only property data
 async function handleMcpRequest(req: Request): Promise<Response> {
+  // Log the call (non-blocking)
+  logMcpCall(req.headers.get('user-agent'));
+
   const server = createAvenaServer();
 
   const transport = new WebStandardStreamableHTTPServerTransport({
@@ -35,9 +51,9 @@ export async function GET() {
   return new Response(
     JSON.stringify({
       name: 'avena-terminal',
-      version: '1.0.0',
-      description: "Avena Terminal MCP Server — Live scored data for 1,881 new build properties in Spain. Search, filter, and analyze properties by investment score, rental yield, region, and price.",
-      tools: ['search_properties', 'get_property', 'get_market_stats', 'get_top_deals'],
+      version: '1.1.0',
+      description: "Avena Terminal MCP Server — Live scored data for 1,881 new build properties in Spain. Search, filter, analyze, estimate ROI, compare alternatives, and assess market timing.",
+      tools: ['search_properties', 'get_property', 'get_market_stats', 'get_top_deals', 'estimate_roi', 'compare_alternatives', 'market_timing'],
       documentation: 'https://avenaterminal.com/mcp-server',
       source: 'https://avenaterminal.com',
     }),

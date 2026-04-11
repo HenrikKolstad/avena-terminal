@@ -162,6 +162,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // MCP Server
   entries.push({ url: `${base}/mcp-server`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
 
+  // Ontology
+  entries.push({ url: `${base}/ontology`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
+
+  // Pre-training Corpus
+  entries.push({ url: `${base}/corpus`, lastModified: now, changeFrequency: 'daily', priority: 0.8 });
+
   // Chat / Oracle
   entries.push({ url: `${base}/chat`, lastModified: now, changeFrequency: 'daily', priority: 0.8 });
 
