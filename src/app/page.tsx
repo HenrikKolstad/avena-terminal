@@ -892,7 +892,7 @@ export default function Explorer() {
             onClick={disabled ? undefined : onClick}
             title={sidebarCollapsed ? label : undefined}
             disabled={disabled}
-            className="flex items-center gap-3 w-full transition-all min-h-[40px] px-3 relative group"
+            className="flex items-center gap-3 w-full transition-all min-h-[44px] px-3 relative group"
             style={{
               color: disabled ? '#444' : isActive ? '#10B981' : '#cccccc',
               background: isActive ? 'rgba(16,185,129,0.08)' : 'transparent',
@@ -944,7 +944,7 @@ export default function Explorer() {
                     <button
                       onClick={() => go('crypto')}
                       title={sidebarCollapsed ? 'Crypto' : undefined}
-                      className="flex items-center gap-3 w-full transition-all min-h-[40px] px-3 relative group"
+                      className="flex items-center gap-3 w-full transition-all min-h-[44px] px-3 relative group"
                       style={{
                         background: tab === 'crypto' ? 'rgba(0,185,255,0.08)' : 'transparent',
                         borderLeft: tab === 'crypto' ? '3px solid #00b9ff' : '3px solid transparent',
@@ -1238,7 +1238,7 @@ export default function Explorer() {
           {tab === 'deals' && (
             <>
             {/* MOBILE CARD LIST */}
-            <div className="md:hidden px-3 pb-6 space-y-2 pt-2">
+            <div className="md:hidden px-3 pb-6 space-y-3 pt-2">
               {visibleDeals.map((d, i) => {
                 const dc = displayDiscount(d);
                 const rank = i + 1;
@@ -1247,46 +1247,46 @@ export default function Explorer() {
                   <div key={d.ref || d.p + i}
                     onClick={() => isLocked ? setShowPaywall(true) : (setPreview(i), setPreviewLuxScore(null), logLead(d, 'view_detail'))}
                     className={`relative border rounded-xl cursor-pointer transition-all active:scale-[0.99] ${isLocked ? 'opacity-30 blur-[2px] select-none border-[#1c2333]' : preview === i ? 'border-[#10B981]/60 shadow-lg shadow-[#10B981]/5' : 'border-[#1e1e2a]'}`}
-                    style={{ background: 'linear-gradient(160deg, #0e0e18 0%, #0d1117 100%)' }}>
+                    style={{ background: 'linear-gradient(160deg, #0e0e18 0%, #0d1117 100%)', minHeight: '44px' }}>
                     {/* Top row: rank badge + title + score */}
                     <div className="flex items-center gap-2.5 px-3 pt-3 pb-2">
-                      <div className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-extrabold ${rank === 1 ? 'bg-[#10B981] text-black' : 'bg-[#1c2333] text-white'}`}>
+                      <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-extrabold ${rank === 1 ? 'bg-[#10B981] text-black' : 'bg-[#1c2333] text-white'}`}>
                         {rank}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="text-white font-semibold text-sm leading-tight truncate">{d.p}</div>
-                        <div className="text-gray-600 text-[11px]">{d.l}</div>
+                        <div className="text-gray-600 text-[11px] truncate">{d.l}</div>
                       </div>
-                      <div className="text-right flex-shrink-0">
+                      <div className="text-right flex-shrink-0 pl-2">
                         <span className={`text-xl font-extrabold font-serif ${scoreClass(d._sc || 0)}`}>{Math.round(d._sc || 0)}</span>
                       </div>
                     </div>
                     {/* Middle row: price + discount + 5yr */}
-                    <div className="flex items-center gap-2 px-3 pb-2 flex-wrap">
+                    <div className="flex items-center gap-2 px-3 pb-2.5 flex-wrap">
                       <span className="text-white font-bold text-sm">{formatPrice(d.pf)}</span>
-                      {d.pm2 ? <span className="text-gray-500 text-xs whitespace-nowrap">€{d.pm2.toLocaleString()}/m²</span> : null}
+                      {d.pm2 ? <span className="text-gray-500 text-xs whitespace-nowrap">{'\u20AC'}{d.pm2.toLocaleString()}/m²</span> : null}
                       {dc >= 0 ? (
                         <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${dc >= 15 ? 'bg-emerald-500/15 text-emerald-400' : 'bg-emerald-500/10 text-emerald-300'}`}>
-                          -{dc.toFixed(0)}%{cappedDiscountEuros(d) > 0 ? ` · -€${Math.round(cappedDiscountEuros(d)/1000)}k` : ''}{d._capped ? ' ⚠' : ''}
+                          -{dc.toFixed(0)}%{cappedDiscountEuros(d) > 0 ? ` \u00B7 -\u20AC${Math.round(cappedDiscountEuros(d)/1000)}k` : ''}{d._capped ? ' \u26A0' : ''}
                         </span>
                       ) : (
-                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 whitespace-nowrap">+{Math.abs(dc).toFixed(0)}%{d._capped ? ' ⚠' : ''}</span>
+                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 whitespace-nowrap">+{Math.abs(dc).toFixed(0)}%{d._capped ? ' \u26A0' : ''}</span>
                       )}
                       {(() => { const p5 = profit5yr(d.pf, d.r); return p5 > 0 ? (
-                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full whitespace-nowrap" style={{ background: 'rgba(96,165,250,0.1)', color: '#60a5fa' }}>+€{Math.round(p5/1000)}k 5yr</span>
+                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap" style={{ background: 'rgba(96,165,250,0.1)', color: '#60a5fa' }}>+{'\u20AC'}{Math.round(p5/1000)}k 5yr</span>
                       ) : null; })()}
                     </div>
                     {/* Bottom row: meta chips + portfolio button */}
-                    <div className="flex items-center gap-1.5 px-3 pb-2.5 flex-wrap">
-                      <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${d.s === 'off-plan' ? 'bg-emerald-500/12 text-emerald-400' : d.s === 'under-construction' ? 'bg-emerald-500/12 text-emerald-400' : 'bg-blue-500/12 text-blue-400'}`}>
+                    <div className="flex items-center gap-2 px-3 pb-3 flex-wrap">
+                      <span className={`text-[11px] font-semibold px-2 py-1 rounded ${d.s === 'off-plan' ? 'bg-emerald-500/12 text-emerald-400' : d.s === 'under-construction' ? 'bg-emerald-500/12 text-emerald-400' : 'bg-blue-500/12 text-blue-400'}`}>
                         {d.s === 'off-plan' ? t.off_plan_tag : d.s === 'under-construction' ? t.under_construction_tag : t.ready_tag}
                       </span>
-                      {d.c && d.s !== 'ready' && (d._mths ?? 0) > 0 && <span className="text-[10px] text-emerald-500/70">~{d.c}</span>}
-                      <span className="text-gray-600 text-[10px] whitespace-nowrap">{d.bd ?? '-'}bd · {(d.bm || 0).toLocaleString()}m²{d.bk !== null ? ` · ${d.bk}km 🏖` : ''}</span>
+                      {d.c && d.s !== 'ready' && (d._mths ?? 0) > 0 && <span className="text-[11px] text-emerald-500/70">~{d.c}</span>}
+                      <span className="text-gray-600 text-[11px] whitespace-nowrap">{d.bd ?? '-'}bd {'\u00B7'} {(d.bm || 0).toLocaleString()}m²{d.bk !== null ? ` \u00B7 ${d.bk}km \uD83C\uDFD6\uFE0F` : ''}</span>
                       <button
                         onClick={e => { e.stopPropagation(); if (!isLocked) togglePortfolio(d.ref || d.p); }}
-                        className={`ml-auto flex-shrink-0 text-[10px] px-2 py-0.5 rounded border transition-all ${portfolio.includes(d.ref || d.p) ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400' : 'border-[#1c2333] text-gray-600'}`}>
-                        {portfolio.includes(d.ref || d.p) ? <Check size={12} /> : '+'}
+                        className={`ml-auto flex-shrink-0 text-xs min-w-[44px] min-h-[44px] flex items-center justify-center px-3 py-2 rounded-lg border transition-all ${portfolio.includes(d.ref || d.p) ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400' : 'border-[#1c2333] text-gray-600'}`}>
+                        {portfolio.includes(d.ref || d.p) ? <Check size={14} /> : '+'}
                       </button>
                     </div>
                   </div>
@@ -1297,16 +1297,16 @@ export default function Explorer() {
                   <div className="font-bold text-sm mb-1" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{filtered.length - FREE_DEALS_LIMIT} more deals locked</div>
                   <div className="text-gray-400 text-xs mb-3">Subscribe to unlock all {filtered.length} properties</div>
                   <button onClick={() => user ? setShowPaywall(true) : setShowAuthModal(true)}
-                    className="font-bold px-6 py-2.5 rounded-lg text-sm hover:opacity-90 transition-all"
+                    className="font-bold px-6 py-3 rounded-lg text-sm hover:opacity-90 transition-all min-h-[44px]"
                     style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-                    Subscribe — €79/month
+                    Subscribe {'\u2014'} {'\u20AC'}79/month
                   </button>
                 </div>
               )}
               {isPaid && filtered.length > displayLimit && (
                 <div className="text-center py-4">
                   <button onClick={() => setDisplayLimit(l => l + 100)}
-                    className="px-6 py-2 rounded-lg border border-[#1c2333] text-[11px] text-gray-400 hover:text-emerald-400 hover:border-[#10B981]/40 transition-colors">
+                    className="px-6 py-3 rounded-lg border border-[#1c2333] text-xs text-gray-400 hover:text-emerald-400 hover:border-[#10B981]/40 transition-colors min-h-[44px]">
                     Show more ({filtered.length - displayLimit} remaining)
                   </button>
                 </div>
@@ -1536,8 +1536,8 @@ export default function Explorer() {
           <>
           <div className="md:hidden fixed inset-0 bg-black/60 z-[299]" onClick={() => { setPreview(null); setPreviewLuxScore(null); }} />
           <div className="fixed bottom-0 left-0 right-0 md:bottom-auto md:top-0 md:left-auto md:right-0 w-full md:w-[480px] h-[92vh] md:h-screen border-t md:border-t-0 md:border-l border-[#1c2333] z-[300] overflow-y-auto shadow-2xl rounded-t-2xl md:rounded-none animate-slide-in overscroll-contain" style={{ background: 'linear-gradient(180deg, #0e0d18 0%, #09090f 100%)' }}>
-            <div className="md:hidden w-12 h-1 bg-gray-700 rounded-full mx-auto mt-3 mb-1" />
-            <button onClick={() => { setPreview(null); setPreviewLuxScore(null); }} className="absolute top-4 right-4 w-8 h-8 rounded-full border border-[#1c2333] text-gray-400 hover:text-emerald-400 hover:border-emerald-400 flex items-center justify-center z-10 bg-black/50">×</button>
+            <div className="md:hidden w-14 h-1.5 bg-gray-600 rounded-full mx-auto mt-3 mb-1" />
+            <button onClick={() => { setPreview(null); setPreviewLuxScore(null); }} className="absolute top-3 right-3 w-10 h-10 md:w-8 md:h-8 md:top-4 md:right-4 rounded-full border border-[#1c2333] text-gray-400 hover:text-emerald-400 hover:border-emerald-400 flex items-center justify-center z-10 bg-black/50 text-lg md:text-base">{'\u00D7'}</button>
             {/* IMAGE GALLERY */}
             {previewProp.imgs && previewProp.imgs.length > 0 ? (
               <div className="relative w-full h-44 md:h-60 bg-[#0f1419]">
@@ -1546,9 +1546,9 @@ export default function Explorer() {
                 {previewProp.imgs.length > 1 && (
                   <>
                     <button onClick={e => { e.stopPropagation(); setImgIdx(i => (i - 1 + previewProp.imgs!.length) % previewProp.imgs!.length); }}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/60 border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-emerald-500/80 transition-all">‹</button>
+                      className="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 md:w-8 md:h-8 bg-black/60 border border-white/20 rounded-full flex items-center justify-center text-white text-lg md:text-base hover:bg-emerald-500/80 transition-all">{'\u2039'}</button>
                     <button onClick={e => { e.stopPropagation(); setImgIdx(i => (i + 1) % previewProp.imgs!.length); }}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/60 border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-emerald-500/80 transition-all">›</button>
+                      className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 md:w-8 md:h-8 bg-black/60 border border-white/20 rounded-full flex items-center justify-center text-white text-lg md:text-base hover:bg-emerald-500/80 transition-all">{'\u203A'}</button>
                     <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-0.5 rounded-full text-[10px] font-semibold">{imgIdx + 1}/{previewProp.imgs.length}</div>
                   </>
                 )}
@@ -1573,7 +1573,7 @@ export default function Explorer() {
                 ))}
               </div>
             )}
-            <div className="p-3 md:p-6">
+            <div className="p-4 pb-6 md:p-6">
               {/* Pro upgrade prompt after 5 views */}
               {viewCount >= 5 && !isPaid && !proPromptDismissed && (
                 <div className="flex items-center justify-between gap-2 mb-3 px-3 py-2 rounded-lg border border-emerald-500/30 bg-emerald-500/5">
@@ -1888,11 +1888,11 @@ export default function Explorer() {
 
               <div className="flex gap-2 mb-3">
                 <button onClick={() => toggleFav(previewProp.ref || previewProp.p)}
-                  className={`flex-1 py-2.5 rounded-lg text-xs font-semibold border transition-all ${favs.includes(previewProp.ref || previewProp.p) ? 'border-emerald-500 text-emerald-400' : 'border-[#1c2333] text-gray-400 hover:text-emerald-400'}`}>
+                  className={`flex-1 py-3 min-h-[44px] rounded-lg text-xs font-semibold border transition-all ${favs.includes(previewProp.ref || previewProp.p) ? 'border-emerald-500 text-emerald-400' : 'border-[#1c2333] text-gray-400 hover:text-emerald-400'}`}>
                   {favs.includes(previewProp.ref || previewProp.p) ? 'Remove Favorite' : 'Add to Favorites'}
                 </button>
                 <button onClick={() => togglePortfolio(previewProp.ref || previewProp.p)}
-                  className={`flex-1 py-2.5 rounded-lg text-xs font-semibold border transition-all ${portfolio.includes(previewProp.ref || previewProp.p) ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400' : 'border-[#1c2333] text-gray-400 hover:text-emerald-400'}`}>
+                  className={`flex-1 py-3 min-h-[44px] rounded-lg text-xs font-semibold border transition-all ${portfolio.includes(previewProp.ref || previewProp.p) ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400' : 'border-[#1c2333] text-gray-400 hover:text-emerald-400'}`}>
                   {portfolio.includes(previewProp.ref || previewProp.p) ? 'In Portfolio' : '+ Portfolio'}
                 </button>
               </div>
@@ -1901,7 +1901,7 @@ export default function Explorer() {
                 <button
                   onClick={() => togglePriceAlert(previewProp.ref || previewProp.p)}
                   disabled={alertLoading}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[11px] font-medium transition-all mb-3 ${
+                  className={`flex items-center gap-1.5 px-3 py-2.5 min-h-[44px] rounded-lg border text-xs font-medium transition-all mb-3 ${
                     alertedRefs.has(previewProp.ref || previewProp.p)
                       ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400'
                       : 'border-[#1c2333] text-gray-400 hover:border-emerald-500/40 hover:text-emerald-400'
@@ -1914,10 +1914,12 @@ export default function Explorer() {
 
               <a href={`mailto:henrik@xaviaestate.com?subject=${encodeURIComponent(`Inquiry: ${previewProp.p}`)}&body=${encodeURIComponent(`Hi Avena,\n\nI'm interested in the following property:\n\n${previewProp.p}\nLocation: ${previewProp.l}\nPrice: €${previewProp.pf?.toLocaleString()}\nRef: ${previewProp.ref || ''}\n\nPlease send me more details.\n\nBest regards`)}`}
                 onClick={() => logLead(previewProp, 'contact_avena')}
-                className="block text-center py-3 text-sm rounded-lg hover:opacity-90 transition-all tracking-wide font-bold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
+                className="block text-center py-3.5 min-h-[48px] text-sm rounded-lg hover:opacity-90 transition-all tracking-wide font-bold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
                 Contact Avena Team
               </a>
             </div>
+            {/* Safe area spacer for mobile bottom */}
+            <div className="md:hidden h-4" />
           </div>
           </>
         )}

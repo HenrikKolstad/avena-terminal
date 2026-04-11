@@ -216,18 +216,18 @@ export default function MarketIndexTab({ properties }: { properties: Property[] 
         {regions.map(r => (
           <div key={r.code}>
             <button onClick={() => setExpandedRegion(expandedRegion === r.code ? null : r.code)}
-              className="w-full flex items-center gap-3 p-3 rounded-lg border text-left transition-all hover:border-emerald-500/30"
+              className="w-full flex flex-wrap md:flex-nowrap items-center gap-2 md:gap-3 p-3 min-h-[48px] rounded-lg border text-left transition-all hover:border-emerald-500/30"
               style={{ background: '#0f1419', borderColor: expandedRegion === r.code ? '#10B981' : '#1c2333', borderLeftWidth: expandedRegion === r.code ? 3 : 1 }}>
-              <ChevronRight size={14} className={`text-gray-500 transition-transform ${expandedRegion === r.code ? 'rotate-90' : ''}`} />
-              <span className="text-white font-medium text-sm flex-1">{r.name}</span>
+              <ChevronRight size={14} className={`text-gray-500 transition-transform flex-shrink-0 ${expandedRegion === r.code ? 'rotate-90' : ''}`} />
+              <span className="text-white font-medium text-sm flex-1 min-w-[120px]">{r.name}</span>
               <span className="text-gray-400 text-xs">{r.count} props</span>
-              <span className="text-emerald-400 text-xs font-semibold">{r.avgPm2 ? <>&euro;{r.avgPm2.toLocaleString()}/m&sup2;</> : ''}</span>
+              <span className="text-emerald-400 text-xs font-semibold hidden md:inline">{r.avgPm2 ? <>&euro;{r.avgPm2.toLocaleString()}/m&sup2;</> : ''}</span>
               <span className="text-emerald-400 text-xs font-semibold">{r.avgDisc}% disc</span>
               <span className="text-emerald-400 text-xs font-semibold">{r.avgYield}% yield</span>
               <span className="text-gray-400 text-xs hidden md:inline">{r.bestTown?.split(',')[0]}</span>
             </button>
             {expandedRegion === r.code && (
-              <div className="ml-6 mt-2 space-y-1 mb-3">
+              <div className="ml-3 md:ml-6 mt-2 space-y-1 mb-3">
                 {(() => {
                   const townMap: Record<string, Property[]> = {};
                   for (const p of r.props) { if (!townMap[p.l]) townMap[p.l] = []; townMap[p.l].push(p); }

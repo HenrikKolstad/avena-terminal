@@ -80,6 +80,12 @@ export default function LiveTab() {
         </div>
         <div className="text-xs font-mono text-gray-500">Madrid <span className="text-white">{clock}</span></div>
       </div>
+      {/* Mobile-only compact stats */}
+      <div className="flex md:hidden items-center justify-center gap-4 px-4 py-1.5 text-[10px] font-mono text-gray-500" style={{ background: '#080810', borderBottom: '1px solid #1c2333' }}>
+        <span>Events today <span className="text-white font-bold">{stats.todayCount}</span></span>
+        <span className="text-gray-700">|</span>
+        <span>Last <span className="text-white font-bold">{events[0] ? timeAgo(events[0].created_at) : '\u2014'}</span></span>
+      </div>
 
       {/* HEARTBEAT SVG */}
       <div className="px-4 py-2" style={{ background: '#080810' }}>
@@ -104,13 +110,13 @@ export default function LiveTab() {
                   background: cfg.bg, borderLeft: `3px solid ${cfg.border}`,
                   animation: i === 0 ? 'slide-in-left 0.3s ease-out' : undefined,
                 }}>
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded" style={{ color: cfg.color, background: `${cfg.color}15`, border: `1px solid ${cfg.color}30` }}>{cfg.label}</span>
-                      <span className="text-xs text-white font-medium">{ev.town}</span>
-                      <span className="text-[10px] text-gray-600">{ev.region}</span>
+                  <div className="flex flex-wrap items-center justify-between gap-1 mb-1">
+                    <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                      <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded flex-shrink-0" style={{ color: cfg.color, background: `${cfg.color}15`, border: `1px solid ${cfg.color}30` }}>{cfg.label}</span>
+                      <span className="text-xs text-white font-medium truncate">{ev.town}</span>
+                      <span className="text-[10px] text-gray-600 hidden md:inline">{ev.region}</span>
                     </div>
-                    <span className="text-[10px] text-gray-600 font-mono">{timeAgo(ev.created_at)}</span>
+                    <span className="text-[10px] text-gray-600 font-mono flex-shrink-0">{timeAgo(ev.created_at)}</span>
                   </div>
                   <p className="text-sm text-gray-300">{ev.message}</p>
                   {ev.change_pct !== 0 && (

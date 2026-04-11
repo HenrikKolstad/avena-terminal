@@ -21,11 +21,11 @@ export default function PropertyGallery({ images, alt }: { images: string[]; alt
           <>
             <button
               onClick={() => setIdx(i => (i - 1 + images.length) % images.length)}
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/60 border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-emerald-500/80 transition-all"
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-8 sm:h-8 bg-black/60 border border-white/20 rounded-full flex items-center justify-center text-white text-lg sm:text-base hover:bg-emerald-500/80 transition-all"
             >&#8249;</button>
             <button
               onClick={() => setIdx(i => (i + 1) % images.length)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/60 border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-emerald-500/80 transition-all"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-8 sm:h-8 bg-black/60 border border-white/20 rounded-full flex items-center justify-center text-white text-lg sm:text-base hover:bg-emerald-500/80 transition-all"
             >&#8250;</button>
             <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-0.5 rounded-full text-[10px] font-semibold">
               {idx + 1}/{images.length}

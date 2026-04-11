@@ -94,7 +94,7 @@ export default function MarketTab({ properties }: { properties: Property[] }) {
       </div>
 
       {/* ── 2. Key Metrics Strip ────────────────────────────── */}
-      <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
         {[
           { label: 'TOTAL LISTINGS', value: totalListings.toLocaleString() },
           { label: 'AVG PRICE', value: formatPrice(overallAvgPrice) },
@@ -160,7 +160,7 @@ export default function MarketTab({ properties }: { properties: Property[] }) {
         </div>
         <div className="flex gap-2 md:gap-4 mt-2 px-2">
           {bandData.map(b => (
-            <div key={b.label} className="flex-1 text-center text-[8px] md:text-[10px] text-gray-500 leading-tight">{b.label}</div>
+            <div key={b.label} className="flex-1 text-center text-[9px] md:text-[10px] text-gray-500 leading-tight">{b.label}</div>
           ))}
         </div>
       </div>

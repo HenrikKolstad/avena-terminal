@@ -261,7 +261,7 @@ export default function YieldTab({ properties, isPaid, onUpgrade, onCurrencyChan
         <div className="flex gap-1.5 items-center flex-wrap">
           {([['yield', 'Yield %'], ['income', 'Income'], ['price', 'Price']] as ['yield' | 'income' | 'price', string][]).map(([key, label]) => (
             <button key={key} onClick={() => setSortMode(key)}
-              className={`text-[10px] px-3 py-1.5 rounded border transition-all min-h-[36px] ${sortMode === key ? 'bg-emerald-600 border-emerald-600 text-black font-semibold' : 'border-[#1c2333] text-gray-400 hover:border-emerald-600/50'}`}>
+              className={`text-[10px] px-3 py-1.5 rounded border transition-all min-h-[44px] md:min-h-[36px] ${sortMode === key ? 'bg-emerald-600 border-emerald-600 text-black font-semibold' : 'border-[#1c2333] text-gray-400 hover:border-emerald-600/50'}`}>
               {label}
             </button>
           ))}
@@ -285,7 +285,7 @@ export default function YieldTab({ properties, isPaid, onUpgrade, onCurrencyChan
               <button
                 key={c.code}
                 onClick={() => handleCurrencyChange(c.code)}
-                className={`px-2.5 py-1 rounded text-[10px] font-semibold border transition-all ${
+                className={`px-2.5 py-1 md:py-1 min-h-[44px] md:min-h-0 rounded text-[10px] font-semibold border transition-all flex items-center ${
                   currency === c.code
                     ? 'bg-[#10B981]/15 border-[#10B981]/60 text-emerald-400'
                     : 'border-[#1c2333] text-gray-500 hover:border-[#10B981]/30'

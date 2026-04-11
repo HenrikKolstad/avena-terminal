@@ -190,12 +190,12 @@ export default function CryptoTab({ properties }: { properties: Property[] }) {
           ) : !walletAddress ? (
             <div className="flex flex-col items-center gap-3">
               <div className="flex gap-3">
-                <button onClick={() => connectWallet('metamask')} className="px-5 py-2.5 rounded-lg text-xs font-bold border transition-all" style={{ borderColor: '#F6851B', color: '#F6851B' }}
+                <button onClick={() => connectWallet('metamask')} className="px-5 py-2.5 min-h-[44px] rounded-lg text-xs font-bold border transition-all" style={{ borderColor: '#F6851B', color: '#F6851B' }}
                   onMouseEnter={e => { e.currentTarget.style.background = '#F6851B'; e.currentTarget.style.color = '#0d1117'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#F6851B'; }}>
                   MetaMask
                 </button>
-                <button onClick={() => connectWallet('trust')} className="px-5 py-2.5 rounded-lg text-xs font-bold border transition-all" style={{ borderColor: '#3375BB', color: '#3375BB' }}
+                <button onClick={() => connectWallet('trust')} className="px-5 py-2.5 min-h-[44px] rounded-lg text-xs font-bold border transition-all" style={{ borderColor: '#3375BB', color: '#3375BB' }}
                   onMouseEnter={e => { e.currentTarget.style.background = '#3375BB'; e.currentTarget.style.color = '#fff'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#3375BB'; }}>
                   Trust Wallet
@@ -607,7 +607,7 @@ export default function CryptoTab({ properties }: { properties: Property[] }) {
               { q: 'Do I need crypto experience?', a: 'You need a BSC-compatible wallet (MetaMask or Trust Wallet) and USDT on BSC. If you\'re not familiar with crypto wallets we recommend doing your research before participating.' },
             ].map((item, i) => (
               <div key={i} className="rounded-lg overflow-hidden" style={{ background: '#090d12', border: '1px solid #1a2332' }}>
-                <button onClick={() => setFaqOpen(faqOpen === i ? null : i)} className="w-full flex items-center justify-between px-5 py-4 text-left">
+                <button onClick={() => setFaqOpen(faqOpen === i ? null : i)} className="w-full flex items-center justify-between px-5 py-4 min-h-[48px] text-left">
                   <span className="text-sm text-white font-medium">{item.q}</span>
                   <span className="text-gray-500 flex-shrink-0 ml-3 transition-transform duration-200" style={{ transform: faqOpen === i ? 'rotate(180deg)' : 'rotate(0deg)' }}>&#9662;</span>
                 </button>
