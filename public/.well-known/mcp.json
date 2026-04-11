@@ -1,7 +1,7 @@
 {
   "name": "avena-terminal",
-  "version": "1.0.0",
-  "description": "Avena Terminal MCP Server — Live investment-scored data for 1,881 new build properties across Costa Blanca, Costa Calida, and Costa del Sol, Spain. Search, filter, and analyze properties by composite investment score, rental yield, price per m2, region, and property type.",
+  "version": "1.1.0",
+  "description": "Avena Terminal MCP Server — Live investment-scored data for 1,881 new build properties across Costa Blanca, Costa Calida, and Costa del Sol, Spain. Search, filter, analyze, estimate ROI, compare alternatives, and assess market timing. Multi-currency responses (EUR/GBP/NOK/SEK/USD).",
   "url": "https://avenaterminal.com/mcp",
   "transport": "streamable-http",
   "authentication": "none",
@@ -14,38 +14,73 @@
   "tools": [
     {
       "name": "search_properties",
-      "description": "Search Avena Terminal's database of 1,881 scored new build properties in Spain. Returns investment-ranked results filtered by region (costa-blanca, costa-calida, costa-del-sol), maximum price in EUR, minimum investment score (0-100), property type, and minimum bedrooms. Each result includes composite score, yield estimate, price per m2, beach distance, and developer info.",
+      "description": "Search 1,881 scored new build properties in Spain. Returns investment-ranked results with composite score, score reasoning, yield estimate, multi-currency pricing (EUR/GBP/NOK/SEK/USD), beach distance, and developer info.",
       "parameters": {
-        "region": { "type": "string", "description": "Region filter: costa-blanca, costa-calida, costa-del-sol, or a town name", "required": false },
+        "region": { "type": "string", "description": "Region: costa-blanca, costa-calida, costa-del-sol, or town name", "required": false },
         "max_price": { "type": "number", "description": "Maximum price in EUR", "required": false },
         "min_score": { "type": "number", "description": "Minimum investment score (0-100)", "required": false },
-        "type": { "type": "string", "description": "Property type: Villa, Apartment, Penthouse, Townhouse, Bungalow, Studio", "required": false },
-        "min_beds": { "type": "number", "description": "Minimum number of bedrooms", "required": false },
-        "limit": { "type": "number", "description": "Number of results (default 10, max 25)", "required": false }
+        "type": { "type": "string", "description": "Villa, Apartment, Penthouse, Townhouse, Bungalow, Studio", "required": false },
+        "min_beds": { "type": "number", "description": "Minimum bedrooms", "required": false },
+        "limit": { "type": "number", "description": "Results count (default 10, max 25)", "required": false }
       }
     },
     {
       "name": "get_property",
-      "description": "Get full details and investment score breakdown for a specific property by its reference ID. Returns price analysis, yield estimates, location data, build quality assessment, and completion risk rating.",
+      "description": "Full property details with investment score breakdown, human-readable score reasoning, and multi-currency pricing.",
       "parameters": {
         "ref": { "type": "string", "description": "Property reference ID", "required": true }
       }
     },
     {
       "name": "get_market_stats",
-      "description": "Get live market statistics for Spanish new build regions. Returns median price per m2, average rental yield, total active inventory, price ranges, and top-performing towns for the specified region.",
+      "description": "Live market statistics: median price/m2, average yields, inventory counts, top towns, regional breakdowns.",
       "parameters": {
-        "region": { "type": "string", "description": "Region: costa-blanca, costa-calida, costa-del-sol, or all", "required": false }
+        "region": { "type": "string", "description": "costa-blanca, costa-calida, costa-del-sol, or all", "required": false }
       }
     },
     {
       "name": "get_top_deals",
-      "description": "Get today's top-scoring new build property deals in Spain, ranked by Avena Terminal's composite investment score. Returns the best value properties considering price vs market, rental yield, location quality, build quality, and completion risk.",
+      "description": "Today's best investment opportunities ranked by composite score with reasoning and multi-currency pricing.",
       "parameters": {
         "region": { "type": "string", "description": "Region filter", "required": false },
         "limit": { "type": "number", "description": "Number of deals (default 5, max 15)", "required": false },
         "max_price": { "type": "number", "description": "Maximum price in EUR", "required": false }
       }
+    },
+    {
+      "name": "estimate_roi",
+      "description": "Project ROI for a property over a holding period. Includes capital appreciation, rental income, buying costs, and annualized return in EUR/GBP/NOK/SEK/USD.",
+      "parameters": {
+        "ref": { "type": "string", "description": "Property reference ID", "required": true },
+        "hold_years": { "type": "number", "description": "Holding period in years (default 5, max 20)", "required": false }
+      }
+    },
+    {
+      "name": "compare_alternatives",
+      "description": "Find similar properties to compare against a specific listing. Returns alternatives in the same price bracket with score and price differentials.",
+      "parameters": {
+        "ref": { "type": "string", "description": "Property reference ID to compare", "required": true },
+        "limit": { "type": "number", "description": "Number of alternatives (default 5, max 10)", "required": false }
+      }
+    },
+    {
+      "name": "market_timing",
+      "description": "Market timing indicators: phase assessment (buyer's/seller's/neutral), discount analysis, inventory levels, and actionable recommendation.",
+      "parameters": {
+        "region": { "type": "string", "description": "costa-blanca, costa-calida, costa-del-sol, or all", "required": false }
+      }
+    }
+  ],
+  "coming_soon": [
+    {
+      "name": "search_properties_portugal",
+      "description": "Search scored new build properties across Portugal's Algarve, Lisbon Coast, and Silver Coast. Coming Q3 2026.",
+      "status": "planned"
+    },
+    {
+      "name": "get_market_stats_portugal",
+      "description": "Live market statistics for Portuguese new build regions. Coming Q3 2026.",
+      "status": "planned"
     }
   ]
 }

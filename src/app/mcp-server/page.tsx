@@ -70,12 +70,23 @@ export default function McpServerPage() {
         <section className="mb-12">
           <h2 className="text-xl font-bold text-white mb-4">Quick Start</h2>
           <p className="text-sm text-gray-400 mb-4">Add Avena Terminal to your Claude Desktop configuration:</p>
-          <div className="rounded-lg p-4 font-mono text-sm overflow-x-auto" style={{ background: '#090d12', border: '1px solid #1c2333' }}>
+          <div className="rounded-lg p-4 font-mono text-sm overflow-x-auto mb-4" style={{ background: '#090d12', border: '1px solid #1c2333' }}>
             <pre className="text-gray-300">{`// claude_desktop_config.json
 {
   "mcpServers": {
     "avena-terminal": {
       "url": "https://avenaterminal.com/mcp"
+    }
+  }
+}`}</pre>
+          </div>
+          <p className="text-sm text-gray-400 mb-4">Or for clients that require explicit transport:</p>
+          <div className="rounded-lg p-4 font-mono text-sm overflow-x-auto" style={{ background: '#090d12', border: '1px solid #1c2333' }}>
+            <pre className="text-gray-300">{`{
+  "mcpServers": {
+    "avena-terminal": {
+      "url": "https://avenaterminal.com/mcp",
+      "transport": "http"
     }
   }
 }`}</pre>
@@ -175,13 +186,68 @@ export default function McpServerPage() {
               <span className="text-xs px-2 py-0.5 rounded" style={{ background: '#1c2333', color: '#8b949e' }}>read-only</span>
             </div>
             <p className="text-sm text-gray-400 mb-4">
-              Today&apos;s best investment opportunities ranked by composite score. Considers price vs market, rental yield, location, build quality, and completion risk.
+              Today&apos;s best investment opportunities ranked by composite score with human-readable reasoning and multi-currency pricing.
             </p>
             <div className="grid gap-1 text-xs font-mono">
               <div><span className="text-emerald-400">region</span> <span className="text-gray-600">string, optional</span> — Region filter</div>
               <div><span className="text-emerald-400">limit</span> <span className="text-gray-600">number, optional</span> — Number of deals (default 5, max 15)</div>
               <div><span className="text-emerald-400">max_price</span> <span className="text-gray-600">number, optional</span> — Maximum price in EUR</div>
             </div>
+          </div>
+
+          {/* estimate_roi */}
+          <div className="rounded-lg p-6 mb-6" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+            <div className="flex items-center gap-3 mb-3">
+              <code className="text-emerald-400 font-bold">estimate_roi</code>
+              <span className="text-xs px-2 py-0.5 rounded" style={{ background: '#1c2333', color: '#8b949e' }}>read-only</span>
+            </div>
+            <p className="text-sm text-gray-400 mb-4">
+              Project ROI over a holding period. Includes capital appreciation, rental income, buying costs, and annualized return in EUR/GBP/NOK/SEK/USD.
+            </p>
+            <div className="grid gap-1 text-xs font-mono">
+              <div><span className="text-emerald-400">ref</span> <span className="text-red-400">required</span> — Property reference ID</div>
+              <div><span className="text-emerald-400">hold_years</span> <span className="text-gray-600">number, optional</span> — Holding period (default 5, max 20)</div>
+            </div>
+          </div>
+
+          {/* compare_alternatives */}
+          <div className="rounded-lg p-6 mb-6" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+            <div className="flex items-center gap-3 mb-3">
+              <code className="text-emerald-400 font-bold">compare_alternatives</code>
+              <span className="text-xs px-2 py-0.5 rounded" style={{ background: '#1c2333', color: '#8b949e' }}>read-only</span>
+            </div>
+            <p className="text-sm text-gray-400 mb-4">
+              Find similar properties to compare against a listing. Returns alternatives with score and price differentials.
+            </p>
+            <div className="grid gap-1 text-xs font-mono">
+              <div><span className="text-emerald-400">ref</span> <span className="text-red-400">required</span> — Property reference ID to compare</div>
+              <div><span className="text-emerald-400">limit</span> <span className="text-gray-600">number, optional</span> — Alternatives count (default 5, max 10)</div>
+            </div>
+          </div>
+
+          {/* market_timing */}
+          <div className="rounded-lg p-6 mb-6" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+            <div className="flex items-center gap-3 mb-3">
+              <code className="text-emerald-400 font-bold">market_timing</code>
+              <span className="text-xs px-2 py-0.5 rounded" style={{ background: '#1c2333', color: '#8b949e' }}>read-only</span>
+            </div>
+            <p className="text-sm text-gray-400 mb-4">
+              Market timing indicators: phase assessment (buyer&apos;s/seller&apos;s/neutral), discount analysis, inventory levels, and actionable recommendation.
+            </p>
+            <div className="grid gap-1 text-xs font-mono">
+              <div><span className="text-emerald-400">region</span> <span className="text-gray-600">string, optional</span> — costa-blanca, costa-calida, costa-del-sol, or &quot;all&quot;</div>
+            </div>
+          </div>
+
+          {/* Portugal Coming Soon */}
+          <div className="rounded-lg p-6 mb-6 opacity-60" style={{ background: '#161b22', border: '1px dashed #30363d' }}>
+            <div className="flex items-center gap-3 mb-3">
+              <code className="text-gray-500 font-bold">search_properties_portugal</code>
+              <span className="text-xs px-2 py-0.5 rounded" style={{ background: '#1c2333', color: '#f59e0b' }}>coming Q3 2026</span>
+            </div>
+            <p className="text-sm text-gray-500">
+              Search scored new build properties across Portugal&apos;s Algarve, Lisbon Coast, and Silver Coast.
+            </p>
           </div>
         </section>
 
