@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: 'Avena Pulse — Daily Spanish Property Market Intelligence',
