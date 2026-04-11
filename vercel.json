@@ -2,6 +2,13 @@
   "functions": {
     "src/app/api/ai/memo/route.ts": {
       "maxDuration": 60
+    },
+    "src/app/api/generate-pulse/route.ts": {
+      "maxDuration": 60
     }
-  }
+  },
+  "crons": [{
+    "path": "/api/cron/pulse",
+    "schedule": "0 7 * * *"
+  }]
 }

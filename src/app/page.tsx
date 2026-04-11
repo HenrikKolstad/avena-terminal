@@ -967,6 +967,15 @@ export default function Explorer() {
                     <NavItem icon={<Zap size={16} />} label="Avena Live" isActive={tab === 'live'} onClick={() => go('live')} badge="LIVE" />
                     <NavItem icon={<TrendingUp size={16} />} label="Market Overview" isActive={tab === 'market'} onClick={() => go('market')} badge="PRO" />
                     <NavItem icon={<BarChart3 size={16} />} label="Market Index" isActive={tab === 'marketindex'} onClick={() => go('marketindex')} />
+                    <a href="/pulse" className="flex items-center gap-3 w-full transition-all min-h-[40px] px-3 relative group" style={{ color: '#cccccc', background: 'transparent', borderLeft: '3px solid transparent', cursor: 'pointer', textDecoration: 'none' }} onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#ffffff08'; }} onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; }}>
+                      <span className="flex-shrink-0 w-5 text-center leading-none"><FileText size={16} /></span>
+                      {(!sidebarCollapsed || mobileSidebarOpen) && (
+                        <span className="text-[12px] font-medium tracking-wide whitespace-nowrap overflow-hidden flex-1 text-left flex items-center gap-1.5">
+                          <span className="flex-1">Avena Pulse</span>
+                          <span className="text-[8px] font-bold px-1.5 py-0.5 rounded flex-shrink-0" style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.3)', color: '#c9a84c', WebkitTextFillColor: '#c9a84c' }}>DAILY</span>
+                        </span>
+                      )}
+                    </a>
                     <NavItem icon={<Star size={16} />} label="Scoring Method" isActive={tab === 'about'} onClick={() => go('about')} />
 
                     {/* TOOLS */}
