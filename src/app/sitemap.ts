@@ -24,6 +24,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entries.push({ url: `${base}/es/${t.slug}`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
   }
 
+  // German pages
+  entries.push({ url: `${base}/de`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+  for (const t of getUniqueTowns()) {
+    entries.push({ url: `${base}/de/${t.slug}`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+  }
+
+  // Dutch pages
+  entries.push({ url: `${base}/nl`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+  for (const t of getUniqueTowns()) {
+    entries.push({ url: `${base}/nl/${t.slug}`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+  }
+
   // Blog posts
   if (supabase) {
     const { data: posts } = await supabase.from('blogs').select('slug, published_at').eq('published', true);
@@ -158,6 +170,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const topic of ['spanish-property-market-outlook-2026','costa-blanca-rental-yield-analysis','new-build-vs-resale-spain-roi','best-spanish-property-for-airbnb','spain-golden-visa-property','non-resident-property-tax-spain','spanish-mortgage-rates-foreigners','costa-blanca-price-history','murcia-property-investment-guide','alicante-new-build-market','torrevieja-rental-market','benidorm-investment-returns','orihuela-costa-new-build-guide','javea-luxury-property','altea-property-prices','moraira-real-estate-investment','calpe-new-build-apartments','marbella-new-build-investment','estepona-property-market','fuengirola-new-builds','costa-del-sol-vs-costa-blanca','spain-property-buying-process','nie-number-spain-guide','spanish-property-taxes-complete','costa-calida-investment-guide','mar-menor-property-market','san-pedro-del-pinatar-investment','guardamar-property-guide','finestrat-new-builds','benalmadena-property-investment','mijas-costa-new-builds','nerja-property-market','la-manga-investment-guide','spain-off-plan-vs-key-ready','best-rental-yield-spain-2026','cheapest-new-builds-spain','luxury-property-spain-analysis','spain-property-for-retirement','british-buyers-spain-guide','norwegian-buyers-spain-guide','swedish-buyers-spain-guide','german-buyers-spain-guide','dutch-buyers-spain-guide','spain-community-fees-explained','spanish-energy-ratings-guide','pool-property-spain-premium','beach-distance-property-value','golf-property-spain-investment','spain-property-management-guide','furnished-vs-unfurnished-rental-spain']) {
     entries.push({ url: `${base}/insights/${topic}`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
   }
+
+  // Research papers
+  for (const paper of [
+    'hedonic-pricing-spanish-new-builds-2026',
+    'rental-yield-variance-costa-blanca',
+    'discount-to-market-distribution-spain',
+    'beach-proximity-premium-decay',
+    'developer-age-completion-risk-proxy',
+  ]) {
+    entries.push({ url: `${base}/research/papers/${paper}`, lastModified: now, changeFrequency: 'daily', priority: 0.8 });
+  }
+  entries.push({ url: `${base}/research/papers`, lastModified: now, changeFrequency: 'daily', priority: 0.8 });
 
   // Research pages
   for (const topic of [

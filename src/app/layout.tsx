@@ -58,6 +58,8 @@ export default function RootLayout({
         <meta name="theme-color" content="#0d0d14" />
         <link rel="alternate" hrefLang="en" href="https://avenaterminal.com" />
         <link rel="alternate" hrefLang="es" href="https://avenaterminal.com/es" />
+        <link rel="alternate" hrefLang="de" href="https://avenaterminal.com/de" />
+        <link rel="alternate" hrefLang="nl" href="https://avenaterminal.com/nl" />
         <link rel="alternate" hrefLang="x-default" href="https://avenaterminal.com" />
         <link rel="preconnect" href="https://apinmo.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://apinmo.com" />
