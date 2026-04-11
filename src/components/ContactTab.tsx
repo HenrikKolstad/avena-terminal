@@ -78,7 +78,7 @@ export default function ContactTab() {
                 style={{ background: 'rgba(16,185,129,0.05)' }}>
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg"
                   style={{ background: 'linear-gradient(135deg, #10B98122, #10B98144)', border: '1px solid rgba(16,185,129,0.4)' }}>
-                  <span className="text-lg font-bold" style={{ color: '#10B981' }}>&Xopf;</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#10B981"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-[9px] uppercase tracking-widest text-gray-600 mb-0.5">Follow on X</div>
