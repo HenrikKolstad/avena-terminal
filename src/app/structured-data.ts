@@ -57,7 +57,7 @@ export function getStructuredData() {
         'https://www.linkedin.com/company/avena-terminal',
         'https://x.com/avenaterminal',
         'https://www.instagram.com/avenaterminal',
-        'https://www.wikidata.org/wiki/Q131247292',
+        'https://www.wikidata.org/wiki/Q139165733',
       ],
     },
     {
