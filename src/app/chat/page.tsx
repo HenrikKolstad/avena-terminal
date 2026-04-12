@@ -38,7 +38,7 @@ export default function ChatPage() {
     if (!isPaid) {
       setMessages(prev => [...prev,
         { role: 'user', content: msg },
-        { role: 'assistant', content: "The Avena Oracle is available to PRO members.\n\nUpgrade to access Europe's most advanced property investment AI — unlimited queries, live market data, yield calculations, alpha signals and deal alerts.\n\nAvena PRO: \u20AC79/month\navenaterminal.com" },
+        { role: 'assistant', content: "The Avena Oracle is available to PRO members.\n\nUpgrade to access Europe's most advanced property investment AI — unlimited queries, live market data, yield calculations, alpha signals and deal alerts.\n\nAvena PRO: €79/month\navenaterminal.com" },
       ]);
       setInput('');
       return;
@@ -69,7 +69,7 @@ export default function ChatPage() {
   };
 
   const suggestions = [
-    'Find me a 3-bed villa under \u20AC350k with sea views',
+    'Find me a 3-bed villa under €350k with sea views',
     "What's the rental yield in Calpe?",
     'Is now a good time to buy in Costa Blanca?',
     'Show me the best value deals this week',
@@ -121,7 +121,7 @@ export default function ChatPage() {
               <Lock size={20} className="text-gray-500 mx-auto mb-2" />
               <p className="text-sm text-gray-400 mb-3">Oracle AI is a PRO feature</p>
               <button onClick={() => startCheckout()} className="px-6 py-2 rounded-lg text-sm font-bold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-                Upgrade to PRO — \u20AC79/mo
+                Upgrade to PRO — €79/mo
               </button>
             </div>
           )}
@@ -161,7 +161,7 @@ export default function ChatPage() {
                       <div className="whitespace-pre-wrap">{msg.content}</div>
                       {!isPaid && msg.content.includes('PRO members') && (
                         <button onClick={() => startCheckout()} className="mt-3 px-4 py-2 rounded-lg text-xs font-bold block" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-                          Upgrade to PRO — \u20AC79/mo
+                          Upgrade to PRO — €79/mo
                         </button>
                       )}
                     </>
