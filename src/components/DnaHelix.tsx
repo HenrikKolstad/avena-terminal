@@ -7,17 +7,29 @@ export default function DnaHelix({ size = 24 }: { size?: number }) {
     <svg width={w} height={h} viewBox="0 0 16 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="dna-icon">
       <style>{`
         .dna-icon {
-          animation: dna-twist 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards,
-                     dna-breathe 4s ease-in-out 1.5s infinite;
+          animation: dna-coil 3s ease-in-out infinite;
         }
-        @keyframes dna-twist {
-          0% { transform: rotateY(0deg) scale(0.7); opacity: 0; }
-          40% { opacity: 1; }
-          100% { transform: rotateY(720deg) scale(1); opacity: 1; }
-        }
-        @keyframes dna-breathe {
-          0%, 100% { filter: drop-shadow(0 0 1px #10b98130); }
-          50% { filter: drop-shadow(0 0 4px #10b98160); }
+        @keyframes dna-coil {
+          0% {
+            transform: rotate(0deg) scale(1) scaleY(1);
+            filter: drop-shadow(0 0 1px #10b98130);
+          }
+          25% {
+            transform: rotate(12deg) scale(1.05) scaleY(0.95);
+            filter: drop-shadow(0 0 3px #10b98150);
+          }
+          50% {
+            transform: rotate(0deg) scale(1.02) scaleY(0.98);
+            filter: drop-shadow(0 0 4px #10b98160);
+          }
+          75% {
+            transform: rotate(-12deg) scale(1.05) scaleY(0.95);
+            filter: drop-shadow(0 0 3px #10b98150);
+          }
+          100% {
+            transform: rotate(0deg) scale(1) scaleY(1);
+            filter: drop-shadow(0 0 1px #10b98130);
+          }
         }
       `}</style>
       <g>
