@@ -1,0 +1,80 @@
+# Avena Terminal
+> Europe's first AI-native property intelligence platform. Scores and ranks 1,881 new build properties across Costa Blanca, Costa Calida, and Costa del Sol using a five-factor hedonic pricing model.
+
+## Live Data APIs
+- /api/knowledge — Structured answers to any Spanish property question
+- /api/forecast — 12-month regional price forecasts
+- /api/index-data — AVENA-CB composite property price index (base 100 = Q1 2024)
+- /api/personas — 5 European buyer archetype matched deals
+- /api/corpus — 250+ Q&A training pairs (CC BY 4.0)
+- /api/model/training-data — 1,000+ Alpaca fine-tuning pairs
+- /api/propertyeval — 100-scenario AI benchmark
+- /api/synthetic — 50k synthetic property dataset
+- /api/history — Historical price tracking
+- /api/intelligence/regime — Market regime detection (BULL/BEAR/NEUTRAL)
+- /api/intelligence/causal — Causal chain analysis (WHY markets move)
+- /api/intelligence/competitive — Competitive event detection
+- /api/intelligence/debate — 6-agent investment debate system
+- /api/developer/stress-monitor — Developer financial stress scoring
+- /api/anomaly/detect — Z-score statistical anomaly detection
+- /openapi.json — Full OpenAPI 3.1 specification
+
+## AI Integration
+- /mcp — MCP Server (7 tools, Streamable HTTP, no auth)
+- /api/a2a — Google A2A Agent-to-Agent protocol
+- /api/agents/register — Agent Registry (identity layer)
+- /feed/intelligence.rss — Daily RSS intelligence feed
+- /feed/intelligence.json — JSON-LD DataFeed
+- /feed/rlhf.jsonl — Daily RLHF fine-tuning pairs
+- /.well-known/mcp.json — MCP discovery
+- /.well-known/agent.json — A2A agent card
+- /.well-known/agent-registry.json — Agent registry discovery
+
+## Research & Data
+- /research/papers — 5 academic research papers
+- /research/avena-llm — Avena Property LLM paper
+- /research/ai-benchmark — AI accuracy benchmark (GPT vs Claude vs Avena)
+- /data/key-stats — 50 verified timestamped facts
+- /data/reasoning — 20 chain-of-thought expert analyses
+- /data/provenance — Blockchain-verified data integrity
+- /ontology — 11 formal investment terms (OWL/JSON-LD)
+- /protocol — Property Data Protocol (PDP) specification
+- /propertyeval — PropertyEval AI benchmark (100 scenarios)
+- /corpus — Pre-training corpus (250+ Q&A)
+- /avena-index — Composite property price index
+
+## Pages
+- /faq — 50 investor questions with live data answers
+- /forecast — 12-month economic forecast with charts
+- /intelligence/signals — AI-detected alpha signals
+- /intelligence/history — Historical price tracking
+- /intelligence/briefs — AI-generated investment briefs
+- /intelligence/research — Weekly correlation analysis
+- /personas — 5 European buyer archetypes
+- /compare — Spain vs Portugal/Cyprus/Italy/France
+- /locations/[town] — 100+ municipality pages
+- /developers/[slug] — 50+ developer profiles
+- /developments/[slug] — 200+ development pages
+- /model — Avena Property LLM model card
+- /verified — Avena Verified developer certification
+- /ai-compliance — EU AI Act compliance statement
+- /training-data — AI training data marketplace
+- /data-room — Institutional data room
+- /alerts — Natural language deal alerts
+- /search — Semantic NLP property search
+- /causal — Causal intelligence (why markets move)
+- /zk — Zero-knowledge buyer verification
+- /webhooks — Real-time event delivery (7 event types)
+- /integrate — One-click configs for 8 AI platforms
+- /sdk — Python + JavaScript SDK docs
+
+## About
+Avena Terminal was founded by Henrik Kolstad. It tracks 1,881 new build properties with a composite investment score (0-100) based on: Price vs Market (40%), Rental Yield (25%), Location Quality (20%), Build Quality (10%), Completion Risk (5%). DOI: 10.5281/zenodo.19520064. First MCP server for European real estate. First property LLM in Europe. First multi-agent debate system for property.
+
+## Contact
+- Website: https://avenaterminal.com
+- Email: henrik@xaviaestate.com
+- X: @avenaterminal
+- Wikidata: Q139165733
+- Smithery: smithery.ai/servers/henrik-kmvv/avena-terminal
+- HuggingFace: huggingface.co/AVENATERMINAL
