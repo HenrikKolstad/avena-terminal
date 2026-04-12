@@ -174,6 +174,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Data Provenance
   entries.push({ url: `${base}/data/provenance`, lastModified: now, changeFrequency: 'daily', priority: 0.7 });
 
+  // PropertyEval Benchmark
+  entries.push({ url: `${base}/propertyeval`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
+
+  // Property Data Protocol
+  entries.push({ url: `${base}/protocol`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
+
+  // AI Compliance
+  entries.push({ url: `${base}/ai-compliance`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 });
+
+  // Quarterly Snapshots
+  entries.push({ url: `${base}/snapshots/q2-2026`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
+
   // Development pages
   const devNames = [...new Set(getAllProperties().map(p => p.p).filter(Boolean))];
   for (const name of devNames) {

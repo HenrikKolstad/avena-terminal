@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://avenaterminal.com/protocol/pdp-schema.json",
+  "title": "Property Data Protocol (PDP) v1.0",
+  "description": "Open standard for structuring property investment data for AI consumption. Published by Avena Terminal.",
+  "type": "object",
+  "required": ["pdp_version", "property"],
+  "properties": {
+    "pdp_version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "PDP specification version"
+    },
+    "property": {
+      "type": "object",
+      "required": ["id", "type", "location", "pricing", "specifications"],
+      "properties": {
+        "id": { "type": "string", "description": "Unique property identifier" },
+        "type": { "type": "string", "enum": ["Villa", "Apartment", "Penthouse", "Townhouse", "Bungalow", "Studio"], "description": "Property type classification" },
+        "location": {
+          "type": "object",
+          "required": ["town", "country"],
+          "properties": {
+            "town": { "type": "string" },
+            "region": { "type": "string" },
+            "country": { "type": "string", "pattern": "^[A-Z]{2}$", "description": "ISO 3166-1 alpha-2" },
+            "coordinates": {
+              "type": "object",
+              "properties": {
+                "lat": { "type": "number", "minimum": -90, "maximum": 90 },
+                "lng": { "type": "number", "minimum": -180, "maximum": 180 }
+              }
+            },
+            "beach_distance_km": { "type": "number", "minimum": 0 }
+          }
+        },
+        "pricing": {
+          "type": "object",
+          "required": ["asking_price_eur"],
+          "properties": {
+            "asking_price_eur": { "type": "number", "minimum": 0 },
+            "price_per_m2": { "type": "number", "minimum": 0 },
+            "market_reference_per_m2": { "type": "number", "minimum": 0, "description": "Comparable market rate at postal code granularity" }
+          }
+        },
+        "specifications": {
+          "type": "object",
+          "properties": {
+            "built_area_m2": { "type": "number", "minimum": 0 },
+            "plot_area_m2": { "type": ["number", "null"], "minimum": 0 },
+            "bedrooms": { "type": "integer", "minimum": 0 },
+            "bathrooms": { "type": "integer", "minimum": 0 },
+            "pool": { "type": "string", "enum": ["private", "communal", "none"] },
+            "energy_rating": { "type": "string", "enum": ["A", "B", "C", "D", "E", "F", "G"] },
+            "status": { "type": "string", "enum": ["off-plan", "under-construction", "key-ready"] },
+            "completion_date": { "type": ["string", "null"], "description": "Expected completion, e.g. 2027-Q3" }
+          }
+        },
+        "investment_metrics": {
+          "type": "object",
+          "properties": {
+            "investment_score": { "type": "number", "minimum": 0, "maximum": 100, "description": "Composite score: 40% value + 25% yield + 20% location + 10% quality + 5% risk" },
+            "score_breakdown": {
+              "type": "object",
+              "properties": {
+                "value": { "type": "number", "minimum": 0, "maximum": 100 },
+                "yield": { "type": "number", "minimum": 0, "maximum": 100 },
+                "location": { "type": "number", "minimum": 0, "maximum": 100 },
+                "quality": { "type": "number", "minimum": 0, "maximum": 100 },
+                "risk": { "type": "number", "minimum": 0, "maximum": 100 }
+              }
+            },
+            "gross_yield_pct": { "type": "number" },
+            "net_yield_pct": { "type": "number" },
+            "annual_rental_income_eur": { "type": "number" }
+          }
+        },
+        "developer": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "years_active": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "source": { "type": "string", "format": "uri" },
+            "last_updated": { "type": "string", "format": "date-time" },
+            "data_hash": { "type": "string", "description": "SHA-256 hash for verification" }
+          }
+        }
+      }
+    }
+  }
+}
