@@ -234,6 +234,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Training Data Marketplace
   entries.push({ url: `${base}/training-data`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
 
+  // Avena Property LLM
+  entries.push({ url: `${base}/model`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
+
   // Avena Index
   entries.push({ url: `${base}/avena-index`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 });
 
