@@ -753,6 +753,11 @@ export default function Explorer() {
               <span className="inline-flex items-center gap-0.5">
                 <svg width="28" height="12" viewBox="0 0 50 21" fill="none"><path d="M9.4 2.3a2.7 2.7 0 00-3.2.6L.4 10l5.8 7.1a2.7 2.7 0 003.2.6l.8-.4a2.7 2.7 0 001.3-3.3L9.8 10l1.7-4a2.7 2.7 0 00-1.3-3.3l-.8-.4z" fill="#000"/><text x="14" y="14.5" fontSize="11" fontWeight="600" fill="#fff" fontFamily="system-ui">Pay</text></svg>
               </span>
+              {punchline.avgDisc > 0 && (<>
+                <span className="text-gray-700 ml-3 mr-3">|</span>
+                <span className="relative flex h-1.5 w-1.5 mt-px"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" /><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500" /></span>
+                <span className="text-gray-500 ml-1">Top 100 deals avg <span className="text-gray-300 font-semibold">{punchline.avgDisc}%</span> below market · saving <span className="text-gray-300 font-semibold">&euro;{punchline.medianSaving.toLocaleString()}</span></span>
+              </>)}
             </p>
           </div>
 
@@ -760,12 +765,6 @@ export default function Explorer() {
           {sidebarCollapsed && (
             <div className="hidden lg:flex flex-col gap-1 flex-1 max-w-md mx-auto text-center">
               <p className="text-[11px] italic tracking-wide font-semibold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>The Bloomberg of European property investment</p>
-              {punchline.avgDisc > 0 && (
-                <div className="flex items-center justify-center gap-1.5 mt-0.5">
-                  <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" /><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500" /></span>
-                  <span className="text-[9px] text-gray-500">Top 100 deals avg <span className="text-gray-300 font-semibold">{punchline.avgDisc}%</span> below market · saving <span className="text-gray-300 font-semibold">&euro;{punchline.medianSaving.toLocaleString()}</span></span>
-                </div>
-              )}
             </div>
           )}
 

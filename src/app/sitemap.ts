@@ -186,6 +186,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Quarterly Snapshots
   entries.push({ url: `${base}/snapshots/q2-2026`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
 
+  // Key Stats
+  entries.push({ url: `${base}/data/key-stats`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+
+  // LangChain Tool
+  entries.push({ url: `${base}/langchain-tool`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
+
   // Development pages
   const devNames = [...new Set(getAllProperties().map(p => p.p).filter(Boolean))];
   for (const name of devNames) {
