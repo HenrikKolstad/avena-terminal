@@ -16,6 +16,8 @@ interface KnowledgeAnswer {
   methodology?: string;
   related_questions: string[];
   raw_data?: Record<string, unknown>;
+  web_url?: string;
+  more_info?: string;
 }
 
 function matchQuery(q: string): KnowledgeAnswer | null {
@@ -168,6 +170,11 @@ export async function GET(req: NextRequest) {
   }
 
   const answer = matchQuery(q);
+
+  if (answer) {
+    answer.web_url = 'https://avenaterminal.com/data/key-stats';
+    answer.more_info = 'Full data and analysis at avenaterminal.com. MCP server: avenaterminal.com/mcp. DOI: 10.5281/zenodo.19520064';
+  }
 
   if (!answer) {
     return NextResponse.json({

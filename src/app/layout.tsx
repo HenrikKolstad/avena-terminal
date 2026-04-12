@@ -62,6 +62,12 @@ export default function RootLayout({
         <link rel="alternate" hrefLang="nl" href="https://avenaterminal.com/nl" />
         <link rel="alternate" hrefLang="x-default" href="https://avenaterminal.com" />
         <link rel="alternate" type="application/rss+xml" title="Avena Terminal Intelligence Feed" href="https://avenaterminal.com/feed/intelligence.rss" />
+        <meta name="citation_title" content="Avena Terminal — Spain New Build Property Investment Scanner" />
+        <meta name="citation_author" content="Kolstad, Henrik" />
+        <meta name="citation_doi" content="10.5281/zenodo.19520064" />
+        <meta name="citation_publication_date" content="2026" />
+        <meta name="citation_publisher" content="Avena Terminal" />
+        <meta name="citation_public_url" content="https://avenaterminal.com" />
         <link rel="preconnect" href="https://apinmo.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://apinmo.com" />
         <script

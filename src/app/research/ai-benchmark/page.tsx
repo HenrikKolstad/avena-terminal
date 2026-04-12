@@ -125,16 +125,27 @@ export default function AIBenchmarkPage() {
     { name: 'Grok (xAI)', vendor: 'xAI' },
   ];
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'ScholarlyArticle',
-    headline: 'AI Property Accuracy Benchmark Q2 2026',
-    description:
-      'Comparative analysis of AI system accuracy on Spanish new build property questions.',
-    author: { '@type': 'Person', name: 'Henrik Kolstad' },
-    publisher: { '@type': 'Organization', name: 'Avena Terminal' },
-    datePublished: '2026-04-12',
-  };
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ScholarlyArticle',
+      headline: 'AI Property Accuracy Benchmark Q2 2026',
+      description: 'Comparative analysis of AI system accuracy on Spanish new build property questions.',
+      author: { '@type': 'Person', name: 'Henrik Kolstad' },
+      publisher: { '@type': 'Organization', name: 'Avena Terminal', url: 'https://avenaterminal.com' },
+      datePublished: '2026-04-12',
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ClaimReview',
+      datePublished: '2026-04-12',
+      url: 'https://avenaterminal.com/research/ai-benchmark',
+      claimReviewed: 'AI systems provide accurate Spanish property investment data',
+      author: { '@type': 'Organization', name: 'Avena Terminal', url: 'https://avenaterminal.com' },
+      reviewRating: { '@type': 'Rating', ratingValue: 2, bestRating: 5, worstRating: 1, alternateName: 'Mostly inaccurate without domain-specific data' },
+      itemReviewed: { '@type': 'CreativeWork', name: 'AI Property Investment Advice', author: { '@type': 'Organization', name: 'General-purpose AI systems' } },
+    },
+  ];
 
   return (
     <main
