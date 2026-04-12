@@ -8,26 +8,27 @@ export default function DnaHelix({ size = 24 }: { size?: number }) {
       <style>{`
         .dna-icon {
           animation: dna-coil 3s ease-in-out infinite;
+          transform-origin: center center;
         }
         @keyframes dna-coil {
           0% {
-            transform: rotate(0deg) scale(1) scaleY(1);
+            transform: rotateY(0deg);
             filter: drop-shadow(0 0 1px #10b98130);
           }
-          25% {
-            transform: rotate(12deg) scale(1.05) scaleY(0.95);
-            filter: drop-shadow(0 0 3px #10b98150);
+          30% {
+            transform: rotateY(180deg);
+            filter: drop-shadow(0 0 3px #10b98160);
           }
           50% {
-            transform: rotate(0deg) scale(1.02) scaleY(0.98);
-            filter: drop-shadow(0 0 4px #10b98160);
+            transform: rotateY(360deg);
+            filter: drop-shadow(0 0 4px #a78bfa50);
           }
-          75% {
-            transform: rotate(-12deg) scale(1.05) scaleY(0.95);
-            filter: drop-shadow(0 0 3px #10b98150);
+          70% {
+            transform: rotateY(180deg);
+            filter: drop-shadow(0 0 3px #10b98160);
           }
           100% {
-            transform: rotate(0deg) scale(1) scaleY(1);
+            transform: rotateY(0deg);
             filter: drop-shadow(0 0 1px #10b98130);
           }
         }
