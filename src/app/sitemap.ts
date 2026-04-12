@@ -234,6 +234,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Training Data Marketplace
   entries.push({ url: `${base}/training-data`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
 
+  // Causal Intelligence
+  entries.push({ url: `${base}/causal`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
+
+  // ZK Verification
+  entries.push({ url: `${base}/zk`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 });
+
   // Forecast
   entries.push({ url: `${base}/forecast`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
 
