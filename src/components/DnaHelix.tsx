@@ -4,7 +4,7 @@ export default function DnaHelix({ size = 24 }: { size?: number }) {
   const id = `dna-${Math.random().toString(36).slice(2, 6)}`;
 
   return (
-    <svg width={w} height={h} viewBox="0 0 16 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="dna-icon">
+    <svg width={w} height={h} viewBox="0 0 16 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="dna-icon" style={{ transform: 'rotate(15deg)' }}>
       <style>{`
         .dna-icon {
           animation: dna-twist 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
