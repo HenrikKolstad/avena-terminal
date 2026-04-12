@@ -251,6 +251,11 @@ Rules:
       if (block.type === 'text') finalText += block.text;
     }
 
+    // Analytics: log Oracle query
+    if (supabase) {
+      try { supabase.from('analytics_events').insert({ event_type: 'oracle_query', payload: { query: message.slice(0, 200) } }); } catch { /* */ }
+    }
+
     // Self-improving: log as training pair
     if (finalText.length > 100 && supabase) {
       try {

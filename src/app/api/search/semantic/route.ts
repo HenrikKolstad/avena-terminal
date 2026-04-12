@@ -170,6 +170,11 @@ Examples:
     if (filters.minScore) parts.push(`score ${filters.minScore}+`);
     if (filters.keywords.length) parts.push(...filters.keywords);
 
+    // Analytics: log search
+    if (supabase) {
+      try { supabase.from('analytics_events').insert({ event_type: 'semantic_search', payload: { query, results_count: results.length } }); } catch { /* */ }
+    }
+
     // Self-improving: log as training pair
     if (results.length > 0 && supabase) {
       const topResult = results[0];

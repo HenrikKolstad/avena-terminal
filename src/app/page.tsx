@@ -7,6 +7,7 @@ import { Property, SortKey, SortDir } from '@/lib/types';
 import { loadProperties, syncSnapshots } from '@/lib/data';
 import { formatPrice, scoreClass, scoreColor, regionLabel, discount, displayDiscount, discountEuros, cappedDiscountEuros, calcYield, DISCOUNT_PCT_CAP } from '@/lib/scoring';
 import { useAuth } from '@/context/AuthContext';
+import { logEvent } from '@/lib/analytics';
 import { supabase } from '@/lib/supabase';
 import { useLanguage } from '@/context/LanguageContext';
 import { LANGUAGES } from '@/lib/translations';
@@ -136,6 +137,11 @@ export default function Explorer() {
       }
     }
   }, []);
+
+  // Log PRO gate hits
+  useEffect(() => {
+    if (showPaywall && !isPaid) logEvent('pro_gate_hit', { feature: tab, page: 'main' }, user?.email || undefined);
+  }, [showPaywall]);
 
   // Fetch MCP citation count
   useEffect(() => {
@@ -516,7 +522,11 @@ export default function Explorer() {
     setAiMemoError(null);
     setNote('');
     setNoteSaved(false);
-    if (preview !== null) setViewCount(c => c + 1);
+    if (preview !== null) {
+      setViewCount(c => c + 1);
+      const p = filtered[preview];
+      if (p) logEvent('property_view', { ref: p.ref, name: p.p || p.t + ' in ' + p.l, price: p.pf, score: p._sc });
+    }
   }, [preview]);
 
   // Load note for current preview property from Supabase
