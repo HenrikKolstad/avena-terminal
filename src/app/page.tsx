@@ -489,6 +489,23 @@ export default function Explorer() {
     };
   }, [filtered]);
 
+  // Live punchline: top 100 deals stats
+  const punchline = useMemo(() => {
+    const top100 = [...properties].sort((a, b) => (b._sc ?? 0) - (a._sc ?? 0)).slice(0, 100);
+    const discounts = top100
+      .filter(p => p.pm2 && p.mm2 && p.mm2 > 0)
+      .map(p => ((p.mm2! - p.pm2!) / p.mm2!) * 100)
+      .filter(d => d > 0);
+    const savings = top100
+      .filter(p => p.pm2 && p.mm2 && p.mm2 > 0 && p.bm)
+      .map(p => (p.mm2! - p.pm2!) * p.bm)
+      .filter(s => s > 0)
+      .sort((a, b) => a - b);
+    const avgDisc = discounts.length ? Math.round(discounts.reduce((a, b) => a + b, 0) / discounts.length) : 0;
+    const medianSaving = savings.length ? Math.round(savings[Math.floor(savings.length / 2)]) : 0;
+    return { avgDisc, medianSaving };
+  }, [properties]);
+
   const previewProp = preview !== null ? filtered[preview] : null;
 
   // Reset image index and AI memo when preview changes + track view count
@@ -672,6 +689,12 @@ export default function Explorer() {
             <div className="text-[9px] text-gray-400 leading-relaxed">
               <div>{t.hero_scanner}</div>
               <div className="text-[10px] italic tracking-wide mt-0.5 font-semibold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>The Bloomberg of European property investment</div>
+              {punchline.avgDisc > 0 && (
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" /></span>
+                  <span className="text-[9px] text-gray-500">LIVE — Top 100 deals averaging <span className="text-white font-semibold">{punchline.avgDisc}%</span> below market · median saving <span className="text-white font-semibold">&euro;{punchline.medianSaving.toLocaleString()}</span></span>
+                </div>
+              )}
               <div className="flex flex-wrap gap-1 mt-1">
                 {([['Costa Blanca North','cb-north'],['Costa Blanca South','cb-south'],['Costa Cálida','costa-calida'],['Costa del Sol','costa-del-sol']] as [string,string][]).map(([r, code]) => (
                   <button key={r} onClick={() => { setFilters(f => ({...f, region: code})); setTab('deals'); }} className={`px-1.5 py-0.5 rounded text-[9px] font-medium bg-[#1c2333] text-emerald-400 border transition-colors cursor-pointer hover:bg-[#10B981]/10 hover:border-[#10B981]/50 ${filters.region === code ? 'border-[#10B981]/70' : 'border-[#10B981]/20'}`}>{r}</button>
@@ -738,6 +761,12 @@ export default function Explorer() {
           {sidebarCollapsed && (
             <div className="hidden lg:flex flex-col gap-1 flex-1 max-w-md mx-auto text-center">
               <p className="text-[11px] italic tracking-wide font-semibold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>The Bloomberg of European property investment</p>
+              {punchline.avgDisc > 0 && (
+                <div className="flex items-center justify-center gap-1.5 mt-1">
+                  <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" /></span>
+                  <span className="text-[10px] text-gray-500">LIVE — Top 100 deals averaging <span className="text-white font-semibold">{punchline.avgDisc}%</span> below market · median saving <span className="text-white font-semibold">&euro;{punchline.medianSaving.toLocaleString()}</span></span>
+                </div>
+              )}
             </div>
           )}
 
