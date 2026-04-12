@@ -34,6 +34,14 @@
     {
       "path": "/api/detect-events",
       "schedule": "30 7 * * *"
+    },
+    {
+      "path": "/api/detect-anomalies",
+      "schedule": "45 7 * * *"
+    },
+    {
+      "path": "/api/weekly-alpha",
+      "schedule": "0 7 * * 1"
     }
   ]
 }

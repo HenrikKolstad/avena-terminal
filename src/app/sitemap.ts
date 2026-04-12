@@ -195,6 +195,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Intelligence Feed
   entries.push({ url: `${base}/feed/intelligence`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
 
+  // Alpha Signals
+  entries.push({ url: `${base}/intelligence/signals`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+
   // Development pages
   const devNames = [...new Set(getAllProperties().map(p => p.p).filter(Boolean))];
   for (const name of devNames) {
