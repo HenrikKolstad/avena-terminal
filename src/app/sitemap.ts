@@ -234,6 +234,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Training Data Marketplace
   entries.push({ url: `${base}/training-data`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
 
+  // HF Space Demo
+  entries.push({ url: `${base}/space`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 });
+
+  // Research: Avena LLM Paper
+  entries.push({ url: `${base}/research/avena-llm`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
+
+  // SDK
+  entries.push({ url: `${base}/sdk`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
+
   // Avena Property LLM
   entries.push({ url: `${base}/model`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
 
