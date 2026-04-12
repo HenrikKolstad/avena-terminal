@@ -1,92 +1,162 @@
 import { NextRequest } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { supabase } from '@/lib/supabase';
-import { readFileSync } from 'fs';
-import path from 'path';
-import { Property } from '@/lib/types';
-import { initProperty } from '@/lib/scoring';
+import { getAllProperties, getUniqueTowns, getUniqueCostas, avg, slugify } from '@/lib/properties';
+import { detectAnomalies } from '@/lib/anomaly';
 
 export const maxDuration = 60;
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-function loadData(): string {
-  try {
-    const filePath = path.join(process.cwd(), 'public', 'data.json');
-    const raw: Property[] = JSON.parse(readFileSync(filePath, 'utf8'));
-    const props = raw.map(initProperty);
+// Tool definitions for Claude
+const tools: Anthropic.Tool[] = [
+  {
+    name: 'search_properties',
+    description: 'Search Avena Terminal database of scored Spanish new-build properties. Filter by region, type, price, score, beach distance, yield, bedrooms.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        region: { type: 'string', description: 'Region: cb-south, cb-north, costa-calida, costa-del-sol, or town name' },
+        type: { type: 'string', description: 'Property type: Villa, Apartment, Penthouse, Townhouse, Bungalow' },
+        maxPrice: { type: 'number', description: 'Maximum price in EUR' },
+        minPrice: { type: 'number', description: 'Minimum price in EUR' },
+        minScore: { type: 'number', description: 'Minimum Avena score (0-100)' },
+        maxBeach: { type: 'number', description: 'Maximum beach distance in km' },
+        minYield: { type: 'number', description: 'Minimum gross yield %' },
+        minBeds: { type: 'number', description: 'Minimum bedrooms' },
+        limit: { type: 'number', description: 'Number of results (default 5)' },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'get_market_data',
+    description: 'Get market statistics for a Spanish property region including prices, yields, scores, property counts, and top towns.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        region: { type: 'string', description: 'Region: costa-blanca, costa-calida, costa-del-sol, or all' },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'get_alpha_signals',
+    description: 'Get current alpha signals — AI-detected anomalies including score outliers, deep discounts, yield spikes, and geographic mispricing.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        region: { type: 'string', description: 'Filter by region (optional)' },
+      },
+      required: [],
+    },
+  },
+];
 
-    // Regional stats
-    const regions: Record<string, { count: number; prices: number[]; yields: number[]; scores: number[] }> = {};
-    const towns: Record<string, { count: number; avgPrice: number; avgYield: number; avgScore: number }> = {};
+function executeSearch(params: Record<string, unknown>): string {
+  const all = getAllProperties();
+  let filtered = all;
 
-    for (const p of props) {
-      const r = p.r || 'unknown';
-      if (!regions[r]) regions[r] = { count: 0, prices: [], yields: [], scores: [] };
-      regions[r].count++;
-      regions[r].prices.push(p.pf);
-      if (p._yield) regions[r].yields.push(p._yield.gross);
-      if (p._sc) regions[r].scores.push(p._sc);
+  if (params.region) {
+    const rs = slugify(String(params.region));
+    filtered = filtered.filter(p => {
+      const cs = p.costa ? slugify(p.costa) : '';
+      const ls = slugify(p.l);
+      return cs.includes(rs) || ls.includes(rs) || (p.r ? slugify(p.r).includes(rs) : false);
+    });
+  }
+  if (params.type) filtered = filtered.filter(p => p.t.toLowerCase() === String(params.type).toLowerCase());
+  if (params.maxPrice) filtered = filtered.filter(p => p.pf <= Number(params.maxPrice));
+  if (params.minPrice) filtered = filtered.filter(p => p.pf >= Number(params.minPrice));
+  if (params.minScore) filtered = filtered.filter(p => (p._sc ?? 0) >= Number(params.minScore));
+  if (params.maxBeach) filtered = filtered.filter(p => p.bk != null && p.bk <= Number(params.maxBeach));
+  if (params.minYield) filtered = filtered.filter(p => (p._yield?.gross ?? 0) >= Number(params.minYield));
+  if (params.minBeds) filtered = filtered.filter(p => p.bd >= Number(params.minBeds));
 
-      const t = p.l;
-      if (!towns[t]) towns[t] = { count: 0, avgPrice: 0, avgYield: 0, avgScore: 0 };
-      towns[t].count++;
-    }
+  const limit = Math.min(Number(params.limit) || 5, 10);
+  const results = filtered.sort((a, b) => (b._sc ?? 0) - (a._sc ?? 0)).slice(0, limit);
 
-    // Compute town averages
-    const townEntries: Record<string, Property[]> = {};
-    for (const p of props) {
-      if (!townEntries[p.l]) townEntries[p.l] = [];
-      townEntries[p.l].push(p);
-    }
-    for (const [town, tProps] of Object.entries(townEntries)) {
-      const wy = tProps.filter(p => p._yield);
-      const ws = tProps.filter(p => p._sc);
-      towns[town] = {
-        count: tProps.length,
-        avgPrice: Math.round(tProps.reduce((s, p) => s + p.pf, 0) / tProps.length),
-        avgYield: wy.length ? Number((wy.reduce((s, p) => s + p._yield!.gross, 0) / wy.length).toFixed(1)) : 0,
-        avgScore: ws.length ? Math.round(ws.reduce((s, p) => s + p._sc!, 0) / ws.length) : 0,
-      };
-    }
+  if (results.length === 0) return 'No properties match these criteria.';
 
-    // Top 20 by score
-    const top20 = props.sort((a, b) => (b._sc ?? 0) - (a._sc ?? 0)).slice(0, 20);
+  return `Found ${filtered.length} matching properties. Top ${results.length}:\n\n` + results.map((p, i) => {
+    const disc = p.pm2 && p.mm2 && p.mm2 > 0 ? Math.round(((p.mm2 - p.pm2) / p.mm2) * 100) : 0;
+    return `${i + 1}. **${p.p || p.t + ' in ' + p.l}**\n` +
+      `   Location: ${p.l} (${p.costa || p.r})\n` +
+      `   Price: \u20AC${p.pf.toLocaleString()} | \u20AC${(p.pm2 || 0).toLocaleString()}/m\u00B2\n` +
+      `   Score: ${p._sc}/100 | Yield: ${p._yield?.gross.toFixed(1) || 'N/A'}% | Discount: ${disc}%\n` +
+      `   ${p.bd} bed | ${p.bm}m\u00B2 | Beach: ${p.bk || 'N/A'}km | Status: ${p.s || 'N/A'}\n` +
+      `   Developer: ${p.d || 'Unknown'}\n` +
+      `   Link: avenaterminal.com/property/${encodeURIComponent(p.ref || '')}`;
+  }).join('\n\n');
+}
 
-    // Best yield towns
-    const townsByYield = Object.entries(towns)
-      .filter(([, d]) => d.count >= 3 && d.avgYield > 0)
-      .sort(([, a], [, b]) => b.avgYield - a.avgYield)
-      .slice(0, 15);
+function executeMarketData(params: Record<string, unknown>): string {
+  const all = getAllProperties();
+  const costas = getUniqueCostas();
+  const towns = getUniqueTowns();
+  const region = params.region ? String(params.region) : 'all';
 
-    let context = `LIVE AVENA TERMINAL DATA (${props.length} properties tracked):\n\n`;
+  const filtered = region === 'all' ? all : all.filter(p => {
+    const rs = slugify(region);
+    return (p.costa && slugify(p.costa).includes(rs)) || slugify(p.r || '').includes(rs);
+  });
 
-    context += `REGIONAL OVERVIEW:\n`;
-    for (const [r, d] of Object.entries(regions)) {
-      const avgP = Math.round(d.prices.reduce((a, b) => a + b, 0) / d.prices.length);
-      const avgY = d.yields.length ? (d.yields.reduce((a, b) => a + b, 0) / d.yields.length).toFixed(1) : 'N/A';
-      const avgS = d.scores.length ? Math.round(d.scores.reduce((a, b) => a + b, 0) / d.scores.length) : 0;
-      context += `- ${r}: ${d.count} properties, avg €${avgP.toLocaleString()}, yield ${avgY}%, score ${avgS}/100\n`;
-    }
+  const avgPrice = Math.round(avg(filtered.map(p => p.pf)));
+  const avgPm2 = Math.round(avg(filtered.filter(p => p.pm2).map(p => p.pm2!)));
+  const avgYield = avg(filtered.filter(p => p._yield?.gross).map(p => p._yield!.gross)).toFixed(1);
+  const avgScore = Math.round(avg(filtered.filter(p => p._sc).map(p => p._sc!)));
+  const above70 = filtered.filter(p => (p._sc ?? 0) >= 70).length;
 
-    context += `\nTOP 15 TOWNS BY YIELD:\n`;
-    for (const [town, d] of townsByYield) {
-      context += `- ${town}: ${d.count} props, avg €${d.avgPrice.toLocaleString()}, yield ${d.avgYield}%, score ${d.avgScore}/100\n`;
-    }
+  let result = `MARKET DATA (${region}):\n`;
+  result += `Properties: ${filtered.length}\n`;
+  result += `Avg Price: \u20AC${avgPrice.toLocaleString()}\n`;
+  result += `Avg \u20AC/m\u00B2: \u20AC${avgPm2.toLocaleString()}\n`;
+  result += `Avg Yield: ${avgYield}%\n`;
+  result += `Avg Score: ${avgScore}/100\n`;
+  result += `Score 70+: ${above70} properties\n\n`;
 
-    context += `\nTOP 20 PROPERTIES BY SCORE:\n`;
-    for (const p of top20) {
-      context += `- ${p.p} | ${p.l} | ${p.t} | €${p.pf.toLocaleString()} | ${p.bd}bed | Score: ${Math.round(p._sc ?? 0)} | Yield: ${p._yield?.gross.toFixed(1) ?? 'N/A'}% | Ref: ${p.ref}\n`;
-    }
+  result += `REGIONS:\n`;
+  for (const c of costas) {
+    result += `- ${c.costa}: ${c.count} props, score ${c.avgScore}/100, yield ${c.avgYield}%\n`;
+  }
 
-    context += `\nALL TOWNS (${Object.keys(towns).length}):\n`;
-    for (const [town, d] of Object.entries(towns).sort(([, a], [, b]) => b.avgScore - a.avgScore).slice(0, 50)) {
-      context += `- ${town}: ${d.count} props, avg €${d.avgPrice.toLocaleString()}, yield ${d.avgYield}%, score ${d.avgScore}/100\n`;
-    }
+  const topTowns = (region === 'all' ? towns : towns.filter(t => {
+    const tp = filtered.filter(p => slugify(p.l) === t.slug);
+    return tp.length > 0;
+  })).sort((a, b) => b.avgScore - a.avgScore).slice(0, 8);
 
-    return context;
-  } catch {
-    return 'Data unavailable. Answer based on general knowledge of Spanish property markets.';
+  result += `\nTOP TOWNS:\n`;
+  for (const t of topTowns) {
+    result += `- ${t.town}: ${t.count} props, \u20AC${t.avgPrice.toLocaleString()}, yield ${t.avgYield}%, score ${t.avgScore}/100\n`;
+  }
+
+  return result;
+}
+
+function executeSignals(params: Record<string, unknown>): string {
+  const signals = detectAnomalies();
+  let filtered = signals;
+  if (params.region) {
+    const rs = slugify(String(params.region));
+    filtered = signals.filter(s => slugify(s.property.region).includes(rs) || slugify(s.property.town).includes(rs));
+  }
+
+  const top = filtered.slice(0, 5);
+  if (top.length === 0) return 'No active alpha signals for this criteria.';
+
+  return `${filtered.length} ALPHA SIGNALS:\n\n` + top.map((s, i) =>
+    `${i + 1}. [${s.severity.toUpperCase()}] ${s.headline}\n` +
+    `   ${s.detail.slice(0, 200)}\n` +
+    `   Action: ${s.analysis.recommended_action}`
+  ).join('\n\n');
+}
+
+function executeTool(name: string, input: Record<string, unknown>): string {
+  switch (name) {
+    case 'search_properties': return executeSearch(input);
+    case 'get_market_data': return executeMarketData(input);
+    case 'get_alpha_signals': return executeSignals(input);
+    default: return 'Unknown tool';
   }
 }
 
@@ -97,60 +167,107 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: 'Message required' }, { status: 400 });
     }
 
-    const dataContext = loadData();
+    const all = getAllProperties();
+    const costas = getUniqueCostas();
 
-    const systemPrompt = `You are the Avena Oracle — an AI property investment advisor with access to live data on 1,881 new build properties across Spain's costas. You answer questions about Spanish property investment using real scored data from the Avena Terminal engine.
+    const systemPrompt = `You are the Avena Oracle — Europe's most advanced property investment AI, built by Avena Terminal (avenaterminal.com).
 
-You also answer general questions about buying property in Spain — NIE numbers, taxes (IBI, ITP, plusvalia), the buying process, residency, mortgages for non-residents, community fees, golden visa, legal steps, insurance, rental regulations, and anything else a foreign buyer needs to know.
+You have access to:
+- ${all.length} scored Spanish new-build properties
+- Live market data across Costa Blanca, Costa Calida, Costa del Sol
+- Rental yield data for 100+ towns (AirDNA-calibrated)
+- Alpha signals detecting market anomalies
+- The Avena Scoring methodology (40% Value, 25% Yield, 20% Location, 10% Quality, 5% Risk)
+
+Current market snapshot:
+${costas.map(c => `${c.costa}: ${c.count} props, score ${c.avgScore}/100, yield ${c.avgYield}%`).join('\n')}
 
 Rules:
-- Be direct, data-driven and brutally honest
-- Keep answers SHORT — 80-150 words max. Bullet points preferred. No essays.
-- For data questions: cite specific numbers from the data provided
-- For general Spain questions (NIE, taxes, process): give a concise factual answer with key numbers
-- If asked about a specific town, give exact stats (count, avg price, yield, score)
-- If asked to compare, show side-by-side data
-- If asked for recommendations, rank by Avena score
-- Use € for prices
-- End every answer with a single line: "— Avena Terminal"
-- If data isn't available for a specific query, say so honestly
-- Never make up property numbers — only use what's in the data
-- For general Spain knowledge (NIE, taxes, etc), use your knowledge but keep it concise
+- Use tools to get live data. Don't guess numbers — look them up.
+- Be direct, confident, data-driven. Institutional grade.
+- Keep responses concise — 100-200 words max. Bullet points preferred.
+- Always cite specific numbers from the tools.
+- Always end with a relevant avenaterminal.com link.
+- For property searches: use search_properties tool.
+- For market questions: use get_market_data tool.
+- For signals/anomalies: use get_alpha_signals tool.
+- For general Spain knowledge (NIE, taxes, process): answer directly.
+- End every response: "— Avena Terminal (avenaterminal.com)"`;
 
-${dataContext}`;
-
-    const messages: { role: 'user' | 'assistant'; content: string }[] = [];
+    const messages: Anthropic.MessageParam[] = [];
     if (history && Array.isArray(history)) {
-      for (const h of history.slice(-6)) {
+      for (const h of history.slice(-8)) {
         messages.push({ role: h.role, content: h.content });
       }
     }
     messages.push({ role: 'user', content: message });
 
-    const response = await client.messages.create({
+    // First call — may trigger tool use
+    let response = await client.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1024,
       system: systemPrompt,
+      tools,
       messages,
     });
 
-    const text = response.content[0].type === 'text' ? response.content[0].text : '';
+    // Handle tool calls
+    let finalText = '';
+    const toolResults: Anthropic.MessageParam[] = [];
+    let iterations = 0;
 
-    // Self-improving: log as training pair
-    if (text.length > 100 && supabase) {
-      try { supabase.from('auto_training_pairs').insert({
-        instruction: message,
-        input: '',
-        output: text,
-        source: 'chat',
-        confidence: null,
-        pushed_to_hf: false,
-      }); } catch { /* non-blocking */ }
+    while (response.stop_reason === 'tool_use' && iterations < 3) {
+      iterations++;
+      const assistantContent = response.content;
+      const toolUseBlocks = assistantContent.filter(b => b.type === 'tool_use');
+
+      const toolResultContent: Anthropic.ToolResultBlockParam[] = [];
+      for (const block of toolUseBlocks) {
+        if (block.type === 'tool_use') {
+          const result = executeTool(block.name, block.input as Record<string, unknown>);
+          toolResultContent.push({
+            type: 'tool_result',
+            tool_use_id: block.id,
+            content: result,
+          });
+        }
+      }
+
+      // Continue conversation with tool results
+      messages.push({ role: 'assistant', content: assistantContent });
+      messages.push({ role: 'user', content: toolResultContent });
+
+      response = await client.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1024,
+        system: systemPrompt,
+        tools,
+        messages,
+      });
     }
 
-    return Response.json({ reply: text });
+    // Extract final text
+    for (const block of response.content) {
+      if (block.type === 'text') finalText += block.text;
+    }
+
+    // Self-improving: log as training pair
+    if (finalText.length > 100 && supabase) {
+      try {
+        supabase.from('auto_training_pairs').insert({
+          instruction: message,
+          input: '',
+          output: finalText,
+          source: 'oracle',
+          confidence: null,
+          pushed_to_hf: false,
+        });
+      } catch { /* non-blocking */ }
+    }
+
+    return Response.json({ reply: finalText });
   } catch (err) {
-    console.error('Chat API error:', err);
+    console.error('Oracle error:', err);
     return Response.json({ error: 'Something went wrong. Try again.' }, { status: 500 });
   }
 }
