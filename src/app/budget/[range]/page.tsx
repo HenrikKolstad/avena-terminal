@@ -17,11 +17,11 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ range: string }> }): Promise<Metadata> {
   const { range } = await params;
   const r = RANGES[range];
-  if (!r) return { title: 'Budget Not Found | Avena Estate' };
+  if (!r) return { title: 'Budget Not Found | Avena Terminal' };
   const props = getAllProperties().filter(p => r.filter(p.pf));
-  const title = `New Build Properties in Spain ${r.label} — Investment Ranked | Avena Estate`;
+  const title = `New Build Properties in Spain ${r.label} — Investment Ranked | Avena Terminal`;
   const description = `${props.length} new build properties ${r.label.toLowerCase()} ranked by investment score. ${r.desc}.`;
-  return { title, description, openGraph: { title, description, url: `https://avenaterminal.com/budget/${range}`, siteName: 'Avena Estate', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] } };
+  return { title, description, openGraph: { title, description, url: `https://avenaterminal.com/budget/${range}`, siteName: 'Avena Terminal', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] } };
 }
 
 export default async function BudgetPage({ params }: { params: Promise<{ range: string }> }) {
@@ -74,7 +74,7 @@ export default async function BudgetPage({ params }: { params: Promise<{ range: 
         <p className="text-[9px] text-gray-600 text-right mt-4">Data last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
       </main>
 
-      <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>&copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a></footer>
+      <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>&copy; 2026 Avena Terminal &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a></footer>
     </div>
   );
 }

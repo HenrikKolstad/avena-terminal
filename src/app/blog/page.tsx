@@ -3,13 +3,13 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 
 export const metadata: Metadata = {
-  title: 'Spain Property Investment Blog | Avena Estate',
+  title: 'Spain Property Investment Blog | Avena Terminal',
   description: 'Weekly insights on Spanish new build investment, rental yields, Costa Blanca & Costa del Sol market analysis.',
   openGraph: {
-    title: 'Spain Property Investment Blog | Avena Estate',
+    title: 'Spain Property Investment Blog | Avena Terminal',
     description: 'Weekly insights on Spanish new build investment, rental yields, and market analysis.',
     url: 'https://avenaterminal.com/blog',
-    siteName: 'Avena Estate',
+    siteName: 'Avena Terminal',
     type: 'website',
   },
 };
@@ -98,7 +98,7 @@ export default async function BlogPage() {
       <div className="h-px w-full" style={{ background: 'linear-gradient(90deg, transparent, #00b9ff40, #9fe87040, transparent)' }} />
 
       <footer className="py-6 text-center text-gray-600 text-xs">
-        © 2026 Avena Estate · <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
+        © 2026 Avena Terminal · <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
       </footer>
     </div>
   );

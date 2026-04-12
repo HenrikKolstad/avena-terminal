@@ -284,7 +284,7 @@ export default async function PricePerM2Page({ params }: { params: Promise<{ loc
 
       {/* Footer */}
       <footer className="border-t py-6 text-center text-gray-600 text-xs mt-10" style={{ borderColor: '#1c2333' }}>
-        &copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
+        &copy; 2026 Avena Terminal &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
       </footer>
     </div>
   );

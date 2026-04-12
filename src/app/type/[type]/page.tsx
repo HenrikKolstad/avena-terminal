@@ -14,9 +14,9 @@ export async function generateMetadata({ params }: { params: Promise<{ type: str
   const { type } = await params;
   const label = TYPES.find(t => slugify(t) === type) || type;
   const props = getAllProperties().filter(p => slugify(p.t) === type);
-  const title = `New Build ${label}s in Spain — Investment Ranked | Avena Estate`;
+  const title = `New Build ${label}s in Spain — Investment Ranked | Avena Terminal`;
   const description = `${props.length} new build ${label.toLowerCase()}s ranked by investment score. Average yield ${avg(props.filter(p => p._yield).map(p => p._yield!.gross)).toFixed(1)}%.`;
-  return { title, description, openGraph: { title, description, url: `https://avenaterminal.com/type/${type}`, siteName: 'Avena Estate', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] } };
+  return { title, description, openGraph: { title, description, url: `https://avenaterminal.com/type/${type}`, siteName: 'Avena Terminal', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] } };
 }
 
 export default async function TypePage({ params }: { params: Promise<{ type: string }> }) {
@@ -67,7 +67,7 @@ export default async function TypePage({ params }: { params: Promise<{ type: str
         <p className="text-[9px] text-gray-600 text-right mt-4">Data last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
       </main>
 
-      <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>&copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a></footer>
+      <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>&copy; 2026 Avena Terminal &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a></footer>
     </div>
   );
 }

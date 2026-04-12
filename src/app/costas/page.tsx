@@ -5,9 +5,9 @@ import { getUniqueCostas } from '@/lib/properties';
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: 'New Build Investment by Costa — Spain | Avena Estate',
+  title: 'New Build Investment by Costa — Spain | Avena Terminal',
   description: 'Compare new build property investments across Spain\'s costas. Costa Blanca, Costa del Sol, Costa Calida — ranked by score and rental yield.',
-  openGraph: { title: 'New Build Investment by Costa — Spain | Avena Estate', description: 'Compare new build property investments across Spain\'s costas.', url: 'https://avenaterminal.com/costas', siteName: 'Avena Estate', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] },
+  openGraph: { title: 'New Build Investment by Costa — Spain | Avena Terminal', description: 'Compare new build property investments across Spain\'s costas.', url: 'https://avenaterminal.com/costas', siteName: 'Avena Terminal', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] },
 };
 
 export default function CostasPage() {
@@ -52,7 +52,7 @@ export default function CostasPage() {
         <p className="text-[9px] text-gray-600 text-right mt-4">Data last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
       </main>
 
-      <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>&copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a></footer>
+      <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>&copy; 2026 Avena Terminal &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a></footer>
     </div>
   );
 }

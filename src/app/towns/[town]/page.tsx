@@ -11,17 +11,17 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ town: string }> }): Promise<Metadata> {
   const { town } = await params;
   const data = getPropertiesByTown(town);
-  if (!data) return { title: 'Town Not Found | Avena Estate' };
+  if (!data) return { title: 'Town Not Found | Avena Terminal' };
   const { town: name, properties: props } = data;
   const avgScore = Math.round(avg(props.filter(p => p._sc).map(p => p._sc!)));
   const maxYield = Math.max(...props.filter(p => p._yield).map(p => p._yield!.gross), 0);
-  const title = `New Build Properties in ${name} — Investment Scores & Rental Yield | Avena Estate`;
+  const title = `New Build Properties in ${name} — Investment Scores & Rental Yield | Avena Terminal`;
   const avgPm2Meta = Math.round(avg(props.filter(p => p.pm2).map(p => p.pm2!)));
   const avgYieldMeta = avg(props.filter(p => p._yield).map(p => p._yield!.gross)).toFixed(1);
   const description = `${name} new builds: avg \u20AC${avgPm2Meta.toLocaleString()}/m\u00B2, ${avgScore}/100 score, ${avgYieldMeta}% gross yield. Live data from Avena Terminal.`;
   return {
     title, description,
-    openGraph: { title, description, url: `https://avenaterminal.com/towns/${town}`, siteName: 'Avena Estate', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] },
+    openGraph: { title, description, url: `https://avenaterminal.com/towns/${town}`, siteName: 'Avena Terminal', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] },
   };
 }
 
@@ -125,7 +125,7 @@ export default async function TownPage({ params }: { params: Promise<{ town: str
       </main>
 
       <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>
-        &copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
+        &copy; 2026 Avena Terminal &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
       </footer>
     </div>
   );

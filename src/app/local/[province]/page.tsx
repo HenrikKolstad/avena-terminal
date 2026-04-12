@@ -41,11 +41,11 @@ export async function generateMetadata({ params }: { params: Promise<{ province:
   const { province: slug } = await params;
   const map = getProvinceData();
   const entry = [...map.entries()].find(([prov]) => slugify(prov) === slug);
-  if (!entry) return { title: 'Province Not Found | Avena Estate' };
+  if (!entry) return { title: 'Province Not Found | Avena Terminal' };
   const [name, props] = entry;
 
   const towns = new Set(props.map(p => p.l));
-  const title = `New Build Properties in ${name}, Spain | Avena Estate`;
+  const title = `New Build Properties in ${name}, Spain | Avena Terminal`;
   const description = `New build properties in ${name}, Spain. ${props.length} scored properties across ${towns.size} towns.`;
   return {
     title,
@@ -54,7 +54,7 @@ export async function generateMetadata({ params }: { params: Promise<{ province:
       title,
       description,
       url: `https://avenaterminal.com/local/${slug}`,
-      siteName: 'Avena Estate',
+      siteName: 'Avena Terminal',
       images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
     },
   };
@@ -184,7 +184,7 @@ export default async function ProvincePage({ params }: { params: Promise<{ provi
       </main>
 
       <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>
-        &copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
+        &copy; 2026 Avena Terminal &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
       </footer>
     </div>
   );

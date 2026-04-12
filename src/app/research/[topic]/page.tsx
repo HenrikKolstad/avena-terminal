@@ -119,18 +119,18 @@ function detectTopicType(topic: string): string[] {
 export async function generateMetadata({ params }: { params: Promise<{ topic: string }> }): Promise<Metadata> {
   const { topic } = await params;
   if (!RESEARCH_TOPICS.includes(topic as ResearchTopic)) {
-    return { title: 'Research Not Found | Avena Estate' };
+    return { title: 'Research Not Found | Avena Terminal' };
   }
   const title = topicToTitle(topic);
   const description = topicToDescription(topic);
   return {
-    title: `${title} | Avena Estate Research`,
+    title: `${title} | Avena Terminal Research`,
     description,
     openGraph: {
       title,
       description,
       url: `https://avenaterminal.com/research/${topic}`,
-      siteName: 'Avena Estate',
+      siteName: 'Avena Terminal',
       type: 'article',
       images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
     },
@@ -357,8 +357,8 @@ export default async function ResearchTopicPage({ params }: { params: Promise<{ 
     '@type': 'Article',
     headline: title,
     description,
-    author: { '@type': 'Organization', name: 'Avena Estate', url: 'https://avenaterminal.com' },
-    publisher: { '@type': 'Organization', name: 'Avena Estate', url: 'https://avenaterminal.com' },
+    author: { '@type': 'Organization', name: 'Avena Terminal', url: 'https://avenaterminal.com' },
+    publisher: { '@type': 'Organization', name: 'Avena Terminal', url: 'https://avenaterminal.com' },
     datePublished: '2026-03-15T10:00:00Z',
     dateModified: new Date().toISOString(),
     mainEntityOfPage: `https://avenaterminal.com/research/${topic}`,
@@ -497,7 +497,7 @@ export default async function ResearchTopicPage({ params }: { params: Promise<{ 
       <div className="h-px w-full mt-12" style={{ background: 'linear-gradient(90deg, transparent, #00b9ff40, #9fe87040, transparent)' }} />
 
       <footer className="py-6 text-center text-gray-600 text-xs">
-        &copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
+        &copy; 2026 Avena Terminal &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
       </footer>
     </div>
   );

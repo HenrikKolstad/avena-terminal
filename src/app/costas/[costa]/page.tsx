@@ -11,12 +11,12 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ costa: string }> }): Promise<Metadata> {
   const { costa } = await params;
   const data = getPropertiesByCosta(costa);
-  if (!data) return { title: 'Costa Not Found | Avena Estate' };
-  const title = `New Build Investments on ${data.costa} — Ranked by Data | Avena Estate`;
+  if (!data) return { title: 'Costa Not Found | Avena Terminal' };
+  const title = `New Build Investments on ${data.costa} — Ranked by Data | Avena Terminal`;
   const avgScoreMeta = Math.round(avg(data.properties.filter(p => p._sc).map(p => p._sc!)));
   const avgYieldMeta = avg(data.properties.filter(p => p._yield).map(p => p._yield!.gross)).toFixed(1);
   const description = `${data.costa} new builds: ${data.properties.length} properties, ${avgScoreMeta}/100 avg score, ${avgYieldMeta}% gross yield. Live data from Avena Terminal.`;
-  return { title, description, openGraph: { title, description, url: `https://avenaterminal.com/costas/${costa}`, siteName: 'Avena Estate', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] } };
+  return { title, description, openGraph: { title, description, url: `https://avenaterminal.com/costas/${costa}`, siteName: 'Avena Terminal', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] } };
 }
 
 export default async function CostaPage({ params }: { params: Promise<{ costa: string }> }) {
@@ -87,7 +87,7 @@ export default async function CostaPage({ params }: { params: Promise<{ costa: s
         <p className="text-[9px] text-gray-600 text-right mt-4">Data last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
       </main>
 
-      <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>&copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a></footer>
+      <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>&copy; 2026 Avena Terminal &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a></footer>
     </div>
   );
 }

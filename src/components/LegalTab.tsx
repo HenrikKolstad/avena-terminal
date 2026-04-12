@@ -57,9 +57,9 @@ export default function LegalTab() {
       </div>
 
       <div className="bg-[#0f1419] border border-emerald-700/20 rounded-lg p-5">
-        <h4 className="text-emerald-300 font-semibold mb-2 text-sm">About Avena Estate & Xavia Estate</h4>
+        <h4 className="text-emerald-300 font-semibold mb-2 text-sm">About Avena Terminal & Xavia Estate</h4>
         <p className="text-gray-400 text-xs leading-relaxed">
-          Avena Estate is an independent investment analysis platform. Property listings are sourced from <span className="text-white">Xavia Estate</span>, a licensed Spanish real estate agency operating in Costa Blanca and Costa Cálida. All transactions are handled directly by Xavia Estate and their legal partners. Avena Estate does not hold client funds or act as a property agent.
+          Avena Terminal is an independent investment analysis platform. Property listings are sourced from <span className="text-white">Xavia Estate</span>, a licensed Spanish real estate agency operating in Costa Blanca and Costa Cálida. All transactions are handled directly by Xavia Estate and their legal partners. Avena Terminal does not hold client funds or act as a property agent.
         </p>
         <div className="mt-3 flex gap-4">
           <a href="https://www.xaviaestate.com" target="_blank" rel="noopener noreferrer" className="text-emerald-500 hover:text-emerald-300 text-xs underline">Xavia Estate website →</a>

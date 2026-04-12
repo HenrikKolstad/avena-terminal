@@ -148,7 +148,7 @@ ${nearbyTowns.slice(0, 5).map((n, i) => `${i + 1}. ${n.town} has ${n.count} new 
 
 When comparing areas near ${d.town}, key factors to weigh include rental yield potential, price per square metre, proximity to airports and beaches, and the strength of the local rental market. ${d.costa ? `All of these towns fall within or near the ${d.costa} region, which benefits from consistent tourist demand and good transport links. ` : ''}Towns with higher investment scores tend to offer better value relative to local market prices, stronger developer track records, and more favourable rental projections.
 
-For the most up-to-date comparison, our database tracks prices and yields across all these areas and updates weekly. Each town page on Avena Estate shows the full list of scored developments, so you can drill into specific properties and see exactly how they compare on value, yield, location quality, and overall investment potential.`;
+For the most up-to-date comparison, our database tracks prices and yields across all these areas and updates weekly. Each town page on Avena Terminal shows the full list of scored developments, so you can drill into specific properties and see exactly how they compare on value, yield, location quality, and overall investment potential.`;
   }
 }
 
@@ -185,11 +185,11 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ question: string }> }): Promise<Metadata> {
   const { question } = await params;
   const parsed = detectPattern(question);
-  if (!parsed) return { title: 'Question Not Found | Avena Estate' };
+  if (!parsed) return { title: 'Question Not Found | Avena Terminal' };
 
   const all = getAllProperties();
   const props = all.filter(p => slugify(p.l) === parsed.townSlug);
-  if (!props.length) return { title: 'Question Not Found | Avena Estate' };
+  if (!props.length) return { title: 'Question Not Found | Avena Terminal' };
 
   const townName = props[0].l;
   const title = questionTitle(parsed.pattern, townName);
@@ -206,13 +206,13 @@ export async function generateMetadata({ params }: { params: Promise<{ question:
   const description = directAnswer.slice(0, 155).trim();
 
   return {
-    title: `${title} | Avena Estate`,
+    title: `${title} | Avena Terminal`,
     description,
     openGraph: {
       title,
       description,
       url: `https://avenaterminal.com/questions/${question}`,
-      siteName: 'Avena Estate',
+      siteName: 'Avena Terminal',
       images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
     },
     other: { 'article:modified_time': new Date().toISOString() },
@@ -411,7 +411,7 @@ export default async function QuestionPage({ params }: { params: Promise<{ quest
 
       {/* Footer */}
       <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>
-        &copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
+        &copy; 2026 Avena Terminal &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
       </footer>
     </div>
   );

@@ -933,13 +933,13 @@ export async function generateMetadata({ params }: { params: Promise<{ topic: st
   const content = getTopicContent(topic, properties, towns);
 
   return {
-    title: `${content.title} | Avena Estate`,
+    title: `${content.title} | Avena Terminal`,
     description: content.description,
     openGraph: {
       title: content.title,
       description: content.description,
       url: `https://avenaterminal.com/insights/${topic}`,
-      siteName: 'Avena Estate',
+      siteName: 'Avena Terminal',
       images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
       type: 'article',
     },
@@ -1060,7 +1060,7 @@ export default async function InsightPage({ params }: { params: Promise<{ topic:
 
       {/* Footer */}
       <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>
-        &copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
+        &copy; 2026 Avena Terminal &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
       </footer>
     </div>
   );

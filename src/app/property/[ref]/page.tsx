@@ -12,9 +12,9 @@ function findProperty(ref: string): Property | null {
 export async function generateMetadata({ params }: { params: Promise<{ ref: string }> }): Promise<Metadata> {
   const { ref } = await params;
   const p = findProperty(decodeURIComponent(ref));
-  if (!p) return { title: 'Property Not Found | Avena Estate' };
+  if (!p) return { title: 'Property Not Found | Avena Terminal' };
 
-  const title = `${p.bd}-bed new build in ${p.l} — ${Math.round(p._sc ?? 0)}/100 investment score | Avena Estate`;
+  const title = `${p.bd}-bed new build in ${p.l} — ${Math.round(p._sc ?? 0)}/100 investment score | Avena Terminal`;
   const description = `New build in ${p.l}. Asking from \u20AC${(p.pf ?? 0).toLocaleString()}. Estimated rental yield ${p._yield?.gross?.toFixed(1) ?? '\u2013'}%. Investment score ${Math.round(p._sc ?? 0)}/100. Analyse on Avena Terminal.`;
 
   return {
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ ref: stri
     openGraph: {
       title, description,
       url: `https://avenaterminal.com/property/${encodeURIComponent(p.ref ?? '')}`,
-      siteName: 'Avena Estate',
+      siteName: 'Avena Terminal',
       images: p.imgs?.[0] ? [{ url: p.imgs[0], width: 1200, height: 630 }] : [{ url: '/opengraph-image', width: 1200, height: 630 }],
       type: 'website',
     },
@@ -196,7 +196,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
       </main>
 
       <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>
-        &copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
+        &copy; 2026 Avena Terminal &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
       </footer>
     </div>
   );

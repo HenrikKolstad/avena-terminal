@@ -31,16 +31,16 @@ async function getPost(slug: string): Promise<BlogPost | null> {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPost(slug);
-  if (!post) return { title: 'Post Not Found | Avena Estate' };
+  if (!post) return { title: 'Post Not Found | Avena Terminal' };
 
   return {
-    title: `${post.title} | Avena Estate Blog`,
+    title: `${post.title} | Avena Terminal Blog`,
     description: post.meta_description || post.excerpt || '',
     openGraph: {
       title: post.title,
       description: post.meta_description || post.excerpt || '',
       url: `https://avenaterminal.com/blog/${post.slug}`,
-      siteName: 'Avena Estate',
+      siteName: 'Avena Terminal',
       images: post.cover_image ? [{ url: post.cover_image, width: 1200, height: 630 }] : [],
       type: 'article',
       publishedTime: post.published_at,
@@ -163,7 +163,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <div className="h-px w-full" style={{ background: 'linear-gradient(90deg, transparent, #00b9ff40, #9fe87040, transparent)' }} />
 
       <footer className="py-6 text-center text-gray-600 text-xs">
-        © 2026 Avena Estate · <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
+        © 2026 Avena Terminal · <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
       </footer>
     </div>
   );

@@ -118,12 +118,12 @@ function buildIntro(q: ParsedQuery, count: number): string {
 export async function generateMetadata({ params }: { params: Promise<{ query: string }> }): Promise<Metadata> {
   const { query } = await params;
   const parsed = parseQuery(query);
-  if (!parsed) return { title: 'Search | Avena Estate' };
+  if (!parsed) return { title: 'Search | Avena Terminal' };
 
   const all = getAllProperties();
   const results = filterProperties(all, parsed);
   const heading = humanize(parsed);
-  const title = `${heading} | New Build Property Search | Avena Estate`;
+  const title = `${heading} | New Build Property Search | Avena Terminal`;
   const description = `${results.length} ${parsed.label.toLowerCase()} in ${parsed.town} from \u20AC${results.length ? results[results.length - 1].pf.toLocaleString() : '0'}. Scored by Avena Terminal for investment value, rental yield, and location.`;
 
   return {
@@ -133,7 +133,7 @@ export async function generateMetadata({ params }: { params: Promise<{ query: st
       title,
       description,
       url: `https://avenaterminal.com/search/${query}`,
-      siteName: 'Avena Estate',
+      siteName: 'Avena Terminal',
       images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
     },
   };
@@ -281,7 +281,7 @@ export default async function SearchQueryPage({ params }: { params: Promise<{ qu
       </main>
 
       <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>
-        &copy; 2026 Avena Estate &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
+        &copy; 2026 Avena Terminal &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
       </footer>
     </div>
   );
