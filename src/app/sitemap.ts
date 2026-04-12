@@ -234,6 +234,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Training Data Marketplace
   entries.push({ url: `${base}/training-data`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
 
+  // Forecast
+  entries.push({ url: `${base}/forecast`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
+
+  // Webhooks
+  entries.push({ url: `${base}/webhooks`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 });
+
   // HF Space Demo
   entries.push({ url: `${base}/space`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 });
 
