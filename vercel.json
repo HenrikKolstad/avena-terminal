@@ -54,6 +54,18 @@
     {
       "path": "/api/weekly-science",
       "schedule": "0 7 * * 5"
+    },
+    {
+      "path": "/api/cron/push-training-data",
+      "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/cron/regime-check",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/developer-monitor",
+      "schedule": "0 4 * * 1"
     }
   ]
 }

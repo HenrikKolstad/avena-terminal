@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { getAllProperties } from '@/lib/properties';
 import { Property } from '@/lib/types';
+import { supabase } from '@/lib/supabase';
 
 export const maxDuration = 30;
 
@@ -168,6 +169,19 @@ Examples:
     if (filters.minYield) parts.push(`${filters.minYield}%+ yield`);
     if (filters.minScore) parts.push(`score ${filters.minScore}+`);
     if (filters.keywords.length) parts.push(...filters.keywords);
+
+    // Self-improving: log as training pair
+    if (results.length > 0 && supabase) {
+      const topResult = results[0];
+      try { supabase.from('auto_training_pairs').insert({
+        instruction: `Find properties matching: ${query}`,
+        input: '',
+        output: `Found ${results.length} properties. Top match: ${(topResult as Record<string, unknown>).project || (topResult as Record<string, unknown>).type + ' in ' + (topResult as Record<string, unknown>).town} at \u20AC${((topResult as Record<string, unknown>).price as number)?.toLocaleString()}, scoring ${(topResult as Record<string, unknown>).score}/100. Search at avenaterminal.com \u2014 Avena Terminal`,
+        source: 'semantic_search',
+        confidence: null,
+        pushed_to_hf: false,
+      }); } catch { /* non-blocking */ }
+    }
 
     return NextResponse.json(
       {

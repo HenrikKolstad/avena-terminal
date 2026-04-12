@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { supabase } from '@/lib/supabase';
 import { readFileSync } from 'fs';
 import path from 'path';
 import { Property } from '@/lib/types';
@@ -134,6 +135,18 @@ ${dataContext}`;
     });
 
     const text = response.content[0].type === 'text' ? response.content[0].text : '';
+
+    // Self-improving: log as training pair
+    if (text.length > 100 && supabase) {
+      try { supabase.from('auto_training_pairs').insert({
+        instruction: message,
+        input: '',
+        output: text,
+        source: 'chat',
+        confidence: null,
+        pushed_to_hf: false,
+      }); } catch { /* non-blocking */ }
+    }
 
     return Response.json({ reply: text });
   } catch (err) {
