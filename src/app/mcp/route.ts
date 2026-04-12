@@ -4,14 +4,20 @@ import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
-// Log MCP call for "Cited by AI" counter
-async function logMcpCall(userAgent: string | null) {
+// Log MCP call for "Cited by AI" counter + agent tracking
+async function logMcpCall(userAgent: string | null, agentId: string | null) {
   try {
     if (supabase) {
       await supabase.from('mcp_calls').insert({
         user_agent: userAgent || 'unknown',
+        agent_id: agentId || null,
         called_at: new Date().toISOString(),
       });
+
+      // If registered agent, increment query count
+      if (agentId) {
+        try { await supabase.rpc('increment_agent_queries', { p_agent_id: agentId }); } catch { /* ignore */ }
+      }
     }
   } catch { /* non-blocking */ }
 }
@@ -20,7 +26,8 @@ async function logMcpCall(userAgent: string | null) {
 // No session management needed for read-only property data
 async function handleMcpRequest(req: Request): Promise<Response> {
   // Log the call (non-blocking)
-  logMcpCall(req.headers.get('user-agent'));
+  const agentId = req.headers.get('x-avena-agent-id');
+  logMcpCall(req.headers.get('user-agent'), agentId);
 
   const server = createAvenaServer();
 

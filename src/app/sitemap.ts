@@ -210,6 +210,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Annual Report
   entries.push({ url: `${base}/reports/annual-2026`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
 
+  // Agent Registry
+  entries.push({ url: `${base}/agents/registry`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+  entries.push({ url: `${base}/agents/directory`, lastModified: now, changeFrequency: 'daily', priority: 0.8 });
+  entries.push({ url: `${base}/agents/leaderboard`, lastModified: now, changeFrequency: 'daily', priority: 0.7 });
+
   // Location pages
   for (const t of getUniqueTowns()) {
     entries.push({ url: `${base}/locations/${t.slug}`, lastModified: now, changeFrequency: 'daily', priority: 0.7 });

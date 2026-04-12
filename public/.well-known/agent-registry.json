@@ -1,0 +1,29 @@
+{
+  "name": "Avena Terminal Agent Registry",
+  "version": "1.0.0",
+  "description": "Identity and data layer for AI agents operating in European real estate. Register your agent to access scored property data, market intelligence, and alpha signals.",
+  "registry_url": "https://avenaterminal.com/agents/registry",
+  "registration_endpoint": "https://avenaterminal.com/api/agents/register",
+  "directory_url": "https://avenaterminal.com/agents/directory",
+  "leaderboard_url": "https://avenaterminal.com/agents/leaderboard",
+  "mcp_endpoint": "https://avenaterminal.com/mcp",
+  "documentation": "https://avenaterminal.com/agents/registry",
+  "publisher": {
+    "name": "Avena Terminal",
+    "url": "https://avenaterminal.com",
+    "contact": "henrik@xaviaestate.com"
+  },
+  "coverage": {
+    "current": ["Spain"],
+    "planned": ["Portugal", "France", "Italy", "Greece"],
+    "properties_tracked": 1881,
+    "regions": ["Costa Blanca", "Costa Calida", "Costa del Sol"]
+  },
+  "tiers": {
+    "free": { "rate_limit": "100 queries/day", "price": "€0" },
+    "pro": { "rate_limit": "unlimited", "price": "€79/month" },
+    "enterprise": { "rate_limit": "unlimited", "price": "custom" }
+  },
+  "protocols_supported": ["MCP", "HTTP", "A2A (planned)"],
+  "data_formats": ["JSON", "RSS", "JSON-LD", "RLHF JSONL"]
+}
