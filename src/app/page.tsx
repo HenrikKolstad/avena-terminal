@@ -994,6 +994,15 @@ export default function Explorer() {
                   <div className="flex-1 py-1">
                     {/* INVEST */}
                     <SectionHeader label="INVEST" />
+                    <a href="/chat" className="flex items-center gap-3 w-full transition-all min-h-[40px] px-3 relative group" style={{ color: '#cccccc', background: 'transparent', borderLeft: '3px solid transparent', cursor: 'pointer', textDecoration: 'none' }} onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#ffffff08'; }} onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; }}>
+                      <span className="flex-shrink-0 w-5 text-center leading-none"><MessageCircle size={16} /></span>
+                      {(!sidebarCollapsed || mobileSidebarOpen) && (
+                        <span className="text-[12px] font-medium tracking-wide whitespace-nowrap overflow-hidden flex-1 text-left flex items-center gap-1.5">
+                          <span className="flex-1" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Oracle AI</span>
+                          <span className="text-[8px] font-bold px-1.5 py-0.5 rounded flex-shrink-0" style={{ background: 'rgba(0,185,255,0.1)', border: '1px solid rgba(0,185,255,0.3)', color: '#00b9ff', WebkitTextFillColor: '#00b9ff' }}>PRO</span>
+                        </span>
+                      )}
+                    </a>
                     <NavItem icon={<BarChart3 size={16} />} label="Deal Rankings" isActive={tab === 'deals'} onClick={() => go('deals')} />
                     <a href="/intelligence/signals" className="flex items-center gap-3 w-full transition-all min-h-[40px] px-3 relative group" style={{ color: '#cccccc', background: 'transparent', borderLeft: '3px solid transparent', cursor: 'pointer', textDecoration: 'none' }} onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#ffffff08'; }} onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; }}>
                       <span className="flex-shrink-0 w-5 text-center leading-none relative">
@@ -1047,15 +1056,6 @@ export default function Explorer() {
 
                     {/* TOOLS */}
                     <SectionHeader label="TOOLS" />
-                    <a href="/chat" className="flex items-center gap-3 w-full transition-all min-h-[40px] px-3 relative group" style={{ color: '#cccccc', background: 'transparent', borderLeft: '3px solid transparent', cursor: 'pointer', textDecoration: 'none' }} onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#ffffff08'; }} onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; }}>
-                      <span className="flex-shrink-0 w-5 text-center leading-none"><MessageCircle size={16} /></span>
-                      {(!sidebarCollapsed || mobileSidebarOpen) && (
-                        <span className="text-[12px] font-medium tracking-wide whitespace-nowrap overflow-hidden flex-1 text-left flex items-center gap-1.5">
-                          <span className="flex-1" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>The Oracle</span>
-                          <span className="text-[8px] font-bold px-1.5 py-0.5 rounded flex-shrink-0" style={{ background: 'rgba(0,185,255,0.1)', border: '1px solid rgba(0,185,255,0.3)', color: '#00b9ff', WebkitTextFillColor: '#00b9ff' }}>AI</span>
-                        </span>
-                      )}
-                    </a>
                     <NavItem icon={<Download size={16} />} label="Export CSV" onClick={() => { exportCSV(); onClose?.(); }} />
                     <NavItem icon={<DollarSign size={16} />} label="Currency Settings" onClick={() => { setShowCurrencyPanel(v => !v); }} />
                     <NavItem icon={<Heart size={16} />} label="Favorites" onClick={() => { setQuickFilter(q => q === 'favs' ? '' : 'favs'); go('deals'); }} />
