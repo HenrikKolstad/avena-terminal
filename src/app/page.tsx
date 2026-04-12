@@ -713,12 +713,13 @@ export default function Explorer() {
                   <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
                 </svg>
               </a>
-              {punchline.avgDisc > 0 && (<>
-                <span className="text-gray-700 ml-2 mr-2">|</span>
-                <span className="relative flex h-1.5 w-1.5 mt-px"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" /><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500" /></span>
-                <span className="text-gray-500 ml-1">Top 100 deals avg <span className="text-gray-300 font-semibold">{punchline.avgDisc}%</span> below market · saving <span className="text-gray-300 font-semibold">&euro;{punchline.medianSaving.toLocaleString()}</span></span>
-              </>)}
             </p>
+            {punchline.avgDisc > 0 && (
+              <p className="text-[9px] text-gray-500 mt-0.5 flex items-center gap-1">
+                <span className="relative flex h-1.5 w-1.5 flex-shrink-0"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" /><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500" /></span>
+                <span>Top 100 deals avg <span className="text-gray-300 font-semibold">{punchline.avgDisc}%</span> below market · saving <span className="text-gray-300 font-semibold">&euro;{punchline.medianSaving.toLocaleString()}</span></span>
+              </p>
+            )}
           </div>
         </div>
 

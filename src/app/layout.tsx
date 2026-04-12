@@ -8,7 +8,7 @@ import { Analytics } from "@vercel/analytics/next";
 export const metadata: Metadata = {
   title: "Avena Terminal — Spain New Build Property Investment Scanner | 1,881 Properties",
   verification: { google: "DGv4LcZcrNU5mn_wXz8-vAErjw0oSxLMN-7KHqdDSd4" },
-  description: "Score and rank 1,881 new build properties across Costa Blanca, Costa Cálida and Costa del Sol. Rental yield, price per m², investment score. Spain's first PropTech terminal.",
+  description: "Avena Terminal scores and ranks 1,881 new build properties across Costa Blanca, Costa Cálida and Costa del Sol using hedonic regression and discount-to-market analysis. Investment score, rental yield, price per m². Spain's first PropTech terminal.",
   metadataBase: new URL("https://avenaterminal.com"),
   alternates: { canonical: 'https://avenaterminal.com' },
   icons: {
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     shortcut: '/favicon.svg',
     apple: '/favicon.svg',
   },
-  keywords: ['Spain new builds', 'Costa Blanca property', 'Costa del Sol investment', 'new build Spain 2026', 'Spanish property investment', 'proptech Spain', 'rental yield Spain', 'Marbella new builds', 'Alicante new builds', 'Costa Calida property', 'Spain investment score'],
+  keywords: ['Spain new builds', 'Costa Blanca property', 'Costa del Sol investment', 'new build Spain 2026', 'Spanish property investment', 'proptech Spain', 'rental yield Spain', 'Avena Terminal', 'hedonic regression property', 'investment score Spain', 'discount to market', 'property scoring model', 'Costa Calida property', 'MCP server real estate'],
   openGraph: {
     title: "Avena Terminal — Spain New Build Property Investment Scanner | 1,881 Properties",
     description: "Score and rank 1,881 new build properties across Costa Blanca, Costa Cálida and Costa del Sol. Rental yield, price per m², investment score.",
