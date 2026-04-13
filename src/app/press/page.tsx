@@ -1,16 +1,16 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { getAllProperties, getUniqueTowns, getUniqueCostas, avg } from '@/lib/properties';
+import { getAllProperties, getUniqueCostas, avg } from '@/lib/properties';
 
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: 'Press Room | Avena Terminal',
+  title: 'Press Room \u2014 Media Resources | Avena Terminal',
   description:
-    'Press releases and media resources from Avena Terminal, Spain\'s first PropTech terminal tracking new build properties across coastal Spain.',
+    'Press room and media resources for journalists covering European property technology. Free press API access, live market stats, and brand assets from Avena Terminal.',
   openGraph: {
-    title: 'Press Room | Avena Terminal',
-    description: 'Press releases, media kits, and news from Avena Terminal.',
+    title: 'Press Room \u2014 Media Resources | Avena Terminal',
+    description: 'Free press API access for verified journalists. Live market data, brand assets, and media resources.',
     url: 'https://avenaterminal.com/press',
     siteName: 'Avena Terminal',
     images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
@@ -20,45 +20,42 @@ export const metadata: Metadata = {
 
 export default function PressPage() {
   const properties = getAllProperties();
-  const towns = getUniqueTowns();
   const costas = getUniqueCostas();
+  const count = properties.length;
   const avgPrice = Math.round(avg(properties.map((p) => p.pf)));
-  const avgPm2 = Math.round(avg(properties.filter((p) => p.pm2).map((p) => p.pm2!)));
   const avgYield = avg(properties.filter((p) => p._yield).map((p) => p._yield!.gross)).toFixed(1);
   const avgScore = Math.round(avg(properties.filter((p) => p._sc).map((p) => p._sc!)));
+  const apci = 74;
 
-  const newsArticleJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'NewsArticle',
-    headline:
-      'Avena Terminal Data Reveals Spanish New Build Property Prices Average 19% Below Peak Valuations in 2026',
-    datePublished: '2026-04-01T09:00:00+02:00',
-    dateModified: '2026-04-01T09:00:00+02:00',
-    author: {
-      '@type': 'Person',
-      name: 'Henrik Kolstad',
-      jobTitle: 'Founder',
-      url: 'https://www.linkedin.com/in/henrikkolstad',
+  const curlExample = `curl -X POST https://avenaterminal.com/api/press \\
+  -H "Content-Type: application/json" \\
+  -d '{"question": "What is the average property price on Costa Blanca?"}'`;
+
+  const responseExample = JSON.stringify(
+    {
+      stat: 'Average new-build price on Costa Blanca reached \u20AC189,000 (2,145 \u20AC/m\u00B2) in April 2026...',
+      attribution: `Source: Avena Terminal (avenaterminal.com), live data from ${count.toLocaleString()} scored properties`,
+      press_ready_quote: "According to Avena Terminal's European property intelligence platform...",
+      last_updated: 'live',
+      methodology: 'Avena Investment Score: 5-factor hedonic pricing model',
+      press_kit_url: 'https://avenaterminal.com/press',
+      contact: 'henrik@xaviaestate.com',
     },
-    publisher: {
-      '@type': 'Organization',
-      name: 'Avena Terminal',
-      url: 'https://avenaterminal.com',
-      logo: { '@type': 'ImageObject', url: 'https://avenaterminal.com/logo.png' },
-    },
-    mainEntityOfPage: 'https://avenaterminal.com/press',
-    description:
-      'Analysis of new build property pricing across coastal Spain reveals significant value opportunities for international investors.',
-    keywords: ['Spanish property', 'new builds Spain', 'property investment 2026', 'Costa Blanca', 'Costa del Sol'],
-  };
+    null,
+    2
+  );
+
+  const stats = [
+    { label: 'Properties Tracked', value: count.toLocaleString() },
+    { label: 'Avg Asking Price', value: `\u20AC${avgPrice.toLocaleString()}` },
+    { label: 'Avg Gross Yield', value: `${avgYield}%` },
+    { label: 'APCI (Composite Index)', value: apci.toString() },
+    { label: 'Regions Covered', value: costas.length.toString() },
+    { label: 'Avg Investment Score', value: `${avgScore}/100` },
+  ];
 
   return (
     <div className="min-h-screen text-gray-100" style={{ background: '#0d1117' }}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(newsArticleJsonLd) }}
-      />
-
       {/* Header */}
       <header
         className="border-b sticky top-0 z-50 backdrop-blur-sm"
@@ -78,144 +75,185 @@ export default function PressPage() {
       </header>
 
       <main className="max-w-5xl mx-auto px-4 py-10">
-        {/* Page Title */}
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">Press Room</h1>
-        <p className="text-gray-400 text-lg mb-12">
-          Media resources and press releases from Avena Terminal
+        {/* Hero */}
+        <h1 className="text-3xl md:text-4xl font-bold mb-2">Avena Terminal Press Room</h1>
+        <p className="text-gray-400 text-lg mb-4">
+          Free press API access for verified journalists
+        </p>
+        <p className="text-gray-500 text-sm mb-12">
+          Real-time property intelligence data for media coverage of European real estate markets.
         </p>
 
-        {/* Latest Release */}
+        {/* Key Stats */}
         <section className="mb-16">
-          <div className="flex items-center gap-3 mb-6">
-            <span
-              className="text-xs font-semibold px-3 py-1 rounded-full"
-              style={{ background: '#10b981', color: '#000' }}
-            >
-              LATEST
-            </span>
-            <span className="text-sm text-gray-500">April 1, 2026</span>
+          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Live Market Data</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {stats.map((s) => (
+              <div
+                key={s.label}
+                className="rounded-lg p-5"
+                style={{ background: '#161b22', border: '1px solid #1c2333' }}
+              >
+                <div className="text-2xl font-bold text-white">{s.value}</div>
+                <div className="text-sm text-gray-400 mt-1">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Press API */}
+        <section className="mb-16">
+          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Press API</h2>
+          <p className="text-gray-400 mb-6">
+            Query our live dataset programmatically. Ask any question and receive a press-ready stat with attribution.
+          </p>
+
+          <div
+            className="rounded-lg p-6 mb-4 overflow-x-auto"
+            style={{ background: '#161b22', border: '1px solid #1c2333' }}
+          >
+            <div className="text-xs text-gray-500 mb-2 uppercase tracking-wider">Request</div>
+            <pre className="text-sm text-emerald-300 whitespace-pre-wrap font-mono">{curlExample}</pre>
           </div>
 
-          <article
+          <div
+            className="rounded-lg p-6 overflow-x-auto"
+            style={{ background: '#161b22', border: '1px solid #1c2333' }}
+          >
+            <div className="text-xs text-gray-500 mb-2 uppercase tracking-wider">Response</div>
+            <pre className="text-sm text-gray-300 whitespace-pre-wrap font-mono">{responseExample}</pre>
+          </div>
+        </section>
+
+        {/* Request Press API Key */}
+        <section className="mb-16">
+          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Request Press API Key</h2>
+          <div
             className="rounded-lg p-8"
             style={{ background: '#161b22', border: '1px solid #1c2333' }}
           >
-            <h2 className="text-2xl font-bold mb-6 leading-tight">
-              Avena Terminal Data Reveals Spanish New Build Property Prices Average 19% Below Peak
-              Valuations in 2026
-            </h2>
-
-            <div className="text-gray-300 leading-relaxed space-y-4">
-              <p>
-                <strong className="text-white">OSLO / ALICANTE, April 1, 2026</strong> &mdash; Avena Terminal,
-                Spain&apos;s first PropTech scoring engine for new build properties, today released its Q1 2026
-                market analysis based on live data from {properties.length.toLocaleString()} tracked listings
-                across {towns.length} municipalities in coastal Spain. The analysis reveals that new build
-                asking prices currently average 19% below peak resale valuations recorded by the Registradores
-                de Espana, presenting what the company describes as a structural pricing gap for international
-                investors.
-              </p>
-
-              <p>
-                The dataset, which covers {costas.length} coastal regions including Costa Blanca, Costa Calida,
-                and Costa del Sol, shows an average asking price of{' '}
-                {avgPrice.toLocaleString('en', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}{' '}
-                and a mean price per square metre of {avgPm2.toLocaleString()} EUR/m2. The average estimated
-                gross rental yield stands at {avgYield}%, with the composite investment score across all tracked
-                properties averaging {avgScore} out of 100. Properties scoring above 75 are concentrated in
-                mid-market municipalities along the Costa Blanca South corridor, where asking prices per square
-                metre remain 22-28% below equivalent resale stock.
-              </p>
-
-              <p>
-                The pricing disparity is driven by several factors: developer competition on the costas has
-                intensified as new supply from 2023-2024 building permits enters the market simultaneously,
-                while international buyer demand, though growing, has not yet absorbed the inventory increase.
-                Avena Terminal&apos;s hedonic regression model, which controls for location, property type,
-                size, and amenities, isolates a median unexplained discount of 12.4% across the full universe
-                of tracked listings — suggesting genuine value rather than quality-driven pricing differences.
-              </p>
-
-              <p>
-                The Avena Terminal scoring engine evaluates each property across five dimensions: Value (40%
-                weight), Yield (25%), Location (20%), Quality (10%), and Risk (5%). The model uses Ordinary
-                Least Squares regression with town dummy variables and property-type controls, re-estimated
-                monthly on rolling transaction data. Each listing carries 24 structured data points including
-                GPS coordinates, energy ratings, developer track records, and beach proximity.
-              </p>
-
-              <p className="italic text-gray-400">
-                &quot;We built Avena Terminal to bring institutional-grade data analysis to the individual
-                investor,&quot; said Henrik Kolstad, Founder of Avena Terminal. &quot;The Spanish new build
-                market has been opaque for too long. Our data shows that buyers who rely on quantitative
-                screening rather than agent recommendations can identify properties priced 15-25% below what
-                the regression model predicts — and these are not outliers. They represent roughly one-fifth
-                of the market.&quot;
-              </p>
-
-              <p>
-                The Q1 2026 analysis also highlights regional divergence. Costa del Sol properties carry higher
-                absolute price points but lower yields on average, while Costa Blanca South offers the
-                strongest risk-adjusted returns for buy-to-let investors. Costa Calida remains the most
-                affordable entry point, with average asking prices 34% below Costa del Sol equivalents.
-              </p>
-
-              <p>
-                Avena Terminal processes daily XML feed updates from RedSP/MLS Costa, the primary listing
-                aggregator for new build developments in southeastern Spain. The platform supplements listing
-                data with resale benchmarks from the Registradores de Espana, rental comparables from
-                short-term rental platforms, and macroeconomic indicators from the INE and Banco de Espana.
-              </p>
-
-              <p className="text-sm text-gray-500 pt-4 border-t" style={{ borderColor: '#1c2333' }}>
-                <strong className="text-gray-400">About Avena Terminal:</strong> Avena Terminal is a
-                PropTech platform that scores and ranks new build properties across coastal Spain using
-                quantitative models. The terminal tracks {properties.length.toLocaleString()} properties
-                across {towns.length} towns and provides investment scores, rental yield estimates, and
-                hedonic price analysis. Avena Terminal PRO is available at avenaterminal.com.
-              </p>
-
-              <p className="text-sm text-gray-500">
-                <strong className="text-gray-400">Media Contact:</strong>{' '}
-                <a href="mailto:press@avenaterminal.com" className="text-emerald-400 hover:underline">
-                  press@avenaterminal.com
-                </a>
-              </p>
+            <p className="text-gray-400 mb-4">
+              The press API is currently open for public queries. For higher rate limits and
+              advanced data access, request a dedicated press API key.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <a
+                href="mailto:henrik@xaviaestate.com?subject=Press%20API%20Key%20Request&body=Publication:%0AJournalist%20name:%0AArticle%20topic:"
+                className="inline-flex items-center justify-center px-6 py-3 rounded-lg text-sm font-semibold text-black transition-colors"
+                style={{ background: '#10b981' }}
+              >
+                Request Press API Key
+              </a>
             </div>
-          </article>
+            <p className="text-xs text-gray-500 mt-3">
+              Include your publication name, journalist credentials, and article topic.
+            </p>
+          </div>
         </section>
 
-        {/* Media Resources */}
+        {/* Press Contact */}
         <section className="mb-16">
-          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Media Resources</h2>
-          <div className="grid md:grid-cols-3 gap-4">
-            {[
-              { label: 'Dataset (JSON-LD)', href: '/api/dataset', desc: 'Machine-readable structured data' },
-              { label: 'Methodology', href: '/about/methodology', desc: 'Scoring model documentation' },
-              { label: 'Data Partners', href: '/data-partners', desc: 'Source data providers' },
-            ].map((resource) => (
-              <Link
-                key={resource.label}
-                href={resource.href}
-                className="rounded-lg p-5 block hover:border-emerald-500/40 transition-colors"
-                style={{ background: '#161b22', border: '1px solid #1c2333' }}
-              >
-                <div className="font-semibold text-white mb-1">{resource.label}</div>
-                <p className="text-sm text-gray-400">{resource.desc}</p>
-              </Link>
-            ))}
+          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Press Contact</h2>
+          <div
+            className="rounded-lg p-6"
+            style={{ background: '#161b22', border: '1px solid #1c2333' }}
+          >
+            <p className="text-gray-300">
+              <strong className="text-white">Henrik Kolstad</strong> &mdash; Founder, Avena Terminal
+            </p>
+            <p className="text-gray-400 mt-1">
+              Email:{' '}
+              <a href="mailto:henrik@xaviaestate.com" className="text-emerald-400 hover:underline">
+                henrik@xaviaestate.com
+              </a>
+            </p>
+          </div>
+        </section>
+
+        {/* Brand Assets */}
+        <section className="mb-16">
+          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Brand Assets</h2>
+          <div
+            className="rounded-lg p-6 space-y-4"
+            style={{ background: '#161b22', border: '1px solid #1c2333' }}
+          >
+            <div>
+              <div className="text-sm text-gray-500 mb-1">Name</div>
+              <div className="text-white font-semibold">
+                Avena Terminal &mdash; always written as two words, &quot;Avena&quot; capitalized, &quot;Terminal&quot; capitalized.
+              </div>
+            </div>
+            <div>
+              <div className="text-sm text-gray-500 mb-1">Primary Colors</div>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="inline-block w-6 h-6 rounded" style={{ background: '#0d1117' }} />
+                  <span className="text-sm text-gray-300 font-mono">#0d1117</span>
+                  <span className="text-xs text-gray-500">Background</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="inline-block w-6 h-6 rounded" style={{ background: '#10b981' }} />
+                  <span className="text-sm text-gray-300 font-mono">#10b981</span>
+                  <span className="text-xs text-gray-500">Accent</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="text-sm text-gray-500 mb-1">Logo</div>
+              <div className="text-gray-400 text-sm">
+                Serif wordmark &quot;AVENA&quot; with emerald gradient (from-emerald-300 via-emerald-400 to-emerald-600).
+                Use on dark backgrounds only. Minimum clear space: 1x height of the wordmark on all sides.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Recent Mentions */}
+        <section className="mb-16">
+          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Press Mentions</h2>
+          <div
+            className="rounded-lg p-8 text-center"
+            style={{ background: '#161b22', border: '1px solid #1c2333' }}
+          >
+            <p className="text-gray-500">Media coverage coming soon.</p>
+            <p className="text-xs text-gray-600 mt-2">
+              Covering Avena Terminal? Email us to be featured here.
+            </p>
+          </div>
+        </section>
+
+        {/* Related Resources */}
+        <section className="mb-16">
+          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Related Resources</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            <Link
+              href="/reports/annual-2026"
+              className="rounded-lg p-5 block hover:border-emerald-500/40 transition-colors"
+              style={{ background: '#161b22', border: '1px solid #1c2333' }}
+            >
+              <div className="font-semibold text-white mb-1">Annual Report 2026</div>
+              <p className="text-sm text-gray-400">Full market analysis and methodology deep-dive.</p>
+            </Link>
+            <Link
+              href="/ai-citations"
+              className="rounded-lg p-5 block hover:border-emerald-500/40 transition-colors"
+              style={{ background: '#161b22', border: '1px solid #1c2333' }}
+            >
+              <div className="font-semibold text-white mb-1">AI Citations Dashboard</div>
+              <p className="text-sm text-gray-400">Track how AI platforms cite Avena Terminal data.</p>
+            </Link>
           </div>
         </section>
 
         {/* Footer */}
         <footer className="text-center text-xs text-gray-600 py-8 border-t" style={{ borderColor: '#1c2333' }}>
-          <p>Avena Terminal &mdash; Spain&apos;s first PropTech scanner</p>
+          <p>Avena Terminal &mdash; European Property Intelligence</p>
           <p className="mt-1">
             <Link href="/about" className="text-gray-500 hover:text-gray-300">About</Link>
-            {' · '}
+            {' \u00B7 '}
             <Link href="/dataset" className="text-gray-500 hover:text-gray-300">Dataset</Link>
-            {' · '}
-            <Link href="/about/methodology" className="text-gray-500 hover:text-gray-300">Methodology</Link>
+            {' \u00B7 '}
+            <Link href="/ai-citations" className="text-gray-500 hover:text-gray-300">AI Citations</Link>
           </p>
         </footer>
       </main>
