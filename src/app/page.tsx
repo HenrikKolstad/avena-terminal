@@ -784,12 +784,8 @@ export default function Explorer() {
             </p>
           </div>
 
-          {/* CENTER — hero punchlines — only when sidebar collapsed */}
-          {sidebarCollapsed && (
-            <div className="hidden lg:flex flex-col gap-1 flex-1 max-w-md mx-auto text-center">
-              <p className="text-[11px] italic tracking-wide font-semibold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>The Bloomberg of European property investment</p>
-            </div>
-          )}
+          {/* Spacer when sidebar collapsed */}
+          {sidebarCollapsed && <div className="flex-1" />}
 
           {/* RIGHT — stats + auth — compact when sidebar expanded */}
           <div className={`flex items-center flex-shrink-0 ${sidebarCollapsed ? 'gap-5' : 'gap-2'}`}>
@@ -851,6 +847,11 @@ export default function Explorer() {
           </div>
         </div>
       </header>
+
+      {/* Bloomberg tagline bar — desktop only */}
+      <div className="hidden md:block text-center py-1 border-b" style={{ borderColor: '#1c2333', background: '#090d12', paddingLeft: sidebarCollapsed ? 32 : 240 }}>
+        <p className="text-[10px] italic tracking-wide font-semibold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>The Bloomberg of European property investment</p>
+      </div>
 
       {/* FILTER BAR — desktop: single row, mobile: 2-row grid */}
       <div className="bg-[#0d1117] border-b border-[#1c2333] px-3 md:px-8 py-2">
