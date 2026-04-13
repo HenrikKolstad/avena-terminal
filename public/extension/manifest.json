@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "Avena Intelligence — Property Scorer",
+  "version": "1.0.0",
+  "description": "See AI-powered deal scores, rental yields, and market intelligence on any Spanish property listing. Powered by Avena Terminal.",
+  "permissions": ["activeTab"],
+  "host_permissions": [
+    "https://www.kyero.com/*",
+    "https://www.rightmove.co.uk/*",
+    "https://www.aplaceinthesun.com/*",
+    "https://www.idealista.com/*",
+    "https://www.fotocasa.es/*",
+    "https://www.spainhouses.net/*",
+    "https://www.thinkspain.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.kyero.com/*",
+        "https://www.rightmove.co.uk/overseas/*",
+        "https://www.aplaceinthesun.com/*",
+        "https://www.idealista.com/*",
+        "https://www.fotocasa.es/*",
+        "https://www.spainhouses.net/*",
+        "https://www.thinkspain.com/*"
+      ],
+      "js": ["content.js"],
+      "css": ["badge.css"]
+    }
+  ],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon48.png"
+  }
+}
