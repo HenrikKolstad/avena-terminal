@@ -168,8 +168,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Pre-training Corpus
   entries.push({ url: `${base}/corpus`, lastModified: now, changeFrequency: 'daily', priority: 0.8 });
 
-  // FAQ
+  // FAQ + AEO Answers
   entries.push({ url: `${base}/faq`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+  entries.push({ url: `${base}/answers`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+  entries.push({ url: `${base}/press`, lastModified: now, changeFrequency: 'daily', priority: 0.8 });
+  entries.push({ url: `${base}/transparency-index`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
+  entries.push({ url: `${base}/awards`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
+  entries.push({ url: `${base}/extension`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 });
+  entries.push({ url: `${base}/widgets`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 });
+  entries.push({ url: `${base}/standards/apip`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
 
   // Data Provenance
   entries.push({ url: `${base}/data/provenance`, lastModified: now, changeFrequency: 'daily', priority: 0.7 });
