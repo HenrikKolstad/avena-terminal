@@ -234,6 +234,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Training Data Marketplace
   entries.push({ url: `${base}/training-data`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
 
+  // Intelligence Digest
+  entries.push({ url: `${base}/digest`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 });
+
   // State of European Property
   entries.push({ url: `${base}/state-of-european-property`, lastModified: now, changeFrequency: 'daily', priority: 1.0 });
 
