@@ -234,6 +234,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Training Data Marketplace
   entries.push({ url: `${base}/training-data`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
 
+  // APCI
+  entries.push({ url: `${base}/apci`, lastModified: now, changeFrequency: 'daily', priority: 1.0 });
+  // Predictions
+  entries.push({ url: `${base}/predictions`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+  // Scenarios
+  entries.push({ url: `${base}/scenarios`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
+  // Ratings
+  entries.push({ url: `${base}/ratings`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+  // Yield Curve
+  entries.push({ url: `${base}/yield-curve`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 });
+
   // Intelligence Digest
   entries.push({ url: `${base}/digest`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 });
 
