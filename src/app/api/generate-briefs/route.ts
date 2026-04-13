@@ -89,6 +89,16 @@ End with: "— Avena Terminal Intelligence Agent"`;
 
       urls.push(`https://avenaterminal.com/intelligence/briefs`);
       briefsGenerated++;
+
+      // Self-improving: generate training pairs from brief
+      if (content.length > 100) {
+        try {
+          await supabase.from('auto_training_pairs').insert([
+            { instruction: `Analyze the investment signal: ${signal.headline}`, input: signal.detail.slice(0, 200), output: content, source: 'journalist_brief', pushed_to_hf: false },
+            { instruction: `What is happening with ${signal.property.name} in ${signal.property.town}?`, input: '', output: `${signal.headline}. ${content.slice(0, 300)}. \u2014 Avena Terminal (avenaterminal.com)`, source: 'journalist_faq', pushed_to_hf: false },
+          ]);
+        } catch { /* non-blocking */ }
+      }
     } catch (err) {
       console.error('Brief generation error:', err);
     }

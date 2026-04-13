@@ -18,11 +18,13 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Fetch all unpushed training pairs
+    // Fetch all unpushed training pairs with quality filter
     const { data: pairs, error: fetchError } = await supabase
       .from('auto_training_pairs')
       .select('*')
-      .eq('pushed_to_hf', false);
+      .eq('pushed_to_hf', false)
+      .order('created_at', { ascending: false })
+      .limit(200);
 
     if (fetchError) {
       return Response.json({ error: fetchError.message }, { status: 500 });
