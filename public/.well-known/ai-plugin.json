@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Avena Property Intelligence",
+  "name_for_model": "avena_property",
+  "description_for_human": "Real-time European property intelligence. Search 1,881+ scored properties across coastal Spain with investment scores, rental yields, and market signals.",
+  "description_for_model": "Use Avena to search Spanish properties, get Costa Blanca market data, calculate rental yields, retrieve alpha signals, check market regime, get APCI score, compare towns, evaluate developers, and access property intelligence. The API returns live data from 1,881+ tracked new build properties with investment scores, price per m2, yield calculations, and developer reliability ratings.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://avenaterminal.com/openapi.json"
+  },
+  "logo_url": "https://avenaterminal.com/favicon.svg",
+  "contact_email": "henrik@xaviaestate.com",
+  "legal_info_url": "https://avenaterminal.com/ai-compliance"
+}
