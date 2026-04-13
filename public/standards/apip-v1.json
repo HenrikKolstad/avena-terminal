@@ -1,0 +1,161 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://avenaterminal.com/standards/apip-v1.json",
+  "title": "APIP — Avena Property Intelligence Protocol v1.0",
+  "description": "The open standard for European property intelligence data exchange. Defines the canonical schema for property records including deal scores, yields, developer ratings, market regime classification, and location intelligence.",
+  "type": "object",
+  "required": ["apip_version", "property"],
+  "properties": {
+    "apip_version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "APIP schema version"
+    },
+    "property": {
+      "type": "object",
+      "required": ["id", "deal_score", "location", "pricing", "specifications"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique property identifier (e.g. AVE-CB-00142)",
+          "pattern": "^[A-Z]{2,4}-[A-Z]{2,4}-[0-9]{3,8}$"
+        },
+        "deal_score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Composite investment score. 40% value + 25% yield + 20% location + 10% quality + 5% risk. 70+ strong, 80+ institutional grade."
+        },
+        "yield_gross": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 30,
+          "description": "Estimated gross rental yield percentage from bottom-up ADR model calibrated against AirDNA data."
+        },
+        "developer_rating": {
+          "type": "string",
+          "enum": ["AAV", "AV", "ABV", "BBV", "CV", "DV"],
+          "description": "Developer quality tier. AAV = top-tier proven through 2008 cycle, AV = strong, ABV = above average, BBV = average, CV = below average, DV = unrated/new entrant."
+        },
+        "market_regime": {
+          "type": "string",
+          "enum": ["buyer_opportunity", "balanced", "seller_premium", "overheated", "correction"],
+          "description": "Current market phase classification derived from aggregate discounts, inventory levels, score distributions, and pricing momentum."
+        },
+        "liquidity_score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Estimated time-to-sale score. Higher values indicate faster expected liquidity based on location demand, pricing, and property characteristics."
+        },
+        "carbon_rating": {
+          "type": "string",
+          "enum": ["A", "B", "C", "D", "E", "F", "G"],
+          "description": "Energy/carbon efficiency rating of the property based on official energy performance certificate."
+        },
+        "apci_at_listing": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Avena Property Consciousness Index value at the time of listing. Measures overall market intelligence awareness."
+        },
+        "location": {
+          "type": "object",
+          "required": ["town", "region", "country"],
+          "properties": {
+            "town": {
+              "type": "string",
+              "description": "Town or municipality name"
+            },
+            "region": {
+              "type": "string",
+              "description": "Coastal region or costa name (e.g. Costa Blanca, Costa del Sol)"
+            },
+            "country": {
+              "type": "string",
+              "description": "ISO 3166-1 alpha-2 country code",
+              "pattern": "^[A-Z]{2}$"
+            },
+            "coordinates": {
+              "type": "object",
+              "properties": {
+                "lat": {
+                  "type": "number",
+                  "minimum": -90,
+                  "maximum": 90
+                },
+                "lng": {
+                  "type": "number",
+                  "minimum": -180,
+                  "maximum": 180
+                }
+              },
+              "required": ["lat", "lng"]
+            },
+            "beach_km": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Distance to nearest beach in kilometres"
+            }
+          }
+        },
+        "pricing": {
+          "type": "object",
+          "required": ["asking_price"],
+          "properties": {
+            "asking_price": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Current asking price in EUR"
+            },
+            "price_per_m2": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Asking price divided by built area in EUR/m2"
+            },
+            "market_reference": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Hyperlocal market reference price per m2 at postal code granularity"
+            }
+          }
+        },
+        "specifications": {
+          "type": "object",
+          "properties": {
+            "built_m2": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Built area in square metres"
+            },
+            "bedrooms": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of bedrooms"
+            },
+            "bathrooms": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of bathrooms"
+            },
+            "pool": {
+              "type": "string",
+              "enum": ["private", "communal", "none"],
+              "description": "Pool configuration"
+            },
+            "energy": {
+              "type": "string",
+              "enum": ["A", "B", "C", "D", "E", "F", "G", "pending"],
+              "description": "Energy performance certificate rating"
+            },
+            "status": {
+              "type": "string",
+              "enum": ["key_ready", "under_construction", "off_plan", "resale"],
+              "description": "Build completion status"
+            }
+          }
+        }
+      }
+    }
+  }
+}
