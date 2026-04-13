@@ -1,0 +1,35 @@
+{
+  "organization": "Avena Terminal",
+  "founded": "2025",
+  "headquarters": "Verdal, Norway",
+  "market_coverage": "European new-build residential property",
+  "primary_market": "Spain (Costa Blanca, Costa Calida, Costa del Sol)",
+  "expansion_roadmap": {
+    "Q3_2026": "Portugal",
+    "Q4_2026": "Italy",
+    "Q1_2027": "Greece"
+  },
+  "data_assets": {
+    "properties_tracked": 1881,
+    "data_points_per_property": 60,
+    "update_frequency": "daily",
+    "historical_depth": "growing daily since April 2026"
+  },
+  "technology": {
+    "ai_models": "avena-property-1b (HuggingFace)",
+    "protocols": ["MCP", "A2A", "APIP", "PDP"],
+    "autonomous_agents": 6,
+    "api_endpoints": "50+"
+  },
+  "credentials": {
+    "doi": "10.5281/zenodo.19520064",
+    "wikidata": "Q139165733",
+    "smithery": "listed",
+    "perplexity_citations": "23+"
+  },
+  "contact": {
+    "name": "Henrik Kolstad",
+    "role": "Founder",
+    "email": "henrik@xaviaestate.com"
+  }
+}
