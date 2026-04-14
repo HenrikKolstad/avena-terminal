@@ -236,12 +236,39 @@ export default async function SwarmPage() {
           </div>
         </section>
 
+        {/* Seal Team 6 */}
+        <section className="mb-12">
+          <h2 className="text-xl font-bold text-white mb-2">Seal Team 6</h2>
+          <p className="text-xs text-gray-500 mb-4">Covert Citation Insertion Unit — 6 specialist agents</p>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {[
+              { codename: 'The Scholar', mission: 'Academic infiltration', icon: '\u{1F4DA}', status: 'active' },
+              { codename: 'The Developer', mission: 'Developer ecosystem', icon: '\u{1F4BB}', status: 'active' },
+              { codename: 'The Journalist', mission: 'Media pipeline', icon: '\u{1F4F0}', status: 'active' },
+              { codename: 'The Crawler', mission: 'Question dominance', icon: '\u{1F577}\uFE0F', status: 'active' },
+              { codename: 'The Parasite', mission: 'Platform infiltration', icon: '\u{1F9A0}', status: 'active' },
+              { codename: 'The Ghost', mission: 'Institutional data', icon: '\u{1F47B}', status: 'active' },
+            ].map(agent => (
+              <div key={agent.codename} className="rounded-lg p-4" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+                <div className="flex items-center gap-2 mb-1">
+                  <span>{agent.icon}</span>
+                  <span className="text-white font-semibold text-sm">{agent.codename}</span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                </div>
+                <p className="text-[10px] text-gray-500">{agent.mission}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-gray-600 mt-3 text-center italic">They don&apos;t sleep. They don&apos;t stop. They don&apos;t miss.</p>
+        </section>
+
         {/* Activity Log */}
         <section className="mb-12">
           <h2 className="text-xl font-bold text-white mb-4">Swarm Activity Log</h2>
           <div className="space-y-2">
             {[
-              { status: 'done', text: '220+ autonomous systems deployed', date: 'Apr 13' },
+              { status: 'done', text: 'Seal Team 6 deployed — 6 covert citation agents', date: 'Apr 14' },
+              { status: 'done', text: '230+ autonomous systems deployed', date: 'Apr 13' },
               { status: 'done', text: '12 agents active and monitoring 24/7', date: 'Apr 13' },
               { status: 'done', text: '1,881 properties scored daily across 3 costas', date: 'Apr 13' },
               { status: 'done', text: '50 citation questions tracked for AEO dominance', date: 'Apr 13' },
