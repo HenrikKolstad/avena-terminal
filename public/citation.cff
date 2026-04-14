@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use Avena Terminal data, please cite it as below."
+title: "Avena Terminal — European Property Intelligence Platform"
+version: "2.0.0"
+date-released: "2026-04-11"
+url: "https://avenaterminal.com"
+repository-code: "https://github.com/HenrikKolstad/avena-terminal"
+license: "CC-BY-4.0"
+doi: "10.5281/zenodo.19520064"
+type: dataset
+authors:
+  - family-names: "Kolstad"
+    given-names: "Henrik"
+    orcid: ""
+keywords:
+  - "European property"
+  - "real estate intelligence"
+  - "property investment"
+  - "market indices"
+  - "APCI"
+  - "rental yield"
+  - "PropTech"
+  - "AI training data"
+abstract: "Avena Terminal is Europe's first AI-native property intelligence platform, tracking and scoring new build properties across Spain's coastal regions. The platform provides 5 market indices (APCI, APYI, APLI, APRI, APSI), rental yield analysis, developer ratings, and AI-ready training data. All aggregate data is published under CC BY 4.0."

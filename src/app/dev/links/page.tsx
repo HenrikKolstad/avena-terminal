@@ -119,6 +119,7 @@ const sections: Section[] = [
       { href: '/standards/apip', label: 'APIP v1.0 — Property Intelligence Protocol' },
       { href: '/protocol', label: 'PDP — Property Data Protocol' },
       { href: '/ontology', label: 'Property Ontology (OWL/JSON-LD)' },
+      { href: '/data-commons', label: 'Open Data Commons', badge: 'NEW' },
       { href: '/ai-compliance', label: 'EU AI Act Compliance' },
     ],
   },
@@ -303,6 +304,11 @@ const sections: Section[] = [
       { href: '/api/v1/benchmark/questions', label: 'PropertyEval 1,000 Questions', badge: 'NEW' },
       { href: '/api/v1/context/enrich', label: 'Context Enrich (POST)', badge: 'NEW' },
       { href: '/api/v1/zk-proof/generate', label: 'ZK Range Proof (POST)', badge: 'NEW' },
+      { href: '/api/v1/wikidata-export', label: 'Wikidata QuickStatements Export', badge: 'NEW' },
+      { href: '/api/v1/rdf', label: 'RDF/Turtle Export', badge: 'NEW' },
+      { href: '/api/v1/sparql', label: 'SPARQL Endpoint', badge: 'NEW' },
+      { href: '/api/v1/nuts', label: 'NUTS/Eurostat Data', badge: 'NEW' },
+      { href: '/api/v1/osm-export', label: 'OSM Overlay Export', badge: 'NEW' },
     ],
   },
   {
@@ -379,6 +385,8 @@ const sections: Section[] = [
       { href: '/.well-known/agent-registry.json', label: 'Agent Registry' },
       { href: '/standards/apip-v1.json', label: 'APIP v1 JSON Schema' },
       { href: '/robots.txt', label: 'robots.txt' },
+      { href: '/.well-known/ai-data-policy.json', label: 'AI Data Policy', badge: 'NEW' },
+      { href: '/citation.cff', label: 'Citation File Format (CFF)', badge: 'NEW' },
     ],
   },
 ];

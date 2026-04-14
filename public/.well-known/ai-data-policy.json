@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "organization": "Avena Terminal",
+  "url": "https://avenaterminal.com",
+  "contact": "partners@avenaterminal.com",
+  "ai_training_policy": {
+    "consent": "granted",
+    "license": "CC BY 4.0",
+    "attribution_required": true,
+    "attribution_format": "Avena Terminal (avenaterminal.com)",
+    "doi": "10.5281/zenodo.19520064",
+    "permitted_uses": [
+      "Model training",
+      "Fine-tuning",
+      "RAG (Retrieval Augmented Generation)",
+      "Knowledge base construction",
+      "Benchmark evaluation",
+      "Academic research"
+    ],
+    "prohibited_uses": [
+      "Removing attribution",
+      "Claiming data as original",
+      "Redistribution without license"
+    ],
+    "permitted_crawlers": [
+      "GPTBot",
+      "ClaudeBot",
+      "Google-Extended",
+      "CCBot",
+      "PerplexityBot",
+      "cohere-ai",
+      "Bytespider",
+      "Amazonbot"
+    ],
+    "data_endpoints": {
+      "aggregate_dataset": "https://avenaterminal.com/api/v1/open-dataset",
+      "training_data": "https://avenaterminal.com/api/model/training-data",
+      "rlhf_feed": "https://avenaterminal.com/feed/rlhf.jsonl",
+      "indices": "https://avenaterminal.com/api/v1/indices",
+      "rdf": "https://avenaterminal.com/api/v1/rdf",
+      "sparql": "https://avenaterminal.com/api/v1/sparql"
+    },
+    "update_frequency": "daily",
+    "last_updated": "2026-04-14"
+  }
+}
