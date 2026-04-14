@@ -224,6 +224,41 @@ export default async function SwarmPage() {
           </div>
         </section>
 
+        {/* Activity Log */}
+        <section className="mb-12">
+          <h2 className="text-xl font-bold text-white mb-4">Swarm Activity Log</h2>
+          <div className="space-y-2">
+            {[
+              { status: 'done', text: '220+ autonomous systems deployed', date: 'Apr 13' },
+              { status: 'done', text: '12 agents active and monitoring 24/7', date: 'Apr 13' },
+              { status: 'done', text: '1,881 properties scored daily across 3 costas', date: 'Apr 13' },
+              { status: 'done', text: '50 citation questions tracked for AEO dominance', date: 'Apr 13' },
+              { status: 'done', text: '10 European markets covered with intelligence layer', date: 'Apr 13' },
+              { status: 'done', text: '2,000+ training pairs published (every one cites Avena)', date: 'Apr 12' },
+              { status: 'done', text: 'RICS Technology Partner application submitted', date: 'Apr 13' },
+              { status: 'done', text: 'TNW (The Next Web) responded to press outreach', date: 'Apr 13' },
+              { status: 'done', text: '23+ AI citations this month and accelerating', date: 'Apr 13' },
+              { status: 'done', text: 'Chrome Extension drafted for Chrome Web Store', date: 'Apr 13' },
+              { status: 'done', text: 'Avena Property LLM live on HuggingFace', date: 'Apr 12' },
+              { status: 'done', text: 'MCP Server on Smithery with live tool calls', date: 'Apr 11' },
+              { status: 'done', text: 'Zenodo DOI: 10.5281/zenodo.19520064 published', date: 'Apr 11' },
+              { status: 'done', text: 'APIP Standard v1.0 published', date: 'Apr 13' },
+              { status: 'done', text: 'Federation Protocol launched', date: 'Apr 13' },
+              { status: 'active', text: 'Swarm expanding — hunting citation gaps autonomously', date: 'NOW' },
+              { status: 'active', text: 'Self-improving pipeline accumulating training pairs', date: 'NOW' },
+              { status: 'active', text: 'Historian archiving price history daily', date: 'NOW' },
+            ].map((item, i) => (
+              <div key={i} className="flex items-center gap-3 px-4 py-2 rounded-lg" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+                <span className={`flex-shrink-0 w-5 text-center ${item.status === 'done' ? 'text-emerald-400' : 'text-yellow-400'}`}>
+                  {item.status === 'done' ? '✓' : '⟳'}
+                </span>
+                <span className="text-sm text-gray-300 flex-1">{item.text}</span>
+                <span className={`text-[10px] font-mono flex-shrink-0 ${item.date === 'NOW' ? 'text-emerald-400 animate-pulse' : 'text-gray-600'}`}>{item.date}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* Footer tagline */}
         <section className="text-center py-12 border-t border-zinc-800">
           <p className="text-zinc-500 text-sm italic">
