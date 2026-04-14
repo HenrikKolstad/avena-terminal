@@ -53,6 +53,11 @@ const CITIES: City[] = [
   { name: 'Valencia', slug: 'valencia', country: 'Spain', flag: '🇪🇸', pricePerM2: 2400, yoyChange: 10.8, bubbleScore: 41, affordability: 54, priceToIncome: 7.1, status: 'healthy', lat: 39.4699, lng: -0.3763 },
   { name: 'Tallinn', slug: 'tallinn', country: 'Estonia', flag: '🇪🇪', pricePerM2: 3500, yoyChange: 3.9, bubbleScore: 47, affordability: 43, priceToIncome: 8.7, status: 'healthy', lat: 59.4370, lng: 24.7536 },
   { name: 'Vilnius', slug: 'vilnius', country: 'Lithuania', flag: '🇱🇹', pricePerM2: 2900, yoyChange: 6.7, bubbleScore: 43, affordability: 49, priceToIncome: 7.8, status: 'healthy', lat: 54.6872, lng: 25.2797 },
+  { name: 'Alicante', slug: 'alicante', country: 'Spain', flag: '🇪🇸', pricePerM2: 1900, yoyChange: 10.5, bubbleScore: 35, affordability: 55, priceToIncome: 6.2, status: 'healthy', lat: 38.3452, lng: -0.4810 },
+  { name: 'Marbella', slug: 'marbella', country: 'Spain', flag: '🇪🇸', pricePerM2: 4500, yoyChange: 11.2, bubbleScore: 58, affordability: 30, priceToIncome: 12.8, status: 'warming', lat: 36.5099, lng: -4.8862 },
+  { name: 'Nice', slug: 'nice', country: 'France', flag: '🇫🇷', pricePerM2: 5500, yoyChange: 4.8, bubbleScore: 58, affordability: 28, priceToIncome: 13.5, status: 'warming', lat: 43.7102, lng: 7.2620 },
+  { name: 'Nicosia', slug: 'nicosia', country: 'Cyprus', flag: '🇨🇾', pricePerM2: 2000, yoyChange: 6.5, bubbleScore: 30, affordability: 52, priceToIncome: 7.2, status: 'healthy', lat: 35.1856, lng: 33.3823 },
+  { name: 'Split', slug: 'split', country: 'Croatia', flag: '🇭🇷', pricePerM2: 3000, yoyChange: 12.8, bubbleScore: 55, affordability: 35, priceToIncome: 11.5, status: 'warming', lat: 43.5081, lng: 16.4402 },
 ];
 
 /* ────────────────────────────────────────────────────────── */

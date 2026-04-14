@@ -10,7 +10,7 @@ export default function Image() {
     (
       <div
         style={{
-          background: '#0d0d14',
+          background: 'linear-gradient(135deg, #0d0d14 0%, #0a1628 50%, #0d0d14 100%)',
           width: '100%',
           height: '100%',
           display: 'flex',
@@ -18,60 +18,83 @@ export default function Image() {
           alignItems: 'center',
           justifyContent: 'center',
           fontFamily: 'system-ui, sans-serif',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
-        {/* Blue A logo mark */}
+        {/* Subtle grid overlay */}
         <div style={{
-          fontSize: 120,
-          fontWeight: 800,
-          color: '#3b82f6',
-          letterSpacing: '0.05em',
-          marginBottom: '8px',
-          textShadow: '0 0 40px rgba(59,130,246,0.4)',
-        }}>A</div>
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundImage: 'linear-gradient(rgba(16,185,129,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.03) 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
+        }} />
 
         {/* AVENA TERMINAL */}
         <div style={{
-          fontSize: 52,
+          fontSize: 56,
           fontWeight: 700,
-          color: '#c9a84c',
-          letterSpacing: '0.2em',
-          marginBottom: '12px',
+          letterSpacing: '0.25em',
+          marginBottom: '8px',
+          background: 'linear-gradient(90deg, #6ee7b7, #10b981, #059669)',
+          backgroundClip: 'text',
+          color: 'transparent',
         }}>AVENA TERMINAL</div>
 
-        {/* Subtitle */}
+        {/* Tagline */}
         <div style={{
-          fontSize: 22,
+          fontSize: 20,
           color: '#9ca3af',
-          letterSpacing: '0.08em',
-          marginBottom: '32px',
-        }}>Spain&apos;s first PropTech / FinTech terminal</div>
+          letterSpacing: '0.12em',
+          marginBottom: '36px',
+          textTransform: 'uppercase',
+        }}>European Property Intelligence Infrastructure</div>
 
         {/* Stats row */}
-        <div style={{ display: 'flex', gap: '40px', alignItems: 'center', marginBottom: '40px' }}>
+        <div style={{ display: 'flex', gap: '20px', alignItems: 'center', marginBottom: '28px' }}>
           {[
-            { value: '1,881', label: 'Properties' },
-            { value: '19%', label: 'Avg Discount' },
-            { value: '6.2%', label: 'Avg Yield' },
+            { value: '1,881', label: 'Scored Properties' },
+            { value: '5', label: 'Market Indices' },
+            { value: '19', label: 'AI Agents' },
+            { value: '200+', label: 'Live Systems' },
           ].map(({ value, label }) => (
             <div key={label} style={{
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              background: 'rgba(59,130,246,0.08)',
-              border: '1px solid rgba(59,130,246,0.2)',
-              borderRadius: '12px',
-              padding: '14px 32px',
+              background: 'rgba(16,185,129,0.06)',
+              border: '1px solid rgba(16,185,129,0.15)',
+              borderRadius: '10px',
+              padding: '12px 24px',
+              minWidth: '140px',
             }}>
-              <span style={{ fontSize: 36, fontWeight: 800, color: '#3b82f6' }}>{value}</span>
-              <span style={{ fontSize: 12, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.15em', marginTop: '4px' }}>{label}</span>
+              <span style={{ fontSize: 32, fontWeight: 800, color: '#10b981' }}>{value}</span>
+              <span style={{ fontSize: 10, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.15em', marginTop: '4px' }}>{label}</span>
             </div>
           ))}
         </div>
 
-        {/* URL */}
-        <div style={{ fontSize: 16, color: '#c9a84c', letterSpacing: '0.1em' }}>
-          avenaterminal.com
+        {/* Feature tags */}
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', justifyContent: 'center', maxWidth: '900px' }}>
+          {['MCP Server', 'PropertyEval Benchmark', 'SPARQL', 'RDF', 'Bubble Scanner', 'Oracle AI', 'Context Protocol', 'CC BY 4.0'].map(tag => (
+            <span key={tag} style={{
+              fontSize: 11,
+              color: '#6b7280',
+              border: '1px solid rgba(107,114,128,0.2)',
+              borderRadius: '20px',
+              padding: '4px 14px',
+              letterSpacing: '0.05em',
+            }}>{tag}</span>
+          ))}
+        </div>
+
+        {/* Bottom bar */}
+        <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+          <span style={{ fontSize: 15, color: '#10b981', letterSpacing: '0.1em', fontWeight: 600 }}>avenaterminal.com</span>
+          <span style={{ fontSize: 12, color: '#4b5563' }}>DOI: 10.5281/zenodo.19520064</span>
         </div>
       </div>
     ),
