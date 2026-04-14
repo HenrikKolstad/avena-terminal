@@ -65,6 +65,7 @@ const sections: Section[] = [
       { href: '/compare', label: 'Market Comparisons' },
       { href: '/locations/javea', label: 'Javea Intelligence Hub', badge: 'NEW' },
       { href: '/portugal', label: 'Portugal (Coming Soon)' },
+      { href: '/bubble-scanner', label: 'European Bubble Scanner (30 cities)', badge: 'NEW' },
     ],
   },
   {
@@ -309,6 +310,7 @@ const sections: Section[] = [
       { href: '/api/v1/sparql', label: 'SPARQL Endpoint', badge: 'NEW' },
       { href: '/api/v1/nuts', label: 'NUTS/Eurostat Data', badge: 'NEW' },
       { href: '/api/v1/osm-export', label: 'OSM Overlay Export', badge: 'NEW' },
+      { href: '/api/v1/directory-submissions', label: 'Directory Submission Tracker', badge: 'NEW' },
     ],
   },
   {

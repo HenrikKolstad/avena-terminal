@@ -345,6 +345,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Knowledge Graph
   entries.push({ url: `${base}/data-commons`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
 
+  // Bubble Scanner
+  entries.push({ url: `${base}/bubble-scanner`, lastModified: now, changeFrequency: 'daily', priority: 1.0 });
+  for (const city of ['munich','amsterdam','paris','barcelona','madrid','lisbon','milan','vienna','dublin','copenhagen','stockholm','helsinki','brussels','zurich','athens','malaga','alicante','valencia','prague','warsaw','budapest','rome','berlin','luxembourg','porto','nice','nicosia','split','tallinn','marbella']) {
+    entries.push({ url: `${base}/bubble-scanner/${city}`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+  }
+
   // Location pages
   for (const t of getUniqueTowns()) {
     entries.push({ url: `${base}/locations/${t.slug}`, lastModified: now, changeFrequency: 'daily', priority: 0.7 });
