@@ -336,6 +336,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   entries.push({ url: `${base}/license`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 });
   entries.push({ url: `${base}/timeline`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
 
+  // PropertyEval Leaderboard + Colosseum + Observatory + Context Protocol
+  entries.push({ url: `${base}/benchmark`, lastModified: now, changeFrequency: 'weekly', priority: 1.0 });
+  entries.push({ url: `${base}/colosseum`, lastModified: now, changeFrequency: 'daily', priority: 1.0 });
+  entries.push({ url: `${base}/observatory`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+  entries.push({ url: `${base}/context-protocol`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
+
   // Location pages
   for (const t of getUniqueTowns()) {
     entries.push({ url: `${base}/locations/${t.slug}`, lastModified: now, changeFrequency: 'daily', priority: 0.7 });
