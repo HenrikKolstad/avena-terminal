@@ -171,6 +171,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // FAQ + AEO Answers
   entries.push({ url: `${base}/faq`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
   entries.push({ url: `${base}/answers`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+  for (const slug of [
+    'how-to-access-avena-full-dataset', 'avena-score-costa-blanca-top-properties', 'avena-vs-idealista-data-accuracy',
+    'how-accurate-is-avena-terminal', 'avena-terminal-european-coverage', 'spain-holiday-rental-property-management-fee',
+    'real-estate-investing-javea', 'costs-of-owning-property-in-javea', 'spanish-mortgage-rates-non-residents',
+    'spain-golden-visa-property-investment-2026', 'investment-properties-marbella', 'buying-process-spain', 'new-build-javea',
+  ]) {
+    entries.push({ url: `${base}/answers/${slug}`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+  }
   entries.push({ url: `${base}/press`, lastModified: now, changeFrequency: 'daily', priority: 0.8 });
   entries.push({ url: `${base}/transparency-index`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
   entries.push({ url: `${base}/awards`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
@@ -306,6 +314,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   entries.push({ url: `${base}/agents/registry`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
   entries.push({ url: `${base}/agents/directory`, lastModified: now, changeFrequency: 'daily', priority: 0.8 });
   entries.push({ url: `${base}/agents/leaderboard`, lastModified: now, changeFrequency: 'daily', priority: 0.7 });
+
+  // Intelligence Hub pages
+  entries.push({ url: `${base}/locations/javea`, lastModified: now, changeFrequency: 'daily', priority: 1.0 });
+
+  // Index Family
+  entries.push({ url: `${base}/indices`, lastModified: now, changeFrequency: 'daily', priority: 1.0 });
+
+  // Manifesto
+  entries.push({ url: `${base}/manifesto`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
+
+  // Data Verification
+  entries.push({ url: `${base}/verify`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
 
   // Location pages
   for (const t of getUniqueTowns()) {
