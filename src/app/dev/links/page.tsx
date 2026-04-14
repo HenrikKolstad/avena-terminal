@@ -145,6 +145,11 @@ const sections: Section[] = [
     title: 'TRUST & IDENTITY',
     links: [
       { href: '/manifesto', label: 'The Autonomy Declaration', badge: 'NEW' },
+      { href: '/timeline', label: 'Invention Timeline (SHA-256 proofs)', badge: 'NEW' },
+      { href: '/verify', label: 'Data Verification', badge: 'NEW' },
+      { href: '/terms', label: 'Terms of Use', badge: 'NEW' },
+      { href: '/license', label: 'License (all asset types)', badge: 'NEW' },
+      { href: '/cite', label: 'Citation Generator (all systems)', badge: 'NEW' },
       { href: '/about/entity', label: 'Entity Profile' },
       { href: '/about/methodology', label: 'Methodology' },
       { href: '/about/accuracy', label: 'Accuracy' },
@@ -287,6 +292,10 @@ const sections: Section[] = [
       { href: '/api/v1/citation-score', label: 'Citation Score' },
       { href: '/api/v1/attribution', label: 'Attribution Tracking' },
       { href: '/api/v1/crawler-report', label: 'Crawler Report' },
+      { href: '/api/v1/watermark/verify', label: 'Watermark Verify (POST)', badge: 'NEW' },
+      { href: '/api/v1/copy-detection/report', label: 'Copy Detection Report', badge: 'NEW' },
+      { href: '/api/v1/copy-detection/notice', label: 'Copy Detection Notice Template', badge: 'NEW' },
+      { href: '/api/v1/trademark-brief', label: 'Trademark Filing Brief', badge: 'NEW' },
     ],
   },
   {

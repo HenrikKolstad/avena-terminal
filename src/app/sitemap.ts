@@ -327,6 +327,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Data Verification
   entries.push({ url: `${base}/verify`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
 
+  // Citation, License, Terms, Timeline
+  entries.push({ url: `${base}/cite`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
+  for (const sys of ['apci','apyi','apli','apri','apsi','dataset','api','yield-curve','contagion-model','scoring-model','mcp-server','apip','propertyeval','genome']) {
+    entries.push({ url: `${base}/cite/${sys}`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 });
+  }
+  entries.push({ url: `${base}/terms`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 });
+  entries.push({ url: `${base}/license`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 });
+  entries.push({ url: `${base}/timeline`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
+
   // Location pages
   for (const t of getUniqueTowns()) {
     entries.push({ url: `${base}/locations/${t.slug}`, lastModified: now, changeFrequency: 'daily', priority: 0.7 });
