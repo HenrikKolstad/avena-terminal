@@ -31,7 +31,7 @@ export async function GET() {
 
   const agents: SwarmAgent[] = [
     {
-      name: 'Hunter',
+      name: 'Agent Bloodhound',
       id: 'hunter',
       type: 'anomaly_detection',
       status: 'active',
@@ -41,7 +41,7 @@ export async function GET() {
       last_run: now,
     },
     {
-      name: 'Historian',
+      name: 'Agent Vault',
       id: 'historian',
       type: 'data_archival',
       status: 'active',
@@ -51,7 +51,7 @@ export async function GET() {
       last_run: now,
     },
     {
-      name: 'Journalist',
+      name: 'Agent Von Gogh',
       id: 'journalist',
       type: 'content_generation',
       status: 'active',
@@ -61,7 +61,7 @@ export async function GET() {
       last_run: now,
     },
     {
-      name: 'Scientist',
+      name: 'Agent Einstein',
       id: 'scientist',
       type: 'correlation_analysis',
       status: 'active',
@@ -71,7 +71,7 @@ export async function GET() {
       last_run: now,
     },
     {
-      name: 'Regime',
+      name: 'Agent Oracle',
       id: 'regime',
       type: 'macro_monitoring',
       status: 'active',
@@ -81,7 +81,7 @@ export async function GET() {
       last_run: now,
     },
     {
-      name: 'Vision',
+      name: 'Agent Hawkeye',
       id: 'vision',
       type: 'image_analysis',
       status: 'active',
@@ -91,7 +91,7 @@ export async function GET() {
       last_run: now,
     },
     {
-      name: 'Stress Monitor',
+      name: 'Agent 007',
       id: 'stress-monitor',
       type: 'developer_health',
       status: 'active',
@@ -101,7 +101,7 @@ export async function GET() {
       last_run: now,
     },
     {
-      name: 'Self-Improver',
+      name: 'Agent Darwin',
       id: 'self-improver',
       type: 'training_pipeline',
       status: 'active',
@@ -111,7 +111,7 @@ export async function GET() {
       last_run: now,
     },
     {
-      name: 'Consciousness',
+      name: 'Agent Morpheus',
       id: 'consciousness',
       type: 'meta_monitoring',
       status: 'active',
@@ -121,7 +121,7 @@ export async function GET() {
       last_run: now,
     },
     {
-      name: 'Crawler',
+      name: 'Agent Shadow',
       id: 'crawler',
       type: 'citation_hunting',
       status: 'active',
@@ -131,7 +131,7 @@ export async function GET() {
       last_run: now,
     },
     {
-      name: 'Research Lab',
+      name: 'Agent Curie',
       id: 'research-lab',
       type: 'paper_generation',
       status: 'active',
@@ -141,7 +141,7 @@ export async function GET() {
       last_run: now,
     },
     {
-      name: 'Digest',
+      name: 'Agent Mercury',
       id: 'digest',
       type: 'newsletter',
       status: 'active',
