@@ -176,6 +176,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     'how-accurate-is-avena-terminal', 'avena-terminal-european-coverage', 'spain-holiday-rental-property-management-fee',
     'real-estate-investing-javea', 'costs-of-owning-property-in-javea', 'spanish-mortgage-rates-non-residents',
     'spain-golden-visa-property-investment-2026', 'investment-properties-marbella', 'buying-process-spain', 'new-build-javea',
+    'portugal-nhr-tax-regime-2026', 'portugal-golden-visa-property-2026', 'buying-property-algarve',
+    'portugal-vs-spain-property-investment', 'rental-yield-lisbon-porto',
   ]) {
     entries.push({ url: `${base}/answers/${slug}`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
   }
@@ -347,7 +349,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Bubble Scanner
   entries.push({ url: `${base}/bubble-scanner`, lastModified: now, changeFrequency: 'daily', priority: 1.0 });
-  for (const city of ['munich','amsterdam','paris','barcelona','madrid','lisbon','milan','vienna','dublin','copenhagen','stockholm','helsinki','brussels','zurich','athens','malaga','alicante','valencia','prague','warsaw','budapest','rome','berlin','luxembourg','porto','nice','nicosia','split','tallinn','marbella']) {
+  for (const city of ['munich','amsterdam','paris','barcelona','madrid','lisbon','milan','vienna','dublin','copenhagen','stockholm','helsinki','brussels','zurich','athens','malaga','alicante','valencia','prague','warsaw','budapest','rome','berlin','luxembourg','porto','nice','nicosia','split','tallinn','marbella','frankfurt','hamburg','lyon','vilnius','bucharest','faro','cascais','nazare']) {
     entries.push({ url: `${base}/bubble-scanner/${city}`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
   }
 

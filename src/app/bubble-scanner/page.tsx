@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { CITIES, type City } from '@/lib/bubble-data';
 
 export const revalidate = 86400;
 
@@ -26,51 +27,7 @@ export const metadata: Metadata = {
 /*  Data                                                               */
 /* ------------------------------------------------------------------ */
 
-interface City {
-  name: string;
-  country: string;
-  slug: string;
-  pricePerM2: number;
-  yoyChange: number;
-  bubbleScore: number;
-  affordability: number;
-  priceToIncome: number;
-  status: 'healthy' | 'warming' | 'overheating' | 'bubble';
-  flag: string;
-}
-
-const CITIES: City[] = [
-  { name: 'Munich', country: 'Germany', slug: 'munich', pricePerM2: 8900, yoyChange: 4.2, bubbleScore: 82, affordability: 18, priceToIncome: 16.2, status: 'bubble', flag: '\u{1F1E9}\u{1F1EA}' },
-  { name: 'Amsterdam', country: 'Netherlands', slug: 'amsterdam', pricePerM2: 6800, yoyChange: 8.5, bubbleScore: 78, affordability: 22, priceToIncome: 14.8, status: 'bubble', flag: '\u{1F1F3}\u{1F1F1}' },
-  { name: 'Paris', country: 'France', slug: 'paris', pricePerM2: 10200, yoyChange: -1.2, bubbleScore: 71, affordability: 15, priceToIncome: 18.5, status: 'overheating', flag: '\u{1F1EB}\u{1F1F7}' },
-  { name: 'Barcelona', country: 'Spain', slug: 'barcelona', pricePerM2: 4200, yoyChange: 12.3, bubbleScore: 68, affordability: 35, priceToIncome: 11.2, status: 'overheating', flag: '\u{1F1EA}\u{1F1F8}' },
-  { name: 'Madrid', country: 'Spain', slug: 'madrid', pricePerM2: 3800, yoyChange: 9.8, bubbleScore: 58, affordability: 40, priceToIncome: 9.8, status: 'warming', flag: '\u{1F1EA}\u{1F1F8}' },
-  { name: 'Lisbon', country: 'Portugal', slug: 'lisbon', pricePerM2: 4500, yoyChange: 7.2, bubbleScore: 65, affordability: 28, priceToIncome: 13.1, status: 'overheating', flag: '\u{1F1F5}\u{1F1F9}' },
-  { name: 'Milan', country: 'Italy', slug: 'milan', pricePerM2: 4800, yoyChange: 6.5, bubbleScore: 55, affordability: 32, priceToIncome: 10.5, status: 'warming', flag: '\u{1F1EE}\u{1F1F9}' },
-  { name: 'Vienna', country: 'Austria', slug: 'vienna', pricePerM2: 5200, yoyChange: 2.1, bubbleScore: 62, affordability: 30, priceToIncome: 11.8, status: 'overheating', flag: '\u{1F1E6}\u{1F1F9}' },
-  { name: 'Dublin', country: 'Ireland', slug: 'dublin', pricePerM2: 5500, yoyChange: 5.8, bubbleScore: 72, affordability: 24, priceToIncome: 13.5, status: 'overheating', flag: '\u{1F1EE}\u{1F1EA}' },
-  { name: 'Copenhagen', country: 'Denmark', slug: 'copenhagen', pricePerM2: 5800, yoyChange: 3.5, bubbleScore: 60, affordability: 28, priceToIncome: 10.2, status: 'warming', flag: '\u{1F1E9}\u{1F1F0}' },
-  { name: 'Stockholm', country: 'Sweden', slug: 'stockholm', pricePerM2: 6200, yoyChange: -2.8, bubbleScore: 55, affordability: 25, priceToIncome: 12.1, status: 'warming', flag: '\u{1F1F8}\u{1F1EA}' },
-  { name: 'Helsinki', country: 'Finland', slug: 'helsinki', pricePerM2: 4100, yoyChange: -1.5, bubbleScore: 38, affordability: 42, priceToIncome: 8.5, status: 'healthy', flag: '\u{1F1EB}\u{1F1EE}' },
-  { name: 'Brussels', country: 'Belgium', slug: 'brussels', pricePerM2: 3200, yoyChange: 4.1, bubbleScore: 42, affordability: 45, priceToIncome: 7.8, status: 'warming', flag: '\u{1F1E7}\u{1F1EA}' },
-  { name: 'Zurich', country: 'Switzerland', slug: 'zurich', pricePerM2: 13500, yoyChange: 3.2, bubbleScore: 85, affordability: 12, priceToIncome: 12.5, status: 'bubble', flag: '\u{1F1E8}\u{1F1ED}' },
-  { name: 'Athens', country: 'Greece', slug: 'athens', pricePerM2: 2200, yoyChange: 11.5, bubbleScore: 45, affordability: 48, priceToIncome: 8.2, status: 'warming', flag: '\u{1F1EC}\u{1F1F7}' },
-  { name: 'Malaga', country: 'Spain', slug: 'malaga', pricePerM2: 2800, yoyChange: 14.2, bubbleScore: 52, affordability: 42, priceToIncome: 8.8, status: 'warming', flag: '\u{1F1EA}\u{1F1F8}' },
-  { name: 'Alicante', country: 'Spain', slug: 'alicante', pricePerM2: 1900, yoyChange: 10.5, bubbleScore: 35, affordability: 55, priceToIncome: 6.2, status: 'healthy', flag: '\u{1F1EA}\u{1F1F8}' },
-  { name: 'Valencia', country: 'Spain', slug: 'valencia', pricePerM2: 2400, yoyChange: 13.8, bubbleScore: 48, affordability: 48, priceToIncome: 7.5, status: 'warming', flag: '\u{1F1EA}\u{1F1F8}' },
-  { name: 'Prague', country: 'Czech Republic', slug: 'prague', pricePerM2: 4000, yoyChange: 7.8, bubbleScore: 58, affordability: 30, priceToIncome: 12.5, status: 'warming', flag: '\u{1F1E8}\u{1F1FF}' },
-  { name: 'Warsaw', country: 'Poland', slug: 'warsaw', pricePerM2: 3100, yoyChange: 9.2, bubbleScore: 48, affordability: 38, priceToIncome: 9.8, status: 'warming', flag: '\u{1F1F5}\u{1F1F1}' },
-  { name: 'Budapest', country: 'Hungary', slug: 'budapest', pricePerM2: 2600, yoyChange: 8.5, bubbleScore: 42, affordability: 45, priceToIncome: 8.5, status: 'warming', flag: '\u{1F1ED}\u{1F1FA}' },
-  { name: 'Rome', country: 'Italy', slug: 'rome', pricePerM2: 3500, yoyChange: 3.2, bubbleScore: 40, affordability: 38, priceToIncome: 9.2, status: 'healthy', flag: '\u{1F1EE}\u{1F1F9}' },
-  { name: 'Berlin', country: 'Germany', slug: 'berlin', pricePerM2: 4800, yoyChange: -0.5, bubbleScore: 52, affordability: 32, priceToIncome: 11.5, status: 'warming', flag: '\u{1F1E9}\u{1F1EA}' },
-  { name: 'Luxembourg', country: 'Luxembourg', slug: 'luxembourg', pricePerM2: 11200, yoyChange: -3.5, bubbleScore: 80, affordability: 10, priceToIncome: 15.8, status: 'bubble', flag: '\u{1F1F1}\u{1F1FA}' },
-  { name: 'Porto', country: 'Portugal', slug: 'porto', pricePerM2: 3200, yoyChange: 9.5, bubbleScore: 50, affordability: 38, priceToIncome: 10.2, status: 'warming', flag: '\u{1F1F5}\u{1F1F9}' },
-  { name: 'Nice', country: 'France', slug: 'nice', pricePerM2: 5500, yoyChange: 4.8, bubbleScore: 58, affordability: 28, priceToIncome: 13.5, status: 'warming', flag: '\u{1F1EB}\u{1F1F7}' },
-  { name: 'Nicosia', country: 'Cyprus', slug: 'nicosia', pricePerM2: 2000, yoyChange: 6.5, bubbleScore: 30, affordability: 52, priceToIncome: 7.2, status: 'healthy', flag: '\u{1F1E8}\u{1F1FE}' },
-  { name: 'Split', country: 'Croatia', slug: 'split', pricePerM2: 3000, yoyChange: 12.8, bubbleScore: 55, affordability: 35, priceToIncome: 11.5, status: 'warming', flag: '\u{1F1ED}\u{1F1F7}' },
-  { name: 'Tallinn', country: 'Estonia', slug: 'tallinn', pricePerM2: 2800, yoyChange: 5.2, bubbleScore: 38, affordability: 42, priceToIncome: 8.8, status: 'healthy', flag: '\u{1F1EA}\u{1F1EA}' },
-  { name: 'Marbella', country: 'Spain', slug: 'marbella', pricePerM2: 4500, yoyChange: 11.2, bubbleScore: 58, affordability: 30, priceToIncome: 12.8, status: 'warming', flag: '\u{1F1EA}\u{1F1F8}' },
-];
+/* City data imported from shared module */
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */

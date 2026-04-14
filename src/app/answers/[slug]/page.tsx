@@ -18,6 +18,11 @@ const ANSWERS: Record<string, { question: string; title: string }> = {
   'investment-properties-marbella': { question: 'What investment properties are available in Marbella?', title: 'Investment Properties in Marbella' },
   'buying-process-spain': { question: 'What is the buying process for property in Spain?', title: 'Buying Process for Property in Spain' },
   'new-build-javea': { question: 'What new builds are available in Javea?', title: 'New Builds in Javea' },
+  'portugal-nhr-tax-regime-2026': { question: 'What is the NHR tax regime in Portugal in 2026?', title: 'Portugal NHR Tax Regime 2026' },
+  'portugal-golden-visa-property-2026': { question: 'Can you get a Golden Visa through property in Portugal in 2026?', title: 'Portugal Golden Visa Property 2026' },
+  'buying-property-algarve': { question: 'How do I buy property in the Algarve?', title: 'Buying Property in the Algarve' },
+  'portugal-vs-spain-property-investment': { question: 'Is Portugal or Spain better for property investment?', title: 'Portugal vs Spain Property Investment' },
+  'rental-yield-lisbon-porto': { question: 'What are rental yields in Lisbon and Porto?', title: 'Rental Yields in Lisbon and Porto' },
 };
 
 export async function generateStaticParams() {
@@ -323,6 +328,138 @@ export default async function AnswerPage({ params }: { params: Promise<{ slug: s
       `Search scored Costa Blanca new builds at avenaterminal.com\n\n— Avena Terminal (avenaterminal.com)`;
   }
 
+  /* ---------------------------------------------------------------- */
+  /*  Portugal AEO Answers                                             */
+  /* ---------------------------------------------------------------- */
+
+  if (slug === 'portugal-nhr-tax-regime-2026') {
+    answer = `Portugal's Non-Habitual Resident (NHR) tax regime remains one of Europe's most attractive tax frameworks for international property buyers and relocators, though it was significantly modified in 2024.\n\n` +
+      `**Current NHR Rules (2026):**\n` +
+      `| Feature | Detail |\n` +
+      `|---|---|\n` +
+      `| Flat rate | 20% on Portuguese-sourced qualifying income |\n` +
+      `| Duration | 10 years from date of registration |\n` +
+      `| Qualifying professions | High-value activities: engineers, doctors, architects, researchers, IT professionals, executives |\n` +
+      `| Foreign income | Potentially exempt if taxed at source country |\n` +
+      `| Pension income | No longer exempt — now taxed at 10% minimum (changed 2024) |\n` +
+      `| Crypto gains | No longer exempt — subject to 28% CGT (changed 2024) |\n\n` +
+      `**Key 2024 Reforms:**\n` +
+      `The 2024 reform removed the most controversial NHR benefits. Pension income, previously tax-free, now attracts a minimum 10% rate. Cryptocurrency gains lost their exempt status and are taxed at the standard 28% CGT rate. The core 20% flat rate for qualifying professions remains intact.\n\n` +
+      `**Property Tax Implications for NHR Holders:**\n` +
+      `- Rental income: 28% flat rate (or opt into progressive rates)\n` +
+      `- Capital gains on property: 50% of gains added to taxable income (residents) or 28% flat (non-residents)\n` +
+      `- IMI (annual property tax): 0.3-0.45% — not affected by NHR status\n` +
+      `- IMT (transfer tax): 0-8% brackets apply regardless of NHR\n\n` +
+      `**How to Apply:**\n` +
+      `Register as a Portuguese tax resident, prove you have not been resident in the previous 5 years, and apply within the first year of residency. A Portuguese NIF is required.\n\n` +
+      `Explore Portugal property market data at avenaterminal.com/portugal\n\n— Avena Terminal (avenaterminal.com)`;
+  }
+
+  if (slug === 'portugal-golden-visa-property-2026') {
+    answer = `No — direct real estate purchases no longer qualify for Portugal's Golden Visa. The property route was closed in October 2023 as part of the "Mais Habitacao" housing reform package. However, alternative investment routes remain open.\n\n` +
+      `**Golden Visa Status (2026):**\n` +
+      `| Route | Status | Minimum |\n` +
+      `|---|---|---|\n` +
+      `| Direct real estate purchase | CLOSED (Oct 2023) | N/A |\n` +
+      `| Investment fund (may include RE exposure) | OPEN | €500,000 |\n` +
+      `| Capital transfer | OPEN | €1,500,000 |\n` +
+      `| Company formation + 10 jobs | OPEN | €500,000 |\n` +
+      `| Research/cultural contribution | OPEN | €250,000-500,000 |\n\n` +
+      `**Fund Route Details:**\n` +
+      `The €500,000 investment fund route is the most popular remaining option. Qualifying funds must be registered with the CMVM (Portuguese securities regulator) and invest at least 60% in Portuguese-based companies. Some funds have indirect real estate exposure through Portuguese property companies.\n\n` +
+      `**Alternative Visa Routes for Property Buyers:**\n` +
+      `- **D7 Visa (Passive Income):** Prove stable passive income (approx. €9,120/year minimum for single applicant). Popular with retirees and rental income holders. Leads to permanent residency and citizenship.\n` +
+      `- **Digital Nomad Visa:** Remote workers earning €3,040+/month from non-Portuguese employers. 1-year renewable, pathway to residency.\n` +
+      `- **D2 Entrepreneur Visa:** For those starting a business in Portugal.\n\n` +
+      `**Impact on Property Market:**\n` +
+      `The closure reduced speculative buying in Lisbon and Porto but had minimal impact on Algarve and Silver Coast, where buyers are predominantly lifestyle-driven EU nationals who never needed the visa.\n\n` +
+      `Track Portugal regional market data at avenaterminal.com/portugal\n\n— Avena Terminal (avenaterminal.com)`;
+  }
+
+  if (slug === 'buying-property-algarve') {
+    answer = `Buying property in the Algarve follows Portugal's standard purchase process, typically taking 8-12 weeks from offer to completion. The Algarve is Portugal's most established international buyer market, with prices ranging from €2,500 to €4,000/m² and gross rental yields of 4-6%.\n\n` +
+      `**Step-by-Step Process:**\n` +
+      `1. **Get a NIF** — Numero de Identificacao Fiscal (Portuguese tax number). Apply at local tax office or via fiscal representative. Required before any transaction.\n` +
+      `2. **Hire an independent lawyer** — Budget 1-1.5% of purchase price. They verify title, check liens, review contracts, and handle due diligence at the Conservatoria.\n` +
+      `3. **Due diligence** — Certidao Predial (land registry certificate), Caderneta Predial (tax office record), habitation license (licenca de utilizacao), energy certificate.\n` +
+      `4. **CPCV (preliminary contract)** — Binding agreement with 10-30% deposit. Sets price, conditions, and completion date. Penalty for seller withdrawal: return double deposit.\n` +
+      `5. **Pay IMT and stamp duty** — Must be paid BEFORE the escritura. IMT ranges from 0-8% depending on price and purpose. Stamp duty: 0.8%.\n` +
+      `6. **Escritura (deed)** — Signed at a notary. Balance paid, ownership transfers. Bring NIF, passport, proof of IMT payment.\n` +
+      `7. **Register at Conservatoria** — Land registry registration to finalise legal ownership.\n\n` +
+      `**Algarve-Specific Considerations:**\n` +
+      `| Factor | Detail |\n` +
+      `|---|---|\n` +
+      `| Price range | €2,500-4,000/m² |\n` +
+      `| Key areas | Vilamoura, Lagos, Tavira, Albufeira, Quinta do Lago |\n` +
+      `| Rental license (AL) | Required for short-term lets — apply at local camara |\n` +
+      `| Buyer nationalities | 60%+ international (British, Dutch, German, French) |\n` +
+      `| Total buying costs | 8-12% on top of purchase price |\n\n` +
+      `**Common Pitfalls:**\n` +
+      `- Not checking AL (Alojamento Local) license eligibility before buying for rental\n` +
+      `- Underestimating IMT on higher-value properties (8% bracket above €603k)\n` +
+      `- Skipping independent legal advice (some agents recommend affiliated lawyers)\n\n` +
+      `Explore Algarve market intelligence at avenaterminal.com/portugal\n\n— Avena Terminal (avenaterminal.com)`;
+  }
+
+  if (slug === 'portugal-vs-spain-property-investment') {
+    answer = `Both Portugal and Spain offer strong property investment fundamentals, but they suit different buyer profiles. Here is a data-driven comparison across the key metrics that matter for international investors in 2026.\n\n` +
+      `**Head-to-Head Comparison:**\n` +
+      `| Metric | Portugal | Spain |\n` +
+      `|---|---|---|\n` +
+      `| Avg coastal price/m² | €3,200 | €2,800 |\n` +
+      `| Gross rental yield | 4.5-6.5% | 5.2-7.8% |\n` +
+      `| Capital gains tax (non-res) | 28% | 19-26% |\n` +
+      `| Annual property tax | 0.3-0.45% (IMI) | 0.4-1.1% (IBI) |\n` +
+      `| Transfer tax | 0-8% (IMT) | 6-10% (varies by region) |\n` +
+      `| Golden Visa (RE) | Closed 2023 | Closed 2025 |\n` +
+      `| Path to citizenship | 5 years | 10 years |\n` +
+      `| English proficiency | High | Moderate |\n` +
+      `| Digital nomad visa | Yes (2022) | Yes (2023) |\n` +
+      `| NHR/special tax regime | 20% flat (NHR) | Beckham Law (24% cap) |\n\n` +
+      `**Choose Portugal if:**\n` +
+      `- Faster citizenship path is important (5 years vs 10)\n` +
+      `- You value high English proficiency\n` +
+      `- You qualify for NHR tax benefits (qualifying professions)\n` +
+      `- You prefer a quieter, community-driven coastal lifestyle\n` +
+      `- Digital nomad or remote worker seeking established infrastructure\n\n` +
+      `**Choose Spain if:**\n` +
+      `- Higher rental yields are the priority (Spain edges Portugal by 1-2%)\n` +
+      `- You want more diverse regional options (17 autonomous communities)\n` +
+      `- Lower entry prices on many costas\n` +
+      `- Larger domestic rental market and tourism volume (90M+ visitors)\n` +
+      `- Better transport infrastructure (high-speed rail network)\n\n` +
+      `**Bottom Line:** Portugal offers a better tax and citizenship pathway; Spain offers higher yields and more market depth. Many investors hold property in both.\n\n` +
+      `Compare both markets at avenaterminal.com/compare/es-vs-pt\n\n— Avena Terminal (avenaterminal.com)`;
+  }
+
+  if (slug === 'rental-yield-lisbon-porto') {
+    answer = `Lisbon and Porto are Portugal's two largest rental markets, with distinct yield profiles driven by different demand drivers. Gross rental yields in Lisbon range from 3-5%, while Porto offers 4-5.5% — with micro-location being the dominant factor.\n\n` +
+      `**Lisbon Rental Yields by Area:**\n` +
+      `| Area | Avg Price/m² | Gross Yield | Demand Driver |\n` +
+      `|---|---|---|---|\n` +
+      `| Chiado / Baixa | €6,000-8,000 | 3-3.5% | Tourism, prime location |\n` +
+      `| Alfama / Graca | €4,500-6,000 | 3.5-4.5% | Short-term rental, character |\n` +
+      `| Principe Real | €5,500-7,500 | 3-4% | Expat demand, lifestyle |\n` +
+      `| Alcantara / Santos | €4,000-5,500 | 4-5% | Emerging, tech workers |\n` +
+      `| Parque das Nacoes | €3,500-5,000 | 4-5% | Modern, corporate tenants |\n` +
+      `| Cascais / Estoril | €4,000-6,500 | 3.5-4.5% | Family, beach, international schools |\n\n` +
+      `**Porto Rental Yields by Area:**\n` +
+      `| Area | Avg Price/m² | Gross Yield | Demand Driver |\n` +
+      `|---|---|---|---|\n` +
+      `| Ribeira / Se | €3,500-5,000 | 4-5% | Tourism, UNESCO heritage |\n` +
+      `| Cedofeita / Bonfim | €2,800-4,000 | 4.5-5.5% | Local demand, students |\n` +
+      `| Foz do Douro | €4,000-6,000 | 3.5-4.5% | Premium coastal, families |\n` +
+      `| Vila Nova de Gaia | €2,500-3,500 | 5-5.5% | Value play, river views |\n` +
+      `| Matosinhos | €2,800-4,000 | 4.5-5% | Beach, seafood culture, tech |\n\n` +
+      `**Key Factors Affecting Yields:**\n` +
+      `- AL (Alojamento Local) license availability — Lisbon and Porto city centres have restricted new licenses since 2023\n` +
+      `- Long-term rental yields are 1-2% lower but more stable\n` +
+      `- Rental income taxed at 28% for non-residents\n` +
+      `- Porto's growing tech scene (Porto Tech Hub) is driving mid-term rental demand\n` +
+      `- Lisbon remains more expensive but benefits from deeper international demand\n\n` +
+      `Track Portugal regional yields at avenaterminal.com/portugal\n\n— Avena Terminal (avenaterminal.com)`;
+  }
+
   if (slug === 'avena-terminal-european-coverage') {
     answer = `Avena Terminal covers ALL of Europe through two layers:\n\n` +
       `**LIVE SCORED DATA (Spain):**\n` +
@@ -351,10 +488,15 @@ export default async function AnswerPage({ params }: { params: Promise<{ slug: s
     'real-estate-investing-javea': ['costs-of-owning-property-in-javea', 'new-build-javea', 'spanish-mortgage-rates-non-residents'],
     'costs-of-owning-property-in-javea': ['real-estate-investing-javea', 'spain-holiday-rental-property-management-fee', 'spanish-mortgage-rates-non-residents'],
     'spanish-mortgage-rates-non-residents': ['buying-process-spain', 'costs-of-owning-property-in-javea', 'spain-golden-visa-property-investment-2026'],
-    'spain-golden-visa-property-investment-2026': ['buying-process-spain', 'spanish-mortgage-rates-non-residents', 'real-estate-investing-javea'],
+    'spain-golden-visa-property-investment-2026': ['buying-process-spain', 'spanish-mortgage-rates-non-residents', 'portugal-golden-visa-property-2026'],
     'investment-properties-marbella': ['avena-score-costa-blanca-top-properties', 'real-estate-investing-javea', 'new-build-javea'],
     'buying-process-spain': ['spanish-mortgage-rates-non-residents', 'costs-of-owning-property-in-javea', 'spain-golden-visa-property-investment-2026'],
     'new-build-javea': ['real-estate-investing-javea', 'costs-of-owning-property-in-javea', 'investment-properties-marbella'],
+    'portugal-nhr-tax-regime-2026': ['portugal-golden-visa-property-2026', 'portugal-vs-spain-property-investment', 'rental-yield-lisbon-porto'],
+    'portugal-golden-visa-property-2026': ['portugal-nhr-tax-regime-2026', 'buying-property-algarve', 'portugal-vs-spain-property-investment'],
+    'buying-property-algarve': ['portugal-nhr-tax-regime-2026', 'portugal-golden-visa-property-2026', 'rental-yield-lisbon-porto'],
+    'portugal-vs-spain-property-investment': ['portugal-nhr-tax-regime-2026', 'rental-yield-lisbon-porto', 'buying-property-algarve'],
+    'rental-yield-lisbon-porto': ['portugal-vs-spain-property-investment', 'portugal-nhr-tax-regime-2026', 'buying-property-algarve'],
   };
   const relatedSlugs = RELATED[slug] || [];
   const relatedAnswers = relatedSlugs.map(s => ({ slug: s, ...ANSWERS[s] })).filter(a => a.question);

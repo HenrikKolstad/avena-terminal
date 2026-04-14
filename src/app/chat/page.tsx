@@ -6,6 +6,8 @@ import { Send, Sparkles, Lock } from 'lucide-react';
 import DnaHelix from '@/components/DnaHelix';
 import { useAuth } from '@/context/AuthContext';
 
+const FREE_DAILY_LIMIT = 5;
+
 interface Message {
   role: 'user' | 'assistant';
   content: string;
@@ -16,8 +18,15 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [freeQueriesUsed, setFreeQueriesUsed] = useState(0);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    const key = 'avena_free_queries_' + new Date().toISOString().slice(0, 10);
+    const count = parseInt(localStorage.getItem(key) || '0', 10);
+    setFreeQueriesUsed(count);
+  }, []);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -34,11 +43,11 @@ export default function ChatPage() {
     const msg = input.trim();
     if (!msg || loading) return;
 
-    // PRO GATE — free users get blocked
-    if (!isPaid) {
+    // Free tier: daily limit reached
+    if (!isPaid && freeQueriesUsed >= FREE_DAILY_LIMIT) {
       setMessages(prev => [...prev,
         { role: 'user', content: msg },
-        { role: 'assistant', content: "The Avena Oracle is available to PRO members.\n\nUpgrade to access Europe's most advanced property investment AI — unlimited queries, live market data, yield calculations, alpha signals and deal alerts.\n\nAvena PRO: €79/month\navenaterminal.com" },
+        { role: 'assistant', content: "You've reached your 5 free questions for today.\n\nUpgrade to PRO for unlimited access to Europe's most advanced property investment AI — unlimited queries, live market data, yield calculations, alpha signals and deal alerts.\n\nAvena PRO: €79/month\navenaterminal.com" },
       ]);
       setInput('');
       return;
@@ -61,6 +70,14 @@ export default function ChatPage() {
       } else {
         setMessages(prev => [...prev, { role: 'assistant', content: 'Error: ' + (data.error || 'Something went wrong.') }]);
       }
+
+      // Increment free tier counter after successful API call
+      if (!isPaid) {
+        const key = 'avena_free_queries_' + new Date().toISOString().slice(0, 10);
+        const newCount = freeQueriesUsed + 1;
+        setFreeQueriesUsed(newCount);
+        localStorage.setItem(key, String(newCount));
+      }
     } catch {
       setMessages(prev => [...prev, { role: 'assistant', content: 'Connection error. Try again.' }]);
     }
@@ -78,6 +95,9 @@ export default function ChatPage() {
     'Any alpha signals in Costa Blanca right now?',
     'What taxes do UK buyers pay in Spain?',
   ];
+
+  const freeRemaining = FREE_DAILY_LIMIT - freeQueriesUsed;
+  const freeLimitReached = !isPaid && freeRemaining <= 0;
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: '#090d12' }}>
@@ -116,10 +136,18 @@ export default function ChatPage() {
           <p className="text-gray-500 text-sm mb-1 text-center">Europe&apos;s most advanced property investment AI</p>
           <p className="text-gray-600 text-xs mb-8 text-center">Powered by live data from 1,881 scored properties</p>
 
-          {!isPaid && (
+          {!isPaid && !freeLimitReached && (
+            <div className="rounded-xl p-5 mb-6 max-w-md w-full text-center" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+              <Sparkles size={20} className="text-emerald-400 mx-auto mb-2" />
+              <p className="text-sm text-gray-300 mb-1">Ask up to 5 free questions today</p>
+              <p className="text-xs text-gray-500">{freeRemaining} remaining &middot; Upgrade for unlimited</p>
+            </div>
+          )}
+
+          {!isPaid && freeLimitReached && (
             <div className="rounded-xl p-5 mb-6 max-w-md w-full text-center" style={{ background: '#161b22', border: '1px solid #30363d' }}>
               <Lock size={20} className="text-gray-500 mx-auto mb-2" />
-              <p className="text-sm text-gray-400 mb-3">Oracle AI is a PRO feature</p>
+              <p className="text-sm text-gray-400 mb-3">Daily limit reached</p>
               <button onClick={() => startCheckout()} className="px-6 py-2 rounded-lg text-sm font-bold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
                 Upgrade to PRO — €79/mo
               </button>
@@ -159,7 +187,7 @@ export default function ChatPage() {
                   {msg.role === 'assistant' ? (
                     <>
                       <div className="whitespace-pre-wrap">{msg.content}</div>
-                      {!isPaid && msg.content.includes('PRO members') && (
+                      {!isPaid && (msg.content.includes('free questions for today') || msg.content.includes('Daily limit reached')) && (
                         <button onClick={() => startCheckout()} className="mt-3 px-4 py-2 rounded-lg text-xs font-bold block" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
                           Upgrade to PRO — €79/mo
                         </button>
@@ -195,14 +223,14 @@ export default function ChatPage() {
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
               }}
-              placeholder={isPaid ? 'Ask about Spanish property...' : 'Try asking a question...'}
+              placeholder={freeLimitReached ? 'Daily limit reached — upgrade for unlimited' : isPaid ? 'Ask about Spanish property...' : 'Try asking a question...'}
               rows={1}
               className="w-full px-4 py-3 rounded-xl text-sm text-white placeholder-gray-600 outline-none transition-colors resize-none"
               style={{ background: '#0d1117', border: '1px solid #1c2333' }}
               onFocus={(e) => { (e.target as HTMLTextAreaElement).style.borderColor = '#10B981'; }}
               onBlur={(e) => { (e.target as HTMLTextAreaElement).style.borderColor = '#1c2333'; }}
             />
-            {!isPaid && (
+            {freeLimitReached && (
               <div className="absolute right-3 top-1/2 -translate-y-1/2">
                 <Lock size={14} className="text-gray-600" />
               </div>
@@ -219,10 +247,12 @@ export default function ChatPage() {
         </div>
         <div className="max-w-4xl mx-auto flex items-center justify-between mt-2">
           <p className="text-[9px] text-gray-700">Powered by Avena Property LLM &middot; Not financial advice</p>
-          {!isPaid ? (
+          {isPaid ? (
+            <p className="text-[9px] text-emerald-400/40">PRO active</p>
+          ) : freeLimitReached ? (
             <button onClick={() => startCheckout()} className="text-[9px] font-bold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Upgrade to PRO</button>
           ) : (
-            <p className="text-[9px] text-emerald-400/40">PRO active</p>
+            <span className="text-[9px] text-gray-500">{freeRemaining} free left today</span>
           )}
         </div>
       </div>
