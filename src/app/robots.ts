@@ -22,6 +22,7 @@ export default function robots(): MetadataRoute.Robots {
       'https://avenaterminal.com/sitemap.xml',
       'https://avenaterminal.com/sitemap-news.xml',
       'https://avenaterminal.com/sitemap-images.xml',
+      'https://avenaterminal.com/sitemap-ai.xml',
     ],
     host: 'https://avenaterminal.com',
   };

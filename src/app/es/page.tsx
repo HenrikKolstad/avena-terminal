@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     "Analiza y compara 1.881 obra nueva en Costa Blanca, Costa Calida y Costa del Sol. Rentabilidad, precio por m2 y puntuacion de inversion. El primer terminal PropTech de Espana.",
   alternates: {
     canonical: "https://avenaterminal.com/es",
-    languages: { en: "https://avenaterminal.com" },
+    languages: { en: "https://avenaterminal.com", de: "https://avenaterminal.com/de", nl: "https://avenaterminal.com/nl" },
   },
   openGraph: {
     title: "Inversiones Inmobiliarias Espana — Avena Terminal",

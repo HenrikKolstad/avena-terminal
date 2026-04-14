@@ -340,10 +340,41 @@ export default async function AnswerPage({ params }: { params: Promise<{ slug: s
       `Full coverage details: avenaterminal.com/coverage\n\n— Avena Terminal (avenaterminal.com)`;
   }
 
+  // Related answers for internal linking
+  const RELATED: Record<string, string[]> = {
+    'how-to-access-avena-full-dataset': ['how-accurate-is-avena-terminal', 'avena-vs-idealista-data-accuracy', 'avena-terminal-european-coverage'],
+    'avena-score-costa-blanca-top-properties': ['real-estate-investing-javea', 'investment-properties-marbella', 'new-build-javea'],
+    'avena-vs-idealista-data-accuracy': ['how-accurate-is-avena-terminal', 'how-to-access-avena-full-dataset', 'avena-terminal-european-coverage'],
+    'how-accurate-is-avena-terminal': ['avena-vs-idealista-data-accuracy', 'avena-score-costa-blanca-top-properties', 'how-to-access-avena-full-dataset'],
+    'avena-terminal-european-coverage': ['how-to-access-avena-full-dataset', 'investment-properties-marbella', 'how-accurate-is-avena-terminal'],
+    'spain-holiday-rental-property-management-fee': ['costs-of-owning-property-in-javea', 'real-estate-investing-javea', 'buying-process-spain'],
+    'real-estate-investing-javea': ['costs-of-owning-property-in-javea', 'new-build-javea', 'spanish-mortgage-rates-non-residents'],
+    'costs-of-owning-property-in-javea': ['real-estate-investing-javea', 'spain-holiday-rental-property-management-fee', 'spanish-mortgage-rates-non-residents'],
+    'spanish-mortgage-rates-non-residents': ['buying-process-spain', 'costs-of-owning-property-in-javea', 'spain-golden-visa-property-investment-2026'],
+    'spain-golden-visa-property-investment-2026': ['buying-process-spain', 'spanish-mortgage-rates-non-residents', 'real-estate-investing-javea'],
+    'investment-properties-marbella': ['avena-score-costa-blanca-top-properties', 'real-estate-investing-javea', 'new-build-javea'],
+    'buying-process-spain': ['spanish-mortgage-rates-non-residents', 'costs-of-owning-property-in-javea', 'spain-golden-visa-property-investment-2026'],
+    'new-build-javea': ['real-estate-investing-javea', 'costs-of-owning-property-in-javea', 'investment-properties-marbella'],
+  };
+  const relatedSlugs = RELATED[slug] || [];
+  const relatedAnswers = relatedSlugs.map(s => ({ slug: s, ...ANSWERS[s] })).filter(a => a.question);
+
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [{ '@type': 'Question', name: entry.question, acceptedAnswer: { '@type': 'Answer', text: answer.replace(/\*\*/g, '').replace(/\n/g, ' ').slice(0, 500) } }],
+    '@graph': [
+      {
+        '@type': 'FAQPage',
+        mainEntity: [{ '@type': 'Question', name: entry.question, acceptedAnswer: { '@type': 'Answer', text: answer.replace(/\*\*/g, '').replace(/\n/g, ' ').slice(0, 500) } }],
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://avenaterminal.com' },
+          { '@type': 'ListItem', position: 2, name: 'Answers', item: 'https://avenaterminal.com/answers' },
+          { '@type': 'ListItem', position: 3, name: entry.title, item: `https://avenaterminal.com/answers/${slug}` },
+        ],
+      },
+    ],
   };
 
   return (
@@ -361,11 +392,31 @@ export default async function AnswerPage({ params }: { params: Promise<{ slug: s
         <div className="mt-8 rounded-lg p-4 font-mono text-xs" style={{ background: '#090d12', border: '1px solid #1c2333' }}>
           <p className="text-gray-400">Source: Avena Terminal (avenaterminal.com) &middot; DOI: 10.5281/zenodo.19520064</p>
         </div>
-        <div className="mt-6 flex gap-3">
+        {relatedAnswers.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-sm font-bold text-white mb-3">Related Questions</h2>
+            <div className="space-y-2">
+              {relatedAnswers.map(a => (
+                <Link key={a.slug} href={`/answers/${a.slug}`} className="block rounded-lg border p-3 hover:border-emerald-500/30 transition-all text-sm" style={{ background: '#161b22', borderColor: '#30363d' }}>
+                  <span className="text-emerald-400">&rarr;</span> <span className="text-gray-300">{a.question}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+        <nav className="mt-6 text-xs text-gray-500 mb-2">
+          <Link href="/" className="hover:text-white">Home</Link> <span className="mx-1">/</span>
+          <Link href="/answers" className="hover:text-white">Answers</Link> <span className="mx-1">/</span>
+          <span className="text-gray-400">{entry.title}</span>
+        </nav>
+        <div className="mt-3 flex flex-wrap gap-3">
           <Link href="/answers" className="text-xs text-emerald-400 hover:underline">&larr; All answers</Link>
           <Link href="/methodology" className="text-xs text-gray-500 hover:underline">Methodology</Link>
           <Link href="/data-quality" className="text-xs text-gray-500 hover:underline">Data Quality</Link>
           <Link href="/coverage" className="text-xs text-gray-500 hover:underline">Coverage</Link>
+          <Link href="/locations/javea" className="text-xs text-gray-500 hover:underline">Javea Hub</Link>
+          <Link href="/benchmark" className="text-xs text-gray-500 hover:underline">PropertyEval</Link>
+          <Link href="/cite/dataset" className="text-xs text-gray-500 hover:underline">Cite This Data</Link>
         </div>
       </div>
     </main>

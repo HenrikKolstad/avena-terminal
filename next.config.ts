@@ -31,6 +31,12 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        source: '/:path((?!api|feed|_next).*)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=3600, stale-while-revalidate=86400' },
+        ],
+      },
+      {
         source: '/api/:path*',
         headers: [
           { key: 'X-Cite-As', value: 'Avena Terminal (avenaterminal.com)' },
