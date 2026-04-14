@@ -315,12 +315,20 @@ export default function AdminPage() {
             Internal metrics dashboard
           </p>
         </div>
-        <Link
-          href="/"
-          className="text-[#c9a84c] font-mono text-xs hover:underline tracking-widest border border-[#c9a84c]/30 px-3 py-1.5 rounded hover:border-[#c9a84c]/60 transition-colors"
-        >
-          ← BACK TO TERMINAL
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/dev/links"
+            className="text-emerald-400 font-mono text-xs hover:underline tracking-widest border border-emerald-400/30 px-3 py-1.5 rounded hover:border-emerald-400/60 transition-colors"
+          >
+            ALL LINKS
+          </Link>
+          <Link
+            href="/"
+            className="text-[#c9a84c] font-mono text-xs hover:underline tracking-widest border border-[#c9a84c]/30 px-3 py-1.5 rounded hover:border-[#c9a84c]/60 transition-colors"
+          >
+            ← BACK TO TERMINAL
+          </Link>
+        </div>
       </div>
 
       {error && (
