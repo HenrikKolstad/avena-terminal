@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 
-export const revalidate = 86400;
+export const revalidate = 28800;
 
 export const metadata: Metadata = {
   title: 'Agent Swarm — Live Intelligence Network | Avena Terminal',
