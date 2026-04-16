@@ -47,10 +47,6 @@ interface SwarmData {
   last_health_check: string;
 }
 
-interface MessagesData {
-  messages: AgentMessage[];
-}
-
 // Launch date — when the swarm went live
 const LAUNCH_DATE = new Date('2026-04-08T06:00:00Z');
 

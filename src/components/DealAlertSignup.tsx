@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type CSSProperties, type FormEvent } from 'react';
 
 const REGIONS = [
   { value: '', label: 'All regions' },
@@ -32,7 +32,7 @@ export default function DealAlertSignup() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setStatus('loading');
     setErrorMsg('');
@@ -316,7 +316,7 @@ export default function DealAlertSignup() {
 }
 
 // Shared styles
-const labelStyle: React.CSSProperties = {
+const labelStyle: CSSProperties = {
   display: 'block',
   color: '#888',
   fontSize: 11,
@@ -325,7 +325,7 @@ const labelStyle: React.CSSProperties = {
   marginBottom: 6,
 };
 
-const inputStyle: React.CSSProperties = {
+const inputStyle: CSSProperties = {
   width: '100%',
   background: '#13131f',
   border: '1px solid #1e1e2e',
