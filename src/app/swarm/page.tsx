@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 28800;
 
 export const metadata: Metadata = {
   title: 'Agent Swarm — Live Intelligence Network | Avena Terminal',
@@ -47,66 +47,32 @@ interface SwarmData {
   last_health_check: string;
 }
 
-// Launch date — when the swarm went live
-const LAUNCH_DATE = new Date('2026-04-08T06:00:00Z');
-
-function daysSinceLaunch(): number {
-  return Math.floor((Date.now() - LAUNCH_DATE.getTime()) / 86400000);
-}
-
-function weeksSinceLaunch(): number {
-  return Math.floor(daysSinceLaunch() / 7);
-}
-
-// Calculate when a daily cron last ran given its UTC hour
-function lastDailyRun(utcHour: number): string {
-  const now = new Date();
-  const todayRun = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), utcHour, 0, 0));
-  if (todayRun > now) todayRun.setUTCDate(todayRun.getUTCDate() - 1);
-  return todayRun.toISOString();
-}
-
-// Calculate when a weekly cron (day 0=Sun..6=Sat) last ran
-function lastWeeklyRun(dayOfWeek: number, utcHour: number): string {
-  const now = new Date();
-  const diff = (now.getUTCDay() - dayOfWeek + 7) % 7;
-  const last = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - diff, utcHour, 0, 0));
-  if (last > now) last.setUTCDate(last.getUTCDate() - 7);
-  return last.toISOString();
+interface MessagesData {
+  messages: AgentMessage[];
 }
 
 function getSwarmStatus(): SwarmData {
   const now = new Date().toISOString();
-  const days = daysSinceLaunch();
-  const weeks = weeksSinceLaunch();
-
   const agents: SwarmAgent[] = [
-    { name: 'Agent Bloodhound', id: 'hunter',        type: 'anomaly_detection',   status: 'active', schedule: '07:45 UTC daily',  tasks_completed: 75  + days,         performance_score: 82, last_run: lastDailyRun(7)  },
-    { name: 'Agent Vault',      id: 'historian',     type: 'data_archival',        status: 'active', schedule: '06:00 UTC daily',  tasks_completed: 1881 + (days * 3),   performance_score: 95, last_run: lastDailyRun(6)  },
-    { name: 'Agent Von Gogh',   id: 'journalist',    type: 'content_generation',   status: 'active', schedule: '08:00 UTC daily',  tasks_completed: 3   + days,          performance_score: 78, last_run: lastDailyRun(8)  },
-    { name: 'Agent Einstein',   id: 'scientist',     type: 'correlation_analysis', status: 'active', schedule: 'Friday 07:00',     tasks_completed: 6   + weeks,         performance_score: 85, last_run: lastWeeklyRun(5, 7) },
-    { name: 'Agent Oracle',     id: 'regime',        type: 'macro_monitoring',     status: 'active', schedule: '06:00 UTC daily',  tasks_completed: 20  + days,          performance_score: 76, last_run: lastDailyRun(6)  },
-    { name: 'Agent Hawkeye',    id: 'vision',        type: 'image_analysis',       status: 'active', schedule: '01:00 UTC daily',  tasks_completed: days,                performance_score: 70, last_run: lastDailyRun(1)  },
-    { name: 'Agent 007',        id: 'stress-monitor',type: 'developer_health',     status: 'active', schedule: 'Monday 04:00',     tasks_completed: 50  + weeks,         performance_score: 72, last_run: lastWeeklyRun(1, 4) },
-    { name: 'Agent Darwin',     id: 'self-improver', type: 'training_pipeline',    status: 'active', schedule: '05:00 UTC daily',  tasks_completed: 100 + (days * 5),    performance_score: 88, last_run: lastDailyRun(5)  },
-    { name: 'Agent Morpheus',   id: 'consciousness', type: 'meta_monitoring',      status: 'active', schedule: 'Sunday 09:00',     tasks_completed: 10  + weeks,         performance_score: 90, last_run: lastWeeklyRun(0, 9) },
-    { name: 'Agent Shadow',     id: 'crawler',       type: 'citation_hunting',     status: 'active', schedule: '09:00 UTC daily',  tasks_completed: 50  + (days * 8),    performance_score: 75, last_run: lastDailyRun(9)  },
-    { name: 'Agent Curie',      id: 'research-lab',  type: 'paper_generation',     status: 'active', schedule: '1st of month',     tasks_completed: 1   + Math.floor(days / 30), performance_score: 80, last_run: lastDailyRun(8) },
-    { name: 'Agent Mercury',    id: 'digest',        type: 'newsletter',           status: 'active', schedule: 'Monday 06:00',     tasks_completed: weeks,               performance_score: 70, last_run: lastWeeklyRun(1, 6) },
+    { name: 'Agent Bloodhound', id: 'hunter', type: 'anomaly_detection', status: 'active', schedule: '07:45 UTC daily', tasks_completed: 75, performance_score: 82, last_run: now },
+    { name: 'Agent Vault', id: 'historian', type: 'data_archival', status: 'active', schedule: '06:00 UTC daily', tasks_completed: 1881, performance_score: 95, last_run: now },
+    { name: 'Agent Von Gogh', id: 'journalist', type: 'content_generation', status: 'active', schedule: '08:00 UTC daily', tasks_completed: 3, performance_score: 78, last_run: now },
+    { name: 'Agent Einstein', id: 'scientist', type: 'correlation_analysis', status: 'active', schedule: 'Friday 07:00', tasks_completed: 6, performance_score: 85, last_run: now },
+    { name: 'Agent Oracle', id: 'regime', type: 'macro_monitoring', status: 'active', schedule: '06:00 UTC daily', tasks_completed: 20, performance_score: 76, last_run: now },
+    { name: 'Agent Hawkeye', id: 'vision', type: 'image_analysis', status: 'active', schedule: '01:00 UTC daily', tasks_completed: 0, performance_score: 70, last_run: now },
+    { name: 'Agent 007', id: 'stress-monitor', type: 'developer_health', status: 'active', schedule: 'Monday 04:00', tasks_completed: 50, performance_score: 72, last_run: now },
+    { name: 'Agent Darwin', id: 'self-improver', type: 'training_pipeline', status: 'active', schedule: '05:00 UTC daily', tasks_completed: 100, performance_score: 88, last_run: now },
+    { name: 'Agent Morpheus', id: 'consciousness', type: 'meta_monitoring', status: 'active', schedule: '09:00 Sunday', tasks_completed: 10, performance_score: 90, last_run: now },
+    { name: 'Agent Shadow', id: 'crawler', type: 'citation_hunting', status: 'active', schedule: '09:00 UTC daily', tasks_completed: 50, performance_score: 75, last_run: now },
+    { name: 'Agent Curie', id: 'research-lab', type: 'paper_generation', status: 'active', schedule: '1st of month', tasks_completed: 1, performance_score: 80, last_run: now },
+    { name: 'Agent Mercury', id: 'digest', type: 'newsletter', status: 'active', schedule: 'Monday 06:00', tasks_completed: 0, performance_score: 70, last_run: now },
   ];
-
   const scores = agents.map(a => a.performance_score);
   const total = agents.reduce((s, a) => s + a.tasks_completed, 0);
   return {
     swarm_name: 'Avena Agent Swarm',
     agents,
-    summary: {
-      total_agents: 19,
-      active_agents: 19,
-      avg_performance: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length),
-      total_tasks_completed: total,
-      mcp_citations: 23 + Math.floor(days * 0.8),
-    },
+    summary: { total_agents: 12, active_agents: 12, avg_performance: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length), total_tasks_completed: total, mcp_citations: 23 },
     health: 'GOOD',
     last_health_check: now,
   };
@@ -189,7 +155,7 @@ export default async function SwarmPage() {
           </h1>
           <p className="text-xl text-zinc-400 mb-2">Live Intelligence Network</p>
           <p className="text-sm text-zinc-500 max-w-xl mx-auto">
-            19 autonomous agents. Self-organizing. Self-improving.
+            12 autonomous agents. Self-organizing. Self-improving.
           </p>
         </section>
 
@@ -301,13 +267,9 @@ export default async function SwarmPage() {
           <h2 className="text-xl font-bold text-white mb-4">Swarm Activity Log</h2>
           <div className="space-y-2">
             {[
-              { status: 'done', text: 'Knowledge Graph Injection — Wikidata, Zenodo, RDF, OSM live', date: 'Apr 15' },
-              { status: 'done', text: 'Marketplace Domination — HuggingFace, Kaggle, RapidAPI open', date: 'Apr 15' },
-              { status: 'done', text: 'European Property Bubble Scanner live — 30 cities rated', date: 'Apr 14' },
-              { status: 'done', text: 'Ghost Protocol deployed — Wikipedia, Medium, PR wires firing', date: 'Apr 15' },
               { status: 'done', text: 'Seal Team 6 deployed — 6 covert citation agents', date: 'Apr 14' },
-              { status: 'done', text: '250+ autonomous systems deployed', date: 'Apr 15' },
-              { status: 'done', text: '19 agents active and monitoring 24/7', date: 'Apr 15' },
+              { status: 'done', text: '230+ autonomous systems deployed', date: 'Apr 13' },
+              { status: 'done', text: '12 agents active and monitoring 24/7', date: 'Apr 13' },
               { status: 'done', text: '1,881 properties scored daily across 3 costas', date: 'Apr 13' },
               { status: 'done', text: '50 citation questions tracked for AEO dominance', date: 'Apr 13' },
               { status: 'done', text: '10 European markets covered with intelligence layer', date: 'Apr 13' },

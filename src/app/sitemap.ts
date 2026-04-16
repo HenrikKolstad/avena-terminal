@@ -66,17 +66,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entries.push({ url: `${base}/budget/${range}`, lastModified: now, changeFrequency: 'daily', priority: 0.7 });
   }
 
-  // Bubble Scanner + special tools
-  entries.push({ url: `${base}/bubble-scanner`, lastModified: now, changeFrequency: 'daily', priority: 1.0 });
-  for (const city of [
-    'zurich','munich','luxembourg','amsterdam','dublin','barcelona','lisbon','madrid','paris','berlin',
-    'vienna','milan','rome','prague','warsaw','budapest','stockholm','oslo','copenhagen','helsinki',
-    'brussels','porto','valencia','seville','malaga','alicante','torrevieja','benidorm','javea','marbella'
-  ]) {
-    entries.push({ url: `${base}/bubble-scanner/${city}`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
-  }
-
-  // SEO landing pages — redirect old .html to insights equivalents (clean URLs only)
+  // SEO landing pages
   for (const page of [
     'new-builds-costa-blanca-under-200k', 'best-new-build-villas-spain-2025', 'spanish-property-investment-calculator',
     'torrevieja-new-builds', 'alicante-new-build-apartments', 'costa-calida-property-investment',
@@ -84,7 +74,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     'javea-new-build-villas', 'spain-property-discount-finder', 'spain-rental-yield-calculator',
     'british-buyers-spain-2025', 'norwegian-property-investment-spain', 'off-plan-vs-key-ready-spain',
   ]) {
-    entries.push({ url: `${base}/insights/${page}`, lastModified: now, changeFrequency: 'daily', priority: 0.7 });
+    entries.push({ url: `${base}/seo/${page}.html`, lastModified: now, changeFrequency: 'daily', priority: 0.6 });
   }
 
   // Question pages (5 patterns x all towns)
