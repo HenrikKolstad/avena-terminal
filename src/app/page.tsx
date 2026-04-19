@@ -35,8 +35,8 @@ export default function HomePage() {
       <main>
         <Hero />
         <Ticker />
-        <Indices />
         <FeaturedDeals />
+        <Indices />
         <Regions />
         <CTA />
       </main>

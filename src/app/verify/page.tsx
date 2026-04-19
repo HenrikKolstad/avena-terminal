@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
-import Link from 'next/link';
 import { createHash } from 'crypto';
 import { getAllProperties } from '@/lib/properties';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 
 export const revalidate = 86400;
 
@@ -90,212 +91,268 @@ export default function VerifyPage() {
   };
 
   return (
-    <div className="min-h-screen text-gray-100" style={{ background: '#0d1117' }}>
+    <div className="avena-v2 min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Header */}
-      <header
-        className="border-b sticky top-0 z-50 backdrop-blur-sm"
-        style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}
-      >
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent"
-          >
-            AVENA
-          </Link>
-          <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">
-            Back to Terminal
-          </Link>
-        </div>
-      </header>
+      <Nav />
 
-      <main className="max-w-5xl mx-auto px-4 py-10">
-        {/* Breadcrumb */}
-        <nav className="text-xs text-gray-500 mb-6">
-          <Link href="/" className="hover:text-white">Home</Link>
-          <span className="mx-1">/</span>
-          <span className="text-white">Verify</span>
-        </nav>
-
-        {/* ─── HERO ─── */}
-        <section className="py-12 md:py-20 text-center">
-          <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4" style={{ color: '#c9d1d9' }}>
-            Cryptographic Data Verification
-          </h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Every data point in Avena Terminal is cryptographically hashed and publicly
-            auditable. Verify any statistic, any time, without trusting us.
-          </p>
-          <div className="mt-8 w-24 h-px bg-emerald-500 mx-auto" />
-        </section>
-
-        {/* ─── HOW IT WORKS ─── */}
-        <section className="mb-20">
-          <h2 className="text-2xl font-bold text-emerald-400 mb-8 tracking-wide">
-            HOW IT WORKS
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {steps.map((s) => (
-              <div
-                key={s.step}
-                className="rounded-lg p-6 relative"
-                style={{ background: '#161b22', border: '1px solid #30363d' }}
-              >
-                <div className="text-4xl font-bold text-emerald-500/20 absolute top-4 right-4 font-mono">
-                  {s.icon}
-                </div>
-                <div className="text-emerald-400 text-xs font-mono uppercase tracking-wider mb-3">
-                  Step {s.step}
-                </div>
-                <h3 className="text-white font-semibold text-lg mb-2">{s.title}</h3>
-                <p className="text-sm text-gray-400 leading-relaxed">{s.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ─── CURRENT DATASET INTEGRITY ─── */}
-        <section className="mb-20">
-          <h2 className="text-2xl font-bold text-emerald-400 mb-6 tracking-wide">
-            CURRENT DATASET INTEGRITY
-          </h2>
-          <div
-            className="rounded-lg p-6 md:p-8"
-            style={{ background: '#161b22', border: '1px solid #30363d' }}
-          >
-            <div className="flex items-center gap-3 mb-6">
-              <span className="inline-block w-3 h-3 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-emerald-400 font-semibold text-sm uppercase tracking-wider">
-                Verified
+      <main className="pt-16">
+        {/* Hero */}
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Trust · Cryptographic Verification
               </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">
-                  Total Properties
-                </div>
-                <div className="text-2xl font-bold text-white font-mono">
-                  {totalProperties.toLocaleString()}
-                </div>
-              </div>
-              <div>
-                <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">
-                  Verification Status
-                </div>
-                <div className="text-2xl font-bold text-emerald-400 font-mono">
-                  VERIFIED
-                </div>
-              </div>
-              <div className="md:col-span-2">
-                <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">
-                  SHA-256 Dataset Hash
-                </div>
-                <div className="text-sm text-gray-300 font-mono break-all bg-black/30 rounded px-3 py-2">
-                  {datasetHash}
-                </div>
-              </div>
-              <div>
-                <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">
-                  Timestamp (ISO 8601)
-                </div>
-                <div className="text-sm text-gray-300 font-mono">
-                  {timestamp}
-                </div>
-              </div>
-              <div>
-                <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">
-                  Hash Algorithm
-                </div>
-                <div className="text-sm text-gray-300 font-mono">
-                  SHA-256
-                </div>
-              </div>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                Verify without
+                <br />
+                <span className="italic text-gold">trusting us</span>.
+              </h1>
+              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
+                Every data point in Avena Terminal is cryptographically hashed and publicly
+                auditable. Check any statistic, any time.
+              </p>
             </div>
           </div>
         </section>
 
-        {/* ─── VERIFICATION STANDARDS ─── */}
-        <section className="mb-20">
-          <h2 className="text-2xl font-bold text-emerald-400 mb-6 tracking-wide">
-            VERIFICATION STANDARDS
-          </h2>
-          <div className="space-y-3">
-            {standards.map((s) => (
-              <div
-                key={s.title}
-                className="rounded-lg px-5 py-4 flex items-start gap-4"
-                style={{ background: '#161b22', border: '1px solid #30363d' }}
-              >
-                <span className="text-emerald-400 mt-0.5 shrink-0">&#10003;</span>
+        {/* How it works */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10 max-w-3xl">
+              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                How it works
+              </span>
+              <h2 className="font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+                Three steps to <span className="italic text-gold">integrity</span>.
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {steps.map((s) => (
+                <div
+                  key={s.step}
+                  className="rounded-sm border p-6 relative"
+                  style={{
+                    background: 'hsl(var(--av-surface) / 0.4)',
+                    borderColor: 'hsl(var(--av-border) / 0.6)',
+                  }}
+                >
+                  <span className="font-mono text-3xl font-light text-primary/30 absolute top-4 right-4 tabular">
+                    {s.icon}
+                  </span>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary block mb-3">
+                    Step {s.step}
+                  </span>
+                  <h3 className="font-serif text-xl font-light text-foreground mb-2">{s.title}</h3>
+                  <p className="font-light text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Current dataset integrity */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10 max-w-3xl">
+              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Current Dataset Integrity
+              </span>
+              <h2 className="font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+                The <span className="italic text-gold">canonical</span> hash.
+              </h2>
+            </div>
+            <div
+              className="rounded-sm border p-8"
+              style={{
+                background: 'hsl(var(--av-surface) / 0.4)',
+                borderColor: 'hsl(var(--av-border) / 0.6)',
+              }}
+            >
+              <div className="flex items-center gap-3 mb-8">
+                <span className="pulse-dot relative inline-block h-2 w-2 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
+                <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                  Verified
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <h3 className="text-white font-medium text-sm">{s.title}</h3>
-                  <p className="text-gray-500 text-sm mt-0.5">{s.desc}</p>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-2">
+                    Total Properties
+                  </div>
+                  <div className="font-serif text-3xl font-light text-foreground tabular">
+                    {totalProperties.toLocaleString()}
+                  </div>
+                </div>
+                <div>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-2">
+                    Verification Status
+                  </div>
+                  <div className="font-serif text-3xl font-light text-primary tabular">
+                    VERIFIED
+                  </div>
+                </div>
+                <div className="md:col-span-2">
+                  <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-2">
+                    SHA-256 Dataset Hash
+                  </div>
+                  <pre
+                    className="rounded-sm p-4 overflow-x-auto font-mono text-xs text-foreground/90 break-all whitespace-pre-wrap"
+                    style={{
+                      background: 'hsl(var(--av-background))',
+                      border: '1px solid hsl(var(--av-border) / 0.6)',
+                    }}
+                  >
+                    <code>{datasetHash}</code>
+                  </pre>
+                </div>
+                <div>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-2">
+                    Timestamp (ISO 8601)
+                  </div>
+                  <div className="font-mono text-sm text-foreground/90">
+                    {timestamp}
+                  </div>
+                </div>
+                <div>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-2">
+                    Hash Algorithm
+                  </div>
+                  <div className="font-mono text-sm text-foreground/90">
+                    SHA-256
+                  </div>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
         </section>
 
-        {/* ─── WHO BENEFITS ─── */}
-        <section className="mb-20">
-          <h2 className="text-2xl font-bold text-emerald-400 mb-6 tracking-wide">
-            WHO BENEFITS
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {beneficiaries.map((b) => (
-              <div
-                key={b.title}
-                className="rounded-lg p-6"
-                style={{ background: '#161b22', border: '1px solid #30363d' }}
-              >
-                <h3 className="text-white font-semibold mb-2">{b.title}</h3>
-                <p className="text-sm text-gray-400 leading-relaxed">{b.desc}</p>
+        {/* Verification standards */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10 max-w-3xl">
+              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Verification Standards
+              </span>
+              <h2 className="font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+                What backs the <span className="italic text-gold">chain</span>.
+              </h2>
+            </div>
+            <div className="space-y-3">
+              {standards.map((s) => (
+                <div
+                  key={s.title}
+                  className="rounded-sm border px-5 py-4 flex items-start gap-4"
+                  style={{
+                    background: 'hsl(var(--av-surface) / 0.4)',
+                    borderColor: 'hsl(var(--av-border) / 0.6)',
+                  }}
+                >
+                  <span className="text-primary mt-0.5 shrink-0">&#10003;</span>
+                  <div>
+                    <h3 className="font-serif text-lg font-light text-foreground">{s.title}</h3>
+                    <p className="font-light text-sm text-muted-foreground mt-1">{s.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Who benefits */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10 max-w-3xl">
+              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Who benefits
+              </span>
+              <h2 className="font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+                For every <span className="italic text-gold">auditor</span>.
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {beneficiaries.map((b) => (
+                <div
+                  key={b.title}
+                  className="rounded-sm border p-6"
+                  style={{
+                    background: 'hsl(var(--av-surface) / 0.4)',
+                    borderColor: 'hsl(var(--av-border) / 0.6)',
+                  }}
+                >
+                  <h3 className="font-serif text-xl font-light text-foreground mb-2">{b.title}</h3>
+                  <p className="font-light text-sm text-muted-foreground leading-relaxed">{b.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* API endpoint */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10 max-w-3xl">
+              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                API Endpoint
+              </span>
+              <h2 className="font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+                Programmatic <span className="italic text-gold">access</span>.
+              </h2>
+            </div>
+            <div
+              className="rounded-sm border p-6"
+              style={{
+                background: 'hsl(var(--av-surface) / 0.4)',
+                borderColor: 'hsl(var(--av-border) / 0.6)',
+              }}
+            >
+              <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-3">
+                Verification Endpoint
               </div>
-            ))}
+              <pre
+                className="rounded-sm p-4 overflow-x-auto font-mono text-sm text-primary mb-4"
+                style={{
+                  background: 'hsl(var(--av-background))',
+                  border: '1px solid hsl(var(--av-border) / 0.6)',
+                }}
+              >
+                <code>GET /api/zk/verify</code>
+              </pre>
+              <p className="font-light text-sm text-muted-foreground">
+                Returns the current dataset hash, timestamp, and verification status.
+                Use this endpoint to programmatically verify any Avena Terminal statistic
+                against the canonical dataset hash.
+              </p>
+            </div>
           </div>
         </section>
 
-        {/* ─── API ENDPOINT ─── */}
-        <section className="mb-20">
-          <h2 className="text-2xl font-bold text-emerald-400 mb-6 tracking-wide">
-            API ENDPOINT
-          </h2>
-          <div
-            className="rounded-lg p-6"
-            style={{ background: '#161b22', border: '1px solid #30363d' }}
-          >
-            <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">
-              Verification Endpoint
-            </div>
-            <div className="font-mono text-sm text-emerald-400 bg-black/30 rounded px-3 py-2 mb-4">
-              GET /api/zk/verify
-            </div>
-            <p className="text-sm text-gray-400">
-              Returns the current dataset hash, timestamp, and verification status.
-              Use this endpoint to programmatically verify any Avena Terminal statistic
-              against the canonical dataset hash.
+        {/* Closing note */}
+        <section className="relative border-t py-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12 text-center">
+            <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              Data sourced from publicly available property listings.
+              No personally identifiable information is stored or hashed.
+            </p>
+            <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground/70 mt-3">
+              &copy; {new Date().getFullYear()} Avena Terminal. All rights reserved.
             </p>
           </div>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer
-        className="border-t py-8 text-center text-xs text-gray-600"
-        style={{ borderColor: '#1c2333' }}
-      >
-        <p>
-          Data sourced from publicly available property listings.
-          Avena Terminal does not store or hash any personally identifiable information.
-        </p>
-        <p className="mt-2">&copy; {new Date().getFullYear()} Avena Terminal. All rights reserved.</p>
-      </footer>
+      <Footer />
     </div>
   );
 }

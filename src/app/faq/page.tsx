@@ -1,5 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, avg } from '@/lib/properties';
 
 export const revalidate = 86400;
@@ -366,104 +369,123 @@ export default function FaqPage() {
   };
 
   return (
-    <div className="min-h-screen text-[#c9d1d9]" style={{ background: '#0d1117' }}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
+    <div className="avena-v2 min-h-screen">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
 
-      {/* Header */}
-      <header
-        className="border-b sticky top-0 z-50 backdrop-blur-sm"
-        style={{ borderColor: '#30363d', background: 'rgba(13,17,23,0.85)' }}
-      >
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent"
-          >
-            AVENA
-          </Link>
-          <span className="text-sm font-medium text-[#c9d1d9] tracking-wide uppercase">FAQ</span>
-        </div>
-      </header>
+      <Nav />
 
-      <main className="max-w-4xl mx-auto px-4 py-10">
-        {/* Breadcrumb */}
-        <nav className="text-xs text-gray-500 mb-6">
-          <Link href="/" className="hover:text-emerald-400 transition-colors">
-            Home
-          </Link>
-          <span className="mx-2">/</span>
-          <span className="text-[#c9d1d9]">FAQ</span>
-        </nav>
+      <main className="pt-16">
+        {/* Hero */}
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-50"
+            style={{ background: 'radial-gradient(ellipse at top, hsl(42 85% 64% / 0.18), transparent 60%)' }}
+          />
+          <div className="relative mx-auto max-w-[1600px] px-5 sm:px-12">
+            {/* Breadcrumb */}
+            <nav className="mb-6 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              <Link href="/" className="hover:text-primary">Home</Link>
+              <span className="mx-2">/</span>
+              <span className="text-foreground/80">FAQ</span>
+            </nav>
 
-        {/* Title */}
-        <h1 className="text-3xl md:text-4xl font-bold mb-2 text-white">
-          Frequently Asked Questions
-        </h1>
-        <p className="text-[#8b949e] mb-10 text-lg">
-          50 questions about Spanish new build property investment, answered with live data.
-        </p>
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                FAQ · 50 answers
+              </span>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                Frequently
+                <br />
+                <span className="italic text-gold">asked</span>.
+              </h1>
+              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
+                50 questions about Spanish new build property investment, answered with live data.
+                Market stats, rental yields, scoring, buying process, and everything Avena Terminal.
+              </p>
+            </div>
+          </div>
+        </section>
 
         {/* Sections */}
         {sections.map((section, si) => (
-          <section key={si} className="mb-12">
-            <h2
-              className="text-xl font-semibold mb-6 pb-2 border-b text-emerald-400"
-              style={{ borderColor: '#30363d' }}
-            >
-              {section.title}
-            </h2>
-            <div className="space-y-6">
-              {section.questions.map((qa, qi) => (
-                <div
-                  key={qi}
-                  className="rounded-lg p-5"
-                  style={{ background: '#161b22', border: '1px solid #30363d' }}
-                >
-                  <h3 className="font-semibold text-emerald-400 mb-2 text-[15px] leading-snug">
-                    {qa.q}
-                  </h3>
-                  <p className="text-[#c9d1d9] text-sm leading-relaxed">
-                    {qa.a}
-                  </p>
-                </div>
-              ))}
+          <section
+            key={si}
+            className="relative border-t py-16 sm:py-20"
+            style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
+          >
+            <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+              <div className="mb-10 flex items-baseline justify-between gap-6 flex-wrap">
+                <h2 className="font-serif text-3xl sm:text-4xl font-light tracking-tight text-foreground">
+                  {section.title}
+                </h2>
+                <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                  {section.questions.length} answers
+                </span>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                {section.questions.map((qa, qi) => (
+                  <div
+                    key={qi}
+                    className="rounded-sm border p-6"
+                    style={{
+                      background: 'hsl(var(--av-surface) / 0.4)',
+                      borderColor: 'hsl(var(--av-border) / 0.6)',
+                    }}
+                  >
+                    <h3 className="font-serif text-lg font-light text-foreground mb-3 leading-snug">
+                      {qa.q}
+                    </h3>
+                    <p className="font-light text-sm text-muted-foreground leading-relaxed">
+                      {qa.a}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
         ))}
 
         {/* Footer CTA */}
-        <div
-          className="rounded-lg p-8 text-center mt-8 mb-12"
-          style={{ background: '#161b22', border: '1px solid #30363d' }}
-        >
-          <h2 className="text-xl font-bold text-white mb-3">Still have questions?</h2>
-          <p className="text-[#8b949e] mb-5 text-sm">
-            Ask The Oracle AI or explore the terminal for live property data.
-          </p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <Link
-              href="/chat"
-              className="px-6 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm transition-colors"
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div
+              className="rounded-sm border p-10 text-center"
+              style={{
+                background: 'hsl(var(--av-surface) / 0.4)',
+                borderColor: 'hsl(var(--av-border) / 0.6)',
+              }}
             >
-              Ask The Oracle
-            </Link>
-            <Link
-              href="/"
-              className="px-6 py-2.5 rounded-lg text-emerald-400 font-semibold text-sm transition-colors hover:bg-white/5"
-              style={{ border: '1px solid #30363d' }}
-            >
-              Open Terminal
-            </Link>
+              <h2 className="mb-3 font-serif text-3xl sm:text-4xl font-light text-foreground">
+                Still have <span className="italic text-gold">questions</span>?
+              </h2>
+              <p className="mx-auto mb-7 max-w-xl font-light text-base text-muted-foreground">
+                Ask The Oracle AI or explore the terminal for live property data.
+              </p>
+              <div className="flex flex-wrap justify-center gap-4">
+                <Link
+                  href="/chat"
+                  className="group inline-flex items-center gap-3 rounded-sm px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
+                  style={{ background: 'var(--av-gradient-gold)' }}
+                >
+                  Ask The Oracle
+                  <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </Link>
+                <Link
+                  href="/"
+                  className="inline-flex items-center gap-3 rounded-sm border px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-foreground transition-colors hover:text-primary"
+                  style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+                >
+                  Open Terminal
+                </Link>
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
       </main>
+
+      <Footer />
     </div>
   );
 }

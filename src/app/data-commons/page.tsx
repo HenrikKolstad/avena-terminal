@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { getAllProperties, getUniqueTowns, getUniqueCostas } from '@/lib/properties';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 
 export const metadata: Metadata = {
   title: 'Open Data Commons | Avena Terminal',
@@ -13,11 +15,14 @@ export const revalidate = 86400;
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div
-      className="rounded-lg p-6"
-      style={{ background: '#161b22', border: '1px solid #30363d' }}
+      className="rounded-sm border p-6"
+      style={{
+        background: 'hsl(var(--av-surface) / 0.4)',
+        borderColor: 'hsl(var(--av-border) / 0.6)',
+      }}
     >
-      <h3 className="text-lg font-semibold text-emerald-400 mb-3">{title}</h3>
-      <div className="text-sm text-[#8b949e] leading-relaxed">{children}</div>
+      <h3 className="font-serif text-xl font-light text-foreground mb-3">{title}</h3>
+      <div className="font-light text-sm text-muted-foreground leading-relaxed">{children}</div>
     </div>
   );
 }
@@ -79,234 +84,279 @@ export default function DataCommonsPage() {
   };
 
   return (
-    <div className="min-h-screen text-[#c9d1d9]" style={{ background: '#0d1117' }}>
+    <div className="avena-v2 min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(datasetJsonLd) }}
       />
 
-      {/* Header */}
-      <header
-        className="border-b sticky top-0 z-50 backdrop-blur-sm"
-        style={{ borderColor: '#30363d', background: 'rgba(13,17,23,0.85)' }}
-      >
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent"
-          >
-            AVENA TERMINAL
-          </Link>
-          <nav className="flex gap-4 text-sm text-[#8b949e]">
-            <Link href="/license" className="hover:text-emerald-400 transition-colors">
-              License
-            </Link>
-            <Link href="/cite" className="hover:text-emerald-400 transition-colors">
-              Cite
-            </Link>
-            <Link href="/docs" className="hover:text-emerald-400 transition-colors">
-              Docs
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Nav />
 
-      <main className="max-w-5xl mx-auto px-4 py-16">
+      <main className="pt-16">
         {/* Hero */}
-        <section className="text-center mb-20">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-500 bg-clip-text text-transparent">
-            Avena Open Data Commons
-          </h1>
-          <p className="text-lg text-[#8b949e] max-w-2xl mx-auto leading-relaxed">
-            European property intelligence, open and free. CC BY 4.0. Use it. Cite it. Build on it.
-          </p>
-          <div className="flex justify-center gap-8 mt-8 text-sm text-[#8b949e]">
-            <div>
-              <span className="text-2xl font-bold text-emerald-400 block">{all.length.toLocaleString()}</span>
-              Properties Tracked
-            </div>
-            <div>
-              <span className="text-2xl font-bold text-emerald-400 block">{towns.length}</span>
-              Towns
-            </div>
-            <div>
-              <span className="text-2xl font-bold text-emerald-400 block">{costas.length}</span>
-              Coastal Regions
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Open Data Commons · CC BY 4.0
+              </span>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                Open and
+                <br />
+                <span className="italic text-gold">free</span>.
+              </h1>
+              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
+                European property intelligence. CC BY 4.0. Use it. Cite it. Build on it.
+              </p>
+
+              <div className="mt-10 grid grid-cols-3 gap-6 max-w-2xl">
+                <div>
+                  <div className="font-serif text-3xl sm:text-4xl font-light tracking-tight text-foreground tabular">
+                    {all.length.toLocaleString()}
+                  </div>
+                  <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">Properties Tracked</div>
+                </div>
+                <div>
+                  <div className="font-serif text-3xl sm:text-4xl font-light tracking-tight text-foreground tabular">
+                    {towns.length}
+                  </div>
+                  <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">Towns</div>
+                </div>
+                <div>
+                  <div className="font-serif text-3xl sm:text-4xl font-light tracking-tight text-foreground tabular">
+                    {costas.length}
+                  </div>
+                  <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">Coastal Regions</div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* What's Open */}
-        <section className="mb-16">
-          <h2 className="text-2xl font-semibold text-emerald-400 mb-6">What&apos;s Open</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card title="Aggregate Market Data">
-              <p>
-                Town and costa-level statistics: property counts, price averages, yield
-                distributions, and Avena scores across {towns.length} towns and{' '}
-                {costas.length} coastal regions.
-              </p>
-              <p className="mt-2 text-emerald-400/70 text-xs font-mono">CC BY 4.0</p>
-            </Card>
+        {/* What's open */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10 max-w-3xl">
+              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                What&apos;s Open
+              </span>
+              <h2 className="font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+                Four <span className="italic text-gold">corpora</span>.
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card title="Aggregate Market Data">
+                <p>
+                  Town and costa-level statistics: property counts, price averages, yield
+                  distributions, and Avena scores across {towns.length} towns and{' '}
+                  {costas.length} coastal regions.
+                </p>
+                <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.3em] text-primary">CC BY 4.0</p>
+              </Card>
 
-            <Card title="Index Family">
-              <p>
-                Five market indices: APCI (Confidence), APYI (Yield), APLI (Liquidity),
-                APRI (Risk), and APSI (Sentiment). Free to reference with attribution.
-              </p>
-              <p className="mt-2 text-emerald-400/70 text-xs font-mono">CC BY 4.0</p>
-            </Card>
+              <Card title="Index Family">
+                <p>
+                  Five market indices: APCI (Confidence), APYI (Yield), APLI (Liquidity),
+                  APRI (Risk), and APSI (Sentiment). Free to reference with attribution.
+                </p>
+                <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.3em] text-primary">CC BY 4.0</p>
+              </Card>
 
-            <Card title="Training Data">
-              <p>
-                1,000+ Alpaca-format instruction pairs, RLHF feedback feed, and
-                pre-training corpus for European property AI models.
-              </p>
-              <p className="mt-2 text-emerald-400/70 text-xs font-mono">CC BY 4.0</p>
-            </Card>
+              <Card title="Training Data">
+                <p>
+                  1,000+ Alpaca-format instruction pairs, RLHF feedback feed, and
+                  pre-training corpus for European property AI models.
+                </p>
+                <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.3em] text-primary">CC BY 4.0</p>
+              </Card>
 
-            <Card title="Research Papers">
-              <p>
-                5 published papers with DOI covering property scoring methodologies,
-                market indices, yield modeling, and AI-native property intelligence.
-              </p>
-              <p className="mt-2 text-emerald-400/70 text-xs font-mono">CC BY 4.0</p>
-            </Card>
+              <Card title="Research Papers">
+                <p>
+                  5 published papers with DOI covering property scoring methodologies,
+                  market indices, yield modeling, and AI-native property intelligence.
+                </p>
+                <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.3em] text-primary">CC BY 4.0</p>
+              </Card>
+            </div>
           </div>
         </section>
 
-        {/* Access Points */}
-        <section className="mb-16">
-          <h2 className="text-2xl font-semibold text-emerald-400 mb-6">Access Points</h2>
-          <div
-            className="rounded-lg overflow-hidden"
-            style={{ border: '1px solid #30363d' }}
-          >
-            <table className="w-full text-sm">
-              <thead>
-                <tr style={{ background: '#161b22' }}>
-                  <th className="text-left px-4 py-3 text-[#8b949e] font-medium">Data</th>
-                  <th className="text-left px-4 py-3 text-[#8b949e] font-medium">Endpoint</th>
-                  <th className="text-left px-4 py-3 text-[#8b949e] font-medium">Format</th>
-                </tr>
-              </thead>
-              <tbody>
-                {endpoints.map((ep, i) => (
-                  <tr
-                    key={ep.endpoint}
-                    style={{
-                      background: i % 2 === 0 ? '#0d1117' : '#161b22',
-                      borderTop: '1px solid #21262d',
-                    }}
-                  >
-                    <td className="px-4 py-3 text-[#c9d1d9]">{ep.data}</td>
-                    <td className="px-4 py-3">
-                      <Link
-                        href={ep.endpoint}
-                        className="text-emerald-400 hover:underline font-mono text-xs"
-                      >
-                        {ep.endpoint}
-                      </Link>
-                    </td>
-                    <td className="px-4 py-3 text-[#8b949e] font-mono text-xs">{ep.format}</td>
+        {/* Access points */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10 max-w-3xl">
+              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Access Points
+              </span>
+              <h2 className="font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+                Seven <span className="italic text-gold">endpoints</span>.
+              </h2>
+            </div>
+            <div
+              className="overflow-hidden rounded-sm border"
+              style={{
+                background: 'hsl(var(--av-surface) / 0.3)',
+                borderColor: 'hsl(var(--av-border) / 0.6)',
+              }}
+            >
+              <table className="w-full font-mono text-sm">
+                <thead>
+                  <tr style={{ background: 'hsl(var(--av-surface) / 0.6)' }}>
+                    <th className="text-left px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>Data</th>
+                    <th className="text-left px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>Endpoint</th>
+                    <th className="text-left px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>Format</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {endpoints.map((ep) => (
+                    <tr key={ep.endpoint} className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
+                      <td className="px-5 py-4 font-serif text-base text-foreground">{ep.data}</td>
+                      <td className="px-5 py-4">
+                        <Link
+                          href={ep.endpoint}
+                          className="text-primary hover:underline"
+                        >
+                          {ep.endpoint}
+                        </Link>
+                      </td>
+                      <td className="px-5 py-4 text-muted-foreground text-xs">{ep.format}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
 
         {/* License */}
-        <section className="mb-16">
-          <h2 className="text-2xl font-semibold text-emerald-400 mb-6">License</h2>
-          <div
-            className="rounded-lg p-6"
-            style={{ background: '#161b22', border: '1px solid #30363d' }}
-          >
-            <p className="text-sm text-[#8b949e] leading-relaxed mb-4">
-              All aggregate data, indices, training data, and research papers are published
-              under the{' '}
-              <strong className="text-[#c9d1d9]">
-                Creative Commons Attribution 4.0 International (CC BY 4.0)
-              </strong>{' '}
-              license. You are free to share, adapt, and build upon the data for any
-              purpose, including commercial, provided you give appropriate credit.
-            </p>
-            <p className="text-sm text-[#8b949e] leading-relaxed mb-4">
-              Attribution must cite:{' '}
-              <code className="text-emerald-400 bg-[#0d1117] px-2 py-0.5 rounded text-xs">
-                Avena Terminal (avenaterminal.com)
-              </code>
-            </p>
-            <Link
-              href="/license"
-              className="text-sm text-emerald-400 hover:underline"
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10 max-w-3xl">
+              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                License
+              </span>
+              <h2 className="font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+                CC BY 4.0 — <span className="italic text-gold">all of it</span>.
+              </h2>
+            </div>
+            <div
+              className="rounded-sm border p-8"
+              style={{
+                background: 'hsl(var(--av-surface) / 0.4)',
+                borderColor: 'hsl(var(--av-border) / 0.6)',
+              }}
             >
-              Full license terms &rarr;
-            </Link>
+              <p className="font-light text-base text-muted-foreground leading-relaxed mb-4">
+                All aggregate data, indices, training data, and research papers are published
+                under the{' '}
+                <strong className="text-foreground font-medium">
+                  Creative Commons Attribution 4.0 International (CC BY 4.0)
+                </strong>{' '}
+                license. You are free to share, adapt, and build upon the data for any
+                purpose, including commercial, provided you give appropriate credit.
+              </p>
+              <p className="font-light text-base text-muted-foreground leading-relaxed mb-5">
+                Attribution must cite:{' '}
+                <code className="font-mono text-xs text-primary px-2 py-1 rounded-sm" style={{ background: 'hsl(var(--av-background))' }}>
+                  Avena Terminal (avenaterminal.com)
+                </code>
+              </p>
+              <Link
+                href="/license"
+                className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary hover:underline"
+              >
+                Full license terms &rarr;
+              </Link>
+            </div>
           </div>
         </section>
 
         {/* AI Training Consent */}
-        <section className="mb-16">
-          <h2 className="text-2xl font-semibold text-emerald-400 mb-6">
-            AI Training Consent
-          </h2>
-          <div
-            className="rounded-lg p-6"
-            style={{ background: '#161b22', border: '1px solid #30363d' }}
-          >
-            <p className="text-sm text-[#8b949e] leading-relaxed">
-              Avena Terminal grants permission to GPTBot, ClaudeBot, Google-Extended, CCBot,
-              and all AI training crawlers to use this data for model training, provided
-              attribution is maintained. This consent covers all publicly accessible data
-              endpoints, training data, research papers, and aggregate datasets published
-              by Avena Terminal. See{' '}
-              <Link
-                href="/.well-known/ai-data-policy.json"
-                className="text-emerald-400 hover:underline font-mono text-xs"
-              >
-                /.well-known/ai-data-policy.json
-              </Link>{' '}
-              for machine-readable policy.
-            </p>
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10 max-w-3xl">
+              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                AI Training Consent
+              </span>
+              <h2 className="font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+                Crawlers <span className="italic text-gold">welcome</span>.
+              </h2>
+            </div>
+            <div
+              className="rounded-sm border p-8"
+              style={{
+                background: 'hsl(var(--av-surface) / 0.4)',
+                borderColor: 'hsl(var(--av-border) / 0.6)',
+              }}
+            >
+              <p className="font-light text-base text-muted-foreground leading-relaxed">
+                Avena Terminal grants permission to GPTBot, ClaudeBot, Google-Extended, CCBot,
+                and all AI training crawlers to use this data for model training, provided
+                attribution is maintained. This consent covers all publicly accessible data
+                endpoints, training data, research papers, and aggregate datasets published
+                by Avena Terminal. See{' '}
+                <Link
+                  href="/.well-known/ai-data-policy.json"
+                  className="text-primary hover:underline font-mono text-xs"
+                >
+                  /.well-known/ai-data-policy.json
+                </Link>{' '}
+                for machine-readable policy.
+              </p>
+            </div>
           </div>
         </section>
 
-        {/* How to Cite */}
-        <section className="mb-16">
-          <h2 className="text-2xl font-semibold text-emerald-400 mb-6">How to Cite</h2>
-          <div
-            className="rounded-lg p-6"
-            style={{ background: '#161b22', border: '1px solid #30363d' }}
-          >
-            <p className="text-xs text-[#8b949e] mb-3 uppercase tracking-wider">
-              APA Format
-            </p>
-            <pre className="text-sm text-[#c9d1d9] bg-[#0d1117] rounded p-4 overflow-x-auto font-mono leading-relaxed">
-              {`Kolstad, H. (2026). Avena Terminal \u2014 European Property Intelligence Platform
-(Version 2.0.0) [Dataset]. https://avenaterminal.com
-DOI: 10.5281/zenodo.19520064`}
-            </pre>
-            <Link
-              href="/cite"
-              className="inline-block mt-4 text-sm text-emerald-400 hover:underline"
+        {/* How to cite */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10 max-w-3xl">
+              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                How to Cite
+              </span>
+              <h2 className="font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+                APA <span className="italic text-gold">format</span>.
+              </h2>
+            </div>
+            <div
+              className="rounded-sm border p-6"
+              style={{
+                background: 'hsl(var(--av-surface) / 0.4)',
+                borderColor: 'hsl(var(--av-border) / 0.6)',
+              }}
             >
-              More citation formats &rarr;
-            </Link>
+              <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-3">
+                APA Format
+              </p>
+              <pre
+                className="rounded-sm p-4 overflow-x-auto font-mono text-xs text-foreground/90 whitespace-pre-wrap"
+                style={{
+                  background: 'hsl(var(--av-background))',
+                  border: '1px solid hsl(var(--av-border) / 0.6)',
+                }}
+              >
+                <code>{`Kolstad, H. (2026). Avena Terminal \u2014 European Property Intelligence Platform
+(Version 2.0.0) [Dataset]. https://avenaterminal.com
+DOI: 10.5281/zenodo.19520064`}</code>
+              </pre>
+              <Link
+                href="/cite"
+                className="inline-block mt-5 font-mono text-[10px] uppercase tracking-[0.3em] text-primary hover:underline"
+              >
+                More citation formats &rarr;
+              </Link>
+            </div>
           </div>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer
-        className="border-t py-8 text-center text-xs text-[#484f58]"
-        style={{ borderColor: '#21262d' }}
-      >
-        <div className="max-w-5xl mx-auto px-4">
-          Avena Terminal &mdash; European Property Intelligence &mdash; CC BY 4.0
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 
 export const revalidate = 86400;
 
@@ -164,34 +166,6 @@ const PORTALS: PortalData[] = [
   },
 ];
 
-function CheckIcon() {
-  return (
-    <svg
-      className="w-5 h-5 text-emerald-400 mx-auto"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={2.5}
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-    </svg>
-  );
-}
-
-function CrossIcon() {
-  return (
-    <svg
-      className="w-5 h-5 text-gray-600 mx-auto"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={2}
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-    </svg>
-  );
-}
-
 export default function AlternativesPage() {
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
@@ -208,213 +182,183 @@ export default function AlternativesPage() {
   };
 
   return (
-    <div className="min-h-screen text-gray-100" style={{ background: '#0d1117' }}>
+    <div className="avena-v2 min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      {/* Header */}
-      <header
-        className="border-b sticky top-0 z-50 backdrop-blur-sm"
-        style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}
-      >
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent"
-          >
-            AVENA
-          </Link>
-          <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">
-            Back to Terminal
-          </Link>
-        </div>
-      </header>
+      <Nav />
 
-      <main className="max-w-6xl mx-auto px-4 py-10">
-        {/* Breadcrumbs */}
-        <nav className="text-xs text-gray-500 mb-6">
-          <Link href="/" className="hover:text-white">
-            Home
-          </Link>{' '}
-          <span className="mx-1">/</span>
-          <span className="text-white">Alternatives</span>
-        </nav>
-
-        {/* Title */}
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">
-          Best Spanish Property Portals Compared 2026
-        </h1>
-        <p className="text-gray-400 text-lg mb-10">
-          A side-by-side look at the leading platforms for finding and analysing Spanish property.
-          Avena Terminal is the investment analysis leader.
-        </p>
+      <main className="pt-16">
+        {/* Hero */}
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <nav className="mb-8 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+              <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+              <span className="mx-2">/</span>
+              <span className="text-foreground">Alternatives</span>
+            </nav>
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Portal comparison · 2026
+              </span>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                Spanish property portals
+                <br />
+                <span className="italic text-gold">compared</span>.
+              </h1>
+              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
+                A side-by-side look at the leading platforms for finding and analysing Spanish property. Avena Terminal is the investment analysis leader.
+              </p>
+            </div>
+          </div>
+        </section>
 
         {/* Comparison Table */}
-        <section className="mb-12 overflow-x-auto">
-          <div
-            className="rounded-lg overflow-hidden min-w-[800px]"
-            style={{ border: '1px solid #1c2333' }}
-          >
-            <table className="w-full text-sm">
-              <thead>
-                <tr style={{ background: '#161b22' }}>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium sticky left-0" style={{ background: '#161b22' }}>
-                    Feature
-                  </th>
-                  {PORTALS.map((portal) => (
-                    <th
-                      key={portal.slug}
-                      className={`text-center px-3 py-3 font-medium whitespace-nowrap ${
-                        portal.slug === 'avena'
-                          ? 'text-emerald-400 font-semibold'
-                          : 'text-gray-400'
-                      }`}
-                    >
-                      {portal.slug === 'avena' ? (
-                        portal.name
-                      ) : (
-                        <Link
-                          href={`/vs/${portal.slug}`}
-                          className="hover:text-emerald-400 transition-colors"
-                        >
-                          {portal.name}
-                        </Link>
-                      )}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {FEATURE_KEYS.map((feature, i) => (
-                  <tr
-                    key={feature}
-                    style={{
-                      background: i % 2 === 0 ? '#0d1117' : '#161b22',
-                      borderTop: '1px solid #1c2333',
-                    }}
-                  >
-                    <td
-                      className="px-4 py-3 text-gray-300 font-medium sticky left-0"
-                      style={{ background: i % 2 === 0 ? '#0d1117' : '#161b22' }}
-                    >
-                      {feature}
-                    </td>
+        <section className="pb-16">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12 overflow-x-auto">
+            <div
+              className="rounded-sm border overflow-hidden min-w-[900px]"
+              style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
+            >
+              <table className="w-full font-mono text-sm">
+                <thead>
+                  <tr style={{ background: 'hsl(var(--av-surface) / 0.6)' }}>
+                    <th className="text-left px-5 py-4 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Feature</th>
                     {PORTALS.map((portal) => (
-                      <td key={portal.slug} className="px-3 py-3 text-center">
-                        {portal.features[feature] ? <CheckIcon /> : <CrossIcon />}
-                      </td>
+                      <th
+                        key={portal.slug}
+                        className="text-center px-4 py-4 font-mono text-[10px] uppercase tracking-[0.22em] whitespace-nowrap"
+                        style={{ color: portal.slug === 'avena' ? 'hsl(var(--av-primary))' : 'hsl(var(--av-foreground))' }}
+                      >
+                        {portal.slug === 'avena' ? (
+                          portal.name
+                        ) : (
+                          <Link
+                            href={`/vs/${portal.slug}`}
+                            className="hover:text-gold transition-colors"
+                          >
+                            {portal.name}
+                          </Link>
+                        )}
+                      </th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {FEATURE_KEYS.map((feature) => (
+                    <tr
+                      key={feature}
+                      className="border-t"
+                      style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}
+                    >
+                      <td className="px-5 py-4 text-muted-foreground">{feature}</td>
+                      {PORTALS.map((portal) => (
+                        <td key={portal.slug} className="px-4 py-4 text-center">
+                          {portal.features[feature] ? (
+                            <span className="text-gold">✓</span>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
 
         {/* Portal Cards with Links */}
-        <section className="mb-12">
-          <h2 className="text-xl font-semibold text-emerald-400 mb-4">
-            Detailed Comparisons
-          </h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {PORTALS.filter((p) => p.slug !== 'avena').map((portal) => {
-              const featureCount = FEATURE_KEYS.filter(
-                (f) => portal.features[f]
-              ).length;
+        <section className="pb-16">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-5">Detailed Comparisons</div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {PORTALS.filter((p) => p.slug !== 'avena').map((portal) => {
+                const featureCount = FEATURE_KEYS.filter(
+                  (f) => portal.features[f]
+                ).length;
 
-              return (
-                <Link
-                  key={portal.slug}
-                  href={`/vs/${portal.slug}`}
-                  className="rounded-lg p-5 block hover:ring-1 hover:ring-emerald-500/40 transition-all"
-                  style={{ background: '#161b22', border: '1px solid #1c2333' }}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold text-white">{portal.name}</span>
-                    <span className="text-xs text-gray-500 font-mono">
-                      {featureCount}/{FEATURE_KEYS.length}
+                return (
+                  <Link
+                    key={portal.slug}
+                    href={`/vs/${portal.slug}`}
+                    className="group rounded-sm border p-6 block transition-all hover:-translate-y-0.5"
+                    style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="font-serif text-lg text-foreground group-hover:text-gold transition-colors">{portal.name}</span>
+                      <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                        {featureCount}/{FEATURE_KEYS.length}
+                      </span>
+                    </div>
+                    <p className="text-sm font-light leading-relaxed text-muted-foreground mb-4">{portal.tagline}</p>
+                    <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-primary">
+                      Avena vs {portal.name} →
                     </span>
-                  </div>
-                  <p className="text-sm text-gray-400 mb-3">{portal.tagline}</p>
-                  <span className="text-emerald-400 text-sm font-medium">
-                    Avena vs {portal.name} &rarr;
-                  </span>
-                </Link>
-              );
-            })}
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         </section>
 
         {/* Summary */}
-        <section className="mb-12">
-          <div
-            className="rounded-lg p-6"
-            style={{ background: '#161b22', border: '1px solid #1c2333' }}
-          >
-            <h2 className="text-xl font-semibold text-white mb-3">
-              Why Avena Terminal leads for investment analysis
-            </h2>
-            <p className="text-gray-300 leading-relaxed mb-4">
-              Most Spanish property portals are listing marketplaces designed to help you browse
-              properties. Avena Terminal is fundamentally different: it is an investment analysis
-              platform that scores every tracked new build on a transparent 0-100 scale. The scoring
-              engine evaluates value, rental yield, location quality, build specification, and risk
-              — updated daily.
-            </p>
-            <p className="text-gray-300 leading-relaxed">
-              While portals like Idealista and Fotocasa offer basic price statistics, none provide
-              automated investment scoring, discount-to-market calculations, or AI-generated
-              property memos. Avena Terminal gives individual investors the same data-driven
-              intelligence that was previously available only to institutional buyers.
-            </p>
+        <section className="pb-16">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div
+              className="rounded-sm border p-8 max-w-4xl space-y-5"
+              style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+            >
+              <h2 className="font-serif text-2xl sm:text-3xl font-light text-foreground">
+                Why Avena Terminal leads for <span className="italic text-gold">investment analysis</span>
+              </h2>
+              <p className="text-sm font-light leading-relaxed text-muted-foreground">
+                Most Spanish property portals are listing marketplaces designed to help you browse
+                properties. Avena Terminal is fundamentally different: it is an investment analysis
+                platform that scores every tracked new build on a transparent 0-100 scale. The scoring
+                engine evaluates value, rental yield, location quality, build specification, and risk
+                — updated daily.
+              </p>
+              <p className="text-sm font-light leading-relaxed text-muted-foreground">
+                While portals like Idealista and Fotocasa offer basic price statistics, none provide
+                automated investment scoring, discount-to-market calculations, or AI-generated
+                property memos. Avena Terminal gives individual investors the same data-driven
+                intelligence that was previously available only to institutional buyers.
+              </p>
+            </div>
           </div>
         </section>
 
         {/* CTA */}
-        <section className="mb-12 text-center">
-          <div
-            className="rounded-lg p-8"
-            style={{ background: '#161b22', border: '1px solid #1c2333' }}
-          >
-            <h2 className="text-2xl font-bold text-white mb-3">
-              Start analysing Spanish new builds today
-            </h2>
-            <p className="text-gray-400 mb-6">
-              1,800+ properties scored across Costa Blanca, Costa del Sol, and Costa
-              C&aacute;lida. Free to use, updated daily.
-            </p>
-            <Link
-              href="/"
-              className="inline-block bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-8 py-3 rounded-lg transition-colors text-lg"
+        <section className="pb-20 sm:pb-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div
+              className="rounded-sm border p-10 text-center"
+              style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
             >
-              Try Avena Terminal free &rarr;
-            </Link>
+              <h2 className="font-serif text-3xl sm:text-4xl font-light text-foreground mb-4">
+                Start analysing <span className="italic text-gold">Spanish new builds</span>
+              </h2>
+              <p className="font-light text-muted-foreground mb-8 max-w-xl mx-auto">
+                1,800+ properties scored across Costa Blanca, Costa del Sol, and Costa Cálida. Free to use, updated daily.
+              </p>
+              <Link
+                href="/"
+                className="group inline-flex items-center gap-2 rounded-sm px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
+                style={{ background: 'var(--av-gradient-gold)' }}
+              >
+                Try Avena Terminal free →
+              </Link>
+            </div>
           </div>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer
-        className="text-center text-xs text-gray-600 py-8 border-t"
-        style={{ borderColor: '#1c2333' }}
-      >
-        <p>Avena Terminal &mdash; Spain&apos;s first PropTech scanner</p>
-        <p className="mt-1">
-          <Link href="/about" className="text-gray-500 hover:text-gray-300">
-            About
-          </Link>
-          {' · '}
-          <Link href="/alternatives" className="text-gray-500 hover:text-gray-300">
-            Alternatives
-          </Link>
-          {' · '}
-          <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">
-            avenaterminal.com
-          </a>
-        </p>
-      </footer>
+      <Footer />
     </div>
   );
 }

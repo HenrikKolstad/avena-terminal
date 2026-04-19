@@ -1,5 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 
 export const revalidate = 86400;
 
@@ -64,13 +67,34 @@ export default async function CiteSystemPage({ params }: { params: Promise<{ sys
 
   if (!data) {
     return (
-      <main style={{ minHeight: '100vh', backgroundColor: '#0d1117', color: '#c9d1d9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center' }}>
-          <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>System Not Found</h1>
-          <p style={{ color: '#8b949e', marginBottom: '2rem' }}>The system &quot;{system}&quot; is not in our citation database.</p>
-          <Link href="/cite" style={{ color: '#34d399', textDecoration: 'underline' }}>View all citable systems</Link>
-        </div>
-      </main>
+      <div className="avena-v2 min-h-screen">
+        <Nav />
+        <main className="pt-16">
+          <section className="relative overflow-hidden py-28 sm:py-40">
+            <div className="mx-auto max-w-[1600px] px-5 sm:px-12 text-center">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                404
+              </span>
+              <h1 className="font-serif text-5xl sm:text-6xl font-light leading-[0.95] tracking-tight text-foreground mb-6">
+                System not <span className="italic text-gold">found</span>.
+              </h1>
+              <p className="font-light text-base text-muted-foreground mb-8">
+                The system &quot;{system}&quot; is not in our citation database.
+              </p>
+              <Link
+                href="/cite"
+                className="group inline-flex items-center gap-3 rounded-sm border px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground transition-colors hover:text-primary"
+                style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+              >
+                View all citable systems
+                <ArrowUpRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </Link>
+            </div>
+          </section>
+        </main>
+        <Footer />
+      </div>
     );
   }
 
@@ -106,89 +130,92 @@ export default async function CiteSystemPage({ params }: { params: Promise<{ sys
   };
 
   return (
-    <>
+    <div className="avena-v2 min-h-screen">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(scholarlyJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
 
-      <main style={{ minHeight: '100vh', backgroundColor: '#0d1117', color: '#c9d1d9' }}>
-        {/* Header */}
-        <header style={{ borderBottom: '1px solid #30363d', padding: '1rem 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: '#c9d1d9' }}>
-            <span style={{ fontSize: '1.25rem', fontWeight: 700, letterSpacing: '0.05em' }}>AVENA</span>
-            <span style={{ fontSize: '0.75rem', color: '#34d399', fontWeight: 600 }}>TERMINAL</span>
-          </Link>
-          <Link href="/cite" style={{ color: '#34d399', fontSize: '0.875rem', textDecoration: 'none' }}>
-            All Citations
-          </Link>
-        </header>
+      <Nav />
 
-        {/* Content */}
-        <div style={{ maxWidth: '48rem', margin: '0 auto', padding: '3rem 1.5rem' }}>
-          <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-            Cite: {data.name}
-          </h1>
-          <p style={{ color: '#8b949e', fontSize: '1rem', marginBottom: '2.5rem', lineHeight: 1.6 }}>
-            {data.description}
-          </p>
+      <main className="pt-16">
+        {/* Hero */}
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Citation · {data.name}
+              </span>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                Cite:
+                <br />
+                <span className="italic text-gold">{data.name}</span>.
+              </h1>
+              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
+                {data.description}
+              </p>
+            </div>
+          </div>
+        </section>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {formats.map((fmt) => (
-              <div
-                key={fmt.label}
-                style={{
-                  backgroundColor: '#161b22',
-                  border: '1px solid #30363d',
-                  borderRadius: '0.5rem',
-                  padding: '1.25rem',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                  <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#34d399' }}>
-                    {fmt.label}
-                  </span>
-                  <span style={{ fontSize: '0.75rem', color: '#8b949e', cursor: 'pointer' }}>
-                    Copy
-                  </span>
-                </div>
-                <pre
+        {/* Citation formats */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10 max-w-3xl">
+              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Formats
+              </span>
+              <h2 className="font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+                Five <span className="italic text-gold">formats</span>, one source.
+              </h2>
+            </div>
+            <div className="flex flex-col gap-5">
+              {formats.map((fmt) => (
+                <div
+                  key={fmt.label}
+                  className="rounded-sm border p-6"
                   style={{
-                    fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
-                    fontSize: '0.8125rem',
-                    lineHeight: 1.6,
-                    color: '#c9d1d9',
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word',
-                    margin: 0,
-                    backgroundColor: '#0d1117',
-                    padding: '1rem',
-                    borderRadius: '0.375rem',
-                    border: '1px solid #30363d',
+                    background: 'hsl(var(--av-surface) / 0.4)',
+                    borderColor: 'hsl(var(--av-border) / 0.6)',
                   }}
                 >
-                  {fmt.value}
-                </pre>
-              </div>
-            ))}
-          </div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                      {fmt.label}
+                    </span>
+                    <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
+                      Select to copy
+                    </span>
+                  </div>
+                  <pre
+                    className="rounded-sm p-4 overflow-x-auto font-mono text-xs text-foreground/90 whitespace-pre-wrap break-words"
+                    style={{
+                      background: 'hsl(var(--av-background))',
+                      border: '1px solid hsl(var(--av-border) / 0.6)',
+                    }}
+                  >
+                    <code>{fmt.value}</code>
+                  </pre>
+                </div>
+              ))}
+            </div>
 
-          {/* Back link */}
-          <div style={{ marginTop: '3rem', textAlign: 'center' }}>
-            <Link
-              href="/cite"
-              style={{
-                color: '#34d399',
-                textDecoration: 'none',
-                fontSize: '0.875rem',
-                padding: '0.5rem 1.5rem',
-                border: '1px solid #30363d',
-                borderRadius: '0.375rem',
-              }}
-            >
-              View all citable systems
-            </Link>
+            {/* Back link */}
+            <div className="mt-12 text-center">
+              <Link
+                href="/cite"
+                className="group inline-flex items-center gap-3 rounded-sm border px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground transition-colors hover:text-primary"
+                style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+              >
+                View all citable systems
+                <ArrowUpRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </Link>
+            </div>
           </div>
-        </div>
+        </section>
       </main>
-    </>
+
+      <Footer />
+    </div>
   );
 }

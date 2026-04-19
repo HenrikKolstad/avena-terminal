@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
-import Link from 'next/link';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 
 export const metadata: Metadata = {
   title: 'Universal Property Context Protocol — Inject Live Data into Any AI | Avena Terminal',
@@ -10,9 +11,9 @@ export const metadata: Metadata = {
 export const revalidate = 86400;
 
 const steps = [
-  { num: '1', title: 'Send Query', desc: 'Your app sends the user\'s natural-language query to Avena.' },
-  { num: '2', title: 'Get Context', desc: 'Avena returns enriched context with live property data, stats, and citations.' },
-  { num: '3', title: 'Inject into LLM', desc: 'You pass the enriched prompt to any LLM. It answers with real data.' },
+  { num: '01', title: 'Send Query', desc: 'Your app sends the user\'s natural-language query to Avena.' },
+  { num: '02', title: 'Get Context', desc: 'Avena returns enriched context with live property data, stats, and citations.' },
+  { num: '03', title: 'Inject into LLM', desc: 'You pass the enriched prompt to any LLM. It answers with real data.' },
 ];
 
 const entityTypes = [
@@ -83,169 +84,255 @@ export default function ContextProtocolPage() {
   };
 
   return (
-    <main className="min-h-screen" style={{ background: '#0d1117', color: '#c9d1d9' }}>
+    <div className="avena-v2 min-h-screen">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      {/* Header */}
-      <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}>
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">AVENA</Link>
-          <span className="text-xs font-mono px-3 py-1 rounded-full border" style={{ borderColor: '#10b981', color: '#10b981' }}>CONTEXT PROTOCOL</span>
-        </div>
-      </header>
+      <Nav />
 
-      <div className="max-w-4xl mx-auto px-4 py-12">
-
+      <main className="pt-16">
         {/* Hero */}
-        <section className="mb-16 text-center">
-          <h1 className="text-4xl font-bold text-white mb-4">Universal Property Context Protocol</h1>
-          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-            One API call. Live data in every AI answer about European property.
-          </p>
-          <div className="mt-6 flex gap-3 justify-center flex-wrap">
-            <span className="text-xs font-mono px-3 py-1 rounded-full" style={{ background: '#1c2333', color: '#10b981' }}>Free tier available</span>
-            <span className="text-xs font-mono px-3 py-1 rounded-full" style={{ background: '#1c2333', color: '#c9d1d9' }}>No SDK required</span>
-            <span className="text-xs font-mono px-3 py-1 rounded-full" style={{ background: '#1c2333', color: '#c9d1d9' }}>Works with any LLM</span>
-          </div>
-        </section>
-
-        <div className="h-px w-full mb-12" style={{ background: '#1c2333' }} />
-
-        {/* How It Works */}
-        <section className="mb-16">
-          <h2 className="text-2xl font-bold text-white mb-8 text-center">How It Works</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            {steps.map(s => (
-              <div key={s.num} className="rounded-lg p-6 text-center" style={{ background: '#161b22', border: '1px solid #30363d' }}>
-                <div className="w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold" style={{ background: '#10b981', color: '#0d1117' }}>
-                  {s.num}
-                </div>
-                <h3 className="text-white font-semibold mb-2">{s.title}</h3>
-                <p className="text-sm text-gray-400">{s.desc}</p>
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Protocol · Context Enrichment
+              </span>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                One call.
+                <br />
+                <span className="italic text-gold">Live data</span> in every answer.
+              </h1>
+              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
+                One API call. Live data in every AI answer about European property. Free tier, no SDK, works with any LLM.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <span className="rounded-sm border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.3em] text-primary" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)', background: 'hsl(var(--av-primary) / 0.08)' }}>Free tier available</span>
+                <span className="rounded-sm border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>No SDK required</span>
+                <span className="rounded-sm border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>Works with any LLM</span>
               </div>
-            ))}
+            </div>
           </div>
         </section>
 
-        <div className="h-px w-full mb-12" style={{ background: '#1c2333' }} />
-
-        {/* Quick Start */}
-        <section className="mb-16">
-          <h2 className="text-2xl font-bold text-white mb-6">Quick Start</h2>
-          <p className="text-sm text-gray-400 mb-6">Send a POST request. Get enriched context. Inject into your LLM.</p>
-
-          <div className="mb-4">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs font-mono px-2 py-0.5 rounded" style={{ background: '#1c2333', color: '#f97316' }}>Python</span>
+        {/* How it works */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10 max-w-3xl">
+              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                How it works
+              </span>
+              <h2 className="font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+                Three <span className="italic text-gold">steps</span>.
+              </h2>
             </div>
-            <pre className="rounded-lg p-4 text-sm overflow-x-auto" style={{ background: '#161b22', border: '1px solid #30363d', color: '#c9d1d9' }}>
-              <code>{pythonCode}</code>
-            </pre>
-          </div>
-
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs font-mono px-2 py-0.5 rounded" style={{ background: '#1c2333', color: '#f97316' }}>JavaScript</span>
+            <div className="grid md:grid-cols-3 gap-4">
+              {steps.map(s => (
+                <div
+                  key={s.num}
+                  className="rounded-sm border p-6"
+                  style={{
+                    background: 'hsl(var(--av-surface) / 0.4)',
+                    borderColor: 'hsl(var(--av-border) / 0.6)',
+                  }}
+                >
+                  <span className="font-mono text-3xl font-light text-primary tabular block mb-3">{s.num}</span>
+                  <h3 className="font-serif text-xl font-light text-foreground mb-2">{s.title}</h3>
+                  <p className="font-light text-sm text-muted-foreground">{s.desc}</p>
+                </div>
+              ))}
             </div>
-            <pre className="rounded-lg p-4 text-sm overflow-x-auto" style={{ background: '#161b22', border: '1px solid #30363d', color: '#c9d1d9' }}>
-              <code>{jsCode}</code>
-            </pre>
           </div>
         </section>
 
-        <div className="h-px w-full mb-12" style={{ background: '#1c2333' }} />
+        {/* Quick start */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10 max-w-3xl">
+              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Quick Start
+              </span>
+              <h2 className="font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground mb-4">
+                Send. Enrich. <span className="italic text-gold">Inject</span>.
+              </h2>
+              <p className="font-light text-base text-muted-foreground">
+                Send a POST request. Get enriched context. Inject into your LLM.
+              </p>
+            </div>
 
-        {/* What Gets Enriched */}
-        <section className="mb-16">
-          <h2 className="text-2xl font-bold text-white mb-6">What Gets Enriched</h2>
-          <div className="rounded-lg overflow-hidden" style={{ border: '1px solid #30363d' }}>
-            <table className="w-full text-sm">
-              <thead>
-                <tr style={{ background: '#161b22' }}>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Entity Type</th>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Example</th>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium hidden md:table-cell">Detection</th>
-                </tr>
-              </thead>
-              <tbody>
-                {entityTypes.map((e, i) => (
-                  <tr key={e.entity} style={{ background: i % 2 === 0 ? '#0d1117' : '#161b22', borderTop: '1px solid #21262d' }}>
-                    <td className="px-4 py-3 text-white font-medium">{e.entity}</td>
-                    <td className="px-4 py-3 text-gray-400">{e.example}</td>
-                    <td className="px-4 py-3 text-gray-500 hidden md:table-cell">{e.detection}</td>
+            <div className="space-y-6">
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary">Python</span>
+                </div>
+                <pre
+                  className="rounded-sm p-4 overflow-x-auto font-mono text-xs text-foreground/90"
+                  style={{
+                    background: 'hsl(var(--av-background))',
+                    border: '1px solid hsl(var(--av-border) / 0.6)',
+                  }}
+                >
+                  <code>{pythonCode}</code>
+                </pre>
+              </div>
+
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary">JavaScript</span>
+                </div>
+                <pre
+                  className="rounded-sm p-4 overflow-x-auto font-mono text-xs text-foreground/90"
+                  style={{
+                    background: 'hsl(var(--av-background))',
+                    border: '1px solid hsl(var(--av-border) / 0.6)',
+                  }}
+                >
+                  <code>{jsCode}</code>
+                </pre>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* What gets enriched */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10 max-w-3xl">
+              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Entity Detection
+              </span>
+              <h2 className="font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+                What gets <span className="italic text-gold">enriched</span>.
+              </h2>
+            </div>
+            <div
+              className="overflow-hidden rounded-sm border"
+              style={{
+                background: 'hsl(var(--av-surface) / 0.3)',
+                borderColor: 'hsl(var(--av-border) / 0.6)',
+              }}
+            >
+              <table className="w-full font-mono text-sm">
+                <thead>
+                  <tr style={{ background: 'hsl(var(--av-surface) / 0.6)' }}>
+                    <th className="text-left px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>Entity Type</th>
+                    <th className="text-left px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>Example</th>
+                    <th className="text-left px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground border-b hidden md:table-cell" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>Detection</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {entityTypes.map((e) => (
+                    <tr key={e.entity} className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
+                      <td className="px-5 py-4 font-serif text-base text-foreground">{e.entity}</td>
+                      <td className="px-5 py-4 text-muted-foreground text-xs">{e.example}</td>
+                      <td className="px-5 py-4 text-muted-foreground text-xs hidden md:table-cell">{e.detection}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
-
-        <div className="h-px w-full mb-12" style={{ background: '#1c2333' }} />
 
         {/* Pricing */}
-        <section className="mb-16">
-          <h2 className="text-2xl font-bold text-white mb-8 text-center">Pricing</h2>
-          <div className="grid md:grid-cols-4 gap-4">
-            {pricingTiers.map(tier => (
-              <div
-                key={tier.name}
-                className="rounded-lg p-5 flex flex-col"
-                style={{
-                  background: '#161b22',
-                  border: tier.name === 'PRO' ? '2px solid #10b981' : '1px solid #30363d',
-                }}
-              >
-                <h3 className="text-white font-bold mb-1">{tier.name}</h3>
-                <p className="text-2xl font-bold text-white mb-1">
-                  {tier.price === 'Custom' ? 'Custom' : tier.price === '0' ? 'Free' : `\u20AC${tier.price}/mo`}
-                </p>
-                <p className="text-xs text-gray-500 mb-4">{tier.requests}</p>
-                <ul className="text-sm text-gray-400 space-y-1 mt-auto">
-                  {tier.features.map(f => (
-                    <li key={f}><span className="text-emerald-400 mr-1">-</span> {f}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10 max-w-3xl">
+              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Pricing
+              </span>
+              <h2 className="font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+                Four <span className="italic text-gold">tiers</span>.
+              </h2>
+            </div>
+            <div className="grid md:grid-cols-4 gap-4">
+              {pricingTiers.map(tier => (
+                <div
+                  key={tier.name}
+                  className="rounded-sm border p-6 flex flex-col"
+                  style={{
+                    background: 'hsl(var(--av-surface) / 0.4)',
+                    borderColor: tier.name === 'PRO' ? 'hsl(var(--av-primary) / 0.5)' : 'hsl(var(--av-border) / 0.6)',
+                  }}
+                >
+                  <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary block mb-2">
+                    {tier.name}
+                  </span>
+                  <div className="font-serif text-4xl font-light tracking-tight text-foreground tabular mb-1">
+                    {tier.price === 'Custom' ? 'Custom' : tier.price === '0' ? 'Free' : `€${tier.price}`}
+                    {tier.price !== 'Custom' && tier.price !== '0' && (
+                      <span className="font-mono text-xs uppercase tracking-[0.22em] text-muted-foreground ml-1">/mo</span>
+                    )}
+                  </div>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-5">{tier.requests}</p>
+                  <ul className="space-y-2 mt-auto">
+                    {tier.features.map(f => (
+                      <li key={f} className="flex items-start gap-2 font-light text-sm text-foreground/80">
+                        <span className="text-primary mt-0.5 shrink-0">&mdash;</span>
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
-        <div className="h-px w-full mb-12" style={{ background: '#1c2333' }} />
-
-        {/* Why Use This */}
-        <section className="mb-16">
-          <h2 className="text-2xl font-bold text-white mb-8 text-center">Why Use This</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            {whyCards.map(c => (
-              <div key={c.title} className="rounded-lg p-6" style={{ background: '#161b22', border: '1px solid #30363d' }}>
-                <h3 className="text-white font-bold mb-2">{c.title}</h3>
-                <p className="text-sm text-gray-400">{c.desc}</p>
-              </div>
-            ))}
+        {/* Why use this */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10 max-w-3xl">
+              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Why use this
+              </span>
+              <h2 className="font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+                Three <span className="italic text-gold">reasons</span>.
+              </h2>
+            </div>
+            <div className="grid md:grid-cols-3 gap-4">
+              {whyCards.map(c => (
+                <div
+                  key={c.title}
+                  className="rounded-sm border p-6"
+                  style={{
+                    background: 'hsl(var(--av-surface) / 0.4)',
+                    borderColor: 'hsl(var(--av-border) / 0.6)',
+                  }}
+                >
+                  <h3 className="font-serif text-xl font-light text-foreground mb-2">{c.title}</h3>
+                  <p className="font-light text-sm text-muted-foreground">{c.desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
-
-        <div className="h-px w-full mb-12" style={{ background: '#1c2333' }} />
 
         {/* CTA */}
-        <section className="text-center mb-12">
-          <p className="text-gray-400 mb-4">Start enriching AI answers with live property data today.</p>
-          <code className="text-sm px-4 py-2 rounded-lg inline-block" style={{ background: '#161b22', border: '1px solid #30363d', color: '#10b981' }}>
-            POST https://avenaterminal.com/api/v1/context/enrich
-          </code>
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12 text-center">
+            <p className="font-light text-base text-muted-foreground mb-6">
+              Start enriching AI answers with live property data today.
+            </p>
+            <code
+              className="inline-block rounded-sm px-6 py-4 font-mono text-sm text-primary"
+              style={{
+                background: 'hsl(var(--av-background))',
+                border: '1px solid hsl(var(--av-border) / 0.6)',
+              }}
+            >
+              POST https://avenaterminal.com/api/v1/context/enrich
+            </code>
+          </div>
         </section>
+      </main>
 
-        {/* Footer */}
-        <footer className="text-center text-xs text-gray-600 pt-8 pb-4" style={{ borderTop: '1px solid #1c2333' }}>
-          <Link href="/" className="hover:text-gray-400">Avena Terminal</Link>
-          {' '}&middot;{' '}
-          <Link href="/integrate" className="hover:text-gray-400">Integrations</Link>
-          {' '}&middot;{' '}
-          <Link href="/mcp-server" className="hover:text-gray-400">MCP Server</Link>
-          {' '}&middot;{' '}
-          <Link href="/a2a" className="hover:text-gray-400">A2A Protocol</Link>
-        </footer>
-      </div>
-    </main>
+      <Footer />
+    </div>
   );
 }

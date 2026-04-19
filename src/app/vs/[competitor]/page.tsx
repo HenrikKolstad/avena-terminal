@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 
 export const revalidate = 86400;
 
@@ -217,13 +219,17 @@ export default async function VsCompetitorPage({
 
   if (!data) {
     return (
-      <div className="min-h-screen text-gray-100" style={{ background: '#0d1117' }}>
-        <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-          <h1 className="text-3xl font-bold mb-4">Competitor not found</h1>
-          <Link href="/alternatives" className="text-emerald-400 hover:underline">
-            View all comparisons
-          </Link>
-        </div>
+      <div className="avena-v2 min-h-screen">
+        <Nav />
+        <main className="pt-16 flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <h1 className="font-serif text-4xl font-light text-foreground mb-4">Competitor not found</h1>
+            <Link href="/alternatives" className="font-mono text-[11px] uppercase tracking-[0.22em] text-primary hover:text-gold transition-colors">
+              View all comparisons →
+            </Link>
+          </div>
+        </main>
+        <Footer />
       </div>
     );
   }
@@ -272,7 +278,7 @@ export default async function VsCompetitorPage({
   };
 
   return (
-    <div className="min-h-screen text-gray-100" style={{ background: '#0d1117' }}>
+    <div className="avena-v2 min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
@@ -282,187 +288,151 @@ export default async function VsCompetitorPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      {/* Header */}
-      <header
-        className="border-b sticky top-0 z-50 backdrop-blur-sm"
-        style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}
-      >
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent"
-          >
-            AVENA
-          </Link>
-          <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">
-            Back to Terminal
-          </Link>
-        </div>
-      </header>
+      <Nav />
 
-      <main className="max-w-5xl mx-auto px-4 py-10">
-        {/* Breadcrumbs */}
-        <nav className="text-xs text-gray-500 mb-6">
-          <Link href="/" className="hover:text-white">
-            Home
-          </Link>{' '}
-          <span className="mx-1">/</span>
-          <Link href="/alternatives" className="hover:text-white">
-            Alternatives
-          </Link>{' '}
-          <span className="mx-1">/</span>
-          <span className="text-white">vs {data.name}</span>
-        </nav>
-
-        {/* Title */}
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">
-          Avena Terminal vs {data.name}
-        </h1>
-        <p className="text-gray-400 text-lg mb-10">
-          {data.tagline} &mdash; how does it compare for property investment?
-        </p>
+      <main className="pt-16">
+        {/* Hero */}
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <nav className="mb-8 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+              <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+              <span className="mx-2">/</span>
+              <Link href="/alternatives" className="hover:text-primary transition-colors">Alternatives</Link>
+              <span className="mx-2">/</span>
+              <span className="text-foreground">vs {data.name}</span>
+            </nav>
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Competitor comparison
+              </span>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                Avena Terminal
+                <br />
+                <span className="italic text-gold">vs {data.name}</span>.
+              </h1>
+              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
+                {data.tagline} — how does it compare for property investment?
+              </p>
+            </div>
+          </div>
+        </section>
 
         {/* Comparison Table */}
-        <section className="mb-12">
-          <h2 className="text-xl font-semibold text-emerald-400 mb-4">
-            Feature Comparison
-          </h2>
-          <div
-            className="rounded-lg overflow-hidden"
-            style={{ border: '1px solid #1c2333' }}
-          >
-            <table className="w-full text-sm">
-              <thead>
-                <tr style={{ background: '#161b22' }}>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Feature</th>
-                  <th className="text-center px-4 py-3 text-emerald-400 font-semibold">
-                    Avena Terminal
-                  </th>
-                  <th className="text-center px-4 py-3 text-gray-400 font-medium">
-                    {data.name}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {FEATURE_KEYS.map((feature, i) => (
-                  <tr
-                    key={feature}
-                    style={{
-                      background: i % 2 === 0 ? '#0d1117' : '#161b22',
-                      borderTop: '1px solid #1c2333',
-                    }}
-                  >
-                    <td className="px-4 py-3 text-gray-300">{feature}</td>
-                    <td className="px-4 py-3 text-center">
-                      {AVENA_FEATURES[feature] ? (
-                        <span className="text-emerald-400 font-bold">Yes</span>
-                      ) : (
-                        <span className="text-gray-600">No</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      {data.features[feature] ? (
-                        <span className="text-emerald-400 font-bold">Yes</span>
-                      ) : (
-                        <span className="text-gray-600">No</span>
-                      )}
-                    </td>
+        <section className="pb-16">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-5">Feature Comparison</div>
+            <div
+              className="rounded-sm border overflow-hidden"
+              style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
+            >
+              <table className="w-full font-mono text-sm">
+                <thead>
+                  <tr style={{ background: 'hsl(var(--av-surface) / 0.6)' }}>
+                    <th className="px-5 py-4 text-left font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Feature</th>
+                    <th className="px-5 py-4 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-primary">Avena Terminal</th>
+                    <th className="px-5 py-4 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-foreground">{data.name}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {FEATURE_KEYS.map((feature) => (
+                    <tr
+                      key={feature}
+                      className="border-t"
+                      style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}
+                    >
+                      <td className="px-5 py-4 text-muted-foreground">{feature}</td>
+                      <td className="px-5 py-4 text-center">
+                        {AVENA_FEATURES[feature] ? (
+                          <span className="text-gold">Yes</span>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </td>
+                      <td className="px-5 py-4 text-center">
+                        {data.features[feature] ? (
+                          <span className="text-gold">Yes</span>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
 
         {/* Analysis */}
-        <section className="mb-12">
-          <h2 className="text-xl font-semibold text-emerald-400 mb-4">
-            Honest Analysis
-          </h2>
-          <div
-            className="rounded-lg p-6 space-y-4"
-            style={{ background: '#161b22', border: '1px solid #1c2333' }}
-          >
-            <div>
-              <h3 className="text-white font-semibold mb-2">
-                What {data.name} does well
-              </h3>
-              <p className="text-gray-300 leading-relaxed">{data.strengths}</p>
-            </div>
-            <div>
-              <h3 className="text-white font-semibold mb-2">
-                Where Avena Terminal goes further
-              </h3>
-              <p className="text-gray-300 leading-relaxed">{data.analysis}</p>
+        <section className="pb-16">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-5">Honest Analysis</div>
+            <div
+              className="rounded-sm border p-8 space-y-6 max-w-4xl"
+              style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+            >
+              <div>
+                <h3 className="font-serif text-xl font-light text-foreground mb-3">What {data.name} does well</h3>
+                <p className="text-sm font-light leading-relaxed text-muted-foreground">{data.strengths}</p>
+              </div>
+              <div className="border-t pt-6" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+                <h3 className="font-serif text-xl font-light text-foreground mb-3">Where Avena Terminal goes further</h3>
+                <p className="text-sm font-light leading-relaxed text-muted-foreground">{data.analysis}</p>
+              </div>
             </div>
           </div>
         </section>
 
         {/* CTA */}
-        <section className="mb-12 text-center">
-          <div
-            className="rounded-lg p-8"
-            style={{ background: '#161b22', border: '1px solid #1c2333' }}
-          >
-            <h2 className="text-2xl font-bold text-white mb-3">
-              Ready to invest smarter?
-            </h2>
-            <p className="text-gray-400 mb-6">
-              Avena Terminal scores 1,800+ new build properties across Spain&apos;s coastal regions.
-              Investment scoring, rental yields, and AI memos — all free.
-            </p>
-            <Link
-              href="/"
-              className="inline-block bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-8 py-3 rounded-lg transition-colors text-lg"
+        <section className="pb-16">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div
+              className="rounded-sm border p-10 text-center"
+              style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
             >
-              Try Avena Terminal free &rarr;
-            </Link>
+              <h2 className="font-serif text-3xl sm:text-4xl font-light text-foreground mb-4">
+                Ready to invest <span className="italic text-gold">smarter</span>?
+              </h2>
+              <p className="font-light text-muted-foreground mb-8 max-w-xl mx-auto">
+                Avena Terminal scores 1,800+ new build properties across Spain&apos;s coastal regions.
+                Investment scoring, rental yields, and AI memos — all free.
+              </p>
+              <Link
+                href="/"
+                className="group inline-flex items-center gap-2 rounded-sm px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
+                style={{ background: 'var(--av-gradient-gold)' }}
+              >
+                Try Avena Terminal free →
+              </Link>
+            </div>
           </div>
         </section>
 
         {/* More Comparisons */}
-        <section className="mb-12">
-          <h2 className="text-xl font-semibold text-emerald-400 mb-4">
-            More Comparisons
-          </h2>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {Object.entries(COMPETITORS)
-              .filter(([slug]) => slug !== competitor)
-              .map(([slug, c]) => (
-                <Link
-                  key={slug}
-                  href={`/vs/${slug}`}
-                  className="rounded-lg px-4 py-3 text-sm hover:ring-1 hover:ring-emerald-500/40 transition-all"
-                  style={{ background: '#161b22', border: '1px solid #1c2333' }}
-                >
-                  <span className="text-white font-medium">vs {c.name}</span>
-                  <span className="block text-xs text-gray-500 mt-0.5">{c.tagline}</span>
-                </Link>
-              ))}
+        <section className="pb-20 sm:pb-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-5">More Comparisons</div>
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
+              {Object.entries(COMPETITORS)
+                .filter(([slug]) => slug !== competitor)
+                .map(([slug, c]) => (
+                  <Link
+                    key={slug}
+                    href={`/vs/${slug}`}
+                    className="group rounded-sm border p-5 transition-all hover:-translate-y-0.5"
+                    style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+                  >
+                    <div className="font-serif text-base text-foreground group-hover:text-gold transition-colors">vs {c.name}</div>
+                    <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">{c.tagline}</div>
+                  </Link>
+                ))}
+            </div>
           </div>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer
-        className="text-center text-xs text-gray-600 py-8 border-t"
-        style={{ borderColor: '#1c2333' }}
-      >
-        <p>Avena Terminal &mdash; Spain&apos;s first PropTech scanner</p>
-        <p className="mt-1">
-          <Link href="/about" className="text-gray-500 hover:text-gray-300">
-            About
-          </Link>
-          {' · '}
-          <Link href="/alternatives" className="text-gray-500 hover:text-gray-300">
-            Alternatives
-          </Link>
-          {' · '}
-          <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">
-            avenaterminal.com
-          </a>
-        </p>
-      </footer>
+      <Footer />
     </div>
   );
 }

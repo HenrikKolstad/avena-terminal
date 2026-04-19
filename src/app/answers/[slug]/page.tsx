@@ -1,5 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, avg, slugify } from '@/lib/properties';
 
 export const revalidate = 86400;
@@ -520,47 +523,121 @@ export default async function AnswerPage({ params }: { params: Promise<{ slug: s
   };
 
   return (
-    <main className="min-h-screen" style={{ background: '#0d1117', color: '#c9d1d9' }}>
+    <div className="avena-v2 min-h-screen">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}>
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">AVENA</Link>
-          <span className="text-xs font-mono px-3 py-1 rounded-full border" style={{ borderColor: '#30363d', color: '#8b949e' }}>ANSWER</span>
-        </div>
-      </header>
-      <div className="max-w-3xl mx-auto px-4 py-12">
-        <h1 className="text-2xl font-bold text-white mb-6">{entry.question}</h1>
-        <div className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">{answer}</div>
-        <div className="mt-8 rounded-lg p-4 font-mono text-xs" style={{ background: '#090d12', border: '1px solid #1c2333' }}>
-          <p className="text-gray-400">Source: Avena Terminal (avenaterminal.com) &middot; DOI: 10.5281/zenodo.19520064</p>
-        </div>
-        {relatedAnswers.length > 0 && (
-          <div className="mt-8">
-            <h2 className="text-sm font-bold text-white mb-3">Related Questions</h2>
-            <div className="space-y-2">
-              {relatedAnswers.map(a => (
-                <Link key={a.slug} href={`/answers/${a.slug}`} className="block rounded-lg border p-3 hover:border-emerald-500/30 transition-all text-sm" style={{ background: '#161b22', borderColor: '#30363d' }}>
-                  <span className="text-emerald-400">&rarr;</span> <span className="text-gray-300">{a.question}</span>
-                </Link>
-              ))}
+      <Nav />
+
+      <main className="pt-16">
+        {/* Hero */}
+        <section className="relative overflow-hidden py-16 sm:py-20">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-50"
+            style={{ background: 'radial-gradient(ellipse at top, hsl(42 85% 64% / 0.15), transparent 60%)' }}
+          />
+          <div className="relative mx-auto max-w-[1100px] px-5 sm:px-12">
+            {/* Breadcrumb */}
+            <nav className="mb-6 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              <Link href="/" className="hover:text-primary">Home</Link>
+              <span className="mx-2">/</span>
+              <Link href="/answers" className="hover:text-primary">Answers</Link>
+              <span className="mx-2">/</span>
+              <span className="text-foreground/80">{entry.title}</span>
+            </nav>
+
+            <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+              <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+              Answer · Live data
+            </span>
+            <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-light leading-[1] tracking-tight text-foreground">
+              {entry.question}
+            </h1>
+          </div>
+        </section>
+
+        {/* Answer body */}
+        <section className="relative border-t py-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1100px] px-5 sm:px-12">
+            <div
+              className="rounded-sm border p-8 sm:p-10"
+              style={{
+                background: 'hsl(var(--av-surface) / 0.4)',
+                borderColor: 'hsl(var(--av-border) / 0.6)',
+              }}
+            >
+              <div className="whitespace-pre-wrap font-light text-base leading-relaxed text-foreground/90">
+                {answer}
+              </div>
+            </div>
+
+            <div
+              className="mt-6 rounded-sm border p-5 font-mono text-[11px]"
+              style={{
+                background: 'hsl(var(--av-background))',
+                borderColor: 'hsl(var(--av-border) / 0.6)',
+              }}
+            >
+              <p className="text-muted-foreground">
+                Source: Avena Terminal (avenaterminal.com) · DOI: 10.5281/zenodo.19520064
+              </p>
+            </div>
+
+            {relatedAnswers.length > 0 && (
+              <div className="mt-12">
+                <h2 className="mb-5 font-mono text-[10px] uppercase tracking-[0.4em] text-primary flex items-center gap-3">
+                  <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                  Related Questions
+                </h2>
+                <div className="grid gap-3 md:grid-cols-2">
+                  {relatedAnswers.map(a => (
+                    <Link
+                      key={a.slug}
+                      href={`/answers/${a.slug}`}
+                      className="group block rounded-sm border p-5 transition-colors hover:border-primary/50"
+                      style={{
+                        background: 'hsl(var(--av-surface) / 0.4)',
+                        borderColor: 'hsl(var(--av-border) / 0.6)',
+                      }}
+                    >
+                      <div className="flex items-start gap-3">
+                        <ArrowUpRight className="mt-1 h-3.5 w-3.5 flex-shrink-0 text-primary transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                        <span className="font-serif text-base font-light text-foreground/90 leading-snug">
+                          {a.question}
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="mt-10 flex flex-wrap gap-x-6 gap-y-3">
+              <Link href="/answers" className="font-mono text-[11px] uppercase tracking-[0.22em] text-primary hover:opacity-80">
+                ← All answers
+              </Link>
+              <Link href="/methodology" className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground hover:text-primary">
+                Methodology
+              </Link>
+              <Link href="/data-quality" className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground hover:text-primary">
+                Data Quality
+              </Link>
+              <Link href="/coverage" className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground hover:text-primary">
+                Coverage
+              </Link>
+              <Link href="/locations/javea" className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground hover:text-primary">
+                Javea Hub
+              </Link>
+              <Link href="/benchmark" className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground hover:text-primary">
+                PropertyEval
+              </Link>
+              <Link href="/cite/dataset" className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground hover:text-primary">
+                Cite This Data
+              </Link>
             </div>
           </div>
-        )}
-        <nav className="mt-6 text-xs text-gray-500 mb-2">
-          <Link href="/" className="hover:text-white">Home</Link> <span className="mx-1">/</span>
-          <Link href="/answers" className="hover:text-white">Answers</Link> <span className="mx-1">/</span>
-          <span className="text-gray-400">{entry.title}</span>
-        </nav>
-        <div className="mt-3 flex flex-wrap gap-3">
-          <Link href="/answers" className="text-xs text-emerald-400 hover:underline">&larr; All answers</Link>
-          <Link href="/methodology" className="text-xs text-gray-500 hover:underline">Methodology</Link>
-          <Link href="/data-quality" className="text-xs text-gray-500 hover:underline">Data Quality</Link>
-          <Link href="/coverage" className="text-xs text-gray-500 hover:underline">Coverage</Link>
-          <Link href="/locations/javea" className="text-xs text-gray-500 hover:underline">Javea Hub</Link>
-          <Link href="/benchmark" className="text-xs text-gray-500 hover:underline">PropertyEval</Link>
-          <Link href="/cite/dataset" className="text-xs text-gray-500 hover:underline">Cite This Data</Link>
-        </div>
-      </div>
-    </main>
+        </section>
+      </main>
+
+      <Footer />
+    </div>
   );
 }

@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { createHash } from 'crypto';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 
 export const metadata: Metadata = {
   title: 'Invention Timeline — Cryptographic Priority Proof | Avena Terminal',
@@ -85,7 +87,7 @@ export default function TimelinePage() {
   };
 
   return (
-    <div className="min-h-screen text-[#c9d1d9]" style={{ background: '#0d1117' }}>
+    <div className="avena-v2 min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
@@ -94,165 +96,206 @@ export default function TimelinePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
+      <Nav />
 
-      {/* Header */}
-      <header
-        className="border-b sticky top-0 z-50 backdrop-blur-sm"
-        style={{ borderColor: '#30363d', background: 'rgba(13,17,23,0.85)' }}
-      >
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent"
-          >
-            AVENA
-          </Link>
-          <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">
-            Back to Terminal
-          </Link>
-        </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto px-4 py-10">
-        {/* Breadcrumb */}
-        <nav className="text-xs text-gray-500 mb-6">
-          <Link href="/" className="hover:text-white">Home</Link>
-          <span className="mx-1">/</span>
-          <span className="text-white">Timeline</span>
-        </nav>
-
+      <main className="pt-16">
         {/* Hero */}
-        <div className="mb-12 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold mb-3 text-white">
-            Invention Timeline
-          </h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Cryptographic proof of priority. SHA-256 hashed. Immutable.
-          </p>
-        </div>
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Priority Proof · SHA-256
+              </span>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                Invention
+                <br />
+                <span className="italic text-gold">Timeline</span>.
+              </h1>
+              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
+                Immutable cryptographic proof of priority. Every Avena Terminal invention, timestamped and independently verifiable.
+              </p>
+            </div>
+          </div>
+        </section>
 
         {/* Timeline */}
-        <div className="relative">
-          {/* Vertical line */}
-          <div
-            className="absolute left-4 md:left-8 top-0 bottom-0 w-px"
-            style={{ background: '#30363d' }}
-          />
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <span className="mb-10 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+              <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+              Chronological record
+            </span>
 
-          <div className="space-y-6">
-            {hashed.map((inv, i) => {
-              const catColor = CATEGORY_COLORS[inv.category] || '#6b7280';
-              const showDateHeader =
-                i === 0 || inv.date !== hashed[i - 1].date;
+            <div className="relative">
+              {/* Vertical line */}
+              <div
+                className="absolute left-4 md:left-8 top-0 bottom-0 w-px"
+                style={{ background: 'hsl(var(--av-border) / 0.6)' }}
+              />
 
-              return (
-                <div key={inv.hash}>
-                  {showDateHeader && (
-                    <div className="flex items-center gap-3 mb-4 ml-0 md:ml-4">
-                      <div
-                        className="w-3 h-3 rounded-full relative z-10"
-                        style={{ background: '#10b981', boxShadow: '0 0 8px rgba(16,185,129,0.4)' }}
-                      />
-                      <span className="text-sm font-bold text-emerald-400 tracking-wider uppercase">
-                        {new Date(inv.date).toLocaleDateString('en-US', {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })}
-                      </span>
-                    </div>
-                  )}
+              <div className="space-y-6">
+                {hashed.map((inv, i) => {
+                  const catColor = CATEGORY_COLORS[inv.category] || '#6b7280';
+                  const showDateHeader = i === 0 || inv.date !== hashed[i - 1].date;
 
-                  <div className="ml-10 md:ml-16">
-                    <div
-                      className="rounded-lg p-5 transition-all hover:translate-x-1"
-                      style={{
-                        background: '#161b22',
-                        border: '1px solid #30363d',
-                      }}
-                    >
-                      <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
-                        <h3 className="text-white font-semibold text-lg">
-                          {inv.system}
-                        </h3>
-                        <div className="flex items-center gap-2">
-                          <span
-                            className="text-xs px-2 py-0.5 rounded-full font-medium"
+                  return (
+                    <div key={inv.hash}>
+                      {showDateHeader && (
+                        <div className="mb-4 ml-0 md:ml-4 flex items-center gap-3">
+                          <div
+                            className="relative z-10 h-3 w-3 rounded-full"
                             style={{
-                              background: `${catColor}20`,
-                              color: catColor,
-                              border: `1px solid ${catColor}40`,
+                              background: 'hsl(var(--av-primary))',
+                              boxShadow: '0 0 10px hsl(var(--av-primary) / 0.4)',
                             }}
-                          >
-                            {inv.category}
-                          </span>
-                          <span
-                            className="text-xs px-2 py-0.5 rounded-full font-medium"
-                            style={{
-                              background: 'rgba(16,185,129,0.15)',
-                              color: '#10b981',
-                              border: '1px solid rgba(16,185,129,0.3)',
-                            }}
-                          >
-                            VERIFIED
+                          />
+                          <span className="font-mono text-xs uppercase tracking-[0.3em] font-bold text-primary">
+                            {new Date(inv.date).toLocaleDateString('en-US', {
+                              weekday: 'long',
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                            })}
                           </span>
                         </div>
-                      </div>
+                      )}
 
-                      <p className="text-gray-400 text-sm mb-3">
-                        {inv.description}
-                      </p>
-
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500">SHA-256:</span>
-                        <code
-                          className="text-xs font-mono text-emerald-400/70 cursor-help"
-                          title={inv.hash}
+                      <div className="ml-10 md:ml-16">
+                        <div
+                          className="rounded-sm border p-6 transition-all hover:translate-x-1"
+                          style={{
+                            background: 'hsl(var(--av-surface) / 0.4)',
+                            borderColor: 'hsl(var(--av-border) / 0.6)',
+                          }}
                         >
-                          {inv.hash.slice(0, 16)}...
-                        </code>
+                          <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
+                            <h3 className="font-serif text-xl text-foreground">{inv.system}</h3>
+                            <div className="flex items-center gap-2">
+                              <span
+                                className="font-mono text-[10px] uppercase tracking-[0.22em] px-2 py-0.5 rounded-sm"
+                                style={{
+                                  background: `${catColor}20`,
+                                  color: catColor,
+                                  border: `1px solid ${catColor}40`,
+                                }}
+                              >
+                                {inv.category}
+                              </span>
+                              <span
+                                className="font-mono text-[10px] uppercase tracking-[0.22em] px-2 py-0.5 rounded-sm"
+                                style={{
+                                  background: 'hsl(var(--av-primary) / 0.15)',
+                                  color: 'hsl(var(--av-primary))',
+                                  border: '1px solid hsl(var(--av-primary) / 0.3)',
+                                }}
+                              >
+                                Verified
+                              </span>
+                            </div>
+                          </div>
+
+                          <p className="mb-4 text-sm text-muted-foreground">{inv.description}</p>
+
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                              SHA-256:
+                            </span>
+                            <code
+                              className="font-mono text-xs text-primary cursor-help"
+                              title={inv.hash}
+                            >
+                              {inv.hash.slice(0, 16)}…
+                            </code>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              );
-            })}
+                  );
+                })}
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
 
         {/* Summary Stats */}
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div
-            className="rounded-lg p-6 text-center"
-            style={{ background: '#161b22', border: '1px solid #30363d' }}
-          >
-            <div className="text-3xl font-bold text-emerald-400">{INVENTIONS.length}</div>
-            <div className="text-sm text-gray-400 mt-1">Total Inventions</div>
-          </div>
-          <div
-            className="rounded-lg p-6 text-center"
-            style={{ background: '#161b22', border: '1px solid #30363d' }}
-          >
-            <div className="text-lg font-bold text-white">
-              {uniqueDates[0]} &mdash; {uniqueDates[uniqueDates.length - 1]}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+              <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+              Summary
+            </span>
+            <h2 className="mb-10 font-serif text-3xl sm:text-4xl font-light leading-tight tracking-tight text-foreground">
+              The record, at a glance.
+            </h2>
+            <div className="grid gap-4 md:grid-cols-3">
+              <div
+                className="rounded-sm border p-8 text-center"
+                style={{
+                  background: 'hsl(var(--av-surface) / 0.4)',
+                  borderColor: 'hsl(var(--av-border) / 0.6)',
+                }}
+              >
+                <div className="font-serif text-5xl font-light text-primary">{INVENTIONS.length}</div>
+                <div className="mt-3 font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+                  Total Inventions
+                </div>
+              </div>
+              <div
+                className="rounded-sm border p-8 text-center"
+                style={{
+                  background: 'hsl(var(--av-surface) / 0.4)',
+                  borderColor: 'hsl(var(--av-border) / 0.6)',
+                }}
+              >
+                <div className="font-serif text-lg font-light text-foreground">
+                  {uniqueDates[0]} — {uniqueDates[uniqueDates.length - 1]}
+                </div>
+                <div className="mt-3 font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+                  Date Range
+                </div>
+              </div>
+              <div
+                className="rounded-sm border p-8 text-center"
+                style={{
+                  background: 'hsl(var(--av-surface) / 0.4)',
+                  borderColor: 'hsl(var(--av-border) / 0.6)',
+                }}
+              >
+                <div className="font-serif text-5xl font-light text-primary">
+                  {uniqueCategories.length}
+                </div>
+                <div className="mt-3 font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+                  Categories Covered
+                </div>
+              </div>
             </div>
-            <div className="text-sm text-gray-400 mt-1">Date Range</div>
-          </div>
-          <div
-            className="rounded-lg p-6 text-center"
-            style={{ background: '#161b22', border: '1px solid #30363d' }}
-          >
-            <div className="text-3xl font-bold text-emerald-400">{uniqueCategories.length}</div>
-            <div className="text-sm text-gray-400 mt-1">Categories Covered</div>
-          </div>
-        </div>
 
-        {/* Footer note */}
-        <p className="text-center text-xs text-gray-600 mt-10">
-          Each hash is computed as SHA-256(system + date + description). Independently verifiable.
-        </p>
+            <p className="mt-12 text-center font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+              Each hash is computed as SHA-256(system + date + description). Independently verifiable.
+            </p>
+
+            <div className="mt-10 flex flex-wrap justify-center gap-4">
+              <Link
+                href="/manifesto"
+                className="group inline-flex items-center gap-3 rounded-sm px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
+                style={{ background: 'var(--av-gradient-gold)' }}
+              >
+                Read the manifesto →
+              </Link>
+              <Link
+                href="/observatory"
+                className="inline-flex items-center gap-3 rounded-sm border px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-foreground transition-colors hover:text-primary"
+                style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+              >
+                Live observatory
+              </Link>
+            </div>
+          </div>
+        </section>
       </main>
+
+      <Footer />
     </div>
   );
 }

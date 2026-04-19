@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 
 export const metadata: Metadata = {
   title: 'European Property Market Comparisons | Avena Terminal',
@@ -74,97 +76,83 @@ const COMPARISONS = [
 
 export default function CompareLandingPage() {
   return (
-    <div className="min-h-screen text-gray-100" style={{ background: '#0d1117' }}>
-      {/* Header */}
-      <header
-        className="border-b sticky top-0 z-50 backdrop-blur-sm"
-        style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}
-      >
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent"
-          >
-            AVENA
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/portugal" className="text-sm text-gray-400 hover:text-white transition-colors">
-              Portugal
-            </Link>
-            <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">
-              Back to Terminal
-            </Link>
-          </div>
-        </div>
-      </header>
+    <div className="avena-v2 min-h-screen">
+      <Nav />
 
-      <main className="max-w-5xl mx-auto px-4 py-10">
-        {/* Breadcrumbs */}
-        <nav className="text-xs text-gray-500 mb-6">
-          <Link href="/" className="hover:text-white">Home</Link>
-          <span className="mx-1">/</span>
-          <span className="text-white">Compare</span>
-        </nav>
-
+      <main className="pt-16">
         {/* Hero */}
-        <section className="text-center mb-14">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
-            European Property Market Comparisons
-          </h1>
-          <p className="text-gray-400 max-w-2xl mx-auto">
-            Data-driven side-by-side analysis of Europe&apos;s most popular property investment destinations. Taxes, prices, yields, and lifestyle factors — all in one place.
-          </p>
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <nav className="mb-8 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+              <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+              <span className="mx-2">/</span>
+              <span className="text-foreground">Compare</span>
+            </nav>
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Market comparisons
+              </span>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                European property
+                <br />
+                <span className="italic text-gold">markets, compared</span>.
+              </h1>
+              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
+                Data-driven side-by-side analysis of Europe&apos;s most popular property investment destinations. Taxes, prices, yields, and lifestyle factors — all in one place.
+              </p>
+            </div>
+          </div>
         </section>
 
         {/* Comparison cards */}
-        <section className="grid md:grid-cols-2 gap-5 mb-14">
-          {COMPARISONS.map((c) => (
-            <Link
-              key={c.slug}
-              href={`/compare/${c.slug}`}
-              className="rounded-xl border p-6 hover:border-emerald-500/30 transition-all group block"
-              style={{ background: '#0f1419', borderColor: '#1c2333' }}
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <span className="text-2xl">{c.flagA}</span>
-                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">vs</span>
-                <span className="text-2xl">{c.flagB}</span>
-              </div>
-              <h2 className="text-lg font-bold text-white mb-1 group-hover:text-emerald-400 transition-colors">
-                {c.labelA} vs {c.labelB}
-              </h2>
-              <p className="text-sm text-gray-400 leading-relaxed">{c.description}</p>
-              <div className="mt-4 text-xs text-emerald-400 font-medium">
-                View comparison &rarr;
-              </div>
-            </Link>
-          ))}
-        </section>
+        <section className="pb-20 sm:pb-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="grid gap-5 md:grid-cols-2">
+              {COMPARISONS.map((c) => (
+                <Link
+                  key={c.slug}
+                  href={`/compare/${c.slug}`}
+                  className="group rounded-sm border p-8 transition-all hover:-translate-y-0.5"
+                  style={{
+                    background: 'hsl(var(--av-surface) / 0.4)',
+                    borderColor: 'hsl(var(--av-border) / 0.6)',
+                  }}
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="text-2xl">{c.flagA}</span>
+                    <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary">vs</span>
+                    <span className="text-2xl">{c.flagB}</span>
+                  </div>
+                  <h2 className="font-serif text-2xl font-light leading-tight text-foreground mb-3 group-hover:text-gold transition-colors">
+                    {c.labelA} vs {c.labelB}
+                  </h2>
+                  <p className="text-sm font-light leading-relaxed text-muted-foreground">{c.description}</p>
+                  <div className="mt-5 font-mono text-[11px] uppercase tracking-[0.22em] text-primary">
+                    View comparison →
+                  </div>
+                </Link>
+              ))}
+            </div>
 
-        {/* Cross-link */}
-        <section className="text-center">
-          <p className="text-sm text-gray-500 mb-3">Looking for town-level comparisons within Spain?</p>
-          <Link
-            href="/towns"
-            className="text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
-          >
-            Browse all Spanish towns &rarr;
-          </Link>
+            {/* Cross-link */}
+            <div className="mt-16 text-center">
+              <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground mb-4">
+                Looking for town-level comparisons within Spain?
+              </p>
+              <Link
+                href="/towns"
+                className="inline-flex items-center gap-2 rounded-sm border px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground hover:text-primary transition-colors"
+                style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+              >
+                Browse all Spanish towns →
+              </Link>
+            </div>
+          </div>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t py-8 mt-12" style={{ borderColor: '#1c2333' }}>
-        <div className="max-w-5xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between text-xs text-gray-500 gap-4">
-          <span className="font-serif tracking-[0.15em] text-gray-400">AVENA</span>
-          <span>Data-driven property investment intelligence for Europe&apos;s coasts.</span>
-          <div className="flex gap-4">
-            <Link href="/portugal" className="hover:text-white transition-colors">Portugal</Link>
-            <Link href="/towns" className="hover:text-white transition-colors">Towns</Link>
-            <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

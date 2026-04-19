@@ -2,6 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 
 export default function MortgageCalculatorPage() {
   const [price, setPrice] = useState(250000);
@@ -34,82 +36,131 @@ export default function MortgageCalculatorPage() {
   const fmt = (n: number) => n.toLocaleString('en-US', { maximumFractionDigits: 0 });
   const fmtPct = (n: number) => n.toFixed(1);
 
+  const inputStyle = {
+    background: 'hsl(var(--av-background))',
+    borderColor: 'hsl(var(--av-border-strong))',
+  };
+
   const inputClass =
-    'w-full bg-[#161b22] border border-[#30363d] rounded-lg px-4 py-3 text-white text-lg focus:outline-none focus:border-[#10B981] focus:ring-1 focus:ring-[#10B981] transition';
-  const labelClass = 'block text-sm font-medium text-gray-400 mb-1';
+    'w-full rounded-sm border px-4 py-3 font-mono text-sm text-foreground outline-none transition-colors focus:border-primary';
+  const labelClass = 'block font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-2';
 
   return (
-    <div className="min-h-screen bg-[#0d1117] text-white">
+    <div className="avena-v2 min-h-screen">
       <title>Spanish Mortgage Calculator — Free Tool | Avena Terminal</title>
       <meta name="description" content="Calculate your Spanish mortgage payments instantly. Estimate monthly payments, total interest and loan-to-value for property purchases in Spain." />
 
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <Link href="/tools" className="text-[#10B981] hover:underline text-sm mb-6 inline-block">&larr; All Tools</Link>
+      <Nav />
 
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">Spanish Mortgage Calculator</h1>
-        <p className="text-gray-400 mb-10 max-w-2xl">
-          Estimate your monthly mortgage payments for a property purchase in Spain. Adjust the deposit, interest rate and term to see how they affect your costs.
-        </p>
-
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* Inputs */}
-          <div className="space-y-5">
-            <div>
-              <label className={labelClass}>Property Price</label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">&#8364;</span>
-                <input type="number" value={price} onChange={e => setPrice(+e.target.value)} className={`${inputClass} pl-8`} min={0} step={5000} />
-              </div>
-            </div>
-            <div>
-              <label className={labelClass}>Deposit: {depositPct}%</label>
-              <input type="range" min={10} max={100} value={depositPct} onChange={e => setDepositPct(+e.target.value)} className="w-full accent-[#10B981]" />
-              <div className="flex justify-between text-xs text-gray-500 mt-1"><span>10%</span><span>100%</span></div>
-            </div>
-            <div>
-              <label className={labelClass}>Annual Interest Rate (%)</label>
-              <input type="number" value={interestRate} onChange={e => setInterestRate(+e.target.value)} className={inputClass} min={0} max={15} step={0.1} />
-            </div>
-            <div>
-              <label className={labelClass}>Term (years)</label>
-              <input type="number" value={termYears} onChange={e => setTermYears(+e.target.value)} className={inputClass} min={1} max={40} step={1} />
+      <main className="pt-16">
+        {/* Hero */}
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <nav className="mb-8 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+              <Link href="/tools" className="hover:text-primary transition-colors">All Tools</Link>
+              <span className="mx-2">/</span>
+              <span className="text-foreground">Mortgage</span>
+            </nav>
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Mortgage calculator
+              </span>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                Spanish mortgage
+                <br />
+                <span className="italic text-gold">payments</span>.
+              </h1>
+              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
+                Estimate monthly payments, total interest and loan-to-value. Adjust deposit, rate and term instantly.
+              </p>
             </div>
           </div>
+        </section>
 
-          {/* Results */}
-          <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-6 space-y-4">
-            <h2 className="text-xl font-semibold text-[#10B981] mb-4">Results</h2>
+        {/* Calculator */}
+        <section className="pb-20 sm:pb-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="grid gap-8 md:grid-cols-2">
+              {/* Inputs */}
+              <div className="space-y-5">
+                <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-2">Inputs</div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <ResultCard label="Monthly Payment" value={`\u20AC${fmt(results.monthlyPayment)}`} highlight />
-              <ResultCard label="Total Interest" value={`\u20AC${fmt(results.totalInterest)}`} />
-              <ResultCard label="Total Cost" value={`\u20AC${fmt(results.totalCost)}`} />
-              <ResultCard label="Loan-to-Value" value={`${fmtPct(results.ltv)}%`} />
-              <ResultCard label="Loan Amount" value={`\u20AC${fmt(results.loanAmount)}`} />
-              <ResultCard label="Deposit" value={`\u20AC${fmt(results.deposit)}`} />
-            </div>
-
-            <div className="mt-6 pt-4 border-t border-[#30363d]">
-              <div className="w-full bg-[#21262d] rounded-full h-3 overflow-hidden">
-                <div className="bg-[#10B981] h-3 rounded-full transition-all" style={{ width: `${Math.min(100, (results.totalInterest / (results.totalCost || 1)) * 100)}%` }} />
+                <div>
+                  <label className={labelClass}>Property Price</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-mono">€</span>
+                    <input type="number" value={price} onChange={e => setPrice(+e.target.value)} className={`${inputClass} pl-8`} style={inputStyle} min={0} step={5000} />
+                  </div>
+                </div>
+                <div>
+                  <label className={labelClass}>Deposit: {depositPct}%</label>
+                  <input type="range" min={10} max={100} value={depositPct} onChange={e => setDepositPct(+e.target.value)} className="w-full accent-primary" />
+                  <div className="flex justify-between font-mono text-[10px] text-muted-foreground mt-1"><span>10%</span><span>100%</span></div>
+                </div>
+                <div>
+                  <label className={labelClass}>Annual Interest Rate (%)</label>
+                  <input type="number" value={interestRate} onChange={e => setInterestRate(+e.target.value)} className={inputClass} style={inputStyle} min={0} max={15} step={0.1} />
+                </div>
+                <div>
+                  <label className={labelClass}>Term (years)</label>
+                  <input type="number" value={termYears} onChange={e => setTermYears(+e.target.value)} className={inputClass} style={inputStyle} min={1} max={40} step={1} />
+                </div>
               </div>
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
-                <span>Principal: {fmt(results.loanAmount)}</span>
-                <span>Interest: {fmt(results.totalInterest)}</span>
+
+              {/* Results */}
+              <div
+                className="rounded-sm border p-6"
+                style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+              >
+                <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-5">Results</div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <ResultCard label="Monthly Payment" value={`€${fmt(results.monthlyPayment)}`} highlight />
+                  <ResultCard label="Total Interest" value={`€${fmt(results.totalInterest)}`} />
+                  <ResultCard label="Total Cost" value={`€${fmt(results.totalCost)}`} />
+                  <ResultCard label="Loan-to-Value" value={`${fmtPct(results.ltv)}%`} />
+                  <ResultCard label="Loan Amount" value={`€${fmt(results.loanAmount)}`} />
+                  <ResultCard label="Deposit" value={`€${fmt(results.deposit)}`} />
+                </div>
+
+                <div className="mt-6 pt-4 border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+                  <div
+                    className="w-full h-2 rounded-sm overflow-hidden"
+                    style={{ background: 'hsl(var(--av-background))' }}
+                  >
+                    <div
+                      className="h-full transition-all"
+                      style={{
+                        width: `${Math.min(100, (results.totalInterest / (results.totalCost || 1)) * 100)}%`,
+                        background: 'var(--av-gradient-gold)',
+                      }}
+                    />
+                  </div>
+                  <div className="flex justify-between font-mono text-[10px] text-muted-foreground mt-2">
+                    <span>Principal: {fmt(results.loanAmount)}</span>
+                    <span>Interest: {fmt(results.totalInterest)}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
+
+      <Footer />
     </div>
   );
 }
 
 function ResultCard({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
-    <div className="bg-[#0d1117] rounded-lg p-4">
-      <p className="text-xs text-gray-500 mb-1">{label}</p>
-      <p className={`text-lg font-bold ${highlight ? 'text-[#10B981]' : 'text-white'}`}>{value}</p>
+    <div
+      className="rounded-sm border p-4"
+      style={{ background: 'hsl(var(--av-background))', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+    >
+      <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-2">{label}</p>
+      <p className={`font-serif text-xl font-light tracking-tight tabular ${highlight ? 'text-gold' : 'text-foreground'}`}>{value}</p>
     </div>
   );
 }

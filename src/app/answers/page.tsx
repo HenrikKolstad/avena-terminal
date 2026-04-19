@@ -1,5 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, avg } from '@/lib/properties';
 
 export const revalidate = 86400;
@@ -124,65 +127,106 @@ export default function AnswersPage() {
   };
 
   return (
-    <main style={{ background: '#0d1117', color: '#c9d1d9', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif' }}>
+    <div className="avena-v2 min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <style>{`
-        .answers-container { max-width: 900px; margin: 0 auto; padding: 3rem 1.5rem; }
-        .answers-container h1 { font-size: 2rem; color: #e6edf3; margin-bottom: 0.5rem; }
-        .answers-subtitle { color: #8b949e; font-size: 1rem; margin-bottom: 2.5rem; }
-        .answers-badge { display: inline-block; background: #1a7f37; color: #fff; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; margin-left: 8px; }
-        .category-section { margin-bottom: 2.5rem; }
-        .category-title { font-size: 1.25rem; color: #58a6ff; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #21262d; }
-        .qa-item { margin-bottom: 1.5rem; padding: 1rem; background: #161b22; border: 1px solid #21262d; border-radius: 6px; }
-        .qa-question { font-weight: 600; color: #e6edf3; margin-bottom: 0.5rem; font-size: 0.95rem; }
-        .qa-answer { color: #8b949e; font-size: 0.9rem; line-height: 1.5; }
-        .api-link { display: inline-block; margin-top: 2rem; padding: 10px 20px; background: #238636; color: #fff; border-radius: 6px; text-decoration: none; font-weight: 500; }
-        .api-link:hover { background: #2ea043; }
-        .back-link { color: #58a6ff; text-decoration: none; font-size: 0.9rem; }
-        .back-link:hover { text-decoration: underline; }
-        .header-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
-        .avena-mark { font-weight: 700; color: #58a6ff; font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; }
-      `}</style>
+      <Nav />
 
-      <div className="answers-container">
-        <div className="header-bar">
-          <span className="avena-mark">AVENA</span>
-          <Link href="/" className="back-link">Terminal</Link>
-        </div>
+      <main className="pt-16">
+        {/* Hero */}
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-60"
+            style={{ background: 'radial-gradient(ellipse at top, hsl(42 85% 64% / 0.18), transparent 60%)' }}
+          />
+          <div className="relative mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Answers · Live data
+              </span>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                {total} questions.
+                <br />
+                <span className="italic text-gold">Live answers</span>.
+              </h1>
+              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
+                Showing 50 of {total} questions answered with live data from Avena Terminal.
+                Every answer computed from real-time property data — price per m², yields, buying
+                process, taxes, regional analysis.
+              </p>
+            </div>
+          </div>
+        </section>
 
-        <h1>
-          {total} Property Investment Questions Answered
-          <span className="answers-badge">LIVE DATA</span>
-        </h1>
-        <p className="answers-subtitle">
-          Showing 50 of {total} questions answered with live data from Avena Terminal.
-          All answers computed from real-time property data.
-        </p>
-
+        {/* Categories */}
         {[...categories.entries()].map(([category, qas]) => (
-          <section key={category} className="category-section">
-            <h2 className="category-title">{category} ({qas.length})</h2>
-            {qas.map((qa, i) => (
-              <div key={i} className="qa-item">
-                <div className="qa-question">{qa.question}</div>
-                <div className="qa-answer">{qa.answer}</div>
+          <section
+            key={category}
+            className="relative border-t py-16 sm:py-20"
+            style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
+          >
+            <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+              <div className="mb-10 flex items-baseline justify-between gap-6 flex-wrap">
+                <h2 className="font-serif text-3xl sm:text-4xl font-light tracking-tight text-foreground">
+                  {category}
+                </h2>
+                <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                  {qas.length} answers
+                </span>
               </div>
-            ))}
+              <div className="grid gap-4 md:grid-cols-2">
+                {qas.map((qa, i) => (
+                  <div
+                    key={i}
+                    className="rounded-sm border p-6"
+                    style={{
+                      background: 'hsl(var(--av-surface) / 0.4)',
+                      borderColor: 'hsl(var(--av-border) / 0.6)',
+                    }}
+                  >
+                    <h3 className="font-serif text-lg font-light text-foreground mb-3 leading-snug">
+                      {qa.question}
+                    </h3>
+                    <p className="font-light text-sm text-muted-foreground leading-relaxed">
+                      {qa.answer}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </section>
         ))}
 
-        <a href="/api/aeo/questions" className="api-link">
-          View all {total} questions via API &rarr;
-        </a>
+        {/* CTA + Footer info */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <a
+              href="/api/aeo/questions"
+              className="group inline-flex items-center gap-3 rounded-sm px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
+              style={{ background: 'var(--av-gradient-gold)' }}
+            >
+              View all {total} questions via API
+              <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </a>
 
-        <div style={{ marginTop: '2rem', color: '#484f58', fontSize: '0.8rem' }}>
-          <p>Data source: Avena Terminal (avenaterminal.com) | DOI: 10.5281/zenodo.19520064 | Wikidata: Q139165733</p>
-          <p>Last updated: {new Date().toISOString().split('T')[0]}</p>
-        </div>
-      </div>
-    </main>
+            <div className="mt-10 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground space-y-1">
+              <p>Data source: Avena Terminal · DOI: 10.5281/zenodo.19520064 · Wikidata: Q139165733</p>
+              <p>Last updated: {new Date().toISOString().split('T')[0]}</p>
+            </div>
+
+            <nav className="mt-6">
+              <Link href="/" className="font-mono text-[11px] uppercase tracking-[0.22em] text-primary hover:opacity-80">
+                ← Back to Terminal
+              </Link>
+            </nav>
+          </div>
+        </section>
+      </main>
+
+      <Footer />
+    </div>
   );
 }

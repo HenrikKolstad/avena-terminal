@@ -247,6 +247,86 @@ export default function ProPage() {
           </div>
         </section>
 
+        {/* THE SWARM — 13 agents working for you */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10 max-w-3xl">
+              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                <span className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
+                The Swarm · 13 agents working 24/7
+              </span>
+              <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-light leading-[1] tracking-tight text-foreground">
+                Your <span className="italic text-gold">unfair advantage</span>.
+              </h2>
+              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
+                13 autonomous agents score properties, detect alpha signals, monitor
+                developer stress, and track citation gaps across the European web &mdash;
+                while you sleep. PRO gives you direct access to every signal they find.
+              </p>
+            </div>
+
+            {/* Agent grid */}
+            <div
+              className="grid gap-px overflow-hidden rounded-sm border sm:grid-cols-2 lg:grid-cols-4"
+              style={{
+                borderColor: 'hsl(var(--av-border) / 0.6)',
+                background: 'hsl(var(--av-border) / 0.6)',
+              }}
+            >
+              {[
+                { name: 'Atlas', role: 'Citation intelligence', desc: 'Monitors Perplexity, GPT, Claude, Gemini for citation gaps. Auto-generates answers.', sched: 'Daily 03:00 UTC', tag: 'NEW' },
+                { name: 'Bloodhound', role: 'Anomaly detection', desc: '8 alpha signal classes. Flags mispricing, deep discounts, yield spikes the moment they appear.', sched: 'Daily 07:45 UTC' },
+                { name: 'Oracle', role: 'Macro regime', desc: 'ECB rates, inflation, foreign demand, credit cycles. Detects regime shifts before price action.', sched: 'Daily 06:00 UTC' },
+                { name: '007', role: 'Developer stress', desc: 'Financial stability, delivery track record, portfolio risk. Flags distressed developers.', sched: 'Weekly Monday' },
+                { name: 'Vault', role: 'Data archival', desc: '1,881 properties snapshotted daily. Historical price deltas. Immutable record.', sched: 'Daily 06:00 UTC' },
+                { name: 'Darwin', role: 'Self-improvement', desc: 'Generates training pairs from every query. Ships to HuggingFace. Model gets smarter daily.', sched: 'Daily 05:00 UTC' },
+                { name: 'Von Gogh', role: 'Content generation', desc: 'AI journalist. Writes investment briefs, market commentary, property analyses.', sched: 'Daily 08:00 UTC' },
+                { name: 'Einstein', role: 'Correlation discovery', desc: 'Finds non-obvious patterns. Beach distance vs yield. Developer age vs completion rate.', sched: 'Weekly Friday' },
+                { name: 'Hawkeye', role: 'Visual intelligence', desc: 'Processes property images. Detects quality signals, renders condition scores.', sched: 'Daily 01:00 UTC' },
+                { name: 'Morpheus', role: 'Meta-monitoring', desc: 'Watches the swarm itself. Spots agent drift, performance degradation, optimization gaps.', sched: 'Sunday 09:00 UTC' },
+                { name: 'Shadow', role: 'Citation hunting', desc: 'Scans the web for Avena mentions. Finds AEO gaps. Feeds targets to Atlas.', sched: 'Daily 09:00 UTC' },
+                { name: 'Curie', role: 'Research synthesis', desc: 'Publishes one research paper per month. Zenodo DOI assigned. Academic rigor.', sched: '1st of month' },
+                { name: 'Mercury', role: 'Weekly digest', desc: 'Synthesizes the week into a digest. APCI moves, top deals, regime shifts.', sched: 'Monday 06:00 UTC' },
+              ].map((a, i) => (
+                <div key={a.name} className="p-5" style={{ background: 'hsl(var(--av-background))' }}>
+                  <div className="flex items-start justify-between mb-2">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary">
+                      {String(i + 1).padStart(2, '0')} · {a.name}
+                    </span>
+                    {a.tag && (
+                      <span className="font-mono text-[8px] uppercase tracking-[0.22em] text-primary-foreground rounded-sm px-1.5 py-0.5"
+                        style={{ background: 'var(--av-gradient-gold)' }}
+                      >
+                        {a.tag}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="font-serif text-xl text-foreground mb-2">{a.role}</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed font-light mb-3">{a.desc}</p>
+                  <div className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground/70">
+                    <span className="pulse-dot relative inline-block h-1 w-1 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
+                    {a.sched}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 flex flex-wrap gap-3 items-center">
+              <Link
+                href="/swarm"
+                className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-primary"
+              >
+                Watch the swarm live
+                <ArrowUpRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </Link>
+              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                · 14 cron jobs · 192 API routes · 0 downtime
+              </span>
+            </div>
+          </div>
+        </section>
+
         {/* THE PRO CARD — the showpiece */}
         <section className="relative border-t py-16 sm:py-24" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
           <div className="mx-auto max-w-[1400px] px-5 sm:px-12">

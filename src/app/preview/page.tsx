@@ -26,8 +26,8 @@ export default function PreviewPage() {
       <main>
         <Hero />
         <Ticker />
-        <Indices />
         <FeaturedDeals />
+        <Indices />
         <Regions />
         <CTA />
       </main>

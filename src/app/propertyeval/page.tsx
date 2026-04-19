@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, avg } from '@/lib/properties';
 
 export const revalidate = 86400;
@@ -72,137 +74,255 @@ export default function PropertyEvalPage() {
     variableMeasured: ['question', 'correct_answer', 'category', 'difficulty'],
   };
 
+  const cardStyle = {
+    background: 'hsl(var(--av-surface) / 0.4)',
+    borderColor: 'hsl(var(--av-border) / 0.6)',
+  };
+
+  const difficultyColor = (d: string) =>
+    d === 'Hard' ? 'hsl(var(--av-destructive))' : d === 'Medium' ? 'hsl(var(--av-primary))' : '#10b981';
+
   return (
-    <main className="min-h-screen" style={{ background: '#0d1117', color: '#c9d1d9' }}>
+    <div className="avena-v2 min-h-screen">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <Nav />
 
-      <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}>
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">AVENA</Link>
-          <span className="text-xs font-mono px-3 py-1 rounded-full" style={{ background: '#10b981', color: '#0d1117' }}>BENCHMARK</span>
-        </div>
-      </header>
-
-      <div className="max-w-4xl mx-auto px-4 py-12">
+      <main className="pt-16">
         {/* Hero */}
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">PropertyEval</h1>
-        <p className="text-lg text-gray-400 mb-2">The AI Property Investment Benchmark</p>
-        <p className="text-sm text-gray-500 mb-8 max-w-2xl">
-          100 standardized scenarios for evaluating how well AI systems recommend property investments. Like HumanEval for coding or MMLU for knowledge — but for real estate. Based on live scored data from {all.length.toLocaleString()} properties.
-        </p>
-
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
-          {[
-            { label: 'Scenarios', value: '100' },
-            { label: 'Categories', value: '4' },
-            { label: 'Source Properties', value: all.length.toLocaleString() },
-            { label: 'Avg Score', value: `${avgScore}/100` },
-          ].map(s => (
-            <div key={s.label} className="rounded-lg p-3 text-center" style={{ background: '#161b22', border: '1px solid #30363d' }}>
-              <div className="text-2xl font-bold text-white">{s.value}</div>
-              <div className="text-[10px] text-gray-500">{s.label}</div>
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-50"
+            style={{ background: 'radial-gradient(ellipse at top, hsl(42 85% 64% / 0.18), transparent 60%)' }}
+          />
+          <div className="relative mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                PropertyEval · Benchmark
+              </span>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                The AI property
+                <br />
+                <span className="italic text-gold">investment benchmark</span>.
+              </h1>
+              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
+                100 standardized scenarios for evaluating how well AI systems recommend property
+                investments. Like HumanEval for coding or MMLU for knowledge — but for real estate.
+                Based on live scored data from {all.length.toLocaleString()} properties.
+              </p>
             </div>
-          ))}
-        </div>
 
-        <div className="h-px w-full mb-10" style={{ background: '#1c2333' }} />
+            {/* Stats */}
+            <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl">
+              {[
+                { label: 'Scenarios', value: '100' },
+                { label: 'Categories', value: '4' },
+                { label: 'Source Properties', value: all.length.toLocaleString() },
+                { label: 'Avg Score', value: `${avgScore}/100` },
+              ].map(s => (
+                <div key={s.label}>
+                  <div className="font-serif text-3xl sm:text-4xl font-light tracking-tight text-foreground tabular">{s.value}</div>
+                  <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {/* Categories */}
-        <section className="mb-10">
-          <h2 className="text-xl font-bold text-white mb-4">Categories</h2>
-          <div className="grid md:grid-cols-2 gap-3">
-            {[
-              { name: 'Property Selection', count: 25, desc: 'Given constraints, identify the optimal investment from the database' },
-              { name: 'Market Analysis', count: 25, desc: 'Answer factual questions about market statistics and regional data' },
-              { name: 'Risk Assessment', count: 25, desc: 'Evaluate investment risk based on property and developer attributes' },
-              { name: 'Comparative Analysis', count: 25, desc: 'Compare properties or regions and justify the better investment' },
-            ].map(c => (
-              <div key={c.name} className="rounded-lg p-4" style={{ background: '#161b22', border: '1px solid #30363d' }}>
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-white font-semibold text-sm">{c.name}</h3>
-                  <span className="text-xs font-mono text-emerald-400">{c.count} scenarios</span>
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+              <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+              Categories
+            </span>
+            <h2 className="mb-10 font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+              Four <span className="italic text-gold">dimensions</span>.
+            </h2>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              {[
+                { name: 'Property Selection', count: 25, desc: 'Given constraints, identify the optimal investment from the database' },
+                { name: 'Market Analysis', count: 25, desc: 'Answer factual questions about market statistics and regional data' },
+                { name: 'Risk Assessment', count: 25, desc: 'Evaluate investment risk based on property and developer attributes' },
+                { name: 'Comparative Analysis', count: 25, desc: 'Compare properties or regions and justify the better investment' },
+              ].map(c => (
+                <div key={c.name} className="rounded-sm border p-6" style={cardStyle}>
+                  <div className="mb-3 flex items-baseline justify-between">
+                    <h3 className="font-serif text-xl font-light text-foreground">{c.name}</h3>
+                    <span className="font-mono text-xs text-primary">{c.count} scenarios</span>
+                  </div>
+                  <p className="font-light text-sm text-muted-foreground leading-relaxed">{c.desc}</p>
                 </div>
-                <p className="text-xs text-gray-500">{c.desc}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
-
-        <div className="h-px w-full mb-10" style={{ background: '#1c2333' }} />
 
         {/* Sample Scenarios */}
-        <section className="mb-10">
-          <h2 className="text-xl font-bold text-white mb-4">Sample Scenarios</h2>
-          <div className="space-y-4">
-            {sampleScenarios.map(s => (
-              <div key={s.id} className="rounded-lg p-5" style={{ background: '#161b22', border: '1px solid #30363d' }}>
-                <div className="flex items-center gap-2 mb-3">
-                  <code className="text-emerald-400 text-xs font-bold">{s.id}</code>
-                  <span className="text-xs px-2 py-0.5 rounded" style={{ background: '#1c2333', color: '#8b949e' }}>{s.category}</span>
-                  <span className="text-xs px-2 py-0.5 rounded" style={{ background: '#1c2333', color: s.difficulty === 'Hard' ? '#f87171' : s.difficulty === 'Medium' ? '#fbbf24' : '#10b981' }}>{s.difficulty}</span>
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+              <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+              Sample Scenarios
+            </span>
+            <h2 className="mb-10 font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+              A <span className="italic text-gold">taste</span> of the questions.
+            </h2>
+
+            <div className="space-y-5">
+              {sampleScenarios.map(s => (
+                <div key={s.id} className="rounded-sm border p-8" style={cardStyle}>
+                  <div className="mb-5 flex flex-wrap items-center gap-3">
+                    <code className="font-mono text-xs font-bold text-primary">{s.id}</code>
+                    <span
+                      className="rounded-sm px-3 py-1 font-mono text-[10px] uppercase tracking-[0.22em]"
+                      style={{ background: 'hsl(var(--av-background))', color: 'hsl(var(--av-muted-foreground))' }}
+                    >
+                      {s.category}
+                    </span>
+                    <span
+                      className="rounded-sm px-3 py-1 font-mono text-[10px] uppercase tracking-[0.22em]"
+                      style={{
+                        background: 'hsl(var(--av-background))',
+                        color: difficultyColor(s.difficulty),
+                      }}
+                    >
+                      {s.difficulty}
+                    </span>
+                  </div>
+                  <div className="mb-5">
+                    <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-2">
+                      Question
+                    </div>
+                    <p className="font-serif text-lg font-light text-foreground leading-snug">{s.question}</p>
+                  </div>
+                  <div>
+                    <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-2">
+                      Correct Answer
+                    </div>
+                    <p className="font-light text-base leading-relaxed text-foreground/90">{s.answer}</p>
+                  </div>
                 </div>
-                <div className="mb-3">
-                  <div className="text-xs text-gray-500 mb-1">Question:</div>
-                  <p className="text-sm text-white">{s.question}</p>
-                </div>
-                <div>
-                  <div className="text-xs text-gray-500 mb-1">Correct Answer:</div>
-                  <p className="text-sm text-gray-400">{s.answer}</p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 
-        <div className="h-px w-full mb-10" style={{ background: '#1c2333' }} />
-
         {/* Download */}
-        <section className="mb-10">
-          <h2 className="text-xl font-bold text-white mb-4">Download</h2>
-          <p className="text-sm text-gray-400 mb-4">Full benchmark dataset (100 scenarios with correct answers) available via API:</p>
-          <div className="rounded-lg p-4 font-mono text-sm" style={{ background: '#090d12', border: '1px solid #1c2333' }}>
-            <pre className="text-gray-300">curl https://avenaterminal.com/api/propertyeval</pre>
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+              <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+              Download
+            </span>
+            <h2 className="mb-6 font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+              Grab the <span className="italic text-gold">dataset</span>.
+            </h2>
+            <p className="mb-8 max-w-3xl font-light text-base text-muted-foreground">
+              Full benchmark dataset (100 scenarios with correct answers) available via API:
+            </p>
+
+            <div
+              className="rounded-sm border p-6 font-mono text-sm max-w-3xl"
+              style={{
+                background: 'hsl(var(--av-background))',
+                borderColor: 'hsl(var(--av-border) / 0.6)',
+              }}
+            >
+              <pre className="text-foreground/90">curl https://avenaterminal.com/api/propertyeval</pre>
+            </div>
+            <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+              JSON format · CC BY 4.0 · Updated with each data refresh
+            </p>
           </div>
-          <p className="text-xs text-gray-500 mt-2">JSON format &middot; CC BY 4.0 &middot; Updated with each data refresh</p>
         </section>
 
         {/* Leaderboard */}
-        <section className="mb-10">
-          <h2 className="text-xl font-bold text-white mb-4">Leaderboard</h2>
-          <div className="rounded-lg p-6 text-center" style={{ background: '#161b22', border: '1px dashed #30363d' }}>
-            <p className="text-gray-500 text-sm mb-2">No submissions yet</p>
-            <p className="text-xs text-gray-600">Run PropertyEval against your AI system and submit results to be listed here.</p>
-            <p className="text-xs text-gray-600 mt-1">Contact: henrik@xaviaestate.com</p>
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+              <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+              Leaderboard
+            </span>
+            <h2 className="mb-10 font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+              Submissions <span className="italic text-gold">welcome</span>.
+            </h2>
+
+            <div
+              className="rounded-sm border p-10 text-center max-w-3xl"
+              style={{
+                background: 'hsl(var(--av-surface) / 0.4)',
+                borderColor: 'hsl(var(--av-border) / 0.6)',
+                borderStyle: 'dashed',
+              }}
+            >
+              <p className="mb-3 font-serif text-xl font-light text-foreground">No submissions yet</p>
+              <p className="mb-2 font-light text-sm text-muted-foreground">
+                Run PropertyEval against your AI system and submit results to be listed here.
+              </p>
+              <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+                Contact: henrik@xaviaestate.com
+              </p>
+            </div>
           </div>
         </section>
 
         {/* How to Evaluate */}
-        <section className="mb-10">
-          <h2 className="text-xl font-bold text-white mb-4">How to Evaluate</h2>
-          <div className="space-y-2 text-sm text-gray-400">
-            <p><strong className="text-white">1.</strong> Download the 100 scenarios from the API</p>
-            <p><strong className="text-white">2.</strong> Feed each question to your AI system</p>
-            <p><strong className="text-white">3.</strong> Compare AI responses against correct answers</p>
-            <p><strong className="text-white">4.</strong> Score: exact match on factual questions, rubric-based on reasoning questions</p>
-            <p><strong className="text-white">5.</strong> Report accuracy per category and overall</p>
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+              <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+              How to Evaluate
+            </span>
+            <h2 className="mb-10 font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+              Five <span className="italic text-gold">steps</span>.
+            </h2>
+
+            <div className="space-y-4 max-w-4xl">
+              {[
+                'Download the 100 scenarios from the API',
+                'Feed each question to your AI system',
+                'Compare AI responses against correct answers',
+                'Score: exact match on factual questions, rubric-based on reasoning questions',
+                'Report accuracy per category and overall',
+              ].map((step, i) => (
+                <div key={i} className="rounded-sm border p-5 flex gap-5" style={cardStyle}>
+                  <span className="font-serif text-2xl font-light text-gold tabular shrink-0">{i + 1}</span>
+                  <p className="font-light text-base leading-relaxed text-foreground/90">{step}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
         {/* Citation */}
-        <section className="mb-10">
-          <h2 className="text-xl font-bold text-white mb-4">Citation</h2>
-          <div className="rounded-lg p-4 font-mono text-xs" style={{ background: '#090d12', border: '1px solid #1c2333' }}>
-            <p className="text-gray-400">Kolstad, H. (2026). PropertyEval: A Benchmark for AI Property Investment Advice.</p>
-            <p className="text-gray-400">Avena Terminal. https://avenaterminal.com/propertyeval</p>
-            <p className="text-gray-400">DOI: 10.5281/zenodo.19520064</p>
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+              <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+              Citation
+            </span>
+            <h2 className="mb-10 font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+              Cite <span className="italic text-gold">this work</span>.
+            </h2>
+
+            <div
+              className="rounded-sm border p-6 font-mono text-sm max-w-3xl"
+              style={{
+                background: 'hsl(var(--av-background))',
+                borderColor: 'hsl(var(--av-border) / 0.6)',
+              }}
+            >
+              <p className="text-foreground/80">Kolstad, H. (2026). PropertyEval: A Benchmark for AI Property Investment Advice.</p>
+              <p className="text-foreground/80">Avena Terminal. https://avenaterminal.com/propertyeval</p>
+              <p className="text-foreground/80">DOI: 10.5281/zenodo.19520064</p>
+            </div>
           </div>
         </section>
+      </main>
 
-        <footer className="text-center text-xs text-gray-600 pb-8">
-          &copy; 2026 Avena Terminal &middot; The first benchmark for AI property investment systems
-        </footer>
-      </div>
-    </main>
+      <Footer />
+    </div>
   );
 }

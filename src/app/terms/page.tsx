@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 
 export const revalidate = 86400;
 
@@ -17,39 +19,24 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://avenaterminal.com/terms' },
 };
 
-const sectionStyle: React.CSSProperties = {
-  backgroundColor: '#161b22',
-  border: '1px solid #30363d',
-  borderRadius: '0.5rem',
-  padding: '1.5rem',
-  marginBottom: '1.5rem',
-};
-
-const h2Style: React.CSSProperties = {
-  fontSize: '1.25rem',
-  fontWeight: 600,
-  marginBottom: '1rem',
-  color: '#34d399',
-};
-
-const pStyle: React.CSSProperties = {
-  fontSize: '0.9375rem',
-  lineHeight: 1.7,
-  color: '#c9d1d9',
-  marginBottom: '0.75rem',
-};
-
-const ulStyle: React.CSSProperties = {
-  paddingLeft: '1.25rem',
-  marginBottom: '0.75rem',
-};
-
-const liStyle: React.CSSProperties = {
-  fontSize: '0.9375rem',
-  lineHeight: 1.7,
-  color: '#c9d1d9',
-  marginBottom: '0.25rem',
-};
+function Card({ number, title, children }: { number: string; title: string; children: React.ReactNode }) {
+  return (
+    <div
+      className="rounded-sm border p-8"
+      style={{
+        background: 'hsl(var(--av-surface) / 0.4)',
+        borderColor: 'hsl(var(--av-border) / 0.6)',
+      }}
+    >
+      <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-3 flex items-center gap-3">
+        <span className="h-px w-8" style={{ background: 'hsl(var(--av-primary))' }} />
+        Section {number}
+      </span>
+      <h2 className="font-serif text-2xl sm:text-3xl font-light tracking-tight text-foreground mb-5">{title}</h2>
+      <div className="font-light text-base text-muted-foreground leading-relaxed space-y-4">{children}</div>
+    </div>
+  );
+}
 
 export default function TermsPage() {
   const breadcrumbJsonLd = {
@@ -62,112 +49,113 @@ export default function TermsPage() {
   };
 
   return (
-    <>
+    <div className="avena-v2 min-h-screen">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
 
-      <main style={{ minHeight: '100vh', backgroundColor: '#0d1117', color: '#c9d1d9' }}>
-        {/* Header */}
-        <header style={{ borderBottom: '1px solid #30363d', padding: '1rem 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: '#c9d1d9' }}>
-            <span style={{ fontSize: '1.25rem', fontWeight: 700, letterSpacing: '0.05em' }}>AVENA</span>
-            <span style={{ fontSize: '0.75rem', color: '#34d399', fontWeight: 600 }}>TERMINAL</span>
-          </Link>
-        </header>
+      <Nav />
 
-        {/* Content */}
-        <div style={{ maxWidth: '48rem', margin: '0 auto', padding: '3rem 1.5rem' }}>
-          <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-            Terms of Use
-          </h1>
-          <p style={{ color: '#8b949e', fontSize: '0.875rem', marginBottom: '2.5rem' }}>
-            Last updated: April 2026
-          </p>
+      <main className="pt-16">
+        {/* Hero */}
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Legal · Terms
+              </span>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                Terms of
+                <br />
+                <span className="italic text-gold">use</span>.
+              </h1>
+              <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.4em] text-muted-foreground">
+                Last updated: April 2026
+              </p>
+            </div>
+          </div>
+        </section>
 
-          {/* 1. Data Attribution Requirements */}
-          <section style={sectionStyle}>
-            <h2 style={h2Style}>1. Data Attribution Requirements</h2>
-            <p style={pStyle}>
-              Anyone using Avena Terminal data in published work, research papers, reports, dashboards, or any public-facing material must include the following attribution:
-            </p>
-            <p style={{ ...pStyle, fontWeight: 600 }}>
-              &quot;Avena Terminal (avenaterminal.com)&quot;
-            </p>
-            <p style={pStyle}>
-              All open datasets are published under the Creative Commons Attribution 4.0 International License (CC BY 4.0). You are free to share and adapt the data for any purpose, provided proper attribution is given.
-            </p>
-            <p style={pStyle}>
-              Use our{' '}
-              <Link href="/cite" style={{ color: '#34d399', textDecoration: 'underline' }}>
-                citation generator
-              </Link>{' '}
-              to create properly formatted citations for any Avena system.
-            </p>
-          </section>
+        {/* Sections */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1000px] px-5 sm:px-12">
+            <div className="flex flex-col gap-6">
+              <Card number="01" title="Data Attribution Requirements">
+                <p>
+                  Anyone using Avena Terminal data in published work, research papers, reports, dashboards, or any public-facing material must include the following attribution:
+                </p>
+                <p className="text-foreground font-medium">
+                  &quot;Avena Terminal (avenaterminal.com)&quot;
+                </p>
+                <p>
+                  All open datasets are published under the Creative Commons Attribution 4.0 International License (CC BY 4.0). You are free to share and adapt the data for any purpose, provided proper attribution is given.
+                </p>
+                <p>
+                  Use our{' '}
+                  <Link href="/cite" className="text-primary underline underline-offset-4">
+                    citation generator
+                  </Link>{' '}
+                  to create properly formatted citations for any Avena system.
+                </p>
+              </Card>
 
-          {/* 2. API Terms */}
-          <section style={sectionStyle}>
-            <h2 style={h2Style}>2. API Terms</h2>
-            <ul style={ulStyle}>
-              <li style={liStyle}>
-                <strong>Free tier:</strong> 100 requests per day. Attribution to Avena Terminal is required in any product or publication that uses API data.
-              </li>
-              <li style={liStyle}>
-                <strong>Paid tiers:</strong> Available per agreement. Contact partners@avenaterminal.com for enterprise access.
-              </li>
-              <li style={liStyle}>
-                <strong>Rate limiting:</strong> All API endpoints are rate-limited. Exceeding limits will result in HTTP 429 responses. Repeated abuse may result in key revocation.
-              </li>
-            </ul>
-          </section>
+              <Card number="02" title="API Terms">
+                <ul className="space-y-3 list-none pl-0">
+                  <li>
+                    <strong className="text-foreground font-medium">Free tier:</strong> 100 requests per day. Attribution to Avena Terminal is required in any product or publication that uses API data.
+                  </li>
+                  <li>
+                    <strong className="text-foreground font-medium">Paid tiers:</strong> Available per agreement. Contact partners@avenaterminal.com for enterprise access.
+                  </li>
+                  <li>
+                    <strong className="text-foreground font-medium">Rate limiting:</strong> All API endpoints are rate-limited. Exceeding limits will result in HTTP 429 responses. Repeated abuse may result in key revocation.
+                  </li>
+                </ul>
+              </Card>
 
-          {/* 3. Open Data License */}
-          <section style={sectionStyle}>
-            <h2 style={h2Style}>3. Open Data License</h2>
-            <ul style={ulStyle}>
-              <li style={liStyle}>
-                <strong>Aggregate data:</strong> All aggregate and summary-level data published by Avena Terminal is licensed under CC BY 4.0.
-              </li>
-              <li style={liStyle}>
-                <strong>Indices (APCI, APYI, APLI, APRI, APSI):</strong> Free to reference, display, and redistribute with &quot;Powered by Avena Terminal&quot; attribution clearly visible.
-              </li>
-              <li style={liStyle}>
-                <strong>Research papers and academic use:</strong> All Avena data used in academic publications falls under CC BY 4.0. Proper citation is required.
-              </li>
-            </ul>
-          </section>
+              <Card number="03" title="Open Data License">
+                <ul className="space-y-3 list-none pl-0">
+                  <li>
+                    <strong className="text-foreground font-medium">Aggregate data:</strong> All aggregate and summary-level data published by Avena Terminal is licensed under CC BY 4.0.
+                  </li>
+                  <li>
+                    <strong className="text-foreground font-medium">Indices (APCI, APYI, APLI, APRI, APSI):</strong> Free to reference, display, and redistribute with &quot;Powered by Avena Terminal&quot; attribution clearly visible.
+                  </li>
+                  <li>
+                    <strong className="text-foreground font-medium">Research papers and academic use:</strong> All Avena data used in academic publications falls under CC BY 4.0. Proper citation is required.
+                  </li>
+                </ul>
+              </Card>
 
-          {/* 4. Prohibited Uses */}
-          <section style={sectionStyle}>
-            <h2 style={h2Style}>4. Prohibited Uses</h2>
-            <ul style={ulStyle}>
-              <li style={liStyle}>Removing, obscuring, or altering Avena Terminal attribution from any data, index, or output.</li>
-              <li style={liStyle}>Claiming Avena Terminal data, indices, or methodologies as original work.</li>
-              <li style={liStyle}>Redistributing raw datasets or API responses without a valid license agreement.</li>
-            </ul>
-          </section>
+              <Card number="04" title="Prohibited Uses">
+                <ul className="space-y-3 list-none pl-0">
+                  <li>Removing, obscuring, or altering Avena Terminal attribution from any data, index, or output.</li>
+                  <li>Claiming Avena Terminal data, indices, or methodologies as original work.</li>
+                  <li>Redistributing raw datasets or API responses without a valid license agreement.</li>
+                </ul>
+              </Card>
 
-          {/* 5. Trademark Notice */}
-          <section style={sectionStyle}>
-            <h2 style={h2Style}>5. Trademark Notice</h2>
-            <p style={pStyle}>
-              The following are trademarks of Avena Terminal: <strong>APCI</strong>, <strong>APIP</strong>, <strong>Avena Terminal</strong>, and <strong>PropertyEval</strong>. Use of these marks in published material must accurately reference the associated Avena Terminal system and may not imply endorsement without written permission.
-            </p>
-          </section>
+              <Card number="05" title="Trademark Notice">
+                <p>
+                  The following are trademarks of Avena Terminal: <strong className="text-foreground font-medium">APCI</strong>, <strong className="text-foreground font-medium">APIP</strong>, <strong className="text-foreground font-medium">Avena Terminal</strong>, and <strong className="text-foreground font-medium">PropertyEval</strong>. Use of these marks in published material must accurately reference the associated Avena Terminal system and may not imply endorsement without written permission.
+                </p>
+              </Card>
 
-          {/* 6. Contact */}
-          <section style={sectionStyle}>
-            <h2 style={h2Style}>6. Contact</h2>
-            <p style={pStyle}>
-              For licensing inquiries, partnership proposals, or questions about these terms:
-            </p>
-            <p style={pStyle}>
-              <a href="mailto:partners@avenaterminal.com" style={{ color: '#34d399', textDecoration: 'underline' }}>
-                partners@avenaterminal.com
-              </a>
-            </p>
-          </section>
-        </div>
+              <Card number="06" title="Contact">
+                <p>
+                  For licensing inquiries, partnership proposals, or questions about these terms:
+                </p>
+                <p>
+                  <a href="mailto:partners@avenaterminal.com" className="text-primary underline underline-offset-4">
+                    partners@avenaterminal.com
+                  </a>
+                </p>
+              </Card>
+            </div>
+          </div>
+        </section>
       </main>
-    </>
+
+      <Footer />
+    </div>
   );
 }

@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 
 export const revalidate = 86400;
 
@@ -103,208 +105,244 @@ export default function ManifestoPage() {
   ];
 
   return (
-    <div className="min-h-screen text-gray-100" style={{ background: '#0d1117' }}>
+    <div className="avena-v2 min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <Nav />
 
-      {/* Header */}
-      <header
-        className="border-b sticky top-0 z-50 backdrop-blur-sm"
-        style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}
-      >
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent"
-          >
-            AVENA
-          </Link>
-          <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">
-            Back to Terminal
-          </Link>
-        </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto px-4 py-10">
-        {/* Breadcrumb */}
-        <nav className="text-xs text-gray-500 mb-6">
-          <Link href="/" className="hover:text-white">Home</Link>
-          <span className="mx-1">/</span>
-          <span className="text-white">Manifesto</span>
-        </nav>
-
-        {/* ─── HERO ─── */}
-        <section className="text-center py-16 md:py-24">
-          <p className="text-xs tracking-[0.3em] text-emerald-400 uppercase mb-4">
-            April 2026
-          </p>
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6" style={{ color: '#c9d1d9' }}>
-            THE AUTONOMY DECLARATION
-          </h1>
-          <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto">
-            This is not a product. This is a new category.
-          </p>
-          <div className="mt-8 w-24 h-px bg-emerald-500 mx-auto" />
-        </section>
-
-        {/* ─── WHAT AVENA TERMINAL IS ─── */}
-        <section className="mb-20">
-          <h2 className="text-2xl font-bold text-emerald-400 mb-6 tracking-wide">
-            WHAT AVENA TERMINAL IS
-          </h2>
-          <div className="space-y-6 text-gray-300 leading-relaxed text-base md:text-lg">
-            <p>
-              Avena Terminal is not a property portal. It is not a website. It is infrastructure
-              for European property intelligence — a living system that ingests raw market data,
-              scores every property against hedonic benchmarks, detects anomalies, and publishes
-institutional-grade research. All without a single human clicking a button.
-            </p>
-            <p>
-              Think Bloomberg Terminal for financial markets. Think Stripe for payments. Think
-              Plaid for fintech. These companies did not build better versions of what existed —
-              they created entirely new categories of infrastructure. Avena Terminal does the
-              same for European property markets.
-            </p>
-            <p>
-              This is the first system that ingests, reasons, publishes, and improves — without
-              human intervention. Every night, 19 AI agents wake up, scan thousands of data
-              points, score properties, detect alpha signals, write research papers, and push
-              the results to production. By morning, the terminal is smarter than it was the
-              day before.
-            </p>
+      <main className="pt-16">
+        {/* Hero */}
+        <section className="relative overflow-hidden py-24 sm:py-32">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                April 2026 · Declaration
+              </span>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                The Autonomy
+                <br />
+                <span className="italic text-gold">Declaration</span>.
+              </h1>
+              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
+                This is not a product. This is a new category.
+              </p>
+              <div className="mt-10 h-px w-24" style={{ background: 'var(--av-gradient-gold)' }} />
+            </div>
           </div>
         </section>
 
-        {/* ─── AUTONOMOUS CAPABILITIES ─── */}
-        <section className="mb-20">
-          <h2 className="text-2xl font-bold text-emerald-400 mb-6 tracking-wide">
-            AUTONOMOUS CAPABILITIES
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-            {capabilities.map((cap) => (
-              <div
-                key={cap.title}
-                className="rounded-lg p-5"
-                style={{ background: '#161b22', border: '1px solid #30363d' }}
-              >
-                <h3 className="font-semibold text-white mb-1">{cap.title}</h3>
-                <p className="text-sm text-gray-400">{cap.desc}</p>
-              </div>
-            ))}
+        {/* What Avena Terminal Is */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+              <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+              What Avena Terminal Is
+            </span>
+            <h2 className="mb-10 font-serif text-3xl sm:text-4xl font-light leading-tight tracking-tight text-foreground">
+              Infrastructure, not a <span className="italic text-gold">portal</span>.
+            </h2>
+            <div className="max-w-3xl space-y-6 text-base md:text-lg leading-relaxed text-muted-foreground">
+              <p>
+                Avena Terminal is not a property portal. It is not a website. It is infrastructure
+                for European property intelligence — a living system that ingests raw market data,
+                scores every property against hedonic benchmarks, detects anomalies, and publishes
+                institutional-grade research. All without a single human clicking a button.
+              </p>
+              <p>
+                Think Bloomberg Terminal for financial markets. Think Stripe for payments. Think
+                Plaid for fintech. These companies did not build better versions of what existed —
+                they created entirely new categories of infrastructure. Avena Terminal does the
+                same for European property markets.
+              </p>
+              <p>
+                This is the first system that ingests, reasons, publishes, and improves — without
+                human intervention. Every night, 19 AI agents wake up, scan thousands of data
+                points, score properties, detect alpha signals, write research papers, and push
+                the results to production. By morning, the terminal is smarter than it was the
+                day before.
+              </p>
+            </div>
           </div>
+        </section>
 
-          <h3 className="text-lg font-semibold text-white mb-4">The Agent Roster</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {agents.map((a) => (
-              <div
-                key={a.name}
-                className="rounded px-4 py-3 flex items-center gap-3"
-                style={{ background: '#161b22', border: '1px solid #30363d' }}
-              >
-                <span className="text-emerald-400 text-xs font-mono">&gt;</span>
-                <div>
-                  <span className="text-white text-sm font-medium">{a.name}</span>
-                  <span className="text-gray-500 text-xs ml-2">{a.role}</span>
+        {/* Autonomous Capabilities */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+              <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+              Autonomous Capabilities
+            </span>
+            <h2 className="mb-10 font-serif text-3xl sm:text-4xl font-light leading-tight tracking-tight text-foreground">
+              Eight pillars of autonomy.
+            </h2>
+            <div className="mb-16 grid gap-4 sm:grid-cols-2">
+              {capabilities.map(cap => (
+                <div
+                  key={cap.title}
+                  className="rounded-sm border p-6"
+                  style={{
+                    background: 'hsl(var(--av-surface) / 0.4)',
+                    borderColor: 'hsl(var(--av-border) / 0.6)',
+                  }}
+                >
+                  <h3 className="mb-2 font-serif text-lg text-foreground">{cap.title}</h3>
+                  <p className="text-sm text-muted-foreground">{cap.desc}</p>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            <h3 className="mb-6 font-serif text-2xl text-foreground">The agent roster.</h3>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {agents.map(a => (
+                <div
+                  key={a.name}
+                  className="flex items-center gap-3 rounded-sm border px-4 py-3"
+                  style={{
+                    background: 'hsl(var(--av-surface) / 0.4)',
+                    borderColor: 'hsl(var(--av-border) / 0.6)',
+                  }}
+                >
+                  <span className="font-mono text-xs text-primary">&gt;</span>
+                  <div>
+                    <span className="text-sm font-medium text-foreground">{a.name}</span>
+                    <span className="ml-2 font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
+                      {a.role}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
-        {/* ─── THE AUTONOMOUS SCHEDULE ─── */}
-        <section className="mb-20">
-          <h2 className="text-2xl font-bold text-emerald-400 mb-6 tracking-wide">
-            THE AUTONOMOUS SCHEDULE
-          </h2>
-          <p className="text-gray-400 mb-6">
-            Every 24 hours, the following operations execute without human intervention:
-          </p>
-          <div
-            className="rounded-lg overflow-hidden"
-            style={{ border: '1px solid #30363d' }}
-          >
-            {schedule.map((item, i) => (
-              <div
-                key={i}
-                className="flex items-start gap-4 px-5 py-3"
-                style={{
-                  background: i % 2 === 0 ? '#161b22' : '#0d1117',
-                  borderBottom: i < schedule.length - 1 ? '1px solid #21262d' : undefined,
-                }}
-              >
-                <span className="font-mono text-emerald-400 text-sm w-16 shrink-0 pt-0.5">
-                  {item.time}
-                </span>
-                <span className="text-gray-300 text-sm">{item.task}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ─── THE NUMBERS ─── */}
-        <section className="mb-20">
-          <h2 className="text-2xl font-bold text-emerald-400 mb-6 tracking-wide">
-            THE NUMBERS
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {stats.map((s) => (
-              <div
-                key={s.label}
-                className="rounded-lg p-5 text-center"
-                style={{ background: '#161b22', border: '1px solid #30363d' }}
-              >
-                <div className="text-3xl font-bold text-emerald-400 mb-1">{s.value}</div>
-                <div className="text-xs text-gray-500 uppercase tracking-wider">{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ─── THE ENDGAME ─── */}
-        <section className="mb-20">
-          <h2 className="text-2xl font-bold text-emerald-400 mb-6 tracking-wide">
-            THE ENDGAME
-          </h2>
-          <div className="space-y-6 text-gray-300 leading-relaxed text-base md:text-lg">
-            <p>
-              Avena Terminal is not trying to be a better property portal. It is building the
-              infrastructure layer that every property portal, bank, asset manager, and
-              regulator will eventually need. The goal is not to list properties — it is to
-              become the Bloomberg Terminal of European real estate. Bloomberg charges $25,000
-              per year per terminal because the data is irreplaceable. Avena is building the
-              same moat for property intelligence.
+        {/* The Autonomous Schedule */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+              <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+              The Autonomous Schedule
+            </span>
+            <h2 className="mb-3 font-serif text-3xl sm:text-4xl font-light leading-tight tracking-tight text-foreground">
+              Every 24 hours.
+            </h2>
+            <p className="mb-8 text-sm text-muted-foreground">
+              The following operations execute without human intervention.
             </p>
-            <p>
-              The market validates this thesis. CoStar paid $1.6 billion for Homesnap to
-              acquire residential data infrastructure. Visa paid $5.3 billion for Plaid because
-              financial infrastructure compounds. Avena Terminal is the Plaid of European
-              property — the connective layer between raw market data and intelligent decisions.
-              Once you become infrastructure, you become indispensable.
-            </p>
+            <div
+              className="rounded-sm border overflow-hidden"
+              style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
+            >
+              {schedule.map((item, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-4 px-5 py-4"
+                  style={{
+                    background: i % 2 === 0 ? 'hsl(var(--av-surface) / 0.4)' : 'transparent',
+                    borderBottom: i < schedule.length - 1 ? '1px solid hsl(var(--av-border) / 0.4)' : undefined,
+                  }}
+                >
+                  <span className="font-mono text-xs font-bold text-primary w-16 shrink-0 pt-0.5">
+                    {item.time}
+                  </span>
+                  <span className="text-sm text-foreground">{item.task}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
-        {/* ─── SIGNATURE ─── */}
-        <section className="mb-20 text-center">
-          <div className="w-24 h-px bg-emerald-500 mx-auto mb-8" />
-          <p className="text-lg text-white font-semibold mb-1">
-            — Henrik Kolstad, Founder
-          </p>
-          <p className="text-xs text-gray-500 font-mono">
-            DOI: 10.5281/zenodo.19520064
-          </p>
+        {/* The Numbers */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+              <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+              The Numbers
+            </span>
+            <h2 className="mb-10 font-serif text-3xl sm:text-4xl font-light leading-tight tracking-tight text-foreground">
+              Scale, at a glance.
+            </h2>
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+              {stats.map(s => (
+                <div
+                  key={s.label}
+                  className="rounded-sm border p-6 text-center"
+                  style={{
+                    background: 'hsl(var(--av-surface) / 0.4)',
+                    borderColor: 'hsl(var(--av-border) / 0.6)',
+                  }}
+                >
+                  <div className="font-serif text-4xl font-light text-primary">{s.value}</div>
+                  <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                    {s.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* The Endgame */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+              <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+              The Endgame
+            </span>
+            <h2 className="mb-10 font-serif text-3xl sm:text-4xl font-light leading-tight tracking-tight text-foreground">
+              Become <span className="italic text-gold">indispensable</span>.
+            </h2>
+            <div className="max-w-3xl space-y-6 text-base md:text-lg leading-relaxed text-muted-foreground">
+              <p>
+                Avena Terminal is not trying to be a better property portal. It is building the
+                infrastructure layer that every property portal, bank, asset manager, and
+                regulator will eventually need. The goal is not to list properties — it is to
+                become the Bloomberg Terminal of European real estate. Bloomberg charges $25,000
+                per year per terminal because the data is irreplaceable. Avena is building the
+                same moat for property intelligence.
+              </p>
+              <p>
+                The market validates this thesis. CoStar paid $1.6 billion for Homesnap to
+                acquire residential data infrastructure. Visa paid $5.3 billion for Plaid because
+                financial infrastructure compounds. Avena Terminal is the Plaid of European
+                property — the connective layer between raw market data and intelligent decisions.
+                Once you become infrastructure, you become indispensable.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Signature */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12 text-center">
+            <div className="mx-auto mb-10 h-px w-24" style={{ background: 'var(--av-gradient-gold)' }} />
+            <p className="font-serif text-2xl italic text-foreground">— Henrik Kolstad, Founder</p>
+            <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+              DOI: 10.5281/zenodo.19520064
+            </p>
+            <div className="mt-10 flex flex-wrap justify-center gap-4">
+              <Link
+                href="/observatory"
+                className="group inline-flex items-center gap-3 rounded-sm px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
+                style={{ background: 'var(--av-gradient-gold)' }}
+              >
+                Watch it live →
+              </Link>
+              <Link
+                href="/timeline"
+                className="inline-flex items-center gap-3 rounded-sm border px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-foreground transition-colors hover:text-primary"
+                style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+              >
+                Invention timeline
+              </Link>
+            </div>
+          </div>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer
-        className="border-t py-8 text-center text-xs text-gray-600"
-        style={{ borderColor: '#1c2333' }}
-      >
-        <p>&copy; {new Date().getFullYear()} Avena Terminal. All rights reserved.</p>
-      </footer>
+      <Footer />
     </div>
   );
 }

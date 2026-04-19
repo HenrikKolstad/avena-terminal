@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 
 export const metadata: Metadata = {
   title: 'License | Avena Terminal',
@@ -11,20 +13,28 @@ export const revalidate = 86400;
 
 function Section({
   id,
+  number,
   title,
   children,
 }: {
   id: string;
+  number: string;
   title: string;
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="mb-12">
-      <h2 className="text-xl font-semibold text-emerald-400 mb-4">{title}</h2>
-      <div
-        className="rounded-lg p-6"
-        style={{ background: '#161b22', border: '1px solid #30363d' }}
-      >
+    <section id={id} className="rounded-sm border p-8"
+      style={{
+        background: 'hsl(var(--av-surface) / 0.4)',
+        borderColor: 'hsl(var(--av-border) / 0.6)',
+      }}
+    >
+      <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-3 flex items-center gap-3">
+        <span className="h-px w-8" style={{ background: 'hsl(var(--av-primary))' }} />
+        Section {number}
+      </span>
+      <h2 className="font-serif text-2xl sm:text-3xl font-light tracking-tight text-foreground mb-5">{title}</h2>
+      <div className="font-light text-base text-muted-foreground leading-relaxed space-y-4">
         {children}
       </div>
     </section>
@@ -42,270 +52,263 @@ export default function LicensePage() {
   };
 
   return (
-    <div className="min-h-screen text-[#c9d1d9]" style={{ background: '#0d1117' }}>
+    <div className="avena-v2 min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      {/* Header */}
-      <header
-        className="border-b sticky top-0 z-50 backdrop-blur-sm"
-        style={{ borderColor: '#30363d', background: 'rgba(13,17,23,0.85)' }}
-      >
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent"
-          >
-            AVENA
-          </Link>
-          <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">
-            Back to Terminal
-          </Link>
-        </div>
-      </header>
+      <Nav />
 
-      <main className="max-w-5xl mx-auto px-4 py-10">
-        {/* Breadcrumb */}
-        <nav className="text-xs text-gray-500 mb-6">
-          <Link href="/" className="hover:text-white">Home</Link>
-          <span className="mx-1">/</span>
-          <span className="text-white">License</span>
-        </nav>
-
-        <h1 className="text-3xl md:text-4xl font-bold mb-2 text-white">License</h1>
-        <p className="text-gray-400 text-lg mb-10">
-          Terms governing all Avena Terminal data, indices, APIs, protocols, and training data.
-        </p>
-
-        {/* 1. Open Data License */}
-        <Section id="open-data" title="1. Open Data License (CC BY 4.0)">
-          <p className="text-gray-300 leading-relaxed mb-4">
-            All aggregate datasets, research papers, and training data published by Avena Terminal
-            are licensed under the{' '}
-            <strong className="text-white">Creative Commons Attribution 4.0 International License (CC BY 4.0)</strong>.
-          </p>
-          <div
-            className="rounded-md p-4 mb-4"
-            style={{ background: '#0d1117', border: '1px solid #30363d' }}
-          >
-            <p className="text-sm text-gray-400 leading-relaxed">
-              <strong className="text-emerald-400">You are free to:</strong> Share &mdash; copy and
-              redistribute the material in any medium or format. Adapt &mdash; remix, transform, and
-              build upon the material for any purpose, including commercially.
-            </p>
-            <p className="text-sm text-gray-400 leading-relaxed mt-2">
-              <strong className="text-emerald-400">Under the following terms:</strong> Attribution
-              &mdash; you must give appropriate credit, provide a link to the license, and indicate
-              if changes were made. You may do so in any reasonable manner, but not in any way that
-              suggests the licensor endorses you or your use.
-            </p>
-          </div>
-          <p className="text-gray-400 text-sm">
-            Required attribution: <code className="text-emerald-400 text-xs bg-black/30 px-1.5 py-0.5 rounded">Avena Terminal (avenaterminal.com)</code>
-          </p>
-        </Section>
-
-        {/* 2. Index License */}
-        <Section id="index-license" title="2. Index License">
-          <p className="text-gray-300 leading-relaxed mb-4">
-            Applies to: <strong className="text-white">APCI, APYI, APLI, APRI, APSI</strong> (the Avena Index Family).
-          </p>
-          <ul className="space-y-3 text-sm text-gray-400">
-            <li className="flex items-start gap-2">
-              <span className="text-emerald-400 mt-0.5">&#9679;</span>
-              <span>
-                <strong className="text-gray-200">Free to reference</strong> in publications,
-                research, and editorial content with{' '}
-                <code className="text-emerald-400 text-xs bg-black/30 px-1.5 py-0.5 rounded">
-                  Powered by Avena Terminal
-                </code>{' '}
-                attribution.
+      <main className="pt-16">
+        {/* Hero */}
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Legal · License
               </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-emerald-400 mt-0.5">&#9679;</span>
-              <span>
-                <strong className="text-gray-200">Commercial redistribution</strong> of index values
-                (e.g., in financial products, dashboards, or data feeds) requires a separate license
-                agreement. Contact{' '}
-                <a href="mailto:partners@avenaterminal.com" className="text-emerald-400 hover:underline">
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                Open to
+                <br />
+                <span className="italic text-gold">build on</span>.
+              </h1>
+              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
+                Terms governing all Avena Terminal data, indices, APIs, protocols, and training data.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Sections */}
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1000px] px-5 sm:px-12">
+            <div className="flex flex-col gap-6">
+              <Section id="open-data" number="01" title="Open Data License (CC BY 4.0)">
+                <p>
+                  All aggregate datasets, research papers, and training data published by Avena Terminal
+                  are licensed under the{' '}
+                  <strong className="text-foreground font-medium">Creative Commons Attribution 4.0 International License (CC BY 4.0)</strong>.
+                </p>
+                <div
+                  className="rounded-sm p-4"
+                  style={{ background: 'hsl(var(--av-background))', border: '1px solid hsl(var(--av-border) / 0.6)' }}
+                >
+                  <p className="text-sm">
+                    <strong className="text-primary font-medium">You are free to:</strong> Share &mdash; copy and
+                    redistribute the material in any medium or format. Adapt &mdash; remix, transform, and
+                    build upon the material for any purpose, including commercially.
+                  </p>
+                  <p className="text-sm mt-2">
+                    <strong className="text-primary font-medium">Under the following terms:</strong> Attribution
+                    &mdash; you must give appropriate credit, provide a link to the license, and indicate
+                    if changes were made. You may do so in any reasonable manner, but not in any way that
+                    suggests the licensor endorses you or your use.
+                  </p>
+                </div>
+                <p className="text-sm">
+                  Required attribution:{' '}
+                  <code className="font-mono text-xs text-primary px-2 py-1 rounded-sm" style={{ background: 'hsl(var(--av-background))' }}>
+                    Avena Terminal (avenaterminal.com)
+                  </code>
+                </p>
+              </Section>
+
+              <Section id="index-license" number="02" title="Index License">
+                <p>
+                  Applies to: <strong className="text-foreground font-medium">APCI, APYI, APLI, APRI, APSI</strong> (the Avena Index Family).
+                </p>
+                <ul className="space-y-3 list-none pl-0">
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-1 shrink-0">&#9679;</span>
+                    <span className="text-sm">
+                      <strong className="text-foreground font-medium">Free to reference</strong> in publications,
+                      research, and editorial content with{' '}
+                      <code className="font-mono text-xs text-primary px-2 py-0.5 rounded-sm" style={{ background: 'hsl(var(--av-background))' }}>
+                        Powered by Avena Terminal
+                      </code>{' '}
+                      attribution.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-1 shrink-0">&#9679;</span>
+                    <span className="text-sm">
+                      <strong className="text-foreground font-medium">Commercial redistribution</strong> of index values
+                      (e.g., in financial products, dashboards, or data feeds) requires a separate license
+                      agreement. Contact{' '}
+                      <a href="mailto:partners@avenaterminal.com" className="text-primary underline underline-offset-4">
+                        partners@avenaterminal.com
+                      </a>.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-1 shrink-0">&#9679;</span>
+                    <span className="text-sm">
+                      Index names (APCI, APYI, APLI, APRI, APSI) are trademarks of Avena Terminal.
+                    </span>
+                  </li>
+                </ul>
+              </Section>
+
+              <Section id="api-license" number="03" title="API License">
+                <div className="overflow-x-auto rounded-sm" style={{ border: '1px solid hsl(var(--av-border) / 0.6)' }}>
+                  <table className="w-full font-mono text-sm">
+                    <thead>
+                      <tr style={{ background: 'hsl(var(--av-background))' }}>
+                        <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>Tier</th>
+                        <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>Rate Limit</th>
+                        <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>Attribution</th>
+                        <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>Terms</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
+                        <td className="px-4 py-3 text-primary font-medium">Free</td>
+                        <td className="px-4 py-3 text-foreground">100 requests/day</td>
+                        <td className="px-4 py-3 text-foreground">Required</td>
+                        <td className="px-4 py-3 text-foreground">No commercial redistribution</td>
+                      </tr>
+                      <tr className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
+                        <td className="px-4 py-3 text-primary font-medium">Pro</td>
+                        <td className="px-4 py-3 text-foreground">Per service agreement</td>
+                        <td className="px-4 py-3 text-foreground">Required</td>
+                        <td className="px-4 py-3 text-foreground">Commercial use permitted</td>
+                      </tr>
+                      <tr>
+                        <td className="px-4 py-3 text-primary font-medium">Enterprise</td>
+                        <td className="px-4 py-3 text-foreground">Per service agreement</td>
+                        <td className="px-4 py-3 text-foreground">Required</td>
+                        <td className="px-4 py-3 text-foreground">White-label available</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                  All API outputs must credit Avena Terminal as the data source.
+                </p>
+              </Section>
+
+              <Section id="protocol-license" number="04" title="Protocol License">
+                <p>
+                  Applies to: <strong className="text-foreground font-medium">APIP v1.0</strong> and{' '}
+                  <strong className="text-foreground font-medium">PDP v1.0</strong>.
+                </p>
+                <div
+                  className="rounded-sm p-4"
+                  style={{ background: 'hsl(var(--av-background))', border: '1px solid hsl(var(--av-border) / 0.6)' }}
+                >
+                  <p className="font-mono text-xs text-foreground/90 leading-relaxed">
+                    <strong className="text-primary">MIT License</strong>
+                    <br /><br />
+                    Permission is hereby granted, free of charge, to any person obtaining a copy of the
+                    protocol specification and associated documentation files, to deal in the specification
+                    without restriction, including without limitation the rights to use, copy, modify,
+                    merge, publish, distribute, sublicense, and/or sell copies or implementations of the
+                    specification, subject to the following conditions:
+                    <br /><br />
+                    The above copyright notice and this permission notice shall be included in all copies
+                    or substantial portions of the specification.
+                  </p>
+                </div>
+                <p className="text-sm">
+                  Protocol names (APIP, PDP) are trademarks of Avena Terminal. Implementations may reference
+                  the protocol name but may not imply endorsement.
+                </p>
+              </Section>
+
+              <Section id="training-data" number="05" title="Training Data License">
+                <p>
+                  Applies to: Alpaca instruction pairs, RLHF preference data, and pre-training corpus.
+                </p>
+                <p>
+                  Licensed under{' '}
+                  <strong className="text-foreground font-medium">Creative Commons Attribution 4.0 International (CC BY 4.0)</strong>.
+                </p>
+                <div
+                  className="rounded-sm p-4"
+                  style={{ background: 'hsl(var(--av-background))', border: '1px solid hsl(var(--av-border) / 0.6)' }}
+                >
+                  <p className="text-sm">
+                    <strong className="text-foreground font-medium">Required citation:</strong>
+                  </p>
+                  <code className="font-mono text-xs text-primary block mt-2 break-all">
+                    DOI: 10.5281/zenodo.19520064
+                  </code>
+                </div>
+              </Section>
+
+              <Section id="how-to-cite" number="06" title="How to Cite">
+                <p>
+                  For all citation formats (APA, BibTeX, Chicago, MLA, RIS), visit{' '}
+                  <Link href="/cite" className="text-primary underline underline-offset-4">
+                    /cite
+                  </Link>.
+                </p>
+                <div
+                  className="rounded-sm p-4"
+                  style={{ background: 'hsl(var(--av-background))', border: '1px solid hsl(var(--av-border) / 0.6)' }}
+                >
+                  <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-2">Quick reference</p>
+                  <code className="font-mono text-sm text-primary block leading-relaxed break-all">
+                    Avena Terminal. (2026). European Property Intelligence. avenaterminal.com. DOI: 10.5281/zenodo.19520064
+                  </code>
+                </div>
+              </Section>
+
+              <Section id="enforcement" number="07" title="Enforcement">
+                <p>
+                  Avena Terminal actively monitors attribution compliance using:
+                </p>
+                <ul className="space-y-3 list-none pl-0">
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-1 shrink-0">&#9679;</span>
+                    <span className="text-sm">
+                      <strong className="text-foreground font-medium">Canary tokens</strong> &mdash; synthetic records
+                      embedded in datasets that trigger alerts when copied without authorization.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-1 shrink-0">&#9679;</span>
+                    <span className="text-sm">
+                      <strong className="text-foreground font-medium">Steganographic watermarks</strong> &mdash;
+                      statistical fingerprints in numeric outputs that identify the data source.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-1 shrink-0">&#9679;</span>
+                    <span className="text-sm">
+                      <strong className="text-foreground font-medium">Automated web monitoring</strong> &mdash;
+                      continuous scanning for unattributed use of Avena data and indices.
+                    </span>
+                  </li>
+                </ul>
+                <p className="text-sm">
+                  Violations are addressed via automated notice at{' '}
+                  <code className="font-mono text-xs text-primary px-2 py-0.5 rounded-sm" style={{ background: 'hsl(var(--av-background))' }}>
+                    /api/v1/copy-detection/notice
+                  </code>. Persistent violations may result in API access revocation and legal action.
+                </p>
+              </Section>
+            </div>
+
+            {/* Bottom note */}
+            <div className="mt-12 text-center">
+              <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                Questions about licensing? Contact{' '}
+                <a href="mailto:partners@avenaterminal.com" className="text-primary underline underline-offset-4">
                   partners@avenaterminal.com
-                </a>.
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-emerald-400 mt-0.5">&#9679;</span>
-              <span>
-                Index names (APCI, APYI, APLI, APRI, APSI) are trademarks of Avena Terminal.
-              </span>
-            </li>
-          </ul>
-        </Section>
-
-        {/* 3. API License */}
-        <Section id="api-license" title="3. API License">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead>
-                <tr style={{ borderBottom: '1px solid #30363d' }}>
-                  <th className="pb-3 text-gray-400 font-medium">Tier</th>
-                  <th className="pb-3 text-gray-400 font-medium">Rate Limit</th>
-                  <th className="pb-3 text-gray-400 font-medium">Attribution</th>
-                  <th className="pb-3 text-gray-400 font-medium">Terms</th>
-                </tr>
-              </thead>
-              <tbody className="text-gray-300">
-                <tr style={{ borderBottom: '1px solid #1c2333' }}>
-                  <td className="py-3 text-emerald-400 font-medium">Free</td>
-                  <td className="py-3">100 requests/day</td>
-                  <td className="py-3">Required</td>
-                  <td className="py-3">No commercial redistribution</td>
-                </tr>
-                <tr style={{ borderBottom: '1px solid #1c2333' }}>
-                  <td className="py-3 text-emerald-400 font-medium">Pro</td>
-                  <td className="py-3">Per service agreement</td>
-                  <td className="py-3">Required</td>
-                  <td className="py-3">Commercial use permitted</td>
-                </tr>
-                <tr>
-                  <td className="py-3 text-emerald-400 font-medium">Enterprise</td>
-                  <td className="py-3">Per service agreement</td>
-                  <td className="py-3">Required</td>
-                  <td className="py-3">White-label available</td>
-                </tr>
-              </tbody>
-            </table>
+                </a>
+              </p>
+              <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground/70 mt-3">
+                &copy; {new Date().getFullYear()} Avena Terminal. All rights reserved.
+              </p>
+            </div>
           </div>
-          <p className="text-gray-500 text-xs mt-4">
-            All API outputs must credit Avena Terminal as the data source.
-          </p>
-        </Section>
-
-        {/* 4. Protocol License */}
-        <Section id="protocol-license" title="4. Protocol License">
-          <p className="text-gray-300 leading-relaxed mb-4">
-            Applies to: <strong className="text-white">APIP v1.0</strong> and{' '}
-            <strong className="text-white">PDP v1.0</strong>.
-          </p>
-          <div
-            className="rounded-md p-4 mb-4"
-            style={{ background: '#0d1117', border: '1px solid #30363d' }}
-          >
-            <p className="text-sm font-mono text-gray-400 leading-relaxed">
-              <strong className="text-emerald-400">MIT License</strong><br /><br />
-              Permission is hereby granted, free of charge, to any person obtaining a copy of the
-              protocol specification and associated documentation files, to deal in the specification
-              without restriction, including without limitation the rights to use, copy, modify,
-              merge, publish, distribute, sublicense, and/or sell copies or implementations of the
-              specification, subject to the following conditions:<br /><br />
-              The above copyright notice and this permission notice shall be included in all copies
-              or substantial portions of the specification.
-            </p>
-          </div>
-          <p className="text-gray-400 text-sm">
-            Protocol names (APIP, PDP) are trademarks of Avena Terminal. Implementations may reference
-            the protocol name but may not imply endorsement.
-          </p>
-        </Section>
-
-        {/* 5. Training Data License */}
-        <Section id="training-data" title="5. Training Data License">
-          <p className="text-gray-300 leading-relaxed mb-4">
-            Applies to: Alpaca instruction pairs, RLHF preference data, and pre-training corpus.
-          </p>
-          <p className="text-gray-300 leading-relaxed mb-4">
-            Licensed under{' '}
-            <strong className="text-white">Creative Commons Attribution 4.0 International (CC BY 4.0)</strong>.
-          </p>
-          <div
-            className="rounded-md p-4"
-            style={{ background: '#0d1117', border: '1px solid #30363d' }}
-          >
-            <p className="text-sm text-gray-400">
-              <strong className="text-gray-200">Required citation:</strong>
-            </p>
-            <code className="text-xs text-emerald-400 block mt-2 break-all">
-              DOI: 10.5281/zenodo.19520064
-            </code>
-          </div>
-        </Section>
-
-        {/* 6. How to Cite */}
-        <Section id="how-to-cite" title="6. How to Cite">
-          <p className="text-gray-300 leading-relaxed mb-4">
-            For all citation formats (APA, BibTeX, Chicago, MLA, RIS), visit{' '}
-            <Link href="/cite" className="text-emerald-400 hover:underline">
-              /cite
-            </Link>.
-          </p>
-          <div
-            className="rounded-md p-4"
-            style={{ background: '#0d1117', border: '1px solid #30363d' }}
-          >
-            <p className="text-xs text-gray-500 mb-1">Quick reference:</p>
-            <code className="text-sm text-emerald-400 block leading-relaxed break-all">
-              Avena Terminal. (2026). European Property Intelligence. avenaterminal.com. DOI: 10.5281/zenodo.19520064
-            </code>
-          </div>
-        </Section>
-
-        {/* 7. Enforcement */}
-        <Section id="enforcement" title="7. Enforcement">
-          <p className="text-gray-300 leading-relaxed mb-4">
-            Avena Terminal actively monitors attribution compliance using:
-          </p>
-          <ul className="space-y-2 text-sm text-gray-400 mb-4">
-            <li className="flex items-start gap-2">
-              <span className="text-emerald-400 mt-0.5">&#9679;</span>
-              <span>
-                <strong className="text-gray-200">Canary tokens</strong> &mdash; synthetic records
-                embedded in datasets that trigger alerts when copied without authorization.
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-emerald-400 mt-0.5">&#9679;</span>
-              <span>
-                <strong className="text-gray-200">Steganographic watermarks</strong> &mdash;
-                statistical fingerprints in numeric outputs that identify the data source.
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-emerald-400 mt-0.5">&#9679;</span>
-              <span>
-                <strong className="text-gray-200">Automated web monitoring</strong> &mdash;
-                continuous scanning for unattributed use of Avena data and indices.
-              </span>
-            </li>
-          </ul>
-          <p className="text-gray-400 text-sm">
-            Violations are addressed via automated notice at{' '}
-            <code className="text-emerald-400 text-xs bg-black/30 px-1.5 py-0.5 rounded">
-              /api/v1/copy-detection/notice
-            </code>. Persistent violations may result in API access revocation and legal action.
-          </p>
-        </Section>
-
-        {/* Footer */}
-        <footer
-          className="mt-16 pt-8 text-center text-sm text-gray-500"
-          style={{ borderTop: '1px solid #30363d' }}
-        >
-          <p>
-            Questions about licensing? Contact{' '}
-            <a
-              href="mailto:partners@avenaterminal.com"
-              className="text-emerald-400 hover:underline"
-            >
-              partners@avenaterminal.com
-            </a>
-          </p>
-          <p className="mt-2 text-xs text-gray-600">
-            &copy; {new Date().getFullYear()} Avena Terminal. All rights reserved.
-          </p>
-        </footer>
+        </section>
       </main>
+
+      <Footer />
     </div>
   );
 }

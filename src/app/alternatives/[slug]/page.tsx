@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 
 export const revalidate = 86400;
 
@@ -159,19 +161,23 @@ export default async function CompetitorPage({
 
   if (!competitor) {
     return (
-      <div className="min-h-screen bg-black text-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">Alternative Not Found</h1>
-          <p className="text-gray-400 mb-8">
-            We don&apos;t have a comparison page for this competitor yet.
-          </p>
-          <Link
-            href="/alternatives"
-            className="text-emerald-400 hover:text-emerald-300 underline"
-          >
-            View all alternatives
-          </Link>
-        </div>
+      <div className="avena-v2 min-h-screen">
+        <Nav />
+        <main className="pt-16 flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <h1 className="font-serif text-4xl font-light text-foreground mb-4">Alternative Not Found</h1>
+            <p className="text-muted-foreground mb-8">
+              We don&apos;t have a comparison page for this competitor yet.
+            </p>
+            <Link
+              href="/alternatives"
+              className="font-mono text-[11px] uppercase tracking-[0.22em] text-primary hover:text-gold transition-colors"
+            >
+              View all alternatives →
+            </Link>
+          </div>
+        </main>
+        <Footer />
       </div>
     );
   }
@@ -196,109 +202,119 @@ export default async function CompetitorPage({
   };
 
   return (
-    <div className="min-h-screen bg-black text-gray-100">
+    <div className="avena-v2 min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Header */}
-      <header className="border-b border-gray-800">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold tracking-wider text-white">
-            AVENA
-          </Link>
-          <nav className="flex gap-6 text-sm text-gray-400">
-            <Link href="/alternatives" className="hover:text-white transition-colors">
-              Alternatives
-            </Link>
-            <Link href="/api/v1/docs" className="hover:text-white transition-colors">
-              API Docs
-            </Link>
-            <Link href="/about" className="hover:text-white transition-colors">
-              About
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Nav />
 
-      {/* Hero */}
-      <section className="max-w-6xl mx-auto px-6 py-16">
-        <p className="text-sm font-mono text-emerald-400 mb-4 tracking-wider uppercase">
-          {competitor.name} Alternative
-        </p>
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">
-          Avena Terminal vs {competitor.name}
-        </h1>
-        <p className="text-xl text-gray-300 max-w-3xl leading-relaxed">{competitor.hero}</p>
-      </section>
-
-      {/* Description */}
-      <section className="max-w-6xl mx-auto px-6 pb-12">
-        <p className="text-gray-400 max-w-3xl leading-relaxed">{competitor.description}</p>
-      </section>
-
-      {/* Comparison Table */}
-      <section className="max-w-6xl mx-auto px-6 pb-16">
-        <h2 className="text-2xl font-bold text-white mb-8">Feature Comparison</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="border-b border-gray-800">
-                <th className="text-left py-4 px-4 text-gray-400 font-medium text-sm">
-                  Feature
-                </th>
-                <th className="text-left py-4 px-4 text-gray-400 font-medium text-sm">
-                  {competitor.name}
-                </th>
-                <th className="text-left py-4 px-4 text-emerald-400 font-medium text-sm">
-                  Avena Terminal
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {competitor.features.map((f) => (
-                <tr key={f.feature} className="border-b border-gray-800/50 hover:bg-gray-900/50">
-                  <td className="py-4 px-4 text-gray-300 font-medium">{f.feature}</td>
-                  <td className="py-4 px-4 text-gray-500">{f.competitor}</td>
-                  <td className="py-4 px-4 text-emerald-300">{f.avena}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="border-t border-gray-800 py-16">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2 className="text-2xl font-bold text-white mb-4">{competitor.cta}</h2>
-          <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-            Free API key with 100 requests/day. No credit card required. Start building in
-            minutes.
-          </p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <Link
-              href="/api-access"
-              className="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded font-medium transition-colors"
-            >
-              Get Free API Key
-            </Link>
-            <Link
-              href="/api/v1/docs"
-              className="border border-gray-700 hover:border-gray-500 text-gray-300 px-8 py-3 rounded font-medium transition-colors"
-            >
-              Explore API Docs
-            </Link>
-            <Link
-              href="/alternatives"
-              className="border border-gray-700 hover:border-gray-500 text-gray-300 px-8 py-3 rounded font-medium transition-colors"
-            >
-              Compare All Portals
-            </Link>
+      <main className="pt-16">
+        {/* Hero */}
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <nav className="mb-8 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+              <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+              <span className="mx-2">/</span>
+              <Link href="/alternatives" className="hover:text-primary transition-colors">Alternatives</Link>
+              <span className="mx-2">/</span>
+              <span className="text-foreground">vs {competitor.name}</span>
+            </nav>
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                {competitor.name} alternative
+              </span>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                Avena Terminal
+                <br />
+                <span className="italic text-gold">vs {competitor.name}</span>.
+              </h1>
+              <p className="mt-6 max-w-3xl font-light text-base text-muted-foreground sm:text-lg leading-relaxed">
+                {competitor.hero}
+              </p>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* Description */}
+        <section className="pb-16">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <p className="max-w-3xl text-sm font-light leading-relaxed text-muted-foreground">{competitor.description}</p>
+          </div>
+        </section>
+
+        {/* Comparison Table */}
+        <section className="pb-16">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-5">Feature Comparison</div>
+            <div
+              className="rounded-sm border overflow-x-auto"
+              style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
+            >
+              <table className="w-full font-mono text-sm">
+                <thead>
+                  <tr style={{ background: 'hsl(var(--av-surface) / 0.6)' }}>
+                    <th className="text-left px-5 py-4 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Feature</th>
+                    <th className="text-left px-5 py-4 font-mono text-[10px] uppercase tracking-[0.22em] text-foreground">{competitor.name}</th>
+                    <th className="text-left px-5 py-4 font-mono text-[10px] uppercase tracking-[0.22em] text-primary">Avena Terminal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {competitor.features.map((f) => (
+                    <tr key={f.feature} className="border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
+                      <td className="py-4 px-5 text-muted-foreground">{f.feature}</td>
+                      <td className="py-4 px-5 text-muted-foreground">{f.competitor}</td>
+                      <td className="py-4 px-5 text-gold">{f.avena}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section className="pb-20 sm:pb-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div
+              className="rounded-sm border p-10 text-center"
+              style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+            >
+              <h2 className="font-serif text-3xl sm:text-4xl font-light text-foreground mb-4">{competitor.cta}</h2>
+              <p className="font-light text-muted-foreground mb-8 max-w-xl mx-auto">
+                Free API key with 100 requests/day. No credit card required. Start building in minutes.
+              </p>
+              <div className="flex gap-3 justify-center flex-wrap">
+                <Link
+                  href="/api-access"
+                  className="group inline-flex items-center gap-2 rounded-sm px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
+                  style={{ background: 'var(--av-gradient-gold)' }}
+                >
+                  Get Free API Key
+                </Link>
+                <Link
+                  href="/api/v1/docs"
+                  className="inline-flex items-center gap-2 rounded-sm border px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground hover:text-primary transition-colors"
+                  style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+                >
+                  Explore API Docs
+                </Link>
+                <Link
+                  href="/alternatives"
+                  className="inline-flex items-center gap-2 rounded-sm border px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground hover:text-primary transition-colors"
+                  style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+                >
+                  Compare All
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <Footer />
     </div>
   );
 }

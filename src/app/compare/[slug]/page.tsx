@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { getAllProperties, getUniqueTowns, slugify, avg } from '@/lib/properties';
 import { Property } from '@/lib/types';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 
 export const revalidate = 86400;
 
@@ -391,155 +393,147 @@ function CountryComparisonPage({ slug, data }: { slug: string; data: ComparisonD
   };
 
   return (
-    <div className="min-h-screen text-gray-100" style={{ background: '#0d1117' }}>
+    <div className="avena-v2 min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify([faqJsonLd, articleJsonLd]) }}
       />
 
-      {/* Header */}
-      <header
-        className="border-b sticky top-0 z-50 backdrop-blur-sm"
-        style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}
-      >
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent"
-          >
-            AVENA
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/compare" className="text-sm text-gray-400 hover:text-white transition-colors">
-              All Comparisons
-            </Link>
-            <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">
-              Back to Terminal
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Nav />
 
-      <main className="max-w-5xl mx-auto px-4 py-10">
-        {/* Breadcrumbs */}
-        <nav className="text-xs text-gray-500 mb-6">
-          <Link href="/" className="hover:text-white">Home</Link>
-          <span className="mx-1">/</span>
-          <Link href="/compare" className="hover:text-white">Compare</Link>
-          <span className="mx-1">/</span>
-          <span className="text-white">{data.countryA} vs {data.countryB}</span>
-        </nav>
-
+      <main className="pt-16">
         {/* Hero */}
-        <section className="text-center mb-12">
-          <div className="flex items-center justify-center gap-4 mb-4">
-            <span className="text-5xl">{data.flagA}</span>
-            <span className="text-lg font-bold text-gray-500">vs</span>
-            <span className="text-5xl">{data.flagB}</span>
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <nav className="mb-8 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+              <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+              <span className="mx-2">/</span>
+              <Link href="/compare" className="hover:text-primary transition-colors">Compare</Link>
+              <span className="mx-2">/</span>
+              <span className="text-foreground">{data.countryA} vs {data.countryB}</span>
+            </nav>
+            <div className="max-w-4xl">
+              <div className="flex items-center gap-4 mb-6">
+                <span className="text-5xl">{data.flagA}</span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary">vs</span>
+                <span className="text-5xl">{data.flagB}</span>
+              </div>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                {data.countryA}
+                <br />
+                <span className="italic text-gold">vs {data.countryB}</span>.
+              </h1>
+              <p className="mt-6 max-w-3xl font-light text-base text-muted-foreground sm:text-lg leading-relaxed">
+                {data.summary}
+              </p>
+            </div>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white mb-3">{data.title}</h1>
-          <p className="text-sm text-gray-400 max-w-3xl mx-auto leading-relaxed">{data.summary}</p>
         </section>
 
         {/* Data comparison table */}
-        <section className="mb-12">
-          <h2 className="text-lg font-bold text-white mb-4">Data Comparison</h2>
-          <div className="rounded-xl border overflow-hidden" style={{ borderColor: '#1c2333' }}>
+        <section className="pb-16">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-5">Data Comparison</div>
             <div
-              className="grid grid-cols-3 text-xs uppercase tracking-wider text-gray-500 px-4 py-3"
-              style={{ background: '#0f1419' }}
+              className="rounded-sm border overflow-hidden"
+              style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
             >
-              <div>Metric</div>
-              <div className="text-center">{data.flagA} {data.countryA}</div>
-              <div className="text-center">{data.flagB} {data.countryB}</div>
+              <table className="w-full font-mono text-sm">
+                <thead>
+                  <tr style={{ background: 'hsl(var(--av-surface) / 0.6)' }}>
+                    <th className="px-5 py-4 text-left font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Metric</th>
+                    <th className="px-5 py-4 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-foreground">{data.flagA} {data.countryA}</th>
+                    <th className="px-5 py-4 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-foreground">{data.flagB} {data.countryB}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.rows.map((row) => (
+                    <tr
+                      key={row.metric}
+                      className="border-t"
+                      style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}
+                    >
+                      <td className="px-5 py-4 text-muted-foreground">{row.metric}</td>
+                      <td className="px-5 py-4 text-center text-foreground tabular">{row.a}</td>
+                      <td className="px-5 py-4 text-center text-foreground tabular">{row.b}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-            {data.rows.map((row, i) => (
-              <div
-                key={row.metric}
-                className="grid grid-cols-3 px-4 py-3 border-t text-sm"
-                style={{ borderColor: '#1c2333', background: i % 2 === 0 ? '#0d1117' : '#0f1419' }}
-              >
-                <div className="text-gray-400 font-medium">{row.metric}</div>
-                <div className="text-center text-white">{row.a}</div>
-                <div className="text-center text-white">{row.b}</div>
-              </div>
-            ))}
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mt-4 text-right">
+              Sources: INE, Eurostat, DBRS, national tax authorities, Avena Terminal research. Q1 2026 data.
+            </p>
           </div>
-          <p className="text-[10px] text-gray-600 mt-3 text-right">
-            Sources: INE, Eurostat, DBRS, national tax authorities, Avena Terminal research. Q1 2026 data.
-          </p>
         </section>
 
         {/* Best for verdict cards */}
-        <section className="mb-12">
-          <h2 className="text-lg font-bold text-white mb-4">Best For&hellip;</h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            {data.bestFor.map((b) => (
-              <div
-                key={b.category}
-                className="rounded-xl border p-5"
-                style={{ background: '#0f1419', borderColor: '#1c2333' }}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-semibold text-white">{b.category}</span>
-                  <span
-                    className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                      b.winner === data.countryA
-                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
-                        : b.winner === data.countryB
-                          ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30'
-                          : 'bg-gray-500/10 text-gray-400 border border-gray-500/30'
-                    }`}
-                  >
-                    {b.winner}
-                  </span>
+        <section className="pb-16">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-5">Best For</div>
+            <div className="grid gap-4 md:grid-cols-2">
+              {data.bestFor.map((b) => (
+                <div
+                  key={b.category}
+                  className="rounded-sm border p-6"
+                  style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-serif text-lg text-foreground">{b.category}</span>
+                    <span
+                      className="rounded-sm px-3 py-1 font-mono text-[10px] uppercase tracking-[0.22em] border"
+                      style={
+                        b.winner === data.countryA
+                          ? { color: 'hsl(var(--av-primary))', borderColor: 'hsl(var(--av-primary) / 0.4)' }
+                          : b.winner === data.countryB
+                            ? { color: 'hsl(var(--av-foreground))', borderColor: 'hsl(var(--av-border-strong))' }
+                            : { color: 'hsl(var(--av-muted-foreground))', borderColor: 'hsl(var(--av-border) / 0.6)' }
+                      }
+                    >
+                      {b.winner}
+                    </span>
+                  </div>
+                  <p className="text-sm font-light leading-relaxed text-muted-foreground">{b.reason}</p>
                 </div>
-                <p className="text-xs text-gray-400 leading-relaxed">{b.reason}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 
         {/* FAQ */}
-        <section className="mb-12">
-          <h2 className="text-lg font-bold text-white mb-4">Frequently Asked Questions</h2>
-          <div className="space-y-4">
-            {data.faqs.map((f) => (
-              <div
-                key={f.q}
-                className="rounded-xl border p-5"
-                style={{ background: '#0f1419', borderColor: '#1c2333' }}
-              >
-                <h3 className="text-sm font-semibold text-white mb-2">{f.q}</h3>
-                <p className="text-sm text-gray-400 leading-relaxed">{f.a}</p>
-              </div>
-            ))}
+        <section className="pb-16">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-5">Frequently Asked</div>
+            <div className="space-y-4 max-w-4xl">
+              {data.faqs.map((f) => (
+                <div
+                  key={f.q}
+                  className="rounded-sm border p-6"
+                  style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+                >
+                  <h3 className="font-serif text-lg font-light text-foreground mb-3">{f.q}</h3>
+                  <p className="text-sm font-light leading-relaxed text-muted-foreground">{f.a}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
         {/* Cross-links */}
-        <section className="text-center">
-          <Link
-            href="/compare"
-            className="inline-block rounded-lg px-6 py-3 text-sm font-semibold text-black bg-emerald-400 hover:bg-emerald-300 transition-colors"
-          >
-            View All Comparisons
-          </Link>
+        <section className="pb-20 sm:pb-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12 text-center">
+            <Link
+              href="/compare"
+              className="group inline-flex items-center gap-2 rounded-sm px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
+              style={{ background: 'var(--av-gradient-gold)' }}
+            >
+              View All Comparisons →
+            </Link>
+          </div>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t py-8 mt-12" style={{ borderColor: '#1c2333' }}>
-        <div className="max-w-5xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between text-xs text-gray-500 gap-4">
-          <span className="font-serif tracking-[0.15em] text-gray-400">AVENA</span>
-          <span>Data-driven property investment intelligence for Europe&apos;s coasts.</span>
-          <div className="flex gap-4">
-            <Link href="/compare" className="hover:text-white transition-colors">Compare</Link>
-            <Link href="/portugal" className="hover:text-white transition-colors">Portugal</Link>
-            <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
@@ -615,135 +609,125 @@ function TownComparisonPage({
   const analysis = `When comparing ${nameA} and ${nameB} as property investment destinations on Spain's coast, several key differences emerge. ${cheaperTown} is the more affordable option, with average new-build prices approximately \u20AC${priceDiff.toLocaleString()} lower. This price advantage can make a significant difference for investors working within a fixed budget or seeking higher leverage.\n\nIn terms of rental income, ${yieldWinner} edges ahead with an average gross yield of ${Math.max(statsA.avgYield, statsB.avgYield)}%, while ${yieldLoser} sits at ${Math.min(statsA.avgYield, statsB.avgYield)}%. The yield gap reflects differences in purchase prices relative to achievable rental rates in each area.\n\nOverall, ${winnerName} takes the lead with an average investment score of ${winnerScore}/100, factoring in value, yield potential, location quality, developer track record, and market positioning. That said, both towns have compelling listings \u2014 the best strategy is to shortlist properties in each location and compare them on a deal-by-deal basis. Market conditions shift, and today\u2019s underdog can become tomorrow\u2019s hotspot.`;
 
   return (
-    <div className="min-h-screen text-gray-100" style={{ background: '#0d1117' }}>
+    <div className="avena-v2 min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify([faqJsonLd, breadcrumbJsonLd]) }}
       />
 
-      {/* Header */}
-      <header
-        className="border-b sticky top-0 z-50 backdrop-blur-sm"
-        style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}
-      >
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent"
-          >
-            AVENA
-          </Link>
-          <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">
-            Back to Terminal
-          </Link>
-        </div>
-      </header>
+      <Nav />
 
-      <main className="max-w-5xl mx-auto px-4 py-10">
-        {/* Breadcrumbs */}
-        <nav className="text-xs text-gray-500 mb-6">
-          <Link href="/" className="hover:text-white">Home</Link>
-          <span className="mx-1">/</span>
-          <Link href="/compare" className="hover:text-white">Compare</Link>
-          <span className="mx-1">/</span>
-          <span className="text-white">{nameA} vs {nameB}</span>
-        </nav>
-
-        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
-          {nameA} vs {nameB} &mdash; Investment Comparison
-        </h1>
-        <p className="text-gray-400 text-sm mb-8">
-          Side-by-side comparison of {statsA.count + statsB.count} new-build properties across both towns.
-        </p>
-
-        {/* Winner banner */}
-        <div
-          className="rounded-xl border p-5 mb-8 text-center"
-          style={{ background: '#0f1419', borderColor: '#1c2333' }}
-        >
-          <div className="text-xs uppercase tracking-wider text-gray-500 mb-1">Overall Winner</div>
-          <div className="text-2xl font-bold text-emerald-400">{winnerName}</div>
-          <div className="text-gray-400 text-sm mt-1">
-            Average investment score {winnerScore}/100 vs {loserScore}/100
-          </div>
-        </div>
-
-        {/* Comparison table */}
-        <div className="rounded-xl border overflow-hidden mb-10" style={{ borderColor: '#1c2333' }}>
-          <div
-            className="grid grid-cols-3 text-xs uppercase tracking-wider text-gray-500 px-4 py-3"
-            style={{ background: '#0f1419' }}
-          >
-            <div>Metric</div>
-            <div className="text-center">{nameA}</div>
-            <div className="text-center">{nameB}</div>
-          </div>
-          {rows.map((row, i) => (
-            <div
-              key={row.label}
-              className="grid grid-cols-3 px-4 py-3 border-t text-sm"
-              style={{ borderColor: '#1c2333', background: i % 2 === 0 ? '#0d1117' : '#0f1419' }}
-            >
-              <div className="text-gray-400 font-medium">{row.label}</div>
-              <div className={`text-center font-semibold ${row.winA ? 'text-emerald-400' : 'text-white'}`}>{row.a}</div>
-              <div className={`text-center font-semibold ${row.winB ? 'text-emerald-400' : 'text-white'}`}>{row.b}</div>
+      <main className="pt-16">
+        {/* Hero */}
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <nav className="mb-8 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+              <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+              <span className="mx-2">/</span>
+              <Link href="/compare" className="hover:text-primary transition-colors">Compare</Link>
+              <span className="mx-2">/</span>
+              <span className="text-foreground">{nameA} vs {nameB}</span>
+            </nav>
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Investment comparison
+              </span>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                {nameA}
+                <br />
+                <span className="italic text-gold">vs {nameB}</span>.
+              </h1>
+              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
+                Side-by-side comparison of {statsA.count + statsB.count} new-build properties across both towns.
+              </p>
             </div>
-          ))}
-        </div>
-
-        {/* Analysis */}
-        <section className="mb-10">
-          <h2 className="text-lg font-bold text-white mb-4">Analysis</h2>
-          <div
-            className="rounded-xl border p-6 text-gray-300 text-sm leading-relaxed space-y-4"
-            style={{ background: '#0f1419', borderColor: '#1c2333' }}
-          >
-            {analysis.split('\n\n').map((para, i) => (
-              <p key={i}>{para}</p>
-            ))}
           </div>
         </section>
 
-        {/* Links to town pages */}
-        <section className="mb-10">
-          <h2 className="text-lg font-bold text-white mb-4">Explore Each Town</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              { name: nameA, slug: slugA, stats: statsA },
-              { name: nameB, slug: slugB, stats: statsB },
-            ].map(({ name, slug: s, stats }) => (
-              <Link
-                key={s}
-                href={`/towns/${s}`}
-                className="rounded-xl border p-5 hover:border-emerald-500/30 transition-all block"
-                style={{ background: '#0f1419', borderColor: '#1c2333' }}
+        <section className="pb-16">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            {/* Winner banner */}
+            <div
+              className="rounded-sm border p-6 mb-10 text-center"
+              style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+            >
+              <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-2">Overall Winner</div>
+              <div className="font-serif text-4xl font-light text-gold">{winnerName}</div>
+              <div className="font-mono text-xs text-muted-foreground mt-2">
+                Average investment score {winnerScore}/100 vs {loserScore}/100
+              </div>
+            </div>
+
+            {/* Comparison table */}
+            <div
+              className="rounded-sm border overflow-hidden mb-12"
+              style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
+            >
+              <table className="w-full font-mono text-sm">
+                <thead>
+                  <tr style={{ background: 'hsl(var(--av-surface) / 0.6)' }}>
+                    <th className="px-5 py-4 text-left font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Metric</th>
+                    <th className="px-5 py-4 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-foreground">{nameA}</th>
+                    <th className="px-5 py-4 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-foreground">{nameB}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((row) => (
+                    <tr key={row.label} className="border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
+                      <td className="px-5 py-4 text-muted-foreground">{row.label}</td>
+                      <td className={`px-5 py-4 text-center tabular ${row.winA ? 'text-gold' : 'text-foreground'}`}>{row.a}</td>
+                      <td className={`px-5 py-4 text-center tabular ${row.winB ? 'text-gold' : 'text-foreground'}`}>{row.b}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Analysis */}
+            <section className="mb-12">
+              <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-5">Analysis</div>
+              <div
+                className="rounded-sm border p-8 space-y-5"
+                style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
               >
-                <div className="text-white font-bold mb-1">{name}</div>
-                <div className="text-gray-500 text-xs">
-                  {stats.count} listings &middot; Score {stats.avgScore}/100 &middot; Yield {stats.avgYield}%
-                </div>
-              </Link>
-            ))}
+                {analysis.split('\n\n').map((para, i) => (
+                  <p key={i} className="text-sm font-light leading-relaxed text-muted-foreground">{para}</p>
+                ))}
+              </div>
+            </section>
+
+            {/* Links to town pages */}
+            <section className="mb-12">
+              <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-5">Explore Each Town</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  { name: nameA, slug: slugA, stats: statsA },
+                  { name: nameB, slug: slugB, stats: statsB },
+                ].map(({ name, slug: s, stats }) => (
+                  <Link
+                    key={s}
+                    href={`/towns/${s}`}
+                    className="group rounded-sm border p-6 hover:-translate-y-0.5 transition-all block"
+                    style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+                  >
+                    <div className="font-serif text-xl font-light text-foreground group-hover:text-gold transition-colors mb-2">{name}</div>
+                    <div className="font-mono text-[11px] text-muted-foreground">
+                      {stats.count} listings · Score {stats.avgScore}/100 · Yield {stats.avgYield}%
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground text-right mt-4">
+              Data last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+            </p>
           </div>
         </section>
-
-        <p className="text-[9px] text-gray-600 text-right mt-4">
-          Data last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
-        </p>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t py-8 mt-12" style={{ borderColor: '#1c2333' }}>
-        <div className="max-w-5xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between text-xs text-gray-500 gap-4">
-          <span className="font-serif tracking-[0.15em] text-gray-400">AVENA</span>
-          <span>Data-driven property investment intelligence for Spain&apos;s coast.</span>
-          <div className="flex gap-4">
-            <Link href="/towns" className="hover:text-white transition-colors">Towns</Link>
-            <Link href="/costas" className="hover:text-white transition-colors">Costas</Link>
-            <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
@@ -781,11 +765,17 @@ export default async function ComparePage({ params }: { params: Promise<{ slug: 
 
   // 3. Not found
   return (
-    <div className="min-h-screen flex items-center justify-center text-white" style={{ background: '#0d1117' }}>
-      <div className="text-center">
-        <h1 className="text-2xl font-bold mb-4">Comparison Not Found</h1>
-        <Link href="/compare" className="text-emerald-400">View All Comparisons</Link>
-      </div>
+    <div className="avena-v2 min-h-screen">
+      <Nav />
+      <main className="pt-16 flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <h1 className="font-serif text-4xl font-light text-foreground mb-4">Comparison Not Found</h1>
+          <Link href="/compare" className="font-mono text-[11px] uppercase tracking-[0.22em] text-primary hover:text-gold transition-colors">
+            View All Comparisons →
+          </Link>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 }
