@@ -1,4 +1,148 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+
+/* =================================================================== */
+/*  AVENA V2 — Luxe editorial theme (scoped to new design components)  */
+/*  Existing pages are unaffected; they use inline hex colors.         */
+/* =================================================================== */
+
+:root {
+  /* Warm dark backgrounds */
+  --av-background: 32 14% 11%;
+  --av-foreground: 40 35% 95%;
+  --av-surface: 32 14% 14%;
+  --av-surface-elevated: 32 14% 17%;
+  --av-card: 32 14% 14%;
+  --av-border: 36 14% 22%;
+  --av-border-strong: 36 16% 30%;
+  --av-muted: 32 12% 18%;
+  --av-muted-foreground: 38 14% 70%;
+
+  /* Gold primary / amber accent */
+  --av-primary: 42 85% 64%;
+  --av-primary-foreground: 30 18% 10%;
+  --av-primary-glow: 40 95% 72%;
+  --av-accent: 26 88% 62%;
+  --av-accent-foreground: 30 18% 10%;
+  --av-accent-glow: 22 95% 68%;
+
+  /* Signal colors */
+  --av-success: 152 55% 55%;
+  --av-destructive: 0 72% 60%;
+  --av-warning: 38 92% 65%;
+
+  /* Gradients */
+  --av-gradient-gold: linear-gradient(135deg, hsl(42 85% 64%), hsl(26 88% 62%));
+  --av-gradient-hero-overlay: linear-gradient(180deg, hsl(32 14% 11% / 0.25) 0%, hsl(32 14% 11% / 0.55) 55%, hsl(32 14% 11%) 100%);
+  --av-gradient-fade-bottom: linear-gradient(180deg, transparent, hsl(32 14% 11%));
+  --av-shadow-gold: 0 0 50px hsl(42 85% 64% / 0.22);
+  --av-shadow-elevated: 0 24px 60px -16px hsl(0 0% 0% / 0.65);
+}
+
+/* Avena V2 root wrapper — apply to pages that use the new design */
+.avena-v2 {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-feature-settings: 'cv11', 'ss01';
+  background-color: hsl(var(--av-background));
+  color: hsl(var(--av-foreground));
+  background-image:
+    radial-gradient(ellipse at 8% -10%, hsl(42 85% 64% / 0.10), transparent 55%),
+    radial-gradient(ellipse at 92% 110%, hsl(26 88% 62% / 0.08), transparent 55%),
+    radial-gradient(ellipse at 50% 50%, hsl(40 35% 95% / 0.015), transparent 70%);
+  background-attachment: fixed;
+}
+
+.avena-v2 .font-mono,
+.avena-v2 .tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.avena-v2 .font-serif {
+  font-family: 'Cormorant Garamond', 'Times New Roman', serif;
+  font-feature-settings: 'liga', 'dlig';
+}
+
+.avena-v2 .text-gold {
+  background: var(--av-gradient-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.avena-v2 .text-glow {
+  text-shadow: 0 0 24px hsl(var(--av-primary) / 0.4);
+}
+
+.avena-v2 .pulse-dot {
+  position: relative;
+}
+.avena-v2 .pulse-dot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: hsl(var(--av-primary));
+  animation: av-pulse-ring 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes av-pulse-ring {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.8); opacity: 0; }
+}
+
+@keyframes av-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.avena-v2 .fade-up { animation: av-fade-up 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+.avena-v2 .ticker-track {
+  animation: av-ticker 60s linear infinite;
+}
+@keyframes av-ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.avena-v2 .hero-overlay {
+  background: var(--av-gradient-hero-overlay);
+}
+
+.avena-v2 .fade-bottom {
+  background: var(--av-gradient-fade-bottom);
+}
+
+.avena-v2 .shadow-gold {
+  box-shadow: var(--av-shadow-gold);
+}
+
+.avena-v2 .shadow-elevated {
+  box-shadow: var(--av-shadow-elevated);
+}
+
+.avena-v2 .gradient-gold {
+  background: var(--av-gradient-gold);
+}
+
+/* Semantic color utilities (scoped to .avena-v2) */
+.avena-v2 .bg-background { background-color: hsl(var(--av-background)); }
+.avena-v2 .bg-surface { background-color: hsl(var(--av-surface)); }
+.avena-v2 .bg-surface-elevated { background-color: hsl(var(--av-surface-elevated)); }
+.avena-v2 .bg-card { background-color: hsl(var(--av-card)); }
+.avena-v2 .bg-muted { background-color: hsl(var(--av-muted)); }
+.avena-v2 .bg-primary { background-color: hsl(var(--av-primary)); }
+.avena-v2 .bg-accent { background-color: hsl(var(--av-accent)); }
+.avena-v2 .text-foreground { color: hsl(var(--av-foreground)); }
+.avena-v2 .text-muted-foreground { color: hsl(var(--av-muted-foreground)); }
+.avena-v2 .text-primary { color: hsl(var(--av-primary)); }
+.avena-v2 .text-primary-foreground { color: hsl(var(--av-primary-foreground)); }
+.avena-v2 .text-accent { color: hsl(var(--av-accent)); }
+.avena-v2 .text-success { color: hsl(var(--av-success)); }
+.avena-v2 .text-destructive { color: hsl(var(--av-destructive)); }
+.avena-v2 .border-border { border-color: hsl(var(--av-border)); }
+.avena-v2 .border-border-strong { border-color: hsl(var(--av-border-strong)); }
 
 .scrollbar-none {
   scrollbar-width: none;
