@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Send, Sparkles, Lock, ArrowUpRight } from 'lucide-react';
 import { Nav } from '@/components/v2/Nav';
+import { ProModal } from '@/components/v2/ProModal';
 import { useAuth } from '@/context/AuthContext';
 
 const FREE_DAILY_LIMIT = 5;
@@ -19,6 +20,7 @@ export default function ChatPage() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [freeQueriesUsed, setFreeQueriesUsed] = useState(0);
+  const [proOpen, setProOpen] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -147,14 +149,14 @@ export default function ChatPage() {
               >
                 <Lock size={18} className="text-muted-foreground mx-auto mb-3" />
                 <p className="text-sm text-foreground mb-4 font-serif text-lg">Daily limit reached</p>
-                <Link
-                  href="/pro"
+                <button
+                  onClick={() => setProOpen(true)}
                   className="group inline-flex items-center gap-2 rounded-sm px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
                   style={{ background: 'var(--av-gradient-gold)' }}
                 >
                   Upgrade to PRO — €79/mo
                   <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </Link>
+                </button>
               </div>
             )}
 
@@ -229,14 +231,14 @@ export default function ChatPage() {
                       <>
                         <div className="whitespace-pre-wrap">{msg.content}</div>
                         {!isPaid && (msg.content.includes('free questions for today') || msg.content.includes('Daily limit reached')) && (
-                          <Link
-                            href="/pro"
+                          <button
+                            onClick={() => setProOpen(true)}
                             className="group mt-4 inline-flex items-center gap-2 rounded-sm px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
                             style={{ background: 'var(--av-gradient-gold)' }}
                           >
                             Upgrade to PRO — €79/mo
                             <ArrowUpRight className="h-3 w-3" />
-                          </Link>
+                          </button>
                         )}
                       </>
                     ) : (
@@ -314,12 +316,12 @@ export default function ChatPage() {
             {isPaid ? (
               <p className="text-[9px] text-primary/70 font-mono uppercase tracking-[0.18em]">PRO active</p>
             ) : freeLimitReached ? (
-              <Link
-                href="/pro"
+              <button
+                onClick={() => setProOpen(true)}
                 className="text-[9px] font-mono uppercase tracking-[0.18em] text-primary hover:text-gold"
               >
                 Upgrade to PRO →
-              </Link>
+              </button>
             ) : (
               <span className="text-[9px] text-muted-foreground font-mono uppercase tracking-[0.18em]">
                 {freeRemaining} free left today
@@ -328,6 +330,7 @@ export default function ChatPage() {
           </div>
         </div>
       </main>
+      <ProModal open={proOpen} onClose={() => setProOpen(false)} />
     </div>
   );
 }

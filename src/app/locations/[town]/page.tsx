@@ -1,4 +1,6 @@
 import { Metadata } from 'next';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 import Link from 'next/link';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, avg, slugify } from '@/lib/properties';
 import { Property } from '@/lib/types';
@@ -59,11 +61,15 @@ export default async function LocationPage({ params }: { params: Promise<{ town:
 
   if (!townData) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-white" style={{ background: '#0d1117' }}>
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Location Not Found</h1>
-          <Link href="/" className="text-emerald-400 hover:underline">Back to Terminal</Link>
-        </div>
+      <div className="avena-v2 min-h-screen">
+        <Nav />
+        <main className="pt-16 flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <h1 className="font-serif text-4xl font-light text-foreground mb-4">Location <span className="italic text-gold">not found</span>.</h1>
+            <Link href="/" className="font-mono text-[11px] uppercase tracking-[0.22em] text-primary hover:opacity-80">← Back to Terminal</Link>
+          </div>
+        </main>
+        <Footer />
       </div>
     );
   }
@@ -154,18 +160,12 @@ export default async function LocationPage({ params }: { params: Promise<{ town:
   const borderColor = '#30363d';
 
   return (
-    <div className="min-h-screen" style={{ background: '#0d1117', color: '#c9d1d9' }}>
+    <div className="avena-v2 min-h-screen">
+      <Nav />
+      <main className="pt-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      {/* Header */}
-      <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}>
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">AVENA</Link>
-          <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">Back to Terminal</Link>
-        </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto px-4 py-10">
+      <div className="max-w-5xl mx-auto px-4 py-10">
         {/* Breadcrumb */}
         <nav className="text-xs text-gray-500 mb-6">
           <Link href="/" className="hover:text-white">Home</Link> <span className="mx-1">/</span>
@@ -403,7 +403,9 @@ export default async function LocationPage({ params }: { params: Promise<{ town:
             Investment data updated daily. Scores reflect value, yield, location, quality, and risk factors.
           </p>
         </footer>
+      </div>
       </main>
+      <Footer />
     </div>
   );
 }

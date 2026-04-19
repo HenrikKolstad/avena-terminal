@@ -1,4 +1,6 @@
 import { Metadata } from 'next';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 import Link from 'next/link';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, avg, slugify } from '@/lib/properties';
 import { createHash } from 'crypto';
@@ -77,17 +79,11 @@ export default function AnnualReport2026() {
   );
 
   return (
-    <main className="min-h-screen" style={{ background: '#0d1117', color: '#c9d1d9', fontFamily: 'Georgia, "Times New Roman", serif' }}>
+    <div className="avena-v2 min-h-screen">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-
-      <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}>
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">AVENA</Link>
-          <span className="text-xs font-mono px-3 py-1 rounded-full border font-sans" style={{ borderColor: '#30363d', color: '#8b949e' }}>ANNUAL REPORT</span>
-        </div>
-      </header>
-
-      <div className="max-w-3xl mx-auto px-4 py-16">
+      <Nav />
+      <main className="pt-16">
+      <div className="max-w-3xl mx-auto px-4 py-16" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
         {/* Title Page */}
         <div className="text-center mb-16">
           <p className="text-xs uppercase tracking-[0.3em] text-emerald-400 mb-4 font-sans">Avena Terminal Research</p>
@@ -307,6 +303,8 @@ export default function AnnualReport2026() {
           <p className="mt-1">Spain&apos;s first PropTech terminal &middot; {all.length.toLocaleString()} properties scored</p>
         </footer>
       </div>
-    </main>
+          </main>
+      <Footer />
+    </div>
   );
 }

@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const SERIES = {
@@ -40,7 +42,9 @@ export default function AvenaIndexPage() {
   const yoy = (key: keyof typeof SERIES) => ((latest(key) - SERIES[key].data[1]) / SERIES[key].data[1] * 100).toFixed(1);
 
   return (
-    <main className="min-h-screen" style={{ background: '#0d1117', color: '#c9d1d9' }}>
+    <div className="avena-v2 min-h-screen">
+      <Nav />
+      <main className="pt-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'Dataset',
@@ -52,13 +56,6 @@ export default function AvenaIndexPage() {
         temporalCoverage: '2024/2025',
         identifier: '10.5281/zenodo.19520064',
       }) }} />
-
-      <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}>
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">AVENA</Link>
-          <span className="text-xs font-mono px-3 py-1 rounded-full" style={{ background: '#10b981', color: '#0d1117' }}>INDEX</span>
-        </div>
-      </header>
 
       <div className="max-w-5xl mx-auto px-4 py-12">
         <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Avena Property Index</h1>
@@ -155,6 +152,8 @@ export default function AvenaIndexPage() {
           &copy; 2026 Avena Terminal &middot; The Case-Shiller of Spanish property
         </footer>
       </div>
-    </main>
+          </main>
+      <Footer />
+    </div>
   );
 }

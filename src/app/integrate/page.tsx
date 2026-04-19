@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 
 export const revalidate = 86400;
 
@@ -170,17 +172,11 @@ export default function IntegratePage() {
   };
 
   return (
-    <main className="min-h-screen" style={{ background: '#0d1117', color: '#c9d1d9' }}>
+    <div className="avena-v2 min-h-screen">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-
-      <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}>
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">AVENA</Link>
-          <span className="text-xs font-mono px-3 py-1 rounded-full" style={{ background: '#10b981', color: '#0d1117' }}>INTEGRATE</span>
-        </div>
-      </header>
-
-      <div className="max-w-4xl mx-auto px-4 py-12">
+      <Nav />
+      <main className="pt-16">
+      <div className="mx-auto max-w-[1600px] px-5 sm:px-12 py-16">
         <h1 className="text-3xl font-bold text-white mb-3">Integrate Avena Terminal</h1>
         <p className="text-gray-400 text-sm mb-2 max-w-2xl">
           Copy-paste configs to connect Avena Terminal&apos;s property data to your AI tool. 7 tools, 1,881 scored properties, live data. No API key. No auth. Just connect.
@@ -251,10 +247,9 @@ export default function IntegratePage() {
           </div>
         </section>
 
-        <footer className="text-center text-xs text-gray-600 pb-8">
-          &copy; 2026 Avena Terminal &middot; Connect once. Property data forever.
-        </footer>
       </div>
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 }

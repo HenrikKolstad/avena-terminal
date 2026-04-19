@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 import Link from 'next/link';
 
 export default function SDKPage() {
@@ -16,13 +18,9 @@ export default function SDKPage() {
   };
 
   return (
-    <main className="min-h-screen" style={{ background: '#0d1117', color: '#c9d1d9' }}>
-      <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}>
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">AVENA</Link>
-          <span className="text-xs font-mono px-3 py-1 rounded-full" style={{ background: '#10b981', color: '#0d1117' }}>SDK</span>
-        </div>
-      </header>
+    <div className="avena-v2 min-h-screen">
+      <Nav />
+      <main className="pt-16">
 
       <div className="max-w-4xl mx-auto px-4 py-12">
         <h1 className="text-3xl font-bold text-white mb-3">Avena Terminal SDK</h1>
@@ -163,6 +161,8 @@ const comparison = await client.compare('costa-blanca', 'costa-del-sol')`}</pre>
           &copy; 2026 Avena Terminal &middot; Property intelligence for every developer
         </footer>
       </div>
-    </main>
+          </main>
+      <Footer />
+    </div>
   );
 }

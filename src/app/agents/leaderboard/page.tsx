@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -24,67 +26,91 @@ export default async function AgentLeaderboardPage() {
   }
 
   return (
-    <main className="min-h-screen" style={{ background: '#0d1117', color: '#c9d1d9' }}>
-      <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}>
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">AVENA</Link>
-          <span className="text-xs font-mono px-3 py-1 rounded-full border" style={{ borderColor: '#fbbf24', color: '#fbbf24' }}>LEADERBOARD</span>
-        </div>
-      </header>
-
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <h1 className="text-3xl font-bold text-white mb-3">Agent Leaderboard</h1>
-        <p className="text-gray-400 text-sm mb-8">Top AI agents by query volume &middot; Updated in real-time</p>
-
-        <div className="h-px w-full mb-8" style={{ background: '#1c2333' }} />
-
-        {agents.length > 0 ? (
-          <div className="rounded-lg overflow-hidden" style={{ border: '1px solid #30363d' }}>
-            <table className="w-full text-sm">
-              <thead>
-                <tr style={{ background: '#161b22' }}>
-                  <th className="text-left px-4 py-3 text-xs uppercase text-gray-500">#</th>
-                  <th className="text-left px-4 py-3 text-xs uppercase text-gray-500">Agent</th>
-                  <th className="text-left px-4 py-3 text-xs uppercase text-gray-500">Developer</th>
-                  <th className="text-right px-4 py-3 text-xs uppercase text-gray-500">Total Queries</th>
-                  <th className="text-right px-4 py-3 text-xs uppercase text-gray-500">This Month</th>
-                </tr>
-              </thead>
-              <tbody className="font-mono text-xs">
-                {agents.map((agent, i) => (
-                  <tr key={i} style={{ background: i % 2 === 0 ? '#0d1117' : '#161b22' }}>
-                    <td className="px-4 py-3">
-                      {i === 0 ? <span className="text-lg">&#x1F947;</span> : i === 1 ? <span className="text-lg">&#x1F948;</span> : i === 2 ? <span className="text-lg">&#x1F949;</span> : <span className="text-gray-500">{i + 1}</span>}
-                    </td>
-                    <td className="px-4 py-3 text-white font-semibold">{agent.agent_name}</td>
-                    <td className="px-4 py-3 text-gray-400">{agent.developer_name}</td>
-                    <td className="px-4 py-3 text-right text-emerald-400">{agent.queries_total.toLocaleString()}</td>
-                    <td className="px-4 py-3 text-right text-gray-300">{(agent.queries_this_month || 0).toLocaleString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+    <div className="avena-v2 min-h-screen">
+      <Nav />
+      <main className="pt-16">
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Leaderboard · Live
+              </span>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                Top agents.
+                <br />
+                <span className="italic text-gold">Ranked by usage</span>.
+              </h1>
+              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
+                The most active AI agents using Avena Terminal for European property intelligence. Ranked by query volume. Updated in real-time.
+              </p>
+            </div>
           </div>
-        ) : (
-          <div className="rounded-lg p-10 text-center" style={{ background: '#161b22', border: '1px dashed #30363d' }}>
-            <p className="text-4xl mb-4">&#x1F3C6;</p>
-            <p className="text-gray-400 mb-2">Leaderboard is empty</p>
-            <p className="text-xs text-gray-600 mb-4">Register your agent and start querying to claim the #1 spot</p>
-            <Link href="/agents/registry" className="text-xs px-4 py-2 rounded-lg inline-block" style={{ background: '#10b981', color: '#0d1117' }}>Register Your Agent</Link>
+        </section>
+
+        <section className="relative border-t py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            {agents.length > 0 ? (
+              <div className="overflow-hidden rounded-sm border" style={{ background: 'hsl(var(--av-surface) / 0.3)', borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+                <table className="w-full font-mono text-sm">
+                  <thead>
+                    <tr style={{ background: 'hsl(var(--av-surface) / 0.6)' }}>
+                      <th className="text-left px-4 py-3 text-[10px] uppercase tracking-[0.22em] text-muted-foreground border-b" style={{ borderColor: 'hsl(var(--av-border))' }}>#</th>
+                      <th className="text-left px-4 py-3 text-[10px] uppercase tracking-[0.22em] text-muted-foreground border-b" style={{ borderColor: 'hsl(var(--av-border))' }}>Agent</th>
+                      <th className="text-left px-4 py-3 text-[10px] uppercase tracking-[0.22em] text-muted-foreground border-b" style={{ borderColor: 'hsl(var(--av-border))' }}>Developer</th>
+                      <th className="text-right px-4 py-3 text-[10px] uppercase tracking-[0.22em] text-primary border-b" style={{ borderColor: 'hsl(var(--av-border))' }}>Total Queries</th>
+                      <th className="text-right px-4 py-3 text-[10px] uppercase tracking-[0.22em] text-muted-foreground border-b" style={{ borderColor: 'hsl(var(--av-border))' }}>This Month</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {agents.map((agent, i) => (
+                      <tr key={i} className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
+                        <td className="px-4 py-4">
+                          {i === 0 ? <span className="text-xl">🥇</span> : i === 1 ? <span className="text-xl">🥈</span> : i === 2 ? <span className="text-xl">🥉</span> : <span className="text-muted-foreground">{i + 1}</span>}
+                        </td>
+                        <td className="px-4 py-4 font-serif text-base text-foreground">{agent.agent_name}</td>
+                        <td className="px-4 py-4 text-muted-foreground">{agent.developer_name}</td>
+                        <td className="px-4 py-4 text-right text-primary tabular">{agent.queries_total.toLocaleString()}</td>
+                        <td className="px-4 py-4 text-right text-foreground/80 tabular">{(agent.queries_this_month || 0).toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="rounded-sm border p-12 text-center" style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)', borderStyle: 'dashed' }}>
+                <p className="font-serif text-2xl text-foreground mb-3">Leaderboard is empty.</p>
+                <p className="text-sm text-muted-foreground font-light mb-6">Register your agent and start querying to claim the #1 spot.</p>
+                <Link
+                  href="/agents/registry"
+                  className="inline-flex items-center gap-2 rounded-sm px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold hover:-translate-y-0.5 transition-transform"
+                  style={{ background: 'var(--av-gradient-gold)' }}
+                >
+                  Register your agent →
+                </Link>
+              </div>
+            )}
+
+            <div className="mt-10 flex flex-wrap gap-3">
+              <Link
+                href="/agents/registry"
+                className="inline-flex items-center gap-2 rounded-sm px-5 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold hover:-translate-y-0.5 transition-transform"
+                style={{ background: 'var(--av-gradient-gold)' }}
+              >
+                Register agent →
+              </Link>
+              <Link
+                href="/agents/directory"
+                className="inline-flex items-center gap-2 rounded-sm border px-5 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground hover:text-primary"
+                style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+              >
+                Full directory
+              </Link>
+            </div>
           </div>
-        )}
-
-        <div className="h-px w-full my-10" style={{ background: '#1c2333' }} />
-
-        <div className="flex flex-wrap gap-3">
-          <Link href="/agents/registry" className="text-xs px-4 py-2 rounded-lg" style={{ background: '#10b981', color: '#0d1117' }}>Register Agent</Link>
-          <Link href="/agents/directory" className="text-xs px-4 py-2 rounded-lg" style={{ background: '#161b22', color: '#c9d1d9', border: '1px solid #30363d' }}>Full Directory</Link>
-        </div>
-
-        <footer className="mt-10 text-center text-xs text-gray-600 pb-8">
-          &copy; 2026 Avena Terminal &middot; The identity layer for European property AI
-        </footer>
-      </div>
-    </main>
+        </section>
+      </main>
+      <Footer />
+    </div>
   );
 }

@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 import Link from 'next/link';
 
 interface ScenarioResult {

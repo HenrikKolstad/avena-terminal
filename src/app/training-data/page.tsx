@@ -1,4 +1,6 @@
 import { Metadata } from 'next';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 import Link from 'next/link';
 
 export const revalidate = 86400;

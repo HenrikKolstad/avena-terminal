@@ -1,4 +1,6 @@
 import { Metadata } from 'next';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 import Link from 'next/link';
 import { getAllProperties, getUniqueTowns, avg, slugify } from '@/lib/properties';
 
@@ -75,20 +77,12 @@ export default async function JaveaHub() {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: '#0d1117', color: '#c9d1d9' }}>
+    <div className="avena-v2 min-h-screen">
+      <Nav />
+      <main className="pt-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}>
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">AVENA</Link>
-          <div className="flex items-center gap-4">
-            <span className="text-xs font-mono px-3 py-1 rounded-full border" style={{ borderColor: '#30363d', color: '#8b949e' }}>INTELLIGENCE HUB</span>
-            <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">Terminal</Link>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto px-4 py-10">
+      <div className="max-w-5xl mx-auto px-4 py-10">
         {/* Breadcrumb */}
         <nav className="text-xs text-gray-500 mb-6">
           <Link href="/" className="hover:text-white">Home</Link>
@@ -547,7 +541,9 @@ export default async function JaveaHub() {
             <Link href="/coverage" className="text-gray-500 hover:underline">Coverage</Link>
           </div>
         </footer>
+      </div>
       </main>
+      <Footer />
     </div>
   );
 }

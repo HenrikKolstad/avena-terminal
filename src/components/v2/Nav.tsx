@@ -3,6 +3,7 @@
 import { Menu, Search, X } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { ProModal } from './ProModal';
 
 const links = [
   { label: 'Signals', href: '/#signals' },
@@ -16,6 +17,7 @@ const links = [
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [proOpen, setProOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -81,13 +83,13 @@ export function Nav() {
           >
             Terminal
           </Link>
-          <Link
-            href="/pro"
+          <button
+            onClick={() => setProOpen(true)}
             className="hidden rounded-sm px-5 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5 lg:inline-flex"
             style={{ background: 'var(--av-gradient-gold)' }}
           >
             Upgrade →
-          </Link>
+          </button>
           <button
             onClick={() => setOpen(!open)}
             className="flex h-9 w-9 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-foreground lg:hidden"
@@ -126,17 +128,17 @@ export function Nav() {
             >
               Enter Terminal
             </Link>
-            <Link
-              href="/pro"
-              onClick={() => setOpen(false)}
+            <button
+              onClick={() => { setOpen(false); setProOpen(true); }}
               className="mt-2 inline-flex items-center justify-center rounded-sm py-3 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold"
               style={{ background: 'var(--av-gradient-gold)' }}
             >
               Upgrade to PRO →
-            </Link>
+            </button>
           </nav>
         </div>
       )}
+      <ProModal open={proOpen} onClose={() => setProOpen(false)} />
     </header>
   );
 }
