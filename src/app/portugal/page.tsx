@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 
 export const revalidate = 86400;
 
@@ -117,12 +119,13 @@ function EmailForm() {
         name="email"
         required
         placeholder="your@email.com"
-        className="flex-1 rounded-lg border px-4 py-3 text-sm bg-transparent text-white placeholder:text-gray-500 focus:outline-none focus:border-emerald-500"
-        style={{ borderColor: '#30363d' }}
+        className="flex-1 rounded-sm border px-4 py-3 text-sm bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
+        style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
       />
       <button
         type="submit"
-        className="rounded-lg px-6 py-3 text-sm font-semibold text-black bg-emerald-400 hover:bg-emerald-300 transition-colors whitespace-nowrap"
+        className="rounded-sm px-6 py-3 text-sm font-mono uppercase tracking-[0.2em] text-background whitespace-nowrap"
+        style={{ background: 'hsl(var(--av-primary))' }}
       >
         Get Portugal Alerts
       </button>
@@ -177,7 +180,7 @@ export default function PortugalPage() {
   };
 
   return (
-    <div className="min-h-screen text-gray-100" style={{ background: '#0d1117' }}>
+    <div className="avena-v2 min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(placeJsonLd) }}
@@ -187,330 +190,350 @@ export default function PortugalPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
 
-      {/* Header */}
-      <header
-        className="border-b sticky top-0 z-50 backdrop-blur-sm"
-        style={{ borderColor: '#30363d', background: 'rgba(13,17,23,0.85)' }}
-      >
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent"
-          >
-            AVENA
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/compare" className="text-sm text-gray-400 hover:text-white transition-colors">
-              Compare
-            </Link>
-            <Link href="/bubble-scanner" className="text-sm text-gray-400 hover:text-white transition-colors">
-              Bubble Scanner
-            </Link>
-            <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">
-              Back to Terminal
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Nav />
 
-      <main className="max-w-5xl mx-auto px-4 py-10">
-        {/* Breadcrumbs */}
-        <nav className="text-xs text-gray-500 mb-6">
-          <Link href="/" className="hover:text-white">Home</Link>
-          <span className="mx-1">/</span>
-          <span className="text-white">Portugal</span>
-        </nav>
-
-        {/* -------------------------------------------------------- */}
-        {/*  1. Hero                                                  */}
-        {/* -------------------------------------------------------- */}
-        <section className="text-center mb-14">
-          <div className="text-4xl mb-4">&#127477;&#127481;</div>
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
-            Portugal Property Intelligence
-          </h1>
-          <p className="text-gray-400 max-w-2xl mx-auto">
-            Portugal is one of Europe&apos;s fastest-growing property markets — driven by lifestyle migration,
-            digital nomad demand, and a tax regime that still favours international buyers. Explore regional
-            pricing, tax frameworks, and investment routes across five key markets.
-          </p>
-        </section>
-
-        {/* -------------------------------------------------------- */}
-        {/*  2. Market Data by Region                                 */}
-        {/* -------------------------------------------------------- */}
-        <section className="mb-14">
-          <h2 className="text-xl font-bold text-white mb-6">Market Data by Region</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {REGIONS.map((r) => (
-              <div
-                key={r.name}
-                className="rounded-xl border p-6 flex flex-col"
-                style={{ background: '#161b22', borderColor: '#30363d' }}
-              >
-                <h3 className="text-lg font-bold text-white mb-2">{r.name}</h3>
-                <p className="text-sm text-gray-400 leading-relaxed mb-4 flex-1">
-                  {r.highlight}
-                </p>
-                <div className="space-y-2 text-xs">
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Price Range</span>
-                    <span className="text-emerald-400 font-semibold">{r.priceRange}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Gross Yield</span>
-                    <span className="text-white font-semibold">{r.yield}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Key Buyers</span>
-                    <span className="text-white">{r.buyers}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* -------------------------------------------------------- */}
-        {/*  3. Tax & Legal Framework                                 */}
-        {/* -------------------------------------------------------- */}
-        <section className="mb-14">
-          <h2 className="text-xl font-bold text-white mb-2">Tax &amp; Legal Framework</h2>
-          <p className="text-sm text-gray-400 mb-6">
-            Key taxes and rates for property buyers and investors in Portugal (2026).
-          </p>
-
-          <div className="grid md:grid-cols-2 gap-5 mb-6">
-            {/* NHR */}
-            <div
-              className="rounded-xl border p-6"
-              style={{ background: '#161b22', borderColor: '#30363d' }}
-            >
-              <h3 className="text-base font-bold text-white mb-3">NHR Regime (Modified 2024)</h3>
-              <ul className="text-sm text-gray-300 space-y-2 leading-relaxed">
-                <li><span className="text-emerald-400 font-semibold">20% flat rate</span> on Portuguese-sourced income for qualifying professions</li>
-                <li>Available for 10 years to new Portuguese tax residents</li>
-                <li>Crypto and pension tax benefits reduced under 2024 reform</li>
-                <li>Foreign-sourced income may be exempt if taxed at source</li>
-              </ul>
-            </div>
-            {/* Other taxes */}
-            <div
-              className="rounded-xl border p-6"
-              style={{ background: '#161b22', borderColor: '#30363d' }}
-            >
-              <h3 className="text-base font-bold text-white mb-3">Property Taxes</h3>
-              <ul className="text-sm text-gray-300 space-y-2 leading-relaxed">
-                <li><span className="text-emerald-400 font-semibold">IMI</span> (annual property tax): 0.3&ndash;0.45% of tax value</li>
-                <li><span className="text-emerald-400 font-semibold">CGT</span>: 28% for non-residents on gains</li>
-                <li><span className="text-emerald-400 font-semibold">Rental income</span>: 28% flat rate for non-residents</li>
-                <li><span className="text-emerald-400 font-semibold">Stamp Duty</span>: 0.8% on purchase price</li>
-              </ul>
-            </div>
-          </div>
-
-          {/* IMT brackets */}
-          <div className="rounded-xl border overflow-hidden" style={{ borderColor: '#30363d' }}>
-            <div
-              className="text-xs uppercase tracking-wider text-gray-500 px-4 py-3 font-semibold"
-              style={{ background: '#161b22' }}
-            >
-              IMT Transfer Tax Brackets (Urban Residential, Permanent Home)
-            </div>
-            {TAX_BRACKETS.map((row, i) => (
-              <div
-                key={row.bracket}
-                className="grid grid-cols-2 px-4 py-3 border-t text-sm"
-                style={{ borderColor: '#30363d', background: i % 2 === 0 ? '#0d1117' : '#161b22' }}
-              >
-                <div className="text-gray-400">{row.bracket}</div>
-                <div className="text-white font-semibold text-right">{row.rate}</div>
-              </div>
-            ))}
-          </div>
-          <p className="text-[10px] text-gray-600 mt-2 text-right">
-            IMT rates vary by property type and purpose. Secondary homes attract higher rates. Sources: AT (Autoridade Tribut&aacute;ria), 2026.
-          </p>
-        </section>
-
-        {/* -------------------------------------------------------- */}
-        {/*  4. Buying Process                                        */}
-        {/* -------------------------------------------------------- */}
-        <section className="mb-14">
-          <h2 className="text-xl font-bold text-white mb-6">Buying Process</h2>
-          <div className="space-y-4">
-            {BUYING_STEPS.map((s) => (
-              <div
-                key={s.step}
-                className="rounded-xl border p-5 flex gap-4 items-start"
-                style={{ background: '#161b22', borderColor: '#30363d' }}
-              >
-                <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold flex-shrink-0">
-                  {s.step}
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-white mb-1">{s.title}</h3>
-                  <p className="text-sm text-gray-400 leading-relaxed">{s.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* -------------------------------------------------------- */}
-        {/*  5. Golden Visa 2026                                      */}
-        {/* -------------------------------------------------------- */}
-        <section className="mb-14">
-          <h2 className="text-xl font-bold text-white mb-2">Golden Visa 2026</h2>
-          <p className="text-sm text-gray-400 mb-6">
-            The landscape has shifted since the 2023 real estate route closure.
-          </p>
-          <div className="grid md:grid-cols-3 gap-5">
-            <div
-              className="rounded-xl border p-6"
-              style={{ background: '#161b22', borderColor: '#30363d' }}
-            >
-              <div className="text-xs uppercase tracking-wider text-red-400 font-semibold mb-2">Closed</div>
-              <h3 className="text-base font-bold text-white mb-2">Real Estate Route</h3>
-              <p className="text-sm text-gray-400 leading-relaxed">
-                Direct property purchases no longer qualify for Golden Visa residency. Closed since October 2023.
-              </p>
-            </div>
-            <div
-              className="rounded-xl border p-6"
-              style={{ background: '#161b22', borderColor: '#30363d' }}
-            >
-              <div className="text-xs uppercase tracking-wider text-emerald-400 font-semibold mb-2">Open</div>
-              <h3 className="text-base font-bold text-white mb-2">Fund Investment</h3>
-              <p className="text-sm text-gray-400 leading-relaxed">
-                Minimum &euro;500,000 investment in qualifying Portuguese investment funds. Funds may include real estate exposure indirectly.
-              </p>
-            </div>
-            <div
-              className="rounded-xl border p-6"
-              style={{ background: '#161b22', borderColor: '#30363d' }}
-            >
-              <div className="text-xs uppercase tracking-wider text-emerald-400 font-semibold mb-2">Alternatives</div>
-              <h3 className="text-base font-bold text-white mb-2">D7 &amp; Digital Nomad</h3>
-              <p className="text-sm text-gray-400 leading-relaxed">
-                D7 visa for passive income holders. Digital nomad visa for remote workers earning &euro;3,040+/month. Both lead to residency.
+      <main className="pt-16">
+        {/* Hero */}
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <nav className="mb-8 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              <Link href="/" className="hover:text-foreground">Home</Link>
+              <span className="mx-2">/</span>
+              <span className="text-foreground">Portugal</span>
+            </nav>
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Market Intelligence
+              </span>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                Portugal Property
+                <br />
+                <span className="italic text-gold">Intelligence</span>.
+              </h1>
+              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
+                Portugal is one of Europe&apos;s fastest-growing property markets — driven by lifestyle migration,
+                digital nomad demand, and a tax regime that still favours international buyers. Explore regional
+                pricing, tax frameworks, and investment routes across five key markets.
               </p>
             </div>
           </div>
         </section>
 
-        {/* -------------------------------------------------------- */}
-        {/*  6. Spain vs Portugal                                     */}
-        {/* -------------------------------------------------------- */}
-        <section className="mb-14">
-          <h2 className="text-xl font-bold text-white mb-2">Spain vs Portugal &mdash; At a Glance</h2>
-          <p className="text-sm text-gray-400 mb-6">
-            How the two Iberian markets compare for international property buyers in 2026.
-          </p>
-          <div className="rounded-xl border overflow-hidden" style={{ borderColor: '#30363d' }}>
-            <div
-              className="grid grid-cols-3 text-xs uppercase tracking-wider text-gray-500 px-4 py-3"
-              style={{ background: '#161b22' }}
-            >
-              <div>Metric</div>
-              <div className="text-center">&#127466;&#127480; Spain</div>
-              <div className="text-center">&#127477;&#127481; Portugal</div>
+        {/* Market Data by Region */}
+        <section className="relative border-t py-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10">
+              <span className="mb-3 inline-block font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                Regions
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl font-light tracking-tight text-foreground">
+                Market Data by Region
+              </h2>
             </div>
-            {COMPARISON_ROWS.map((row, i) => (
-              <div
-                key={row.metric}
-                className="grid grid-cols-3 px-4 py-3 border-t text-sm"
-                style={{ borderColor: '#30363d', background: i % 2 === 0 ? '#0d1117' : '#161b22' }}
-              >
-                <div className="text-gray-400 font-medium">{row.metric}</div>
-                <div className="text-center text-white">{row.spain}</div>
-                <div className="text-center text-white">{row.portugal}</div>
-              </div>
-            ))}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {REGIONS.map((r) => (
+                <div
+                  key={r.name}
+                  className="rounded-sm border p-6 flex flex-col"
+                  style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+                >
+                  <h3 className="font-serif text-xl font-light tracking-tight text-foreground mb-3">{r.name}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1 font-light">
+                    {r.highlight}
+                  </p>
+                  <div className="space-y-2 text-xs font-mono">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground uppercase tracking-[0.2em] text-[10px]">Price Range</span>
+                      <span className="text-primary">{r.priceRange}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground uppercase tracking-[0.2em] text-[10px]">Gross Yield</span>
+                      <span className="text-foreground">{r.yield}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground uppercase tracking-[0.2em] text-[10px]">Key Buyers</span>
+                      <span className="text-foreground">{r.buyers}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          <p className="text-[10px] text-gray-600 mt-3 text-right">
-            Sources: INE (Spain), INE (Portugal), Banco de Portugal, DBRS, Avena Terminal research. Data as of Q1 2026.
-          </p>
         </section>
 
-        {/* -------------------------------------------------------- */}
-        {/*  7. Bubble Scanner CTA                                    */}
-        {/* -------------------------------------------------------- */}
-        <section className="mb-14">
-          <div
-            className="rounded-xl border p-8 text-center"
-            style={{ background: '#161b22', borderColor: '#30363d' }}
-          >
-            <h2 className="text-xl font-bold text-white mb-2">European Bubble Scanner</h2>
-            <p className="text-sm text-gray-400 mb-5">
-              See Portugal cities in the European Bubble Scanner &mdash; track overvaluation risk, price momentum, and yield compression across the continent.
+        {/* Tax & Legal Framework */}
+        <section className="relative border-t py-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10">
+              <span className="mb-3 inline-block font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                Fiscal
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl font-light tracking-tight text-foreground mb-3">
+                Tax &amp; Legal Framework
+              </h2>
+              <p className="text-sm font-light text-muted-foreground">
+                Key taxes and rates for property buyers and investors in Portugal (2026).
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-5 mb-6">
+              <div
+                className="rounded-sm border p-6"
+                style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+              >
+                <h3 className="font-serif text-lg font-light text-foreground mb-3">NHR Regime (Modified 2024)</h3>
+                <ul className="text-sm text-muted-foreground font-light space-y-2 leading-relaxed">
+                  <li><span className="text-primary">20% flat rate</span> on Portuguese-sourced income for qualifying professions</li>
+                  <li>Available for 10 years to new Portuguese tax residents</li>
+                  <li>Crypto and pension tax benefits reduced under 2024 reform</li>
+                  <li>Foreign-sourced income may be exempt if taxed at source</li>
+                </ul>
+              </div>
+              <div
+                className="rounded-sm border p-6"
+                style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+              >
+                <h3 className="font-serif text-lg font-light text-foreground mb-3">Property Taxes</h3>
+                <ul className="text-sm text-muted-foreground font-light space-y-2 leading-relaxed">
+                  <li><span className="text-primary">IMI</span> (annual property tax): 0.3&ndash;0.45% of tax value</li>
+                  <li><span className="text-primary">CGT</span>: 28% for non-residents on gains</li>
+                  <li><span className="text-primary">Rental income</span>: 28% flat rate for non-residents</li>
+                  <li><span className="text-primary">Stamp Duty</span>: 0.8% on purchase price</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* IMT brackets */}
+            <div className="overflow-hidden rounded-sm border" style={{ background: 'hsl(var(--av-surface) / 0.3)', borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+              <div
+                className="px-4 py-3 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground border-b"
+                style={{ background: 'hsl(var(--av-surface) / 0.6)', borderColor: 'hsl(var(--av-border))' }}
+              >
+                IMT Transfer Tax Brackets (Urban Residential, Permanent Home)
+              </div>
+              {TAX_BRACKETS.map((row) => (
+                <div
+                  key={row.bracket}
+                  className="grid grid-cols-2 px-4 py-3 border-b text-sm font-mono"
+                  style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}
+                >
+                  <div className="text-muted-foreground">{row.bracket}</div>
+                  <div className="text-foreground text-right">{row.rate}</div>
+                </div>
+              ))}
+            </div>
+            <p className="text-[10px] font-mono text-muted-foreground mt-2 text-right uppercase tracking-[0.2em]">
+              IMT rates vary by property type and purpose. Secondary homes attract higher rates. Sources: AT (Autoridade Tribut&aacute;ria), 2026.
             </p>
-            <Link
-              href="/bubble-scanner"
-              className="inline-block rounded-lg px-6 py-3 text-sm font-semibold text-black bg-emerald-400 hover:bg-emerald-300 transition-colors"
-            >
-              Open Bubble Scanner
-            </Link>
           </div>
         </section>
 
-        {/* -------------------------------------------------------- */}
-        {/*  8. Related Answers                                       */}
-        {/* -------------------------------------------------------- */}
-        <section className="mb-14">
-          <h2 className="text-xl font-bold text-white mb-4">Portugal Property Answers</h2>
-          <div className="grid md:grid-cols-2 gap-3">
-            {PORTUGAL_ANSWERS.map((a) => (
-              <Link
-                key={a.slug}
-                href={`/answers/${a.slug}`}
-                className="block rounded-xl border p-4 hover:border-emerald-500/40 transition-all"
-                style={{ background: '#161b22', borderColor: '#30363d' }}
+        {/* Buying Process */}
+        <section className="relative border-t py-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10">
+              <span className="mb-3 inline-block font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                Process
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl font-light tracking-tight text-foreground">
+                Buying Process
+              </h2>
+            </div>
+            <div className="space-y-4">
+              {BUYING_STEPS.map((s) => (
+                <div
+                  key={s.step}
+                  className="rounded-sm border p-5 flex gap-4 items-start"
+                  style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+                >
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center font-mono text-sm flex-shrink-0"
+                    style={{ background: 'hsl(var(--av-primary) / 0.15)', color: 'hsl(var(--av-primary))' }}
+                  >
+                    {s.step}
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-base font-light text-foreground mb-1">{s.title}</h3>
+                    <p className="text-sm font-light text-muted-foreground leading-relaxed">{s.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Golden Visa 2026 */}
+        <section className="relative border-t py-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10">
+              <span className="mb-3 inline-block font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                Residency
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl font-light tracking-tight text-foreground mb-3">
+                Golden Visa 2026
+              </h2>
+              <p className="text-sm font-light text-muted-foreground">
+                The landscape has shifted since the 2023 real estate route closure.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-5">
+              <div
+                className="rounded-sm border p-6"
+                style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
               >
-                <span className="text-emerald-400 mr-2">&rarr;</span>
-                <span className="text-sm text-gray-300">{a.question}</span>
-              </Link>
-            ))}
+                <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-destructive mb-2">Closed</div>
+                <h3 className="font-serif text-lg font-light text-foreground mb-2">Real Estate Route</h3>
+                <p className="text-sm font-light text-muted-foreground leading-relaxed">
+                  Direct property purchases no longer qualify for Golden Visa residency. Closed since October 2023.
+                </p>
+              </div>
+              <div
+                className="rounded-sm border p-6"
+                style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+              >
+                <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-2">Open</div>
+                <h3 className="font-serif text-lg font-light text-foreground mb-2">Fund Investment</h3>
+                <p className="text-sm font-light text-muted-foreground leading-relaxed">
+                  Minimum &euro;500,000 investment in qualifying Portuguese investment funds. Funds may include real estate exposure indirectly.
+                </p>
+              </div>
+              <div
+                className="rounded-sm border p-6"
+                style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+              >
+                <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-2">Alternatives</div>
+                <h3 className="font-serif text-lg font-light text-foreground mb-2">D7 &amp; Digital Nomad</h3>
+                <p className="text-sm font-light text-muted-foreground leading-relaxed">
+                  D7 visa for passive income holders. Digital nomad visa for remote workers earning &euro;3,040+/month. Both lead to residency.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* -------------------------------------------------------- */}
-        {/*  9. Email Capture                                         */}
-        {/* -------------------------------------------------------- */}
-        <section
-          className="rounded-xl border p-8 text-center mb-14"
-          style={{ background: '#161b22', borderColor: '#30363d' }}
-        >
-          <h2 className="text-xl font-bold text-white mb-2">Get Portugal Market Alerts</h2>
-          <p className="text-gray-400 text-sm mb-5">
-            Regional price movements, tax changes, and new investment opportunities delivered to your inbox.
-          </p>
-          <EmailForm />
+        {/* Spain vs Portugal */}
+        <section className="relative border-t py-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10">
+              <span className="mb-3 inline-block font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                Comparison
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl font-light tracking-tight text-foreground mb-3">
+                Spain vs Portugal &mdash; At a Glance
+              </h2>
+              <p className="text-sm font-light text-muted-foreground">
+                How the two Iberian markets compare for international property buyers in 2026.
+              </p>
+            </div>
+            <div className="overflow-hidden rounded-sm border" style={{ background: 'hsl(var(--av-surface) / 0.3)', borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+              <table className="w-full font-mono text-sm">
+                <thead>
+                  <tr style={{ background: 'hsl(var(--av-surface) / 0.6)' }}>
+                    <th className="text-left px-4 py-3 text-[10px] uppercase tracking-[0.22em] text-muted-foreground border-b" style={{ borderColor: 'hsl(var(--av-border))' }}>Metric</th>
+                    <th className="text-center px-4 py-3 text-[10px] uppercase tracking-[0.22em] text-muted-foreground border-b" style={{ borderColor: 'hsl(var(--av-border))' }}>Spain</th>
+                    <th className="text-center px-4 py-3 text-[10px] uppercase tracking-[0.22em] text-muted-foreground border-b" style={{ borderColor: 'hsl(var(--av-border))' }}>Portugal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {COMPARISON_ROWS.map((row) => (
+                    <tr key={row.metric} className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
+                      <td className="px-4 py-3 text-muted-foreground">{row.metric}</td>
+                      <td className="px-4 py-3 text-center text-foreground">{row.spain}</td>
+                      <td className="px-4 py-3 text-center text-foreground">{row.portugal}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-[10px] font-mono text-muted-foreground mt-3 text-right uppercase tracking-[0.2em]">
+              Sources: INE (Spain), INE (Portugal), Banco de Portugal, DBRS, Avena Terminal research. Data as of Q1 2026.
+            </p>
+          </div>
+        </section>
+
+        {/* Bubble Scanner CTA */}
+        <section className="relative border-t py-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div
+              className="rounded-sm border p-10 text-center"
+              style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+            >
+              <h2 className="font-serif text-3xl font-light text-foreground mb-3">
+                European <span className="italic text-gold">Bubble Scanner</span>
+              </h2>
+              <p className="text-sm font-light text-muted-foreground mb-6 max-w-2xl mx-auto">
+                See Portugal cities in the European Bubble Scanner &mdash; track overvaluation risk, price momentum, and yield compression across the continent.
+              </p>
+              <Link
+                href="/bubble-scanner"
+                className="inline-block rounded-sm px-6 py-3 font-mono text-xs uppercase tracking-[0.22em] text-background"
+                style={{ background: 'hsl(var(--av-primary))' }}
+              >
+                Open Bubble Scanner
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Related Answers */}
+        <section className="relative border-t py-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-8">
+              <span className="mb-3 inline-block font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                Library
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl font-light tracking-tight text-foreground">
+                Portugal Property Answers
+              </h2>
+            </div>
+            <div className="grid md:grid-cols-2 gap-3">
+              {PORTUGAL_ANSWERS.map((a) => (
+                <Link
+                  key={a.slug}
+                  href={`/answers/${a.slug}`}
+                  className="block rounded-sm border p-4 transition-all hover:border-primary/40"
+                  style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+                >
+                  <span className="text-primary mr-2">&rarr;</span>
+                  <span className="text-sm font-light text-foreground">{a.question}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Email Capture */}
+        <section className="relative border-t py-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div
+              className="rounded-sm border p-10 text-center"
+              style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+            >
+              <h2 className="font-serif text-3xl font-light text-foreground mb-3">
+                Get <span className="italic text-gold">Portugal</span> Alerts
+              </h2>
+              <p className="text-sm font-light text-muted-foreground mb-6 max-w-2xl mx-auto">
+                Regional price movements, tax changes, and new investment opportunities delivered to your inbox.
+              </p>
+              <EmailForm />
+            </div>
+          </div>
         </section>
 
         {/* Deep-dive CTA */}
-        <section className="text-center mb-10">
+        <section className="relative border-t py-16 text-center" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
           <Link
             href="/compare/es-vs-pt"
-            className="inline-block rounded-lg px-6 py-3 text-sm font-semibold text-black bg-emerald-400 hover:bg-emerald-300 transition-colors"
+            className="inline-block rounded-sm px-6 py-3 font-mono text-xs uppercase tracking-[0.22em] text-background"
+            style={{ background: 'hsl(var(--av-primary))' }}
           >
             Deep Dive: Spain vs Portugal Comparison
           </Link>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t py-8 mt-12" style={{ borderColor: '#30363d' }}>
-        <div className="max-w-5xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between text-xs text-gray-500 gap-4">
-          <span className="font-serif tracking-[0.15em] text-gray-400">AVENA</span>
-          <span>Data-driven property investment intelligence for Europe&apos;s coasts.</span>
-          <div className="flex gap-4">
-            <Link href="/compare" className="hover:text-white transition-colors">Compare</Link>
-            <Link href="/towns" className="hover:text-white transition-colors">Towns</Link>
-            <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

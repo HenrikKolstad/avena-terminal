@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { getAllProperties, getUniqueTowns, avg } from '@/lib/properties';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,101 +39,125 @@ export default function LiveMarketFeedPage() {
     topScore: scores[0] ?? 0,
   };
 
-  return (
-    <div className="min-h-screen text-gray-100" style={{ background: '#0d1117' }}>
-      <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}>
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">AVENA</Link>
-          <div className="flex items-center gap-4">
-            <span className="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              LIVE
-            </span>
-            <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">Back to Terminal</Link>
-          </div>
-        </div>
-      </header>
+  const statGrid = [
+    { label: 'Properties', value: stats.totalProperties.toLocaleString() },
+    { label: 'Towns', value: stats.totalTowns.toString() },
+    { label: 'Avg Price', value: `€${stats.avgPrice.toLocaleString()}` },
+    { label: 'Median Price', value: `€${stats.medianPrice.toLocaleString()}` },
+    { label: 'Avg Score', value: stats.avgScore.toString() },
+    { label: 'Avg Yield', value: `${stats.avgYield}%` },
+    { label: 'Top Score', value: stats.topScore.toString() },
+  ];
 
-      <main className="max-w-6xl mx-auto px-4 py-10">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white">Live Market Feed</h1>
-            <p className="text-gray-500 text-xs mt-1 font-mono">Server-rendered {timestamp} CET</p>
+  return (
+    <div className="avena-v2 min-h-screen">
+      <Nav />
+
+      <main className="pt-16">
+        {/* Hero */}
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                <span className="inline-block h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: 'hsl(var(--av-primary))' }} />
+                Live · Force-dynamic
+              </span>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                The live feed.
+                <br />
+                <span className="italic text-gold">Nothing stale</span>.
+              </h1>
+              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
+                Real-time feed of every tracked Spanish new build, scored and ranked. Server-rendered on every request. 0s cache.
+              </p>
+              <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                Rendered {timestamp} CET
+              </p>
+            </div>
           </div>
-          <div className="text-right">
-            <span className="text-[10px] uppercase tracking-wider text-gray-500 block">Force-dynamic</span>
-            <span className="text-[10px] text-gray-600 block">0s cache / always fresh</span>
-          </div>
-        </div>
+        </section>
 
         {/* Market Summary */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-10">
-          {[
-            { label: 'Properties', value: stats.totalProperties.toLocaleString() },
-            { label: 'Towns', value: stats.totalTowns.toString() },
-            { label: 'Avg Price', value: `\u20AC${stats.avgPrice.toLocaleString()}` },
-            { label: 'Median Price', value: `\u20AC${stats.medianPrice.toLocaleString()}` },
-            { label: 'Avg Score', value: stats.avgScore.toString(), highlight: true },
-            { label: 'Avg Yield', value: `${stats.avgYield}%`, highlight: true },
-            { label: 'Top Score', value: stats.topScore.toString(), highlight: true },
-          ].map((s) => (
-            <div key={s.label} className="border rounded-lg p-3 text-center" style={{ background: '#0f1419', borderColor: '#1c2333' }}>
-              <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">{s.label}</div>
-              <div className={`text-lg font-bold font-mono ${s.highlight ? 'text-emerald-400' : 'text-white'}`}>{s.value}</div>
+        <section className="relative border-t py-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10">
+              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Market Summary
+              </span>
             </div>
-          ))}
-        </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-px overflow-hidden rounded-sm border" style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-border) / 0.6)' }}>
+              {statGrid.map(s => (
+                <div key={s.label} className="p-5" style={{ background: 'hsl(var(--av-background))' }}>
+                  <div className="font-serif text-xl md:text-2xl font-light tabular text-foreground">{s.value}</div>
+                  <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {/* Property List */}
-        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">All Properties by Score ({scored.length})</h2>
-
-        <div className="space-y-2">
-          {scored.map((p, i) => (
-            <Link
-              key={p.ref ?? `${p.p}-${i}`}
-              href={p.ref ? `/property/${encodeURIComponent(p.ref)}` : '#'}
-              className="flex items-center gap-4 border rounded-lg px-4 py-3 hover:border-emerald-500/30 transition-all group"
-              style={{ background: '#0f1419', borderColor: '#1c2333' }}
-            >
-              <span className="text-gray-600 font-mono text-xs w-8 text-right shrink-0">#{i + 1}</span>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-white text-sm font-medium truncate">{p.p}</span>
-                  <span className="text-gray-600 text-[10px] shrink-0">{p.t}</span>
-                </div>
-                <div className="text-gray-500 text-xs truncate">{p.l} &middot; {p.d}</div>
-              </div>
-              <div className="flex items-center gap-4 shrink-0 text-xs">
-                <div className="text-right">
-                  <div className="text-gray-500">Price</div>
-                  <div className="text-white font-mono">&euro;{p.pf.toLocaleString()}</div>
-                </div>
-                {p._yield && (
-                  <div className="text-right">
-                    <div className="text-gray-500">Yield</div>
-                    <div className="text-emerald-400 font-mono">{p._yield.gross.toFixed(1)}%</div>
-                  </div>
-                )}
-                <div className="text-right w-12">
-                  <div className="text-gray-500">Score</div>
-                  <div className={`font-bold font-mono ${(p._sc ?? 0) >= 70 ? 'text-emerald-400' : (p._sc ?? 0) >= 50 ? 'text-yellow-400' : 'text-gray-400'}`}>
-                    {p._sc}
-                  </div>
-                </div>
-              </div>
-              <span className="text-gray-700 text-[10px] font-mono shrink-0 w-20 text-right">
-                {p._added ?? now.toISOString().slice(0, 10)}
+        <section className="relative border-t py-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10">
+              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                All Properties by Score · {scored.length}
               </span>
-            </Link>
-          ))}
-        </div>
+              <h2 className="font-serif text-3xl sm:text-4xl font-light leading-[1] tracking-tight text-foreground">
+                Every property, ranked.
+              </h2>
+            </div>
 
-        <p className="text-[9px] text-gray-600 text-right mt-6 font-mono">Feed generated: {now.toISOString()}</p>
+            <div className="space-y-2">
+              {scored.map((p, i) => (
+                <Link
+                  key={p.ref ?? `${p.p}-${i}`}
+                  href={p.ref ? `/property/${encodeURIComponent(p.ref)}` : '#'}
+                  className="flex items-center gap-4 rounded-sm border px-4 py-3 transition-colors hover:border-primary/40"
+                  style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+                >
+                  <span className="text-muted-foreground font-mono text-xs w-10 text-right shrink-0">#{i + 1}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-foreground text-sm font-medium truncate">{p.p}</span>
+                      <span className="text-muted-foreground font-mono text-[10px] shrink-0">{p.t}</span>
+                    </div>
+                    <div className="text-muted-foreground text-xs truncate">{p.l} · {p.d}</div>
+                  </div>
+                  <div className="flex items-center gap-6 shrink-0 text-xs">
+                    <div className="text-right">
+                      <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Price</div>
+                      <div className="text-foreground font-mono tabular">€{p.pf.toLocaleString()}</div>
+                    </div>
+                    {p._yield && (
+                      <div className="text-right">
+                        <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Yield</div>
+                        <div className="text-primary font-mono tabular">{p._yield.gross.toFixed(1)}%</div>
+                      </div>
+                    )}
+                    <div className="text-right w-12">
+                      <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Score</div>
+                      <div className={`font-mono tabular font-semibold ${(p._sc ?? 0) >= 70 ? 'text-primary' : (p._sc ?? 0) >= 50 ? 'text-accent' : 'text-muted-foreground'}`}>
+                        {p._sc}
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-muted-foreground text-[10px] font-mono shrink-0 w-20 text-right">
+                    {p._added ?? now.toISOString().slice(0, 10)}
+                  </span>
+                </Link>
+              ))}
+            </div>
+
+            <p className="text-[10px] text-muted-foreground text-right mt-6 font-mono">Feed generated: {now.toISOString()}</p>
+          </div>
+        </section>
       </main>
 
-      <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>
-        &copy; 2026 Avena Terminal &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { getUniqueTowns } from '@/lib/properties';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 
 export const revalidate = 86400;
 
@@ -20,48 +22,88 @@ export default function TownsPage() {
   const towns = getUniqueTowns();
 
   return (
-    <div className="min-h-screen text-gray-100" style={{ background: '#0d1117' }}>
-      <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}>
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">AVENA</Link>
-          <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">Back to Terminal</Link>
-        </div>
-      </header>
+    <div className="avena-v2 min-h-screen">
+      <Nav />
 
-      <main className="max-w-5xl mx-auto px-4 py-10">
-        <nav className="text-xs text-gray-500 mb-6">
-          <Link href="/" className="hover:text-white">Home</Link> <span className="mx-1">/</span> <span className="text-white">Towns</span>
-        </nav>
+      <main className="pt-16">
+        {/* Hero */}
+        <section className="relative overflow-hidden py-20 sm:py-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <nav className="mb-8 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              <Link href="/" className="hover:text-foreground">Home</Link>
+              <span className="mx-2">/</span>
+              <span className="text-foreground">Towns</span>
+            </nav>
+            <div className="max-w-4xl">
+              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                {towns.length} Towns
+              </span>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+                Every town.
+                <br />
+                <span className="italic text-gold">Scored</span>.
+              </h1>
+              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
+                Avena Terminal tracks new build investment properties across {towns.length} towns in Spain, each scored by value, rental yield, and location fundamentals. Towns are ranked by number of available properties with live investment scores updated weekly.
+              </p>
+            </div>
+          </div>
+        </section>
 
-        <div className="direct-answer mb-6 text-sm text-gray-300 leading-relaxed border-l-2 pl-4" style={{ borderColor: '#10B981' }}>
-          <p>Avena Terminal tracks new build investment properties across {towns.length} towns in Spain, each scored by value, rental yield, and location fundamentals. Towns are ranked by number of available properties with live investment scores updated weekly. Source: Avena Terminal live data &mdash; avenaterminal.com</p>
-        </div>
+        {/* Grid */}
+        <section className="relative border-t py-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-10">
+              <span className="mb-3 inline-block font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                Directory
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl font-light tracking-tight text-foreground mb-3">
+                New Build Properties by Town
+              </h2>
+              <p className="text-sm font-light text-muted-foreground">
+                {towns.length} towns across Spain with scored investment properties.
+              </p>
+            </div>
 
-        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">New Build Properties by Town</h1>
-        <p className="text-gray-400 text-sm mb-8">{towns.length} towns across Spain with scored investment properties.</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {towns.map((t) => (
+                <Link
+                  key={t.slug}
+                  href={`/towns/${t.slug}`}
+                  className="block rounded-sm border p-5 transition-all hover:border-primary/40"
+                  style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="font-serif text-lg font-light tracking-tight text-foreground">{t.town}</h3>
+                    <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">{t.count}</span>
+                  </div>
+                  <div className="flex gap-4 font-mono text-xs">
+                    <div>
+                      <span className="block text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Score</span>
+                      <span className="text-primary">{t.avgScore}</span>
+                    </div>
+                    <div>
+                      <span className="block text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Yield</span>
+                      <span className="text-primary">{t.avgYield}%</span>
+                    </div>
+                    <div>
+                      <span className="block text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Avg</span>
+                      <span className="text-foreground">&euro;{t.avgPrice.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {towns.map((t) => (
-            <Link key={t.slug} href={`/towns/${t.slug}`} className="block border rounded-xl p-4 hover:border-emerald-500/30 transition-all" style={{ background: '#0f1419', borderColor: '#1c2333' }}>
-              <div className="flex justify-between items-start mb-2">
-                <h2 className="text-white font-semibold text-sm">{t.town}</h2>
-                <span className="text-[10px] text-gray-500">{t.count} properties</span>
-              </div>
-              <div className="flex gap-4 text-xs">
-                <div><span className="text-gray-500">Score </span><span className="text-emerald-400 font-semibold">{t.avgScore}</span></div>
-                <div><span className="text-gray-500">Gross Yield </span><span className="text-emerald-400 font-semibold">{t.avgYield}%</span></div>
-                <div><span className="text-gray-500">Avg </span><span className="text-white font-semibold">&euro;{t.avgPrice.toLocaleString()}</span></div>
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        <p className="text-[9px] text-gray-600 text-right mt-4">Data last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+            <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-muted-foreground text-right mt-6">
+              Data last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+            </p>
+          </div>
+        </section>
       </main>
 
-      <footer className="border-t py-6 text-center text-gray-600 text-xs" style={{ borderColor: '#1c2333' }}>
-        &copy; 2026 Avena Terminal &middot; <a href="https://avenaterminal.com" className="text-gray-500 hover:text-gray-300">avenaterminal.com</a>
-      </footer>
+      <Footer />
     </div>
   );
 }
