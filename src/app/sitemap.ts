@@ -254,6 +254,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Predictions
   entries.push({ url: `${base}/predictions`, lastModified: now, changeFrequency: 'daily', priority: 1.0 });
   entries.push({ url: `${base}/predictions/leaderboard`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+  entries.push({ url: `${base}/intelligence`, lastModified: now, changeFrequency: 'daily', priority: 1.0 });
   entries.push({ url: `${base}/changelog`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 });
   // Scenarios
   entries.push({ url: `${base}/scenarios`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });

@@ -6,11 +6,12 @@ import { useEffect, useState } from 'react';
 import { ProModal } from './ProModal';
 
 const links = [
-  { label: 'Signals', href: '/#signals' },
   { label: 'Deals', href: '/#deals' },
-  { label: 'Regions', href: '/#regions' },
-  { label: 'Oracle', href: '/chat' },
+  { label: 'Intelligence', href: '/intelligence' },
+  { label: 'Predictions', href: '/predictions' },
   { label: 'Indices', href: '/indices' },
+  { label: 'Oracle', href: '/chat' },
+  { label: 'Swarm', href: '/swarm' },
   { label: 'Method', href: '/methodology' },
 ];
 

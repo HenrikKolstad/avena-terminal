@@ -201,14 +201,34 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                 </div>
               )}
 
-              <Link
-                href={`/terminal?ref=${encodeURIComponent(p.ref ?? '')}`}
-                className="group inline-flex items-center justify-center gap-3 rounded-sm px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5 w-full sm:w-auto"
-                style={{ background: 'var(--av-gradient-gold)' }}
-              >
-                View full analysis
-                <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </Link>
+              {(() => {
+                const subject = encodeURIComponent(`Enquiry: ${p.p} · ${p.l}`);
+                const body = encodeURIComponent(
+                  `Hi Henrik,\n\n` +
+                  `I'd like more information about this property:\n\n` +
+                  `Project: ${p.p}\n` +
+                  `Reference: ${p.ref}\n` +
+                  `Location: ${p.l}${p.costa ? ` · ${p.costa}` : ''}\n` +
+                  `Type: ${p.t} · ${p.bd} bed · ${p.ba} bath · ${p.bm} m²\n` +
+                  `Price: €${p.pf.toLocaleString()}\n` +
+                  `Avena Score: ${Math.round(p._sc ?? 0)}/100\n` +
+                  (p._yield ? `Estimated gross yield: ${p._yield.gross.toFixed(1)}%\n` : '') +
+                  (p.d ? `Developer: ${p.d}\n` : '') +
+                  `\nURL: https://avenaterminal.com/property/${encodeURIComponent(p.ref ?? '')}\n\n` +
+                  `I'd like to know:\n- Current availability\n- Viewing options\n- Payment plan\n\nThanks!`
+                );
+                const mailto = `mailto:henrik@xaviaestate.com?subject=${subject}&body=${body}`;
+                return (
+                  <a
+                    href={mailto}
+                    className="group inline-flex items-center justify-center gap-3 rounded-sm px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5 w-full sm:w-auto"
+                    style={{ background: 'var(--av-gradient-gold)' }}
+                  >
+                    Contact Henrik
+                    <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </a>
+                );
+              })()}
             </div>
           </section>
 
@@ -333,16 +353,35 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                 Ready to <span className="italic text-gold">analyse</span> this deal?
               </h2>
               <p className="text-muted-foreground mb-8 font-light max-w-md mx-auto">
-                Full scoring breakdown, price history, AI investment memo, and more.
+                Availability, payment plans, viewings. Henrik replies personally within 24h.
               </p>
-              <Link
-                href={`/terminal?ref=${encodeURIComponent(p.ref ?? '')}`}
-                className="group inline-flex items-center gap-3 rounded-sm px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
-                style={{ background: 'var(--av-gradient-gold)' }}
-              >
-                View full analysis on Terminal
-                <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </Link>
+              {(() => {
+                const subject = encodeURIComponent(`Enquiry: ${p.p} · ${p.l}`);
+                const body = encodeURIComponent(
+                  `Hi Henrik,\n\n` +
+                  `I'd like more information about this property:\n\n` +
+                  `Project: ${p.p}\n` +
+                  `Reference: ${p.ref}\n` +
+                  `Location: ${p.l}${p.costa ? ` · ${p.costa}` : ''}\n` +
+                  `Type: ${p.t} · ${p.bd} bed · ${p.ba} bath · ${p.bm} m²\n` +
+                  `Price: €${p.pf.toLocaleString()}\n` +
+                  `Avena Score: ${Math.round(p._sc ?? 0)}/100\n` +
+                  (p._yield ? `Estimated gross yield: ${p._yield.gross.toFixed(1)}%\n` : '') +
+                  `\nURL: https://avenaterminal.com/property/${encodeURIComponent(p.ref ?? '')}\n\n` +
+                  `Thanks!`
+                );
+                const mailto = `mailto:henrik@xaviaestate.com?subject=${subject}&body=${body}`;
+                return (
+                  <a
+                    href={mailto}
+                    className="group inline-flex items-center gap-3 rounded-sm px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
+                    style={{ background: 'var(--av-gradient-gold)' }}
+                  >
+                    Contact Henrik about this property
+                    <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </a>
+                );
+              })()}
             </div>
           </section>
         </div>

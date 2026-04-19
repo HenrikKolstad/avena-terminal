@@ -9,6 +9,7 @@ const cols: Array<{ title: string; items: Array<[string, string]> }> = [
       ['Upgrade to PRO', '/pro'],
       ['APCI', '/apci'],
       ['Indices', '/indices'],
+      ['Causal Intelligence', '/intelligence'],
       ['Prediction Ledger', '/predictions'],
       ['PropertyEval', '/benchmark'],
       ['Colosseum', '/colosseum'],
