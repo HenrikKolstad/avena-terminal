@@ -152,7 +152,7 @@ export default function ChatPage() {
                   className="group inline-flex items-center gap-2 rounded-sm px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
                   style={{ background: 'var(--av-gradient-gold)' }}
                 >
-                  Upgrade to PRO — \u20AC79/mo
+                  Upgrade to PRO — €79/mo
                   <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </Link>
               </div>
@@ -234,7 +234,7 @@ export default function ChatPage() {
                             className="group mt-4 inline-flex items-center gap-2 rounded-sm px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
                             style={{ background: 'var(--av-gradient-gold)' }}
                           >
-                            Upgrade to PRO — \u20AC79/mo
+                            Upgrade to PRO — €79/mo
                             <ArrowUpRight className="h-3 w-3" />
                           </Link>
                         )}
