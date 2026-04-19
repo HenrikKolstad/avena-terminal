@@ -127,6 +127,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // About + Press
   entries.push({ url: `${base}/about`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 });
   entries.push({ url: `${base}/about/press`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 });
+  entries.push({ url: `${base}/press/embargo`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 });
 
   // Dataset, Press, Media, Data Partners
   entries.push({ url: `${base}/dataset`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });

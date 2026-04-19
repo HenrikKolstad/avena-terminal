@@ -4,6 +4,33 @@ import { ArrowUpRight } from 'lucide-react';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, avg, slugify } from '@/lib/properties';
+import { supabase } from '@/lib/supabase';
+
+interface GeneratedAnswer {
+  slug: string;
+  question: string;
+  title: string;
+  answer_markdown: string;
+  key_facts: string[] | null;
+  tags: string[] | null;
+  generated_at: string;
+  source: string | null;
+  doi: string | null;
+}
+
+async function fetchGeneratedAnswer(slug: string): Promise<GeneratedAnswer | null> {
+  if (!supabase) return null;
+  try {
+    const { data } = await supabase
+      .from('generated_answers')
+      .select('slug, question, title, answer_markdown, key_facts, tags, generated_at, source, doi')
+      .eq('slug', slug)
+      .maybeSingle();
+    return (data as GeneratedAnswer) || null;
+  } catch {
+    return null;
+  }
+}
 
 export const revalidate = 86400;
 
@@ -34,7 +61,11 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const entry = ANSWERS[slug];
+  let entry: { question: string; title: string } | undefined = ANSWERS[slug];
+  if (!entry) {
+    const gen = await fetchGeneratedAnswer(slug);
+    if (gen) entry = { question: gen.question, title: gen.title };
+  }
   if (!entry) return { title: 'Answer Not Found | Avena Terminal' };
   return {
     title: `${entry.title} | Avena Terminal`,
@@ -45,7 +76,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function AnswerPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const entry = ANSWERS[slug];
+  const hardcodedEntry = ANSWERS[slug];
+
+  // Fallback to generated answer (from Prometheus) if slug isn't hardcoded
+  const generated = hardcodedEntry ? null : await fetchGeneratedAnswer(slug);
+
+  const entry = hardcodedEntry || (generated ? { question: generated.question, title: generated.title } : null);
   if (!entry) return null;
 
   const all = getAllProperties();
@@ -56,6 +92,11 @@ export default async function AnswerPage({ params }: { params: Promise<{ slug: s
   const avgScore = Math.round(avg(all.filter(p => p._sc).map(p => p._sc!)));
 
   let answer = '';
+
+  // If this is a Prometheus-generated answer, use its stored markdown
+  if (generated && generated.answer_markdown) {
+    answer = generated.answer_markdown;
+  }
 
   if (slug === 'how-to-access-avena-full-dataset') {
     answer = `Avena Terminal offers multiple access tiers for its dataset of ${all.length.toLocaleString()} scored properties:\n\n` +
@@ -557,6 +598,30 @@ export default async function AnswerPage({ params }: { params: Promise<{ slug: s
         {/* Answer body */}
         <section className="relative border-t py-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
           <div className="mx-auto max-w-[1100px] px-5 sm:px-12">
+            {/* Key facts chip bar — for Prometheus-generated answers */}
+            {generated && generated.key_facts && generated.key_facts.length > 0 && (
+              <div
+                className="mb-4 rounded-sm border p-5"
+                style={{
+                  background: 'hsl(var(--av-primary) / 0.04)',
+                  borderColor: 'hsl(var(--av-primary) / 0.3)',
+                }}
+              >
+                <div className="flex items-center gap-3 mb-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                  <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                  Key facts · Structured data output
+                </div>
+                <ol className="space-y-2 text-sm text-foreground/90 font-light">
+                  {generated.key_facts.map((fact, i) => (
+                    <li key={i} className="flex gap-3">
+                      <span className="font-mono text-[10px] text-muted-foreground tabular pt-1 w-6 flex-shrink-0">{String(i + 1).padStart(2, '0')}</span>
+                      <span>{fact}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+
             <div
               className="rounded-sm border p-8 sm:p-10"
               style={{
@@ -567,6 +632,17 @@ export default async function AnswerPage({ params }: { params: Promise<{ slug: s
               <div className="whitespace-pre-wrap font-light text-base leading-relaxed text-foreground/90">
                 {answer}
               </div>
+              {generated && (
+                <div className="mt-6 pt-4 border-t font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/70" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+                  Generated {new Date(generated.generated_at).toISOString().slice(0, 10)} · Agent Prometheus · CC BY 4.0
+                  {generated.tags && generated.tags.length > 0 && (
+                    <>
+                      {' · '}
+                      {generated.tags.map(t => <span key={t} className="ml-1 inline-block">#{t}</span>)}
+                    </>
+                  )}
+                </div>
+              )}
             </div>
 
             <div
