@@ -70,6 +70,10 @@
     {
       "path": "/api/digest?generate=true",
       "schedule": "0 6 * * 1"
+    },
+    {
+      "path": "/api/cron/citation-agent",
+      "schedule": "0 3 * * *"
     }
   ]
 }

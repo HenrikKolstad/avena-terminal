@@ -71,12 +71,14 @@ export function FeaturedDeals() {
           <table className="w-full border-separate border-spacing-0">
             <thead>
               <tr style={{ background: 'hsl(var(--av-surface) / 0.6)' }}>
-                {['#', 'Score', 'Project', 'Region', 'Type', 'Price', '€/m²', 'Market', 'Δ', 'Built', 'Beds', ''].map(
+                {['#', 'Score', 'Project', 'Region', 'Type', 'Price', '€/m²', 'Market', 'Δ', 'Saved', 'Built', 'Beds', ''].map(
                   (h, i) => (
                     <th
                       key={i}
-                      className={`border-b px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground ${
-                        ['Price', '€/m²', 'Market', 'Δ', 'Built', 'Beds'].includes(h)
+                      className={`border-b px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.22em] ${
+                        h === 'Saved' ? 'text-right text-primary' : 'text-muted-foreground'
+                      } ${
+                        ['Price', '€/m²', 'Market', 'Δ', 'Saved', 'Built', 'Beds'].includes(h)
                           ? 'text-right'
                           : 'text-left'
                       }`}
@@ -99,6 +101,7 @@ export function FeaturedDeals() {
                   ? `ES · ${d.costa.replace('Costa ', 'C')}`
                   : 'ES';
                 const built = Math.round(d.bm || 0);
+                const saved = Math.round(((d.mm2 ?? 0) - (d.pm2 ?? 0)) * built);
                 const href = d.ref ? `/property/${encodeURIComponent(d.ref)}` : '/';
 
                 return (
@@ -208,6 +211,20 @@ export function FeaturedDeals() {
                       className="border-b px-4 py-4 text-right"
                       style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}
                     >
+                      <span
+                        className="inline-block rounded-sm px-2 py-1 font-mono text-sm font-bold tabular text-primary-foreground"
+                        style={{
+                          background: 'var(--av-gradient-gold)',
+                          boxShadow: 'var(--av-shadow-gold)',
+                        }}
+                      >
+                        €{fmt(saved)}
+                      </span>
+                    </td>
+                    <td
+                      className="border-b px-4 py-4 text-right"
+                      style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}
+                    >
                       <span className="font-mono text-xs tabular text-foreground/80">
                         {built}m²
                       </span>
@@ -246,6 +263,8 @@ export function FeaturedDeals() {
             const score = Math.round(d._sc ?? 0);
             const discount = Math.round((1 - (d.pm2 ?? 0) / (d.mm2 ?? 1)) * 100);
             const project = d.p || `${d.t} in ${d.l}`;
+            const built = Math.round(d.bm || 0);
+            const saved = Math.round(((d.mm2 ?? 0) - (d.pm2 ?? 0)) * built);
             const href = d.ref ? `/property/${encodeURIComponent(d.ref)}` : '/';
 
             return (
@@ -269,6 +288,21 @@ export function FeaturedDeals() {
                   </div>
                   <span className="font-mono text-sm font-semibold tabular text-primary">
                     −{discount}%
+                  </span>
+                </div>
+
+                <div
+                  className="mt-3 inline-flex items-center gap-2 rounded-sm px-3 py-1.5"
+                  style={{
+                    background: 'var(--av-gradient-gold)',
+                    boxShadow: 'var(--av-shadow-gold)',
+                  }}
+                >
+                  <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-primary-foreground/80">
+                    Saved
+                  </span>
+                  <span className="font-mono text-base font-bold tabular text-primary-foreground">
+                    €{fmt(saved)}
                   </span>
                 </div>
                 <h3 className="mt-3 font-serif text-lg leading-tight text-foreground line-clamp-2">

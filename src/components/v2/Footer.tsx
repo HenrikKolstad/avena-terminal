@@ -4,10 +4,11 @@ const cols: Array<{ title: string; items: Array<[string, string]> }> = [
   {
     title: 'Product',
     items: [
-      ['Terminal', '/'],
+      ['Terminal', '/terminal'],
+      ['Oracle', '/chat'],
+      ['Upgrade to PRO', '/pro'],
       ['APCI', '/apci'],
       ['Indices', '/indices'],
-      ['Oracle', '/chat'],
       ['PropertyEval', '/benchmark'],
       ['Colosseum', '/colosseum'],
     ],

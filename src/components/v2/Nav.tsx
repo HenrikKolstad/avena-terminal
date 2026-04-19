@@ -76,10 +76,17 @@ export function Nav() {
           </button>
           <Link
             href="/terminal"
-            className="hidden rounded-sm border px-5 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground transition-colors hover:text-primary lg:inline-flex"
+            className="hidden rounded-sm border px-4 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground transition-colors hover:text-primary lg:inline-flex"
             style={{ borderColor: 'hsl(var(--av-border-strong))' }}
           >
-            Enter Terminal →
+            Terminal
+          </Link>
+          <Link
+            href="/pro"
+            className="hidden rounded-sm px-5 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5 lg:inline-flex"
+            style={{ background: 'var(--av-gradient-gold)' }}
+          >
+            Upgrade →
           </Link>
           <button
             onClick={() => setOpen(!open)}
@@ -114,10 +121,18 @@ export function Nav() {
             <Link
               href="/terminal"
               onClick={() => setOpen(false)}
-              className="mt-4 inline-flex items-center justify-center rounded-sm py-3 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold"
+              className="mt-4 inline-flex items-center justify-center rounded-sm border py-3 font-mono text-xs uppercase tracking-[0.22em] text-foreground"
+              style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+            >
+              Enter Terminal
+            </Link>
+            <Link
+              href="/pro"
+              onClick={() => setOpen(false)}
+              className="mt-2 inline-flex items-center justify-center rounded-sm py-3 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold"
               style={{ background: 'var(--av-gradient-gold)' }}
             >
-              Enter Terminal →
+              Upgrade to PRO →
             </Link>
           </nav>
         </div>

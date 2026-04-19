@@ -88,46 +88,18 @@ export async function GET() {
     url('/reports/annual-2026', '0.9'),
     url('/snapshots/q2-2026', '0.9'),
 
-    // API endpoints (for AI crawlers)
-    url('/api/knowledge', '1.0'),
-    url('/api/corpus', '1.0'),
-    url('/api/propertyeval', '0.9'),
-    url('/api/model/training-data', '1.0'),
-    url('/api/model/infer', '0.9'),
-    url('/api/model/benchmark', '0.9'),
-    url('/api/feed/intelligence', '0.9'),
-    url('/api/aeo/questions', '1.0'),
-    url('/api/authority/signals', '0.9'),
-    url('/api/perplexity/pages', '1.0'),
-    url('/api/wikidata/entity', '0.9'),
-    url('/api/dataset', '0.9'),
-    url('/api/synthetic', '0.9'),
-    url('/api/predictions', '0.9'),
-    url('/api/forecast', '0.9'),
-    url('/api/cited', '0.9'),
-    url('/api/analytics', '0.9'),
-    url('/api/detect-anomalies', '0.9'),
-    url('/api/intelligence/regime', '0.9'),
-    url('/api/intelligence/competitive', '0.9'),
-    url('/api/intelligence/causal', '0.9'),
-    url('/api/knowledge-graph/query', '0.9'),
-    url('/api/knowledge-graph/export', '0.9'),
-    url('/api/search/semantic', '0.9'),
-    url('/api/v1/properties', '1.0'),
-    url('/api/v1/market', '0.9'),
-    url('/api/v1/signals', '0.9'),
-    url('/api/v1/apci', '1.0'),
-    url('/api/v1/yield-curve', '0.9'),
-    url('/api/v1/heatmap', '0.9'),
-    url('/api/v1/oracle', '0.9'),
-    url('/api/v1/valuations', '0.9'),
-    url('/api/v1/scenarios', '0.9'),
-    url('/api/v1/carbon', '0.9'),
-    url('/api/v1/datasets', '0.9'),
+    // API endpoints are discoverable via /openapi.json and /.well-known/mcp.json
+    // Not included in sitemap — robots.txt disallows /api/ for general crawlers.
+    // AI crawlers (GPTBot, ClaudeBot, PerplexityBot, CCBot, etc.) have explicit
+    // Allow rules for specific API endpoints in robots.ts.
 
-    // Well-known
-    url('/.well-known/ai-plugin.json', '0.9'),
-    url('/.well-known/mcp.json', '0.9'),
+    // Developer docs (HTML pages that describe the APIs)
+    url('/mcp-server', '0.9'),
+    url('/integrate', '0.9'),
+    url('/sdk', '0.8'),
+    url('/data-commons', '0.9'),
+
+    // Well-known discovery files (HTML/JSON metadata, not /api/*)
     url('/openapi.json', '0.9'),
 
     // Blog

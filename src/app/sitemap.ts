@@ -18,6 +18,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Stats page
   entries.push({ url: `${base}/stats`, lastModified: now, changeFrequency: 'daily', priority: 1 });
 
+  // Terminal + PRO upgrade
+  entries.push({ url: `${base}/terminal`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+  entries.push({ url: `${base}/pro`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 });
+
   // Spanish pages
   entries.push({ url: `${base}/es`, lastModified: now, changeFrequency: 'daily', priority: 1 });
   for (const t of getUniqueTowns()) {
@@ -66,16 +70,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entries.push({ url: `${base}/budget/${range}`, lastModified: now, changeFrequency: 'daily', priority: 0.7 });
   }
 
-  // SEO landing pages
-  for (const page of [
-    'new-builds-costa-blanca-under-200k', 'best-new-build-villas-spain-2025', 'spanish-property-investment-calculator',
-    'torrevieja-new-builds', 'alicante-new-build-apartments', 'costa-calida-property-investment',
-    'murcia-new-build-villas', 'orihuela-costa-new-developments', 'benidorm-new-build-apartments',
-    'javea-new-build-villas', 'spain-property-discount-finder', 'spain-rental-yield-calculator',
-    'british-buyers-spain-2025', 'norwegian-property-investment-spain', 'off-plan-vs-key-ready-spain',
-  ]) {
-    entries.push({ url: `${base}/seo/${page}.html`, lastModified: now, changeFrequency: 'daily', priority: 0.6 });
-  }
+  // Note: legacy /seo/*.html landing pages are 301 redirected to /insights/*
+  // equivalents (see next.config.ts) to consolidate canonical ranking signals.
+  // Removed from sitemap to eliminate duplicate content canonical conflicts.
 
   // Question pages (5 patterns x all towns)
   const questionPatterns = ['is-{slug}-good-for-property-investment', 'how-much-does-new-build-cost-in-{slug}', 'average-rental-yield-{slug}-spain', 'can-foreigners-buy-property-in-{slug}', 'best-areas-to-invest-near-{slug}'];
@@ -260,7 +257,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Ratings
   entries.push({ url: `${base}/ratings`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
   // Yield Curve
-  entries.push({ url: `${base}/yield-curve`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 });
+  // /yield-curve redirects to /indices (no dedicated page)
 
   // Intelligence Digest
   entries.push({ url: `${base}/digest`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 });

@@ -40,10 +40,10 @@ function lastMonthlyRun(dayOfMonth: number, utcHour: number): string {
 
 export const metadata: Metadata = {
   title: 'Agent Swarm — Live Intelligence Network | Avena Terminal',
-  description: '12 autonomous agents. Self-organizing. Self-improving. The Avena Agent Swarm powers real-time property intelligence across Spain.',
+  description: '13 autonomous agents. Self-organizing. Self-improving. The Avena Agent Swarm powers real-time property intelligence across Spain.',
   openGraph: {
     title: 'Agent Swarm — Live Intelligence Network | Avena Terminal',
-    description: '12 autonomous agents delivering real-time property intelligence.',
+    description: '13 autonomous agents delivering real-time property intelligence.',
     type: 'website',
   },
 };
@@ -101,13 +101,14 @@ function getSwarmStatus(): SwarmData {
     { name: 'Agent Shadow', id: 'crawler', type: 'citation_hunting', status: 'active', schedule: '09:00 UTC daily', tasks_completed: days * 35, performance_score: 75, last_run: lastDailyRun(9) },
     { name: 'Agent Curie', id: 'research-lab', type: 'paper_generation', status: 'active', schedule: '1st of month', tasks_completed: months * 1, performance_score: 80, last_run: lastMonthlyRun(1, 7) },
     { name: 'Agent Mercury', id: 'digest', type: 'newsletter', status: 'active', schedule: 'Monday 06:00', tasks_completed: weeks * 1, performance_score: 70, last_run: lastWeeklyRun(1, 6) },
+    { name: 'Agent Atlas', id: 'atlas', type: 'citation_intelligence', status: 'active', schedule: '03:00 UTC daily', tasks_completed: days * 50, performance_score: 83, last_run: lastDailyRun(3) },
   ];
   const scores = agents.map(a => a.performance_score);
   const total = agents.reduce((s, a) => s + a.tasks_completed, 0);
   return {
     swarm_name: 'Avena Agent Swarm',
     agents,
-    summary: { total_agents: 12, active_agents: 12, avg_performance: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length), total_tasks_completed: total, mcp_citations: 23 + days },
+    summary: { total_agents: 13, active_agents: 13, avg_performance: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length), total_tasks_completed: total, mcp_citations: 23 + days },
     health: 'GOOD',
     last_health_check: now,
   };
@@ -157,8 +158,8 @@ export default async function SwarmPage() {
 
   const agents = swarmData?.agents ?? [];
   const summary = swarmData?.summary ?? {
-    total_agents: 12,
-    active_agents: 12,
+    total_agents: 13,
+    active_agents: 13,
     avg_performance: 80,
     total_tasks_completed: 2196,
     mcp_citations: 0,
@@ -190,7 +191,7 @@ export default async function SwarmPage() {
           </h1>
           <p className="text-xl text-zinc-400 mb-2">Live Intelligence Network</p>
           <p className="text-sm text-zinc-500 max-w-xl mx-auto">
-            12 autonomous agents. Self-organizing. Self-improving.
+            13 autonomous agents. Self-organizing. Self-improving.
           </p>
         </section>
 

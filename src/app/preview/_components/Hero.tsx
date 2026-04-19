@@ -88,9 +88,9 @@ export function Hero() {
           </h1>
 
           <p className="mt-8 max-w-xl font-light text-base text-muted-foreground sm:text-lg">
-            A real-time intelligence terminal scoring every new-build property
-            across Europe. Find the deals the market hasn&apos;t priced in — ranked by
-            the Avena Score, 0–100.
+            Europe&apos;s most technical property data platform.
+            <br />
+            Average saving on Avena-tracked new builds: <span className="text-gold font-medium">&euro;130,000</span>.
           </p>
 
           <div className="mt-10 flex flex-wrap items-center gap-4">
