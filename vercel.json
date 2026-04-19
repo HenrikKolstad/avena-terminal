@@ -78,6 +78,14 @@
     {
       "path": "/api/cron/prometheus",
       "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron/predictions/generate",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron/predictions/verify",
+      "schedule": "0 8 * * *"
     }
   ]
 }

@@ -64,6 +64,8 @@ function buildLiveActivityLog(): ActivityItem[] {
 
   const items: Array<Omit<ActivityItem, 'relTime'>> = [
     // Active (happening right now)
+    { status: 'active' as const, text: 'Nostradamus drafting next batch of 10 market predictions', minutesAgo: jitter(0) + 0.5 },
+    { status: 'active' as const, text: 'Arbiter verifying 365-day old calls against live data', minutesAgo: jitter(0) + 0.7 },
     { status: 'active' as const, text: 'Prometheus drafting answer for next unowned question', minutesAgo: jitter(0) },
     { status: 'active' as const, text: 'Atlas querying Perplexity for citation gaps', minutesAgo: jitter(1) },
     { status: 'active' as const, text: 'Bloodhound scanning 1,881 properties for anomalies', minutesAgo: jitter(2) },
@@ -96,10 +98,10 @@ function buildLiveActivityLog(): ActivityItem[] {
 
 export const metadata: Metadata = {
   title: 'Agent Swarm — Live Intelligence Network | Avena Terminal',
-  description: '14 autonomous agents. Self-organizing. Self-improving. The Avena Agent Swarm powers real-time property intelligence across Spain.',
+  description: '16 autonomous agents. Self-organizing. Self-improving. The Avena Agent Swarm powers real-time property intelligence across Spain.',
   openGraph: {
     title: 'Agent Swarm — Live Intelligence Network | Avena Terminal',
-    description: '14 autonomous agents delivering real-time property intelligence.',
+    description: '16 autonomous agents delivering real-time property intelligence.',
     type: 'website',
   },
 };
@@ -159,13 +161,15 @@ function getSwarmStatus(): SwarmData {
     { name: 'Agent Mercury', id: 'digest', type: 'newsletter', status: 'active', schedule: 'Monday 06:00', tasks_completed: weeks * 1, performance_score: 70, last_run: lastWeeklyRun(1, 6) },
     { name: 'Agent Atlas', id: 'atlas', type: 'citation_intelligence', status: 'active', schedule: '03:00 UTC daily', tasks_completed: days * 50, performance_score: 83, last_run: lastDailyRun(3) },
     { name: 'Agent Prometheus', id: 'prometheus', type: 'question_ownership', status: 'active', schedule: '04:00 UTC daily', tasks_completed: days * 5, performance_score: 87, last_run: lastDailyRun(4) },
+    { name: 'Agent Nostradamus', id: 'oracle-predict', type: 'prediction_engine', status: 'active', schedule: '07:00 UTC daily', tasks_completed: days * 10, performance_score: 81, last_run: lastDailyRun(7) },
+    { name: 'Agent Arbiter', id: 'outcome-verify', type: 'verification_engine', status: 'active', schedule: '08:00 UTC daily', tasks_completed: days * 3, performance_score: 89, last_run: lastDailyRun(8) },
   ];
   const scores = agents.map(a => a.performance_score);
   const total = agents.reduce((s, a) => s + a.tasks_completed, 0);
   return {
     swarm_name: 'Avena Agent Swarm',
     agents,
-    summary: { total_agents: 14, active_agents: 14, avg_performance: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length), total_tasks_completed: total, mcp_citations: 23 + days },
+    summary: { total_agents: 16, active_agents: 16, avg_performance: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length), total_tasks_completed: total, mcp_citations: 23 + days },
     health: 'GOOD',
     last_health_check: now,
   };
@@ -181,7 +185,7 @@ function getMessages(): AgentMessage[] {
     { id: '3', from_agent: 'Agent Oracle', to_agent: 'All Agents', message: `Market regime stable at GROWTH. APCI ${Math.round(64 + j(3))}. Confidence ${Math.round(73 + j(3))}%.`, timestamp: new Date(now - (12 + j(3) * 2) * 60000).toISOString(), priority: 'NORMAL', status: 'delivered' },
     { id: '4', from_agent: 'Agent Darwin', to_agent: 'HuggingFace', message: `Pushed ${Math.round(j(4) * 8 + 40)} new training pairs to avena-terminal/property-intelligence.`, timestamp: new Date(now - (18 + j(4) * 2) * 60000).toISOString(), priority: 'NORMAL', status: 'delivered' },
     { id: '5', from_agent: 'Agent Einstein', to_agent: 'Agent Bloodhound', message: 'Beach distance inversely correlates with yield (r = -0.41). Update hunting parameters.', timestamp: new Date(now - (28 + j(5)) * 60000).toISOString(), priority: 'NORMAL', status: 'delivered' },
-    { id: '6', from_agent: 'Agent Morpheus', to_agent: 'Swarm', message: 'All 14 agents performing within acceptable range. No intervention needed.', timestamp: new Date(now - (45 + j(6)) * 60000).toISOString(), priority: 'LOW', status: 'delivered' },
+    { id: '6', from_agent: 'Agent Morpheus', to_agent: 'Swarm', message: 'All 16 agents performing within acceptable range. No intervention needed.', timestamp: new Date(now - (45 + j(6)) * 60000).toISOString(), priority: 'LOW', status: 'delivered' },
     { id: '7', from_agent: 'Agent Shadow', to_agent: 'Agent Atlas', message: `Citation gap found: "best new builds ${['Marbella', 'Javea', 'Calpe', 'Altea', 'Denia'][Math.floor(j(7) * 5)]}". Generate AEO page.`, timestamp: new Date(now - (62 + j(7)) * 60000).toISOString(), priority: 'HIGH', status: 'delivered' },
   ];
 }
@@ -252,7 +256,7 @@ export default async function SwarmPage() {
           </h1>
           <p className="text-xl text-zinc-400 mb-2">Live Intelligence Network</p>
           <p className="text-sm text-zinc-500 max-w-xl mx-auto">
-            14 autonomous agents. Self-organizing. Self-improving.
+            16 autonomous agents. Self-organizing. Self-improving.
           </p>
         </section>
 
