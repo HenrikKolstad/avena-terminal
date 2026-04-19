@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { LiveCitations } from '@/components/v2/LiveCitations';
 import { Hero } from './preview/_components/Hero';
 import { Ticker } from './preview/_components/Ticker';
 import { Indices } from './preview/_components/Indices';
@@ -35,6 +36,7 @@ export default function HomePage() {
       <main>
         <Hero />
         <Ticker />
+        <LiveCitations variant="banner" />
         <FeaturedDeals />
         <Indices />
         <Regions />
