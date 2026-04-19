@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
         destination: 'https://avenaterminal.com/:path*',
         permanent: true,
       },
+      {
+        source: '/preview',
+        destination: '/',
+        permanent: true,
+      },
     ];
   },
   async headers() {

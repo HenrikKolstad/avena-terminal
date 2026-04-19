@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 
 interface APCIData {
   apci: number;
@@ -33,26 +35,19 @@ const DIMENSION_LABELS: Record<string, { label: string; weight: string; desc: st
 };
 
 function scoreColor(score: number): string {
-  if (score >= 75) return 'text-emerald-400';
-  if (score >= 60) return 'text-green-400';
-  if (score >= 45) return 'text-yellow-400';
-  return 'text-red-400';
+  if (score >= 75) return 'text-primary';
+  if (score >= 60) return 'text-foreground';
+  if (score >= 45) return 'text-accent';
+  return 'text-destructive';
 }
 
-function scoreBg(score: number): string {
-  if (score >= 75) return 'bg-emerald-500';
-  if (score >= 60) return 'bg-green-500';
-  if (score >= 45) return 'bg-yellow-500';
-  return 'bg-red-500';
-}
-
-function phaseBadge(phase: string): string {
+function phaseColors(phase: string) {
   switch (phase) {
-    case 'BULL': return 'bg-emerald-900/50 text-emerald-300 border-emerald-700';
-    case 'GROWTH': return 'bg-green-900/50 text-green-300 border-green-700';
-    case 'NEUTRAL': return 'bg-yellow-900/50 text-yellow-300 border-yellow-700';
-    case 'CAUTION': return 'bg-red-900/50 text-red-300 border-red-700';
-    default: return 'bg-gray-900/50 text-gray-300 border-gray-700';
+    case 'BULL': return { bg: 'hsl(var(--av-primary) / 0.1)', border: 'hsl(var(--av-primary) / 0.4)', text: 'hsl(var(--av-primary))' };
+    case 'GROWTH': return { bg: 'hsl(var(--av-success) / 0.1)', border: 'hsl(var(--av-success) / 0.4)', text: 'hsl(var(--av-success))' };
+    case 'NEUTRAL': return { bg: 'hsl(var(--av-warning) / 0.1)', border: 'hsl(var(--av-warning) / 0.4)', text: 'hsl(var(--av-warning))' };
+    case 'CAUTION': return { bg: 'hsl(var(--av-destructive) / 0.1)', border: 'hsl(var(--av-destructive) / 0.4)', text: 'hsl(var(--av-destructive))' };
+    default: return { bg: 'hsl(var(--av-muted))', border: 'hsl(var(--av-border))', text: 'hsl(var(--av-muted-foreground))' };
   }
 }
 
@@ -75,7 +70,7 @@ export default function APCIPage() {
     url: 'https://avenaterminal.com/apci',
     identifier: 'doi:10.5281/zenodo.19520064',
     creator: { '@type': 'Organization', name: 'Avena Terminal', url: 'https://avenaterminal.com' },
-    license: 'https://creativecommons.org/licenses/by-nc/4.0/',
+    license: 'https://creativecommons.org/licenses/by/4.0/',
     dateModified: data.date,
     variableMeasured: Object.keys(DIMENSION_LABELS).map(k => ({
       '@type': 'PropertyValue', name: DIMENSION_LABELS[k].label, value: data.dimensions[k],
@@ -83,159 +78,280 @@ export default function APCIPage() {
   } : null;
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100">
+    <div className="avena-v2 min-h-screen">
       {jsonLd && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       )}
 
-      {/* Header */}
-      <header className="border-b border-gray-800 bg-gray-950/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-lg font-bold tracking-wider text-gray-100">
-            AVENA<span className="text-emerald-400">.</span>
-          </Link>
-          <nav className="flex gap-6 text-sm text-gray-400">
-            <Link href="/predictions" className="hover:text-gray-100 transition">Predictions</Link>
-            <Link href="/scenarios" className="hover:text-gray-100 transition">Scenarios</Link>
-            <Link href="/alerts" className="hover:text-gray-100 transition">Alerts</Link>
-          </nav>
-        </div>
-      </header>
+      <Nav />
 
-      <main className="max-w-6xl mx-auto px-4 py-12">
-        {error && (
-          <div className="bg-red-900/30 border border-red-800 rounded-lg p-4 mb-8">
-            <p className="text-red-300">Failed to load APCI: {error}</p>
-          </div>
-        )}
-
-        {!data && !error && (
-          <div className="flex items-center justify-center py-24">
-            <div className="w-8 h-8 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
-          </div>
-        )}
-
-        {data && (
-          <>
-            {/* Hero */}
-            <div className="text-center mb-16">
-              <p className="text-sm uppercase tracking-widest text-gray-500 mb-2">Avena Property Consciousness Index</p>
-              <div className={`text-8xl font-black tabular-nums ${scoreColor(data.apci)} mb-4`}>
-                {data.apci}
-              </div>
-              <div className="flex items-center justify-center gap-4 mb-4">
-                <span className={`px-3 py-1 text-sm font-mono border rounded-full ${phaseBadge(data.phase)}`}>
-                  {data.phase}
-                </span>
-                <span className={`text-lg font-mono ${data.week_change >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                  {data.week_change >= 0 ? '\u2191' : '\u2193'}{Math.abs(data.week_change)} this week
-                </span>
-              </div>
-              <p className="text-gray-400 text-sm">{data.date}</p>
+      <main className="pt-24">
+        <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+          {error && (
+            <div
+              className="rounded-sm border p-4 mb-8"
+              style={{
+                background: 'hsl(var(--av-destructive) / 0.08)',
+                borderColor: 'hsl(var(--av-destructive) / 0.3)',
+              }}
+            >
+              <p className="text-destructive font-mono text-sm">Failed to load APCI: {error}</p>
             </div>
+          )}
 
-            {/* Dimensions Breakdown */}
-            <section className="mb-16">
-              <h2 className="text-xl font-bold mb-6 text-gray-200">8-Dimension Breakdown</h2>
-              <div className="grid gap-4">
-                {Object.entries(DIMENSION_LABELS).map(([key, meta]) => {
-                  const val = data.dimensions[key] ?? 0;
-                  return (
-                    <div key={key} className="bg-gray-900 border border-gray-800 rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <div>
-                          <span className="font-medium text-gray-200">{meta.label}</span>
-                          <span className="text-xs text-gray-500 ml-2">({meta.weight})</span>
+          {!data && !error && (
+            <div className="flex items-center justify-center py-32">
+              <div
+                className="w-8 h-8 border-2 rounded-full animate-spin"
+                style={{ borderColor: 'hsl(var(--av-primary))', borderTopColor: 'transparent' }}
+              />
+            </div>
+          )}
+
+          {data && (
+            <>
+              {/* Hero */}
+              <section className="py-16 sm:py-24 text-center">
+                <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                  <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                  APCI · Live Index
+                  <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                </span>
+                <h1 className="font-serif text-4xl sm:text-5xl font-light leading-tight tracking-tight text-foreground mb-8">
+                  The <span className="italic text-gold">Avena Property</span>
+                  <br />Consciousness Index
+                </h1>
+
+                <div className={`font-serif text-[12rem] sm:text-[16rem] font-extralight leading-none tabular ${scoreColor(data.apci)} mb-6`}>
+                  {data.apci}
+                </div>
+
+                <div className="flex items-center justify-center gap-6 mb-4">
+                  {(() => {
+                    const c = phaseColors(data.phase);
+                    return (
+                      <span
+                        className="px-4 py-2 font-mono text-xs uppercase tracking-[0.22em] border rounded-sm"
+                        style={{ background: c.bg, borderColor: c.border, color: c.text }}
+                      >
+                        {data.phase}
+                      </span>
+                    );
+                  })()}
+                  <span className={`font-mono text-sm tabular ${data.week_change >= 0 ? 'text-primary' : 'text-destructive'}`}>
+                    {data.week_change >= 0 ? '\u2191' : '\u2193'} {Math.abs(data.week_change)} this week
+                  </span>
+                </div>
+                <p className="text-muted-foreground font-mono text-xs uppercase tracking-[0.22em]">{data.date}</p>
+              </section>
+
+              {/* Dimensions Breakdown */}
+              <section className="py-16 border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+                <div className="mb-10">
+                  <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                    <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                    8 Dimensions · Weighted
+                  </span>
+                  <h2 className="font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+                    The anatomy of a market.
+                  </h2>
+                </div>
+
+                <div className="grid gap-3">
+                  {Object.entries(DIMENSION_LABELS).map(([key, meta]) => {
+                    const val = data.dimensions[key] ?? 0;
+                    return (
+                      <div
+                        key={key}
+                        className="rounded-sm border p-5"
+                        style={{
+                          background: 'hsl(var(--av-surface) / 0.4)',
+                          borderColor: 'hsl(var(--av-border) / 0.6)',
+                        }}
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <span className="font-serif text-lg text-foreground">{meta.label}</span>
+                            <span className="ml-3 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                              Weight {meta.weight}
+                            </span>
+                          </div>
+                          <span className={`font-serif text-3xl font-light tabular ${scoreColor(val)}`}>{val}</span>
                         </div>
-                        <span className={`text-lg font-mono font-bold ${scoreColor(val)}`}>{val}</span>
-                      </div>
-                      <div className="w-full bg-gray-800 rounded-full h-2 mb-2">
                         <div
-                          className={`h-2 rounded-full transition-all duration-700 ${scoreBg(val)}`}
-                          style={{ width: `${val}%` }}
-                        />
+                          className="w-full rounded-full h-1 mb-3"
+                          style={{ background: 'hsl(var(--av-border))' }}
+                        >
+                          <div
+                            className="h-1 rounded-full transition-all duration-700"
+                            style={{
+                              width: `${val}%`,
+                              background: val >= 60 ? 'var(--av-gradient-gold)' : val >= 45 ? 'hsl(var(--av-warning))' : 'hsl(var(--av-destructive))',
+                            }}
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground">{meta.desc}</p>
                       </div>
-                      <p className="text-xs text-gray-500">{meta.desc}</p>
+                    );
+                  })}
+                </div>
+              </section>
+
+              {/* Narrative + Stats */}
+              <section className="py-16 border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+                <div
+                  className="rounded-sm border p-8"
+                  style={{
+                    background: 'hsl(var(--av-surface) / 0.4)',
+                    borderColor: 'hsl(var(--av-border) / 0.6)',
+                  }}
+                >
+                  <span className="mb-3 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                    <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                    Market Narrative
+                  </span>
+                  <p className="font-serif text-2xl font-light leading-snug text-foreground">{data.narrative}</p>
+
+                  <div
+                    className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-6 pt-6 border-t"
+                    style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
+                  >
+                    <div>
+                      <div className="font-serif text-3xl font-light text-foreground tabular">
+                        {data.methodology.total_properties.toLocaleString()}
+                      </div>
+                      <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                        Properties Tracked
+                      </div>
                     </div>
-                  );
-                })}
-              </div>
-            </section>
+                    <div>
+                      <div className="font-serif text-3xl font-light text-foreground tabular">
+                        {data.methodology.total_anomalies}
+                      </div>
+                      <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                        Anomalies Detected
+                      </div>
+                    </div>
+                    <div>
+                      <div className="font-serif text-3xl font-light text-primary tabular">
+                        {data.methodology.positive_anomalies}
+                      </div>
+                      <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                        Positive Signals
+                      </div>
+                    </div>
+                    <div>
+                      <div className="font-serif text-3xl font-light text-destructive tabular">
+                        {data.methodology.negative_anomalies}
+                      </div>
+                      <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                        Negative Signals
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
 
-            {/* Narrative */}
-            <section className="mb-16 bg-gray-900 border border-gray-800 rounded-lg p-6">
-              <h2 className="text-xl font-bold mb-4 text-gray-200">Market Narrative</h2>
-              <p className="text-gray-300 leading-relaxed">{data.narrative}</p>
-              <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-                <div>
-                  <div className="text-2xl font-bold text-gray-100">{data.methodology.total_properties.toLocaleString()}</div>
-                  <div className="text-xs text-gray-500">Properties Tracked</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-gray-100">{data.methodology.total_anomalies}</div>
-                  <div className="text-xs text-gray-500">Anomalies Detected</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-emerald-400">{data.methodology.positive_anomalies}</div>
-                  <div className="text-xs text-gray-500">Positive Signals</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-red-400">{data.methodology.negative_anomalies}</div>
-                  <div className="text-xs text-gray-500">Negative Signals</div>
-                </div>
-              </div>
-            </section>
+              {/* What is the APCI? */}
+              <section className="py-16 border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+                <div className="max-w-3xl">
+                  <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                    <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                    Methodology
+                  </span>
+                  <h2 className="font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground mb-6">
+                    The <span className="italic text-gold">VIX</span> for European property.
+                  </h2>
+                  <p className="text-lg text-muted-foreground mb-4 font-light">
+                    Like the VIX for stocks. Like Fear &amp; Greed for crypto. But for European property.
+                  </p>
+                  <p className="text-muted-foreground mb-8 font-light">
+                    The Avena Property Consciousness Index (APCI) is a composite real-time score from 0 to 100
+                    that measures the overall health and opportunity level of the European new-build property market.
+                    It synthesizes 8 independent dimensions into a single number that institutional and retail
+                    investors can use to gauge market conditions.
+                  </p>
 
-            {/* What is the APCI? */}
-            <section className="mb-16">
-              <h2 className="text-2xl font-bold mb-6 text-gray-200">What is the APCI?</h2>
-              <div className="prose prose-invert max-w-none space-y-4 text-gray-300">
-                <p className="text-lg">
-                  Like the VIX for stocks. Like Fear &amp; Greed for crypto. But for European property.
-                </p>
-                <p>
-                  The Avena Property Consciousness Index (APCI) is a composite real-time score from 0 to 100 that
-                  measures the overall health and opportunity level of the European new-build property market.
-                  It synthesizes 8 independent dimensions into a single number that institutional and retail
-                  investors can use to gauge market conditions.
-                </p>
-                <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-                  <h3 className="text-lg font-bold text-gray-200 mb-4">Methodology</h3>
-                  <ul className="space-y-2 text-sm">
-                    <li><strong className="text-gray-100">Valuation Balance (25%)</strong> &mdash; Live calculation: percentage of all tracked properties priced at or below fair market value based on hedonic regression.</li>
-                    <li><strong className="text-gray-100">Developer Health (15%)</strong> &mdash; Financial stability metrics of active developers including track record, delivery history, and portfolio diversification.</li>
-                    <li><strong className="text-gray-100">Macro Support (15%)</strong> &mdash; ECB interest rate trajectory, GDP growth, inflation trends, and fiscal policy impact on property markets.</li>
-                    <li><strong className="text-gray-100">Price Momentum (10%)</strong> &mdash; Year-on-year price appreciation trends across tracked regions, weighted by market depth.</li>
-                    <li><strong className="text-gray-100">Anomaly Density (10%)</strong> &mdash; Ratio of positive anomalies (yield hunts, hidden gems) to negative anomalies (developer dumps, suspicious pricing).</li>
-                    <li><strong className="text-gray-100">Regime Confidence (10%)</strong> &mdash; Statistical confidence in the current market regime classification (BULL, GROWTH, NEUTRAL, CAUTION).</li>
-                    <li><strong className="text-gray-100">Foreign Demand (10%)</strong> &mdash; Cross-border buyer activity signals from UK, Nordic, Dutch, and German markets including FX trends.</li>
-                    <li><strong className="text-gray-100">Supply Balance (5%)</strong> &mdash; Ratio of new pipeline supply to market absorption rate, measuring oversupply or undersupply risk.</li>
-                  </ul>
-                </div>
-                <p className="text-sm text-gray-500">
-                  The APCI is updated hourly. Historical APCI data will be available via the API as the time
-                  series grows. DOI: {data.doi}
-                </p>
-              </div>
-            </section>
+                  <div
+                    className="rounded-sm border p-6 mb-6"
+                    style={{
+                      background: 'hsl(var(--av-surface) / 0.4)',
+                      borderColor: 'hsl(var(--av-border) / 0.6)',
+                    }}
+                  >
+                    <h3 className="font-serif text-lg text-foreground mb-4">Component Weighting</h3>
+                    <ul className="space-y-3 text-sm text-muted-foreground">
+                      {Object.entries(DIMENSION_LABELS).map(([key, meta]) => (
+                        <li key={key} className="flex gap-3">
+                          <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary pt-1 w-12 shrink-0">
+                            {meta.weight}
+                          </span>
+                          <span><strong className="text-foreground">{meta.label}</strong> &mdash; {meta.desc}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
-            {/* API Access */}
-            <section className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-              <h2 className="text-lg font-bold mb-3 text-gray-200">API Access</h2>
-              <p className="text-gray-400 text-sm mb-3">
-                The APCI is available as a public JSON endpoint. No API key required.
-              </p>
-              <code className="block bg-gray-950 border border-gray-800 rounded p-3 text-sm text-emerald-400 font-mono">
-                GET https://avenaterminal.com/api/v1/apci
-              </code>
-            </section>
-          </>
-        )}
+                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                    Updated hourly &middot; DOI {data.doi}
+                  </p>
+                </div>
+              </section>
+
+              {/* API Access */}
+              <section className="py-16 border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+                <div
+                  className="rounded-sm border p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                  style={{
+                    background: 'hsl(var(--av-surface) / 0.4)',
+                    borderColor: 'hsl(var(--av-border) / 0.6)',
+                  }}
+                >
+                  <div>
+                    <h3 className="font-serif text-xl text-foreground mb-1">API Access</h3>
+                    <p className="text-muted-foreground text-sm">Public JSON endpoint. No API key required.</p>
+                  </div>
+                  <code
+                    className="rounded-sm px-4 py-3 font-mono text-sm text-primary"
+                    style={{
+                      background: 'hsl(var(--av-background))',
+                      border: '1px solid hsl(var(--av-border))',
+                    }}
+                  >
+                    GET /api/v1/apci
+                  </code>
+                </div>
+
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Link
+                    href="/indices"
+                    className="group inline-flex items-center gap-2 rounded-sm border px-5 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground transition-colors hover:text-primary"
+                    style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+                  >
+                    All 5 Indices →
+                  </Link>
+                  <Link
+                    href="/methodology"
+                    className="group inline-flex items-center gap-2 rounded-sm border px-5 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground transition-colors hover:text-primary"
+                    style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+                  >
+                    Full methodology
+                  </Link>
+                  <Link
+                    href="/cite/apci"
+                    className="group inline-flex items-center gap-2 rounded-sm border px-5 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground transition-colors hover:text-primary"
+                    style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+                  >
+                    Cite this index
+                  </Link>
+                </div>
+              </section>
+            </>
+          )}
+        </div>
       </main>
 
-      <footer className="border-t border-gray-800 py-8 text-center text-xs text-gray-600">
-        Avena Terminal &mdash; European Property Intelligence
-      </footer>
+      <Footer />
     </div>
   );
 }

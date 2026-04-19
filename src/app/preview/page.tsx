@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Nav } from './_components/Nav';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 import { Hero } from './_components/Hero';
 import { Ticker } from './_components/Ticker';
 import { Indices } from './_components/Indices';
 import { FeaturedDeals } from './_components/FeaturedDeals';
 import { Regions } from './_components/Regions';
 import { CTA } from './_components/CTA';
-import { Footer } from './_components/Footer';
 
 export const revalidate = 3600;
 

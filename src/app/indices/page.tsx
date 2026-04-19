@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 import { getAllProperties, getUniqueCostas, avg } from '@/lib/properties';
 import { Property } from '@/lib/types';
 
@@ -255,200 +257,267 @@ export default function IndicesPage() {
   };
 
   return (
-    <div style={{ backgroundColor: '#0d1117', color: '#c9d1d9', minHeight: '100vh' }}>
+    <div className="avena-v2 min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Header */}
-      <header style={{ borderBottom: '1px solid #30363d', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', color: '#c9d1d9' }}>
-          <span style={{ fontSize: '20px', fontWeight: 700, letterSpacing: '-0.5px' }}>AVENA</span>
-          <span style={{ fontSize: '12px', color: '#8b949e' }}>TERMINAL</span>
-        </Link>
-        <span style={{
-          fontSize: '11px',
-          letterSpacing: '2px',
-          textTransform: 'uppercase',
-          color: '#34d399',
-          border: '1px solid #34d399',
-          padding: '4px 12px',
-          borderRadius: '4px',
-        }}>
-          THE AVENA INDEX FAMILY
-        </span>
-      </header>
+      <Nav />
 
-      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 24px' }}>
-        {/* Hero */}
-        <section style={{ textAlign: 'center', marginBottom: '64px' }}>
-          <h1 style={{ fontSize: '40px', fontWeight: 800, color: '#e6edf3', marginBottom: '16px', letterSpacing: '-1px' }}>
-            The Avena Index Family
-          </h1>
-          <p style={{ fontSize: '18px', color: '#8b949e', maxWidth: '680px', margin: '0 auto', lineHeight: 1.6 }}>
-            The standard reference for European new-build property market measurement.
-            Five indices capturing health, yield, liquidity, risk, and sentiment — computed daily from {all.length.toLocaleString()} tracked properties.
-          </p>
-          <p style={{ marginTop: '12px', fontSize: '13px', color: '#484f58' }}>
-            Last computed: {today} &middot; Source: Avena Terminal Dataset v3
-          </p>
-        </section>
+      <main className="pt-24">
+        <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+          {/* Hero */}
+          <section className="py-16 sm:py-24 max-w-4xl">
+            <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+              <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+              Live Indices · 5 benchmarks
+            </span>
+            <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground mb-8">
+              The benchmarks
+              <br />
+              <span className="italic text-gold">Bloomberg never built</span>.
+            </h1>
+            <p className="text-lg text-muted-foreground mb-4 font-light max-w-2xl">
+              The standard reference for European new-build property market measurement.
+              Five indices capturing health, yield, liquidity, risk, and sentiment — computed daily from {all.length.toLocaleString()} tracked properties.
+            </p>
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+              Last computed {today} &middot; Avena Terminal Dataset v3
+            </p>
+          </section>
 
-        {/* Index Cards Grid */}
-        <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px', marginBottom: '64px' }}>
-          {indices.map(idx => (
-            <div key={idx.code} style={{
-              backgroundColor: '#161b22',
-              border: '1px solid #30363d',
-              borderRadius: '12px',
-              padding: '28px',
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-                <div>
-                  <span style={{
-                    fontSize: '13px',
-                    fontWeight: 700,
-                    letterSpacing: '1.5px',
-                    color: '#34d399',
-                    display: 'block',
-                    marginBottom: '4px',
-                  }}>
-                    {idx.code}
-                  </span>
-                  <span style={{ fontSize: '14px', color: '#8b949e' }}>{idx.name}</span>
-                </div>
-                <span style={{
-                  fontSize: '36px',
-                  fontWeight: 800,
-                  color: scoreColor(idx.value),
-                  lineHeight: 1,
-                  fontVariantNumeric: 'tabular-nums',
-                }}>
-                  {idx.value}
-                </span>
-              </div>
-
-              <p style={{ fontSize: '13px', color: '#8b949e', marginBottom: '20px', lineHeight: 1.5 }}>
-                {idx.description}
-              </p>
-
-              {/* Component Bars */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {idx.components.map(comp => (
-                  <div key={comp.label}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px' }}>
-                      <span style={{ color: '#8b949e' }}>{comp.label}</span>
-                      <span style={{ color: scoreColor(comp.value), fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{comp.value}</span>
+          {/* Index Cards Grid */}
+          <section className="pb-16 border-t pt-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+            <div
+              className="grid gap-px overflow-hidden rounded-sm border sm:grid-cols-2 lg:grid-cols-3"
+              style={{
+                borderColor: 'hsl(var(--av-border) / 0.6)',
+                background: 'hsl(var(--av-border) / 0.6)',
+              }}
+            >
+              {indices.map(idx => (
+                <div
+                  key={idx.code}
+                  className="relative p-8 transition-colors"
+                  style={{ background: 'hsl(var(--av-background))' }}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary block mb-1">
+                        {idx.code}
+                      </span>
+                      <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                        {idx.name}
+                      </p>
                     </div>
-                    <div style={{ height: '6px', backgroundColor: '#21262d', borderRadius: '3px', overflow: 'hidden' }}>
-                      <div style={{
-                        width: `${comp.value}%`,
-                        height: '100%',
-                        backgroundColor: scoreColor(comp.value),
-                        borderRadius: '3px',
-                        transition: 'width 0.3s',
-                      }} />
-                    </div>
+                    <span className={`font-serif text-5xl font-light tabular leading-none ${
+                      idx.value >= 75 ? 'text-primary' :
+                      idx.value >= 60 ? 'text-foreground' :
+                      idx.value >= 45 ? 'text-accent' :
+                      'text-destructive'
+                    }`}>
+                      {idx.value}
+                    </span>
                   </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </section>
 
-        {/* Regional Breakdown */}
-        {regional.length > 0 && (
-          <section style={{ marginBottom: '64px' }}>
-            <h2 style={{ fontSize: '24px', fontWeight: 700, color: '#e6edf3', marginBottom: '24px' }}>
-              Per-Region Breakdown
-            </h2>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-                <thead>
-                  <tr style={{ borderBottom: '1px solid #30363d' }}>
-                    <th style={{ textAlign: 'left', padding: '12px 16px', color: '#8b949e', fontWeight: 600 }}>Region</th>
-                    <th style={{ textAlign: 'center', padding: '12px 16px', color: '#8b949e', fontWeight: 600 }}>Props</th>
-                    <th style={{ textAlign: 'center', padding: '12px 16px', color: '#34d399', fontWeight: 600 }}>APCI</th>
-                    <th style={{ textAlign: 'center', padding: '12px 16px', color: '#34d399', fontWeight: 600 }}>APYI</th>
-                    <th style={{ textAlign: 'center', padding: '12px 16px', color: '#34d399', fontWeight: 600 }}>APLI</th>
-                    <th style={{ textAlign: 'center', padding: '12px 16px', color: '#34d399', fontWeight: 600 }}>APRI</th>
-                    <th style={{ textAlign: 'center', padding: '12px 16px', color: '#34d399', fontWeight: 600 }}>APSI</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {regional.map(r => (
-                    <tr key={r.costa} style={{ borderBottom: '1px solid #21262d' }}>
-                      <td style={{ padding: '12px 16px', fontWeight: 500 }}>{r.costa}</td>
-                      <td style={{ textAlign: 'center', padding: '12px 16px', color: '#8b949e' }}>{r.count}</td>
-                      {[r.apci, r.apyi, r.apli, r.apri, r.apsi].map((v, i) => (
-                        <td key={i} style={{ textAlign: 'center', padding: '12px 16px', color: scoreColor(v), fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
-                          {v}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-6 font-light">
+                    {idx.description}
+                  </p>
+
+                  {/* Component Bars */}
+                  <div className="flex flex-col gap-3">
+                    {idx.components.map(comp => (
+                      <div key={comp.label}>
+                        <div className="flex justify-between font-mono text-[10px] uppercase tracking-[0.18em] mb-1.5">
+                          <span className="text-muted-foreground">{comp.label}</span>
+                          <span className={`tabular ${
+                            comp.value >= 75 ? 'text-primary' :
+                            comp.value >= 60 ? 'text-foreground' :
+                            comp.value >= 45 ? 'text-accent' :
+                            'text-destructive'
+                          }`}>{comp.value}</span>
+                        </div>
+                        <div
+                          className="h-1 overflow-hidden rounded-full"
+                          style={{ background: 'hsl(var(--av-border))' }}
+                        >
+                          <div
+                            className="h-full rounded-full transition-all duration-300"
+                            style={{
+                              width: `${comp.value}%`,
+                              background:
+                                comp.value >= 60 ? 'var(--av-gradient-gold)' :
+                                comp.value >= 45 ? 'hsl(var(--av-warning))' :
+                                'hsl(var(--av-destructive))',
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </section>
-        )}
 
-        {/* Methodology */}
-        <section style={{ marginBottom: '64px' }}>
-          <h2 style={{ fontSize: '24px', fontWeight: 700, color: '#e6edf3', marginBottom: '24px' }}>
-            Methodology
-          </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
-            {[
-              {
-                code: 'APCI',
-                title: 'Property Consciousness Index',
-                text: 'Composite market health score blending value health (40%), yield health (25%), developer stability (15%), and market breadth (20%). Value health derives from average Avena scores; yield health from average gross yield scaled; developer stability from average developer track-record years; breadth from the ratio of properties scoring above 60.',
-              },
-              {
-                code: 'APYI',
-                title: 'Property Yield Index',
-                text: 'Yield attractiveness relative to a 3.5% risk-free rate. Components: yield spread over risk-free (35%), proportion of properties exceeding the risk-free rate (25%), net yield strength (25%), and yield consistency measured by inverse standard deviation (15%).',
-              },
-              {
-                code: 'APLI',
-                title: 'Property Liquidity Index',
-                text: 'Market liquidity from inventory depth (30%), key-ready completion ratio (25%), price diversity measured by coefficient of variation (25%), and geographic spread across unique locations (20%).',
-              },
-              {
-                code: 'APRI',
-                title: 'Property Risk Index',
-                text: 'Structural risk assessment where higher values mean lower risk. Developer maturity from average years active (30%), completion safety from key-ready ratio (25%), price stability from inverse price volatility (25%), and diversification from inverse top-developer concentration (20%).',
-              },
-              {
-                code: 'APSI',
-                title: 'Property Sentiment Index',
-                text: 'Market optimism gauge. Score optimism from ratio of properties above 70 (30%), yield sentiment from gross yield scaled (25%), value sentiment from ratio of below-market-priced properties (25%), and quality confidence from average quality sub-score (20%).',
-              },
-            ].map(m => (
-              <div key={m.code} style={{ backgroundColor: '#161b22', border: '1px solid #30363d', borderRadius: '8px', padding: '20px' }}>
-                <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#34d399', marginBottom: '4px', letterSpacing: '1px' }}>{m.code}</h3>
-                <h4 style={{ fontSize: '15px', fontWeight: 600, color: '#e6edf3', marginBottom: '10px' }}>{m.title}</h4>
-                <p style={{ fontSize: '13px', color: '#8b949e', lineHeight: 1.6 }}>{m.text}</p>
+          {/* Regional Breakdown */}
+          {regional.length > 0 && (
+            <section className="pb-16 border-t pt-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+              <div className="mb-8">
+                <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                  <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                  Per-Region · Breakdown
+                </span>
+                <h2 className="font-serif text-4xl font-light leading-[1] tracking-tight text-foreground">
+                  All five, across every costa.
+                </h2>
               </div>
-            ))}
-          </div>
-        </section>
 
-        {/* Footer */}
-        <footer style={{ borderTop: '1px solid #30363d', paddingTop: '32px', textAlign: 'center' }}>
-          <p style={{ fontSize: '13px', color: '#484f58', marginBottom: '8px' }}>
-            Source: Avena Terminal Dataset v3 &middot; {all.length.toLocaleString()} properties &middot; Updated {today}
-          </p>
-          <p style={{ fontSize: '12px', color: '#484f58', marginBottom: '8px' }}>
-            DOI: <span style={{ color: '#8b949e' }}>10.5281/zenodo.19520064</span> &middot; License: CC BY-NC 4.0
-          </p>
-          <p style={{ fontSize: '12px', color: '#484f58' }}>
-            &copy; {new Date().getFullYear()} Avena Terminal. All rights reserved.
-          </p>
-        </footer>
+              <div
+                className="overflow-hidden rounded-sm border"
+                style={{
+                  borderColor: 'hsl(var(--av-border) / 0.6)',
+                  background: 'hsl(var(--av-surface) / 0.3)',
+                }}
+              >
+                <div className="overflow-x-auto">
+                  <table className="w-full font-mono text-sm">
+                    <thead>
+                      <tr style={{ background: 'hsl(var(--av-surface) / 0.6)' }}>
+                        {['Region', 'Props', 'APCI', 'APYI', 'APLI', 'APRI', 'APSI'].map((h, i) => (
+                          <th
+                            key={h}
+                            className={`border-b px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.22em] ${
+                              i === 0 ? 'text-left text-muted-foreground' :
+                              i === 1 ? 'text-center text-muted-foreground' :
+                              'text-center text-primary'
+                            }`}
+                            style={{ borderColor: 'hsl(var(--av-border))' }}
+                          >
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {regional.map(r => (
+                        <tr
+                          key={r.costa}
+                          className="border-b"
+                          style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}
+                        >
+                          <td className="px-4 py-4 font-serif text-base text-foreground">{r.costa}</td>
+                          <td className="px-4 py-4 text-center tabular text-muted-foreground">{r.count}</td>
+                          {[r.apci, r.apyi, r.apli, r.apri, r.apsi].map((v, i) => (
+                            <td
+                              key={i}
+                              className={`px-4 py-4 text-center tabular font-semibold ${
+                                v >= 75 ? 'text-primary' :
+                                v >= 60 ? 'text-foreground' :
+                                v >= 45 ? 'text-accent' :
+                                'text-destructive'
+                              }`}
+                            >
+                              {v}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Methodology */}
+          <section className="pb-16 border-t pt-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+            <div className="mb-10 max-w-3xl">
+              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                Methodology
+              </span>
+              <h2 className="font-serif text-4xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
+                Every index, <span className="italic text-gold">explained</span>.
+              </h2>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {[
+                {
+                  code: 'APCI',
+                  title: 'Property Consciousness Index',
+                  text: 'Composite market health blending value health (40%), yield health (25%), developer stability (15%), and market breadth (20%).',
+                },
+                {
+                  code: 'APYI',
+                  title: 'Property Yield Index',
+                  text: 'Yield attractiveness relative to a 3.5% risk-free rate. Components: yield spread (35%), yield premium ratio (25%), net yield strength (25%), and consistency (15%).',
+                },
+                {
+                  code: 'APLI',
+                  title: 'Property Liquidity Index',
+                  text: 'Market liquidity from inventory depth (30%), key-ready completion ratio (25%), price diversity (25%), and geographic spread (20%).',
+                },
+                {
+                  code: 'APRI',
+                  title: 'Property Risk Index',
+                  text: 'Structural risk (inverse scale). Developer maturity (30%), completion safety (25%), price stability (25%), and diversification (20%).',
+                },
+                {
+                  code: 'APSI',
+                  title: 'Property Sentiment Index',
+                  text: 'Market optimism. Score optimism (30%), yield sentiment (25%), value sentiment (25%), and quality confidence (20%).',
+                },
+              ].map(m => (
+                <div
+                  key={m.code}
+                  className="rounded-sm border p-6"
+                  style={{
+                    background: 'hsl(var(--av-surface) / 0.4)',
+                    borderColor: 'hsl(var(--av-border) / 0.6)',
+                  }}
+                >
+                  <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary block mb-2">
+                    {m.code}
+                  </span>
+                  <h3 className="font-serif text-xl text-foreground mb-3">{m.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed font-light">{m.text}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* CTA row */}
+          <section className="pb-24 border-t pt-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/apci"
+                className="group inline-flex items-center gap-2 rounded-sm px-5 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
+                style={{ background: 'var(--av-gradient-gold)' }}
+              >
+                Deep-dive APCI →
+              </Link>
+              <Link
+                href="/cite/apci"
+                className="inline-flex items-center gap-2 rounded-sm border px-5 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground transition-colors hover:text-primary"
+                style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+              >
+                Cite these indices
+              </Link>
+              <a
+                href="/api/v1/indices"
+                className="inline-flex items-center gap-2 rounded-sm border px-5 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground transition-colors hover:text-primary"
+                style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+              >
+                GET /api/v1/indices
+              </a>
+            </div>
+          </section>
+        </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

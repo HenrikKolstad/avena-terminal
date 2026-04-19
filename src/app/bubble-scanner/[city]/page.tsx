@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 import { CITIES, type City } from '@/lib/bubble-data';
 
 export const revalidate = 86400;
@@ -93,13 +95,25 @@ export default async function CityBubbleScannerPage({ params }: { params: Promis
 
   if (!city) {
     return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">City Not Found</h1>
-          <p className="text-zinc-400 mb-8">The city you are looking for is not in our bubble scanner.</p>
-          <Link href="/bubble-scanner" className="text-blue-400 hover:underline">Back to Bubble Scanner</Link>
-        </div>
-      </main>
+      <div className="avena-v2 min-h-screen flex flex-col">
+        <Nav />
+        <main className="flex-1 flex items-center justify-center pt-24">
+          <div className="text-center">
+            <h1 className="font-serif text-5xl font-light text-foreground mb-4">
+              City <span className="italic text-gold">not found</span>.
+            </h1>
+            <p className="text-muted-foreground mb-8">This city is not in our bubble scanner yet.</p>
+            <Link
+              href="/bubble-scanner"
+              className="inline-flex items-center gap-2 rounded-sm px-5 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold"
+              style={{ background: 'var(--av-gradient-gold)' }}
+            >
+              &larr; Back to Bubble Scanner
+            </Link>
+          </div>
+        </main>
+        <Footer />
+      </div>
     );
   }
 
@@ -141,13 +155,15 @@ export default async function CityBubbleScannerPage({ params }: { params: Promis
   };
 
   return (
-    <>
+    <div className="avena-v2 min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <main className="min-h-screen bg-black text-white">
+      <Nav />
+
+      <main className="pt-24">
         <div className="max-w-5xl mx-auto px-4 py-12">
 
           {/* ── Breadcrumb ── */}
@@ -292,6 +308,8 @@ export default async function CityBubbleScannerPage({ params }: { params: Promis
 
         </div>
       </main>
-    </>
+
+      <Footer />
+    </div>
   );
 }

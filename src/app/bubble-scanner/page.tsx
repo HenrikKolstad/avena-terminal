@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 import { CITIES, type City } from '@/lib/bubble-data';
 
 export const revalidate = 86400;
@@ -114,99 +116,35 @@ const jsonLd = {
 
 export default function BubbleScannerPage() {
   return (
-    <>
+    <div className="avena-v2 min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <main
-        style={{
-          minHeight: '100vh',
-          backgroundColor: '#0d1117',
-          color: '#e6edf3',
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"',
-        }}
-      >
-        {/* ---- NAV BAR ---- */}
-        <nav
-          style={{
-            borderBottom: '1px solid #30363d',
-            padding: '12px 24px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            maxWidth: 1400,
-            margin: '0 auto',
-          }}
-        >
-          <Link
-            href="/"
-            style={{
-              color: '#3fb950',
-              fontWeight: 700,
-              fontSize: 15,
-              textDecoration: 'none',
-              letterSpacing: '-0.02em',
-            }}
-          >
-            AVENA TERMINAL
-          </Link>
-          <div style={{ display: 'flex', gap: 20, fontSize: 13, color: '#8b949e' }}>
-            <Link href="/indices" style={{ color: '#8b949e', textDecoration: 'none' }}>Indices</Link>
-            <Link href="/answers" style={{ color: '#8b949e', textDecoration: 'none' }}>Answers</Link>
-            <span style={{ color: '#3fb950', fontWeight: 600 }}>Bubble Scanner</span>
-          </div>
-        </nav>
+      <Nav />
 
-        <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 24px 80px' }}>
+      <main className="pt-24">
+        <div style={{ maxWidth: 1600, margin: '0 auto', padding: '0 24px 80px' }}>
 
           {/* ---- HERO ---- */}
-          <header style={{ padding: '56px 0 40px', textAlign: 'center' }}>
-            <div
-              style={{
-                display: 'inline-block',
-                fontSize: 11,
-                fontWeight: 600,
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                color: '#0d1117',
-                backgroundColor: '#3fb950',
-                padding: '4px 12px',
-                borderRadius: 4,
-                marginBottom: 20,
-              }}
-            >
-              Live Data &middot; 30 Cities &middot; Updated Daily
-            </div>
+          <section style={{ padding: '64px 0 40px', maxWidth: 900 }}>
+            <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+              <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+              Live Data &middot; {sorted.length} cities &middot; Updated daily
+            </span>
 
-            <h1
-              style={{
-                fontSize: 'clamp(28px, 5vw, 48px)',
-                fontWeight: 800,
-                letterSpacing: '-0.03em',
-                lineHeight: 1.1,
-                margin: '16px 0 0',
-                background: 'linear-gradient(135deg, #e6edf3, #8b949e)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              European Property Bubble Scanner
+            <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground mt-4 mb-6">
+              Is your city in a
+              <br />
+              <span className="italic text-gold">property bubble</span>?
             </h1>
 
-            <p
-              style={{
-                fontSize: 17,
-                color: '#8b949e',
-                maxWidth: 640,
-                margin: '16px auto 0',
-                lineHeight: 1.6,
-              }}
-            >
-              Is your city in a bubble? 30 European cities rated by price, growth, and risk. Updated April 2026.
+            <p className="text-lg text-muted-foreground font-light max-w-xl">
+              {sorted.length} European cities rated by price, growth, and risk.
+              Composite bubble score 0&ndash;100. Refreshed daily. Source-verified.
             </p>
-          </header>
+          </section>
 
           {/* ---- SUMMARY STATS ---- */}
           <div
@@ -674,32 +612,17 @@ export default function BubbleScannerPage() {
             </div>
           </section>
 
-          {/* ---- FOOTER ---- */}
-          <footer
-            style={{
-              marginTop: 56,
-              paddingTop: 24,
-              borderTop: '1px solid #30363d',
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: 16,
-              fontSize: 12,
-              color: '#484f58',
-            }}
+          {/* ---- SOURCE LINE ---- */}
+          <div
+            className="mt-14 pt-6 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground"
+            style={{ borderTop: '1px solid hsl(var(--av-border) / 0.6)' }}
           >
-            <div>
-              Sources: Eurostat, ECB, National Land Registries &middot; Avena Terminal &copy; 2026
-            </div>
-            <div style={{ display: 'flex', gap: 16 }}>
-              <Link href="/indices" style={{ color: '#484f58', textDecoration: 'none' }}>Indices</Link>
-              <Link href="/methodology" style={{ color: '#484f58', textDecoration: 'none' }}>Methodology</Link>
-              <Link href="/cite" style={{ color: '#484f58', textDecoration: 'none' }}>Cite</Link>
-            </div>
-          </footer>
+            Sources: Eurostat &middot; ECB &middot; National Land Registries
+          </div>
         </div>
       </main>
-    </>
+
+      <Footer />
+    </div>
   );
 }
