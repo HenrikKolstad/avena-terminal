@@ -5,6 +5,7 @@ import { Nav } from './_components/Nav';
 import { Hero } from './_components/Hero';
 import { Ticker } from './_components/Ticker';
 import { Indices } from './_components/Indices';
+import { FeaturedDeals } from './_components/FeaturedDeals';
 import { Regions } from './_components/Regions';
 import { CTA } from './_components/CTA';
 import { Footer } from './_components/Footer';
@@ -26,6 +27,7 @@ export default function PreviewPage() {
         <Hero />
         <Ticker />
         <Indices />
+        <FeaturedDeals />
         <Regions />
         <CTA />
       </main>
