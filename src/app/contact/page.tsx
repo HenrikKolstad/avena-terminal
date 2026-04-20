@@ -4,12 +4,12 @@ import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 
 export const metadata: Metadata = {
-  title: 'Contact Henrik — Avena Terminal',
+  title: 'Contact — Avena Terminal',
   description:
-    'Get in touch with Henrik at Avena Terminal. Personal property consultancy across Costa Blanca, Costa del Sol, and beyond. Replies within 24 hours.',
+    'Get in touch with Avena Terminal. Personal property consultancy across Costa Blanca, Costa del Sol, and beyond. Replies within 24 hours.',
   alternates: { canonical: 'https://avenaterminal.com/contact' },
   openGraph: {
-    title: 'Contact Henrik — Avena Terminal',
+    title: 'Contact — Avena Terminal',
     description: 'Personal property consultancy across Costa Blanca and beyond. Replies within 24h.',
     url: 'https://avenaterminal.com/contact',
     siteName: 'Avena Terminal',
@@ -26,15 +26,15 @@ const CHANNELS = [
   },
   {
     label: 'WhatsApp',
-    value: '+47 93 80 36 65',
-    href: 'https://wa.me/4793803665',
+    value: '+47 980 71 453',
+    href: 'https://wa.me/4798071453',
     icon: MessageCircle,
     meta: 'Fastest · 09:00–21:00 CET',
   },
   {
     label: 'Phone',
-    value: '+47 93 80 36 65',
-    href: 'tel:+4793803665',
+    value: '+47 980 71 453',
+    href: 'tel:+4798071453',
     icon: Phone,
     meta: 'Mon–Sat · 09:00–18:00 CET',
   },
@@ -43,15 +43,15 @@ const CHANNELS = [
 const FAQ = [
   {
     q: 'What do you actually do?',
-    a: 'I find undervalued new-build property in Spain using the Avena scoring engine and handle the buying process end-to-end — from first viewing to keys in hand, tax setup, and rental management if you need it.',
+    a: 'We find undervalued new-build property in Spain using the Avena scoring engine and handle the buying process end-to-end — from first viewing to keys in hand, tax setup, and rental management if you need it.',
   },
   {
-    q: 'Do I pay you a commission?',
-    a: 'No. Developers pay the commission — my service is free for buyers. If I recommend a property, it is because it scored well on Avena — not because it pays the most commission.',
+    q: 'Do I pay a commission?',
+    a: 'No. Developers pay the commission — our service is free for buyers. If we recommend a property, it is because it scored well on Avena — not because it pays the most commission.',
   },
   {
     q: 'Which areas do you cover?',
-    a: 'Primarily Costa Blanca South (Torrevieja, Orihuela Costa, Finestrat, Benidorm), Costa del Sol (Malaga, Marbella, Estepona), and Valencia region. I also broker in Portugal via partner agents.',
+    a: 'Primarily Costa Blanca South (Torrevieja, Orihuela Costa, Finestrat, Benidorm), Costa del Sol (Malaga, Marbella, Estepona), and Valencia region. We also broker in Portugal via partner agents.',
   },
   {
     q: 'I am not buying yet, can I still ask questions?',
@@ -73,14 +73,13 @@ export default function ContactPage() {
               Avena · Founder Desk · Personal
             </span>
             <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground mb-6">
-              Henrik replies
+              Avena replies
               <br />
               <span className="italic text-gold">personally</span>.
             </h1>
             <p className="max-w-2xl text-lg text-muted-foreground font-light">
-              No account managers. No forms routed to a team. Every message comes to me
-              directly — Henrik Kolstad, founder of Avena Terminal. Most enquiries answered
-              within a few hours, always within 24.
+              No account managers. No forms routed to a team. Every message comes to us
+              directly. Most enquiries answered within a few hours, always within 24.
             </p>
           </div>
         </section>
@@ -137,10 +136,9 @@ export default function ContactPage() {
                 Who you&apos;re <span className="italic text-gold">talking to</span>.
               </h2>
               <p className="text-muted-foreground font-light leading-relaxed mb-4">
-                I&apos;m Henrik — Norwegian, based between Costa Blanca and Oslo. Built Avena
-                Terminal to bring hedge-fund-grade analysis to people buying a home or
-                investment property in Spain. Before property, I worked in construction and
-                trading. I read every email myself.
+                Avena is a small, senior team based between Costa Blanca and Oslo. We built
+                Avena Terminal to bring hedge-fund-grade analysis to people buying a home or
+                investment property in Spain. We read every email ourselves.
               </p>
               <p className="text-muted-foreground font-light leading-relaxed">
                 If you want a human view on a specific deal — whether it&apos;s off-plan risk,
@@ -221,7 +219,7 @@ export default function ContactPage() {
               Got a property in <span className="italic text-gold">mind</span>?
             </h2>
             <p className="text-muted-foreground mb-8 font-light max-w-lg mx-auto">
-              Send me the link or reference. I&apos;ll score it, stress-test the yield, and tell
+              Send us the link or reference. We&apos;ll score it, stress-test the yield, and tell
               you honestly if it&apos;s worth it.
             </p>
             <a
@@ -229,7 +227,7 @@ export default function ContactPage() {
               className="group inline-flex items-center gap-3 rounded-sm px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
               style={{ background: 'var(--av-gradient-gold)' }}
             >
-              Email Henrik
+              Email Avena
               <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </a>
           </div>

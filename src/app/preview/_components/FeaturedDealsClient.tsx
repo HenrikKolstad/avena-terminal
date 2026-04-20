@@ -124,7 +124,12 @@ export function FeaturedDealsClient({ items, total }: { items: DealItem[]; total
                 const gated = isGated(idx);
                 const href = gated ? '#' : d.ref ? `/property/${encodeURIComponent(d.ref)}` : '/';
                 const rowStyle: React.CSSProperties = gated
-                  ? { filter: 'blur(5px)', userSelect: 'none', pointerEvents: 'none' }
+                  ? {
+                      filter: 'blur(7px) saturate(0.7)',
+                      opacity: 0.55,
+                      userSelect: 'none',
+                      pointerEvents: 'none',
+                    }
                   : {};
 
                 return (
@@ -219,27 +224,25 @@ export function FeaturedDealsClient({ items, total }: { items: DealItem[]; total
             </tbody>
           </table>
 
-          {/* Desktop unlock overlay */}
-          {!isPaid && items.length > FREE_VISIBLE && (
-            <button
-              onClick={() => setProOpen(true)}
-              className="absolute inset-x-0 bottom-0 flex flex-col items-center justify-center gap-1 py-6 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold"
-              style={{
-                background: 'var(--av-gradient-gold)',
-                top: `calc(${(FREE_VISIBLE + 1) * 56}px)`,
-              }}
-            >
-              <span className="flex items-center gap-3">
-                <Lock className="h-3.5 w-3.5" />
-                Unlock {(total - FREE_VISIBLE).toLocaleString()} more properties · PRO €79/mo
-                <ArrowUpRight className="h-3.5 w-3.5" />
-              </span>
-              <span className="font-mono text-[9px] uppercase tracking-[0.3em] opacity-80 normal-case">
-                Full Terminal access · Yield calculator · Alpha signals
-              </span>
-            </button>
-          )}
         </div>
+
+        {/* Desktop unlock CTA — sits below the table, not overlaid on it */}
+        {!isPaid && items.length > FREE_VISIBLE && (
+          <button
+            onClick={() => setProOpen(true)}
+            className="hidden lg:flex w-full flex-col items-center justify-center gap-1 rounded-sm py-5 mt-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
+            style={{ background: 'var(--av-gradient-gold)' }}
+          >
+            <span className="flex items-center gap-3">
+              <Lock className="h-3.5 w-3.5" />
+              Unlock {(total - FREE_VISIBLE).toLocaleString()} more properties · PRO €79/mo
+              <ArrowUpRight className="h-3.5 w-3.5" />
+            </span>
+            <span className="font-mono text-[9px] uppercase tracking-[0.3em] opacity-85 normal-case">
+              Full Terminal access · Yield calculator · Alpha signals
+            </span>
+          </button>
+        )}
 
         {/* Mobile cards */}
         <div className="grid gap-3 lg:hidden relative">

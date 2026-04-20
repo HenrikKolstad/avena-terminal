@@ -1,9 +1,10 @@
 'use client';
 
-import { Menu, Search, X } from 'lucide-react';
+import { Menu, Search, X, LogIn, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { ProModal } from './ProModal';
+import { useAuth } from '@/context/AuthContext';
 
 const links = [
   { label: 'Deals', href: '/#deals' },
@@ -16,6 +17,7 @@ const links = [
 ];
 
 export function Nav() {
+  const { user, isPaid } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [proOpen, setProOpen] = useState(false);
@@ -97,13 +99,34 @@ export function Nav() {
           >
             Terminal
           </Link>
-          <button
-            onClick={() => setProOpen(true)}
-            className="hidden rounded-sm px-5 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5 lg:inline-flex"
-            style={{ background: 'var(--av-gradient-gold)' }}
-          >
-            Upgrade →
-          </button>
+          {user ? (
+            <Link
+              href="/login"
+              className="hidden items-center gap-2 rounded-sm border px-4 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground transition-colors hover:text-primary lg:inline-flex"
+              style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+            >
+              <UserIcon className="h-3.5 w-3.5" />
+              {isPaid ? 'PRO' : 'Account'}
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              className="hidden items-center gap-2 rounded-sm border px-4 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground transition-colors hover:text-primary lg:inline-flex"
+              style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+            >
+              <LogIn className="h-3.5 w-3.5" />
+              Sign in
+            </Link>
+          )}
+          {!isPaid && (
+            <button
+              onClick={() => setProOpen(true)}
+              className="hidden rounded-sm px-5 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5 lg:inline-flex"
+              style={{ background: 'var(--av-gradient-gold)' }}
+            >
+              Upgrade →
+            </button>
+          )}
           <button
             onClick={() => setOpen(!open)}
             className="flex h-9 w-9 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-foreground lg:hidden"
@@ -142,13 +165,24 @@ export function Nav() {
             >
               Enter Terminal
             </Link>
-            <button
-              onClick={() => { setOpen(false); setProOpen(true); }}
-              className="mt-2 inline-flex items-center justify-center rounded-sm py-3 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold"
-              style={{ background: 'var(--av-gradient-gold)' }}
+            <Link
+              href="/login"
+              onClick={() => setOpen(false)}
+              className="mt-2 inline-flex items-center justify-center gap-2 rounded-sm border py-3 font-mono text-xs uppercase tracking-[0.22em] text-foreground"
+              style={{ borderColor: 'hsl(var(--av-border-strong))' }}
             >
-              Upgrade to PRO →
-            </button>
+              {user ? <UserIcon className="h-3.5 w-3.5" /> : <LogIn className="h-3.5 w-3.5" />}
+              {user ? (isPaid ? 'PRO Account' : 'Account') : 'Sign in'}
+            </Link>
+            {!isPaid && (
+              <button
+                onClick={() => { setOpen(false); setProOpen(true); }}
+                className="mt-2 inline-flex items-center justify-center rounded-sm py-3 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold"
+                style={{ background: 'var(--av-gradient-gold)' }}
+              >
+                Upgrade to PRO →
+              </button>
+            )}
           </nav>
         </div>
       )}
