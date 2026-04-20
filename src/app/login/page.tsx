@@ -66,11 +66,11 @@ export default function LoginPage() {
               </div>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link
-                  href="/terminal"
+                  href="/"
                   className="group inline-flex items-center justify-center gap-2 rounded-sm px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold"
                   style={{ background: 'var(--av-gradient-gold)' }}
                 >
-                  Enter Terminal
+                  Enter Avena
                   <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </Link>
                 <button
