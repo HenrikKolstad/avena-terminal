@@ -339,9 +339,33 @@ export function FeaturedDealsClient({ items, total }: { items: DealItem[]; total
           )}
         </div>
 
+        {/* After-50 "load more" gate — applies to PRO users who've exhausted the 50 shown */}
+        {isPaid && items.length > 0 && total > items.length && (
+          <a
+            href={`mailto:henrik@xaviaestate.com?subject=${encodeURIComponent('Request full deal feed — Avena PRO')}&body=${encodeURIComponent(
+              `Hi Avena,\n\nI'd like to see beyond the top 50 deals. Please send me the full feed or unlock the next batch in my account.\n\nThanks`
+            )}`}
+            className="mt-6 w-full hidden lg:flex flex-col items-center justify-center gap-1 rounded-sm border py-5 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground transition-colors hover:text-primary hover:border-primary"
+            style={{
+              background: 'hsl(var(--av-surface) / 0.4)',
+              borderColor: 'hsl(var(--av-border-strong))',
+            }}
+          >
+            <span className="flex items-center gap-3">
+              <ArrowUpRight className="h-3.5 w-3.5" />
+              Request access to the remaining {(total - items.length).toLocaleString()} properties
+            </span>
+            <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground normal-case">
+              Top 50 shown · full feed available on request
+            </span>
+          </a>
+        )}
+
         <p className="mt-6 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
           {isPaid
-            ? `Live data — ${total.toLocaleString()} scored properties · full terminal access`
+            ? total > items.length
+              ? `Showing top ${items.length} of ${total.toLocaleString()} · request full feed above`
+              : `Live data — ${total.toLocaleString()} scored properties · full access`
             : `Showing top ${FREE_VISIBLE} · ${(total - FREE_VISIBLE).toLocaleString()}+ more properties with PRO`}
         </p>
       </div>
