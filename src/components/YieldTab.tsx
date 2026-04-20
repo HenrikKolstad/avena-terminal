@@ -13,7 +13,7 @@ const CURRENCIES = [
   { code: 'DKK', symbol: 'kr', label: 'DKK kr', flag: '🇩🇰' },
 ];
 
-const FREE_YIELD_LIMIT = 2;
+const FREE_YIELD_LIMIT = 3;
 
 function YieldCard({ d, expanded, onToggle, fmtC, sym }: { d: Property; expanded: boolean; onToggle: () => void; fmtC?: (n: number) => string; sym?: string }) {
   const fmt = fmtC || formatPrice;

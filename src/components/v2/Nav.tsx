@@ -7,12 +7,12 @@ import { ProModal } from './ProModal';
 
 const links = [
   { label: 'Deals', href: '/#deals' },
+  { label: 'Yield', href: '/yield' },
   { label: 'Intelligence', href: '/intelligence' },
-  { label: 'Predictions', href: '/predictions' },
-  { label: 'Indices', href: '/indices' },
   { label: 'Oracle', href: '/chat' },
   { label: 'Swarm', href: '/swarm' },
   { label: 'Method', href: '/methodology' },
+  { label: 'Contact', href: '/contact' },
 ];
 
 export function Nav() {
@@ -21,7 +21,20 @@ export function Nav() {
   const [proOpen, setProOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    let ticking = false;
+    let current = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const next = window.scrollY > 24;
+        if (next !== current) {
+          current = next;
+          setScrolled(next);
+        }
+        ticking = false;
+      });
+    };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -29,9 +42,9 @@ export function Nav() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
+      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
         scrolled
-          ? 'bg-[hsl(var(--av-background)/0.8)] backdrop-blur-xl border-b'
+          ? 'bg-[hsl(var(--av-background)/0.85)] backdrop-blur-md border-b'
           : 'bg-transparent'
       }`}
       style={scrolled ? { borderColor: 'hsl(var(--av-border) / 0.6)' } : {}}

@@ -45,11 +45,12 @@
   font-feature-settings: 'cv11', 'ss01';
   background-color: hsl(var(--av-background));
   color: hsl(var(--av-foreground));
+  /* Single lightweight gradient — previous stack of 3 radial gradients + fixed
+     attachment caused iOS split-render bug and desktop scroll jank. */
   background-image:
-    radial-gradient(ellipse at 8% -10%, hsl(42 85% 64% / 0.10), transparent 55%),
-    radial-gradient(ellipse at 92% 110%, hsl(26 88% 62% / 0.08), transparent 55%),
-    radial-gradient(ellipse at 50% 50%, hsl(40 35% 95% / 0.015), transparent 70%);
-  background-attachment: fixed;
+    radial-gradient(ellipse 80% 50% at 50% 0%, hsl(42 85% 64% / 0.06), transparent 70%);
+  background-repeat: no-repeat;
+  background-attachment: scroll;
 }
 
 .avena-v2 .font-mono,
@@ -100,6 +101,12 @@
 
 .avena-v2 .ticker-track {
   animation: av-ticker 60s linear infinite;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+  .avena-v2 .ticker-track { animation: none; }
 }
 @keyframes av-ticker {
   from { transform: translateX(0); }

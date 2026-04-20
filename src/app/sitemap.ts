@@ -272,6 +272,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Causal Intelligence
   entries.push({ url: `${base}/causal`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
 
+  // Embeddable widget
+  entries.push({ url: `${base}/integrate/widget`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 });
+
+  // Yield + Contact
+  entries.push({ url: `${base}/yield`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+  entries.push({ url: `${base}/contact`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
+
   // ZK Verification
   entries.push({ url: `${base}/zk`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 });
 
