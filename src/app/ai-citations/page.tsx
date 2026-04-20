@@ -57,7 +57,7 @@ export default function AiCitationsPage() {
   }[] = [
     { name: 'Perplexity', status: 'Actively citing', detail: '19 sources referenced in property queries', tone: 'live' },
     { name: 'MCP (Claude, Cursor, Windsurf)', status: 'Live endpoint', detail: '7 tools available at /mcp', tone: 'live' },
-    { name: 'Smithery', status: 'Listed', detail: 'smithery.ai/servers/henrik-kmvv/avena-terminal', tone: 'live' },
+    { name: 'Smithery', status: 'Listed', detail: 'smithery.ai/servers/avena-terminal', tone: 'live' },
     { name: 'Zenodo (CERN)', status: 'Published', detail: 'DOI: 10.5281/zenodo.19520064', tone: 'live' },
     { name: 'Hugging Face', status: 'Published', detail: 'AVENATERMINAL/spain-new-build-properties-2026', tone: 'live' },
     { name: 'Wikidata', status: 'Entity registered', detail: 'Q139165733', tone: 'live' },
@@ -294,9 +294,9 @@ export default function AiCitationsPage() {
             <div className="text-center">
               <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
                 Press inquiries ·{' '}
-                <a href="mailto:henrik@xaviaestate.com" className="text-primary hover:text-gold">
-                  henrik@xaviaestate.com
-                </a>
+                <Link href="/contact" className="text-primary hover:text-gold">
+                  avenaterminal.com/contact
+                </Link>
               </p>
               <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground/70">
                 First MCP server for European real estate · First agent registry for property AI
