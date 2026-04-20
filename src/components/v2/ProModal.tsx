@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowUpRight, Check, Lock, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { trackEvent } from '@/lib/tracking';
 
 // Old Avena PRO feature list — the same benefits the original terminal had
 const PRO_FEATURES = [
@@ -48,8 +49,17 @@ export function ProModal({
     };
   }, [open, onClose]);
 
+  // Fire InitiateCheckout when modal opens for a non-PRO user (TikTok funnel event)
+  useEffect(() => {
+    if (open && !isPaid) {
+      trackEvent('InitiateCheckout', { value: 79, currency: 'EUR' });
+    }
+  }, [open, isPaid]);
+
   async function handleCheckout() {
     setError(null);
+    trackEvent('ClickButton', { button: 'checkout_cta', value: 79, currency: 'EUR' });
+
     if (user?.email) {
       setLoading(true);
       try {

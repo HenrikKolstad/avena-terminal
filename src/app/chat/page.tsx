@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Send, Sparkles, Lock, ArrowUpRight } from 'lucide-react';
 import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 import { ProModal } from '@/components/v2/ProModal';
 import { useAuth } from '@/context/AuthContext';
 
@@ -330,6 +331,7 @@ export default function ChatPage() {
           </div>
         </div>
       </main>
+      <Footer />
       <ProModal open={proOpen} onClose={() => setProOpen(false)} />
     </div>
   );

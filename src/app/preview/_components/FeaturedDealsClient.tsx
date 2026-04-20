@@ -307,14 +307,49 @@ export function FeaturedDealsClient({ items, total }: { items: DealItem[]; total
 
             if (gated) {
               return (
-                <div key={d.ref || rank} className="rounded-sm border p-4" style={cardStyle} aria-hidden>
-                  {Card}
-                </div>
+                <button
+                  key={d.ref || rank}
+                  type="button"
+                  onClick={() => setProOpen(true)}
+                  className="relative rounded-sm border p-4 text-left cursor-pointer active:opacity-80"
+                  style={{
+                    borderColor: 'hsl(var(--av-border) / 0.6)',
+                    background: 'hsl(var(--av-surface) / 0.4)',
+                  }}
+                  aria-label={`Unlock #${rank} — PRO`}
+                >
+                  {/* Visible content, blurred */}
+                  <div
+                    style={{
+                      filter: 'blur(7px) saturate(0.7)',
+                      opacity: 0.55,
+                      userSelect: 'none',
+                      pointerEvents: 'none',
+                    }}
+                  >
+                    {Card}
+                  </div>
+                  {/* Lock badge overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span
+                      className="flex items-center gap-2 rounded-sm px-4 py-2 font-mono text-[10px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold"
+                      style={{ background: 'var(--av-gradient-gold)' }}
+                    >
+                      <Lock className="h-3 w-3" />
+                      PRO · Unlock
+                    </span>
+                  </div>
+                </button>
               );
             }
 
             return (
-              <Link key={d.ref || rank} href={href} className="rounded-sm border p-4" style={cardStyle}>
+              <Link
+                key={d.ref || rank}
+                href={href}
+                className="rounded-sm border p-4 active:opacity-80 transition-opacity"
+                style={cardStyle}
+              >
                 {Card}
               </Link>
             );

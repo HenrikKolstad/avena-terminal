@@ -1,18 +1,18 @@
 import Link from 'next/link';
+import { TikTokBadge } from './TikTokBadge';
 
 const cols: Array<{ title: string; items: Array<[string, string]> }> = [
   {
     title: 'Product',
     items: [
-      ['Terminal', '/terminal'],
+      ['Deals', '/#deals'],
+      ['Yield', '/yield'],
       ['Oracle', '/chat'],
-      ['Upgrade to PRO', '/pro'],
-      ['APCI', '/apci'],
+      ['Intelligence', '/intelligence'],
+      ['Predictions', '/predictions'],
       ['Indices', '/indices'],
-      ['Causal Intelligence', '/intelligence'],
-      ['Prediction Ledger', '/predictions'],
+      ['APCI', '/apci'],
       ['PropertyEval', '/benchmark'],
-      ['Colosseum', '/colosseum'],
     ],
   },
   {
@@ -78,6 +78,9 @@ export function Footer() {
             <p className="mt-4 max-w-sm font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
               European Property Intelligence · v2026.04
             </p>
+            <div className="mt-5">
+              <TikTokBadge />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-10 sm:grid-cols-4 lg:col-span-7">

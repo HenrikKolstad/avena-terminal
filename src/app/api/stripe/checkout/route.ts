@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
       customer: customerId,
       mode: 'subscription',
       'payment_method_types[]': 'card',
-      success_url: `${appUrl}/?subscribed=true`,
+      success_url: `${appUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/?cancelled=true`,
       'subscription_data[metadata][email]': email,
       'metadata[email]': email,

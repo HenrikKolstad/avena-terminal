@@ -72,7 +72,10 @@ export function CTA() {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="you@fund.com"
-                  className="flex-1 bg-transparent px-3 py-2 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                  inputMode="email"
+                  autoComplete="email"
+                  // text-base (16px) prevents iOS Safari auto-zoom on focus. min-h-11 = 44px tap target.
+                  className="flex-1 min-h-11 bg-transparent px-3 py-3 font-mono text-base text-foreground placeholder:text-muted-foreground focus:outline-none"
                 />
                 <button
                   type="submit"

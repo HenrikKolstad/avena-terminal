@@ -85,9 +85,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function signInWithEmail(email: string) {
     if (!supabase) return { error: 'Supabase not configured' };
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+    // Land on /login — signed-in branch shows welcome state + PRO badge
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: appUrl },
+      options: { emailRedirectTo: `${appUrl}/login` },
     });
     return { error: error?.message ?? null };
   }
@@ -107,14 +108,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function startCheckout() {
     const email = user?.email;
     if (!email) return;
-    const res = await fetch('/api/stripe/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
-    });
-    const { url, error } = await res.json();
-    if (error) { alert('Error: ' + error); return; }
-    window.location.href = url;
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const { url, error } = await res.json();
+      if (error) throw new Error(error);
+      if (!url) throw new Error('Stripe did not return a checkout URL');
+      window.location.href = url;
+    } catch (e) {
+      // Re-throw so callers can render inline error (replaces jarring alert())
+      throw e instanceof Error ? e : new Error('Checkout failed');
+    }
   }
 
   return (
