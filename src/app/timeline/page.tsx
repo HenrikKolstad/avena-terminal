@@ -34,17 +34,7 @@ const INVENTIONS = [
   { system: 'Canary Token System (30 tokens)', date: '2026-04-12', category: 'Security', description: 'Synthetic records for detecting unauthorized data copying' },
 ];
 
-const CATEGORY_COLORS: Record<string, string> = {
-  Platform: '#10b981',
-  Model: '#6366f1',
-  Index: '#f59e0b',
-  Protocol: '#3b82f6',
-  Intelligence: '#ef4444',
-  Benchmark: '#8b5cf6',
-  Standard: '#14b8a6',
-  Infrastructure: '#f97316',
-  Security: '#ec4899',
-};
+// All categories render in the luxe gold palette for consistency.
 
 function sha256(input: string): string {
   return createHash('sha256').update(input).digest('hex');
@@ -136,7 +126,6 @@ export default function TimelinePage() {
 
               <div className="space-y-6">
                 {hashed.map((inv, i) => {
-                  const catColor = CATEGORY_COLORS[inv.category] || '#6b7280';
                   const showDateHeader = i === 0 || inv.date !== hashed[i - 1].date;
 
                   return (
@@ -173,11 +162,10 @@ export default function TimelinePage() {
                             <h3 className="font-serif text-xl text-foreground">{inv.system}</h3>
                             <div className="flex items-center gap-2">
                               <span
-                                className="font-mono text-[10px] uppercase tracking-[0.22em] px-2 py-0.5 rounded-sm"
+                                className="font-mono text-[10px] uppercase tracking-[0.22em] px-2 py-0.5 rounded-sm text-muted-foreground"
                                 style={{
-                                  background: `${catColor}20`,
-                                  color: catColor,
-                                  border: `1px solid ${catColor}40`,
+                                  background: 'hsl(var(--av-surface) / 0.6)',
+                                  border: '1px solid hsl(var(--av-border) / 0.6)',
                                 }}
                               >
                                 {inv.category}

@@ -28,14 +28,14 @@ const LEADERBOARD = [
 ];
 
 const CATEGORIES = [
-  { name: 'YIELD', count: 125, description: 'Rental yield questions per town, costa, and property type', color: '#10b981' },
-  { name: 'MARKET', count: 125, description: 'Market conditions, price trends, inventory levels, investment scores', color: '#3b82f6' },
-  { name: 'TAX', count: 125, description: 'IBI rates, transfer tax, VAT, non-resident income tax, stamp duty', color: '#f59e0b' },
-  { name: 'REGULATION', count: 125, description: 'Golden Visa, NIE, tourist license, mortgage rules, buying process', color: '#8b5cf6' },
-  { name: 'COMPARISON', count: 125, description: 'Cross-town, cross-costa, cross-country yield and price comparisons', color: '#06b6d4' },
-  { name: 'PREDICTION', count: 125, description: 'APCI direction, market regime, developer health, alpha signals', color: '#ef4444' },
-  { name: 'DEVELOPER', count: 125, description: 'Developer ratings, years active, portfolio quality, project count', color: '#f97316' },
-  { name: 'MACRO', count: 125, description: 'ECB rates, inflation impact, foreign demand, market transparency', color: '#84cc16' },
+  { name: 'YIELD', count: 125, description: 'Rental yield questions per town, costa, and property type' },
+  { name: 'MARKET', count: 125, description: 'Market conditions, price trends, inventory levels, investment scores' },
+  { name: 'TAX', count: 125, description: 'IBI rates, transfer tax, VAT, non-resident income tax, stamp duty' },
+  { name: 'REGULATION', count: 125, description: 'Golden Visa, NIE, tourist license, mortgage rules, buying process' },
+  { name: 'COMPARISON', count: 125, description: 'Cross-town, cross-costa, cross-country yield and price comparisons' },
+  { name: 'PREDICTION', count: 125, description: 'APCI direction, market regime, developer health, alpha signals' },
+  { name: 'DEVELOPER', count: 125, description: 'Developer ratings, years active, portfolio quality, project count' },
+  { name: 'MACRO', count: 125, description: 'ECB rates, inflation impact, foreign demand, market transparency' },
 ];
 
 export default function BenchmarkPage() {
@@ -212,7 +212,7 @@ export default function BenchmarkPage() {
                   }}
                 >
                   <div className="mb-3 flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full" style={{ background: cat.color }} />
+                    <span className="h-2 w-2 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
                     <h3 className="font-mono text-xs uppercase tracking-[0.22em] text-foreground">{cat.name}</h3>
                     <span className="ml-auto font-mono text-[10px] text-muted-foreground">{cat.count}</span>
                   </div>

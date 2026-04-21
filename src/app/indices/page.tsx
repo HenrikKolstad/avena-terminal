@@ -19,18 +19,6 @@ function clamp(v: number, lo = 0, hi = 100) {
   return Math.max(lo, Math.min(hi, v));
 }
 
-function scoreColor(v: number) {
-  if (v >= 60) return '#34d399';   // emerald-400
-  if (v >= 40) return '#fbbf24';   // yellow-400
-  return '#f87171';                // red-400
-}
-
-function barColor(v: number) {
-  if (v >= 60) return 'bg-emerald-500';
-  if (v >= 40) return 'bg-yellow-500';
-  return 'bg-red-500';
-}
-
 function stddev(nums: number[]): number {
   if (nums.length < 2) return 0;
   const m = avg(nums);
