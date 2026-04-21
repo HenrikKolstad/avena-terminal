@@ -224,7 +224,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                     className="group inline-flex items-center justify-center gap-3 rounded-sm px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5 w-full sm:w-auto"
                     style={{ background: 'var(--av-gradient-gold)' }}
                   >
-                    Contact Henrik
+                    Contact Avena
                     <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </a>
                 );
@@ -377,7 +377,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                     className="group inline-flex items-center gap-3 rounded-sm px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
                     style={{ background: 'var(--av-gradient-gold)' }}
                   >
-                    Contact Henrik about this property
+                    Contact Avena about this property
                     <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </a>
                 );

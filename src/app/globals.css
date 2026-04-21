@@ -45,12 +45,9 @@
   font-feature-settings: 'cv11', 'ss01';
   background-color: hsl(var(--av-background));
   color: hsl(var(--av-foreground));
-  /* Single lightweight gradient — previous stack of 3 radial gradients + fixed
-     attachment caused iOS split-render bug and desktop scroll jank. */
-  background-image:
-    radial-gradient(ellipse 80% 50% at 50% 0%, hsl(42 85% 64% / 0.06), transparent 70%);
-  background-repeat: no-repeat;
-  background-attachment: scroll;
+  /* Flat background — any radial gradient on the root wrapper causes iOS
+     Safari split-render artifacts when combined with inner transforms / fixed
+     elements. Individual sections add their own gradient accents instead. */
 }
 
 .avena-v2 .font-mono,

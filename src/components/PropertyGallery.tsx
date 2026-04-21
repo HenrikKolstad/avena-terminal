@@ -7,7 +7,13 @@ export default function PropertyGallery({ images, alt }: { images: string[]; alt
 
   if (!images.length) {
     return (
-      <div className="aspect-[4/3] rounded-2xl overflow-hidden border flex items-center justify-center text-gray-600 text-4xl" style={{ background: '#0f1419', borderColor: '#1c2333' }}>
+      <div
+        className="aspect-[4/3] rounded-sm overflow-hidden border flex items-center justify-center font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground"
+        style={{
+          background: 'hsl(var(--av-surface))',
+          borderColor: 'hsl(var(--av-border) / 0.6)',
+        }}
+      >
         No image
       </div>
     );
@@ -15,29 +21,67 @@ export default function PropertyGallery({ images, alt }: { images: string[]; alt
 
   return (
     <div>
-      <div className="aspect-[4/3] rounded-2xl overflow-hidden border relative" style={{ background: '#0f1419', borderColor: '#1c2333' }}>
+      <div
+        className="aspect-[4/3] rounded-sm overflow-hidden border relative"
+        style={{
+          background: 'hsl(var(--av-surface))',
+          borderColor: 'hsl(var(--av-border) / 0.6)',
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={images[idx]} alt={alt} className="w-full h-full object-cover" />
         {images.length > 1 && (
           <>
             <button
-              onClick={() => setIdx(i => (i - 1 + images.length) % images.length)}
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-8 sm:h-8 bg-black/60 border border-white/20 rounded-full flex items-center justify-center text-white text-lg sm:text-base hover:bg-emerald-500/80 transition-all"
-            >&#8249;</button>
+              onClick={() => setIdx((i) => (i - 1 + images.length) % images.length)}
+              aria-label="Previous image"
+              className="absolute left-2 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full text-white text-xl transition-all"
+              style={{
+                background: 'hsl(var(--av-background) / 0.7)',
+                border: '1px solid hsl(var(--av-border-strong))',
+              }}
+            >
+              &#8249;
+            </button>
             <button
-              onClick={() => setIdx(i => (i + 1) % images.length)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-8 sm:h-8 bg-black/60 border border-white/20 rounded-full flex items-center justify-center text-white text-lg sm:text-base hover:bg-emerald-500/80 transition-all"
-            >&#8250;</button>
-            <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-0.5 rounded-full text-[10px] font-semibold">
-              {idx + 1}/{images.length}
+              onClick={() => setIdx((i) => (i + 1) % images.length)}
+              aria-label="Next image"
+              className="absolute right-2 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full text-white text-xl transition-all"
+              style={{
+                background: 'hsl(var(--av-background) / 0.7)',
+                border: '1px solid hsl(var(--av-border-strong))',
+              }}
+            >
+              &#8250;
+            </button>
+            <div
+              className="absolute bottom-3 right-3 rounded-sm px-2 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground"
+              style={{
+                background: 'hsl(var(--av-background) / 0.75)',
+                border: '1px solid hsl(var(--av-border) / 0.6)',
+              }}
+            >
+              {idx + 1} / {images.length}
             </div>
           </>
         )}
       </div>
+
       {images.length > 1 && (
         <div className="flex gap-1.5 mt-2 overflow-x-auto scrollbar-none">
           {images.slice(0, 12).map((img, i) => (
-            <button key={i} onClick={() => setIdx(i)}
-              className={`flex-shrink-0 w-16 h-11 rounded overflow-hidden border-2 transition-all ${idx === i ? 'border-emerald-400 opacity-100' : 'border-transparent opacity-50 hover:opacity-80'}`}>
+            <button
+              key={i}
+              onClick={() => setIdx(i)}
+              aria-label={`Show image ${i + 1}`}
+              className="flex-shrink-0 w-16 h-11 rounded-sm overflow-hidden border transition-all"
+              style={{
+                borderColor:
+                  idx === i ? 'hsl(var(--av-primary))' : 'hsl(var(--av-border) / 0.4)',
+                opacity: idx === i ? 1 : 0.55,
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={img} alt="" className="w-full h-full object-cover" />
             </button>
           ))}
