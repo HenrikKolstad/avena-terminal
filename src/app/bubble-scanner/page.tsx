@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
-import { CITIES, type City } from '@/lib/bubble-data';
+import { CITIES } from '@/lib/bubble-data';
 
 export const revalidate = 86400;
 
@@ -29,26 +29,31 @@ export const metadata: Metadata = {
 /*  Data                                                               */
 /* ------------------------------------------------------------------ */
 
-/* City data imported from shared module */
-
-/* ------------------------------------------------------------------ */
-/*  Helpers                                                            */
-/* ------------------------------------------------------------------ */
-
 const sorted = [...CITIES].sort((a, b) => b.bubbleScore - a.bubbleScore);
 
 const STATUS_CONFIG = {
-  bubble:      { label: 'Bubble',      bg: 'rgba(248,81,73,0.15)',  text: '#f85149',  border: '#f8514966' },
-  overheating: { label: 'Overheating', bg: 'rgba(210,153,34,0.15)', text: '#d29922',  border: '#d2992266' },
-  warming:     { label: 'Warming',     bg: 'rgba(187,128,9,0.10)',  text: '#bb8009',  border: '#bb800966' },
-  healthy:     { label: 'Healthy',     bg: 'rgba(63,185,80,0.15)',  text: '#3fb950',  border: '#3fb95066' },
+  bubble:      { label: 'Bubble',      tone: 'destructive' },
+  overheating: { label: 'Overheating', tone: 'warning' },
+  warming:     { label: 'Warming',     tone: 'warning-soft' },
+  healthy:     { label: 'Healthy',     tone: 'primary' },
 } as const;
 
-function bubbleBarColor(score: number): string {
-  if (score >= 70) return '#f85149';
-  if (score >= 50) return '#d29922';
-  if (score >= 30) return '#bb8009';
-  return '#3fb950';
+type Tone = 'destructive' | 'warning' | 'warning-soft' | 'primary';
+
+function toneColor(tone: Tone): string {
+  switch (tone) {
+    case 'destructive': return 'hsl(var(--av-destructive))';
+    case 'warning':     return 'hsl(var(--av-warning))';
+    case 'warning-soft':return 'hsl(var(--av-warning) / 0.75)';
+    case 'primary':     return 'hsl(var(--av-primary))';
+  }
+}
+
+function bubbleBarTone(score: number): Tone {
+  if (score >= 70) return 'destructive';
+  if (score >= 50) return 'warning';
+  if (score >= 30) return 'warning-soft';
+  return 'primary';
 }
 
 function fmtPrice(n: number): string {
@@ -124,219 +129,159 @@ export default function BubbleScannerPage() {
 
       <Nav />
 
-      <main className="pt-24">
-        <div style={{ maxWidth: 1600, margin: '0 auto', padding: '0 24px 80px' }}>
+      <main className="pt-16">
 
-          {/* ---- HERO ---- */}
-          <section style={{ padding: '64px 0 40px', maxWidth: 900 }}>
+        {/* ---- HERO ---- */}
+        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-20 sm:py-24">
             <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
-              <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+              <span className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
               Live Data &middot; {sorted.length} cities &middot; Updated daily
             </span>
-
-            <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground mt-4 mb-6">
+            <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground mb-5">
               Is your city in a
               <br />
               <span className="italic text-gold">property bubble</span>?
             </h1>
-
-            <p className="text-lg text-muted-foreground font-light max-w-xl">
+            <p className="max-w-2xl text-lg text-muted-foreground font-light">
               {sorted.length} European cities rated by price, growth, and risk.
               Composite bubble score 0&ndash;100. Refreshed daily. Source-verified.
             </p>
-          </section>
-
-          {/* ---- SUMMARY STATS ---- */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-              gap: 12,
-              marginBottom: 40,
-            }}
-          >
-            {([
-              { label: 'Bubble Territory', count: counts.bubble, color: '#f85149' },
-              { label: 'Overheating', count: counts.overheating, color: '#d29922' },
-              { label: 'Warming', count: counts.warming, color: '#bb8009' },
-              { label: 'Healthy', count: counts.healthy, color: '#3fb950' },
-            ] as const).map((s) => (
-              <div
-                key={s.label}
-                style={{
-                  backgroundColor: '#161b22',
-                  border: '1px solid #30363d',
-                  borderRadius: 8,
-                  padding: '20px 16px',
-                  textAlign: 'center',
-                }}
-              >
-                <div style={{ fontSize: 32, fontWeight: 800, color: s.color, letterSpacing: '-0.04em' }}>
-                  {s.count}
-                </div>
-                <div style={{ fontSize: 12, color: '#8b949e', marginTop: 4, fontWeight: 500 }}>
-                  {s.label}
-                </div>
-              </div>
-            ))}
           </div>
+        </section>
 
-          {/* ---- DATA TABLE ---- */}
-          <section>
+        {/* ---- SUMMARY STATS ---- */}
+        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-12">
             <div
+              className="grid grid-cols-2 md:grid-cols-4 gap-px overflow-hidden rounded-sm border"
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: 12,
+                borderColor: 'hsl(var(--av-border) / 0.6)',
+                background: 'hsl(var(--av-border) / 0.6)',
               }}
             >
-              <h2 style={{ fontSize: 16, fontWeight: 700, margin: 0, color: '#e6edf3' }}>
-                All 30 Cities &mdash; Ranked by Bubble Risk
+              {([
+                { label: 'Bubble Territory', count: counts.bubble,      tone: 'destructive' as Tone },
+                { label: 'Overheating',      count: counts.overheating, tone: 'warning' as Tone },
+                { label: 'Warming',          count: counts.warming,     tone: 'warning-soft' as Tone },
+                { label: 'Healthy',          count: counts.healthy,     tone: 'primary' as Tone },
+              ]).map((s) => (
+                <div key={s.label} className="p-6" style={{ background: 'hsl(var(--av-background))' }}>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                    {s.label}
+                  </span>
+                  <div
+                    className="mt-3 font-serif font-light tabular text-5xl"
+                    style={{ color: toneColor(s.tone) }}
+                  >
+                    {s.count}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ---- DATA TABLE ---- */}
+        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-16">
+            <div className="flex flex-wrap items-baseline justify-between gap-3 mb-8">
+              <h2 className="font-serif text-3xl sm:text-4xl font-light text-foreground">
+                All 30 cities <span className="italic text-gold">ranked</span>.
               </h2>
-              <span style={{ fontSize: 12, color: '#8b949e' }}>
-                Sorted by Bubble Score (highest first)
+              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                Sorted by bubble score &middot; highest first
               </span>
             </div>
 
-            {/* table wrapper */}
             <div
+              className="rounded-sm border overflow-x-auto"
               style={{
-                backgroundColor: '#161b22',
-                border: '1px solid #30363d',
-                borderRadius: 8,
-                overflowX: 'auto',
+                background: 'hsl(var(--av-surface) / 0.4)',
+                borderColor: 'hsl(var(--av-border) / 0.6)',
               }}
             >
-              <table
-                style={{
-                  width: '100%',
-                  borderCollapse: 'collapse',
-                  fontSize: 14,
-                  minWidth: 900,
-                }}
-              >
+              <table className="w-full min-w-[900px] border-collapse text-sm">
                 <thead>
                   <tr
-                    style={{
-                      borderBottom: '1px solid #30363d',
-                      textAlign: 'left',
-                      color: '#8b949e',
-                      fontSize: 11,
-                      fontWeight: 600,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.06em',
-                    }}
+                    className="text-left font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground"
+                    style={{ borderBottom: '1px solid hsl(var(--av-border) / 0.6)' }}
                   >
-                    <th style={{ padding: '14px 16px', width: 40 }}>#</th>
-                    <th style={{ padding: '14px 12px' }}>City</th>
-                    <th style={{ padding: '14px 12px', textAlign: 'right' }}>Price/m&sup2;</th>
-                    <th style={{ padding: '14px 12px', textAlign: 'right' }}>YoY</th>
-                    <th style={{ padding: '14px 12px' }}>Bubble Score</th>
-                    <th style={{ padding: '14px 12px', textAlign: 'right' }}>Affordability</th>
-                    <th style={{ padding: '14px 12px', textAlign: 'right' }}>P/I Ratio</th>
-                    <th style={{ padding: '14px 12px', textAlign: 'center' }}>Status</th>
-                    <th style={{ padding: '14px 12px', width: 30 }} />
+                    <th className="py-4 pl-5 pr-3" style={{ width: 40 }}>#</th>
+                    <th className="py-4 px-3">City</th>
+                    <th className="py-4 px-3 text-right">Price/m&sup2;</th>
+                    <th className="py-4 px-3 text-right">YoY</th>
+                    <th className="py-4 px-3">Bubble Score</th>
+                    <th className="py-4 px-3 text-right">Affordability</th>
+                    <th className="py-4 px-3 text-right">P/I Ratio</th>
+                    <th className="py-4 px-3 text-center">Status</th>
+                    <th className="py-4 pr-5 pl-3" style={{ width: 30 }} />
                   </tr>
                 </thead>
                 <tbody>
                   {sorted.map((city, i) => {
                     const sc = STATUS_CONFIG[city.status];
+                    const barTone = bubbleBarTone(city.bubbleScore);
                     return (
                       <tr
                         key={city.slug}
                         style={{
-                          borderBottom: i < sorted.length - 1 ? '1px solid #21262d' : 'none',
-                          transition: 'background 0.15s',
+                          borderBottom: i < sorted.length - 1 ? '1px solid hsl(var(--av-border) / 0.3)' : 'none',
                         }}
                       >
                         {/* rank */}
-                        <td
-                          style={{
-                            padding: '12px 16px',
-                            color: '#484f58',
-                            fontWeight: 600,
-                            fontSize: 12,
-                            fontVariantNumeric: 'tabular-nums',
-                          }}
-                        >
+                        <td className="py-3 pl-5 pr-3 font-mono tabular text-[11px] text-muted-foreground">
                           {i + 1}
                         </td>
 
                         {/* city */}
-                        <td style={{ padding: '12px 12px' }}>
+                        <td className="py-3 px-3">
                           <Link
                             href={`/bubble-scanner/${city.slug}`}
-                            style={{
-                              color: '#e6edf3',
-                              textDecoration: 'none',
-                              fontWeight: 600,
-                            }}
+                            className="text-foreground font-light transition-colors hover:text-primary"
                           >
-                            <span style={{ marginRight: 8 }}>{city.flag}</span>
+                            <span className="mr-2">{city.flag}</span>
                             {city.name}
-                            <span style={{ color: '#484f58', fontWeight: 400, marginLeft: 6, fontSize: 12 }}>
+                            <span className="ml-2 text-[11px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
                               {city.country}
                             </span>
                           </Link>
                         </td>
 
                         {/* price */}
-                        <td
-                          style={{
-                            padding: '12px 12px',
-                            textAlign: 'right',
-                            fontVariantNumeric: 'tabular-nums',
-                            fontWeight: 500,
-                          }}
-                        >
+                        <td className="py-3 px-3 text-right font-mono tabular text-foreground">
                           &euro;{fmtPrice(city.pricePerM2)}
                         </td>
 
                         {/* yoy */}
                         <td
+                          className="py-3 px-3 text-right font-mono tabular"
                           style={{
-                            padding: '12px 12px',
-                            textAlign: 'right',
-                            fontVariantNumeric: 'tabular-nums',
-                            fontWeight: 600,
-                            color: city.yoyChange >= 0 ? '#3fb950' : '#f85149',
+                            color: city.yoyChange >= 0 ? 'hsl(var(--av-primary))' : 'hsl(var(--av-destructive))',
                           }}
                         >
                           {city.yoyChange >= 0 ? '+' : ''}{city.yoyChange.toFixed(1)}%
                         </td>
 
                         {/* bubble score bar */}
-                        <td style={{ padding: '12px 12px', minWidth: 160 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <td className="py-3 px-3" style={{ minWidth: 160 }}>
+                          <div className="flex items-center gap-3">
                             <div
-                              style={{
-                                flex: 1,
-                                height: 8,
-                                backgroundColor: '#21262d',
-                                borderRadius: 4,
-                                overflow: 'hidden',
-                              }}
+                              className="flex-1 h-1.5 rounded-full overflow-hidden"
+                              style={{ background: 'hsl(var(--av-border) / 0.6)' }}
                             >
                               <div
                                 style={{
                                   width: `${city.bubbleScore}%`,
                                   height: '100%',
-                                  backgroundColor: bubbleBarColor(city.bubbleScore),
-                                  borderRadius: 4,
+                                  background: toneColor(barTone),
                                   transition: 'width 0.4s ease',
                                 }}
                               />
                             </div>
                             <span
-                              style={{
-                                fontWeight: 700,
-                                fontSize: 13,
-                                fontVariantNumeric: 'tabular-nums',
-                                color: bubbleBarColor(city.bubbleScore),
-                                minWidth: 28,
-                                textAlign: 'right',
-                              }}
+                              className="font-mono tabular text-[12px]"
+                              style={{ color: toneColor(barTone), minWidth: 28, textAlign: 'right' }}
                             >
                               {city.bubbleScore}
                             </span>
@@ -345,45 +290,32 @@ export default function BubbleScannerPage() {
 
                         {/* affordability */}
                         <td
+                          className="py-3 px-3 text-right font-mono tabular"
                           style={{
-                            padding: '12px 12px',
-                            textAlign: 'right',
-                            fontVariantNumeric: 'tabular-nums',
-                            color: city.affordability >= 40 ? '#3fb950' : city.affordability >= 25 ? '#bb8009' : '#f85149',
-                            fontWeight: 500,
+                            color:
+                              city.affordability >= 40 ? 'hsl(var(--av-primary))' :
+                              city.affordability >= 25 ? 'hsl(var(--av-warning))' :
+                              'hsl(var(--av-destructive))',
                           }}
                         >
                           {city.affordability}/100
                         </td>
 
                         {/* P/I ratio */}
-                        <td
-                          style={{
-                            padding: '12px 12px',
-                            textAlign: 'right',
-                            fontVariantNumeric: 'tabular-nums',
-                            color: '#8b949e',
-                            fontWeight: 500,
-                          }}
-                        >
+                        <td className="py-3 px-3 text-right font-mono tabular text-muted-foreground">
                           {city.priceToIncome.toFixed(1)}x
                         </td>
 
                         {/* status badge */}
-                        <td style={{ padding: '12px 12px', textAlign: 'center' }}>
+                        <td className="py-3 px-3 text-center">
                           <span
+                            className="inline-block font-mono text-[10px] uppercase tracking-[0.18em] whitespace-nowrap"
                             style={{
-                              display: 'inline-block',
-                              fontSize: 11,
-                              fontWeight: 600,
                               padding: '3px 10px',
-                              borderRadius: 12,
-                              backgroundColor: sc.bg,
-                              color: sc.text,
-                              border: `1px solid ${sc.border}`,
-                              textTransform: 'uppercase',
-                              letterSpacing: '0.04em',
-                              whiteSpace: 'nowrap',
+                              borderRadius: 2,
+                              color: toneColor(sc.tone as Tone),
+                              background: `${toneColor(sc.tone as Tone).replace(')', ' / 0.12)')}`,
+                              border: `1px solid ${toneColor(sc.tone as Tone).replace(')', ' / 0.35)')}`,
                             }}
                           >
                             {sc.label}
@@ -391,11 +323,11 @@ export default function BubbleScannerPage() {
                         </td>
 
                         {/* arrow */}
-                        <td style={{ padding: '12px 12px' }}>
+                        <td className="py-3 pr-5 pl-3">
                           <Link
                             href={`/bubble-scanner/${city.slug}`}
                             aria-label={`View ${city.name} details`}
-                            style={{ color: '#484f58', textDecoration: 'none', fontSize: 16 }}
+                            className="text-muted-foreground transition-colors hover:text-primary"
                           >
                             &rsaquo;
                           </Link>
@@ -406,217 +338,174 @@ export default function BubbleScannerPage() {
                 </tbody>
               </table>
             </div>
-          </section>
+          </div>
+        </section>
 
-          {/* ---- HOW WE SCORE ---- */}
-          <section
-            style={{
-              marginTop: 56,
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: 16,
-            }}
-          >
-            <div
-              style={{
-                backgroundColor: '#161b22',
-                border: '1px solid #30363d',
-                borderRadius: 8,
-                padding: 28,
-              }}
-            >
-              <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 16px', color: '#e6edf3' }}>
-                How We Score
-              </h2>
-              <p style={{ color: '#8b949e', fontSize: 14, lineHeight: 1.7, margin: '0 0 16px' }}>
-                The <strong style={{ color: '#e6edf3' }}>Avena Bubble Score</strong> (0&ndash;100)
-                is a composite index reflecting how stretched a city&apos;s housing market is
-                relative to fundamentals.
-              </p>
-              <ul
+        {/* ---- HOW WE SCORE + RISK SCALE ---- */}
+        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-16">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              <div
+                className="rounded-sm border p-8"
                 style={{
-                  listStyle: 'none',
-                  padding: 0,
-                  margin: 0,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 10,
+                  background: 'hsl(var(--av-surface) / 0.4)',
+                  borderColor: 'hsl(var(--av-border) / 0.6)',
                 }}
               >
-                {([
-                  { w: '40%', label: 'Price-to-Income Ratio', desc: 'How many years of local median income to buy a median flat' },
-                  { w: '30%', label: 'YoY Price Acceleration', desc: 'Speed of price growth compared to long-term trend' },
-                  { w: '15%', label: 'Credit Growth Proxy', desc: 'Mortgage lending growth relative to GDP' },
-                  { w: '15%', label: 'Affordability Gap', desc: 'Rent-to-own spread adjusted for local rates' },
-                ] as const).map((item) => (
-                  <li
-                    key={item.label}
-                    style={{
-                      display: 'flex',
-                      gap: 12,
-                      alignItems: 'flex-start',
-                      fontSize: 13,
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontWeight: 700,
-                        color: '#3fb950',
-                        minWidth: 36,
-                        textAlign: 'right',
-                        fontVariantNumeric: 'tabular-nums',
-                      }}
-                    >
-                      {item.w}
-                    </span>
-                    <span>
-                      <strong style={{ color: '#e6edf3' }}>{item.label}</strong>
-                      <br />
-                      <span style={{ color: '#8b949e' }}>{item.desc}</span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">
+                  Methodology
+                </span>
+                <h2 className="mt-3 mb-5 font-serif text-3xl font-light text-foreground">
+                  How we <span className="italic text-gold">score</span>.
+                </h2>
+                <p className="mb-6 font-light text-muted-foreground leading-relaxed">
+                  The <span className="text-foreground">Avena Bubble Score</span> (0&ndash;100)
+                  is a composite index reflecting how stretched a city&apos;s housing market is
+                  relative to fundamentals.
+                </p>
+                <ul className="flex flex-col gap-4">
+                  {([
+                    { w: '40%', label: 'Price-to-Income Ratio', desc: 'How many years of local median income to buy a median flat' },
+                    { w: '30%', label: 'YoY Price Acceleration', desc: 'Speed of price growth compared to long-term trend' },
+                    { w: '15%', label: 'Credit Growth Proxy', desc: 'Mortgage lending growth relative to GDP' },
+                    { w: '15%', label: 'Affordability Gap', desc: 'Rent-to-own spread adjusted for local rates' },
+                  ] as const).map((item) => (
+                    <li key={item.label} className="flex gap-4 items-start">
+                      <span
+                        className="font-mono tabular text-primary text-right"
+                        style={{ minWidth: 44 }}
+                      >
+                        {item.w}
+                      </span>
+                      <span className="text-sm">
+                        <span className="text-foreground font-light">{item.label}</span>
+                        <br />
+                        <span className="text-muted-foreground font-light">{item.desc}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-            <div
-              style={{
-                backgroundColor: '#161b22',
-                border: '1px solid #30363d',
-                borderRadius: 8,
-                padding: 28,
-              }}
-            >
-              <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 16px', color: '#e6edf3' }}>
-                Risk Scale
-              </h2>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                {([
-                  { range: '0 \u2013 30', label: 'Healthy', color: '#3fb950', desc: 'Prices are in line with incomes and historical norms.' },
-                  { range: '30 \u2013 50', label: 'Warming', color: '#bb8009', desc: 'Growth is above trend. Monitor closely.' },
-                  { range: '50 \u2013 70', label: 'Overheating', color: '#d29922', desc: 'Prices are significantly detached from fundamentals.' },
-                  { range: '70 \u2013 100', label: 'Bubble Territory', color: '#f85149', desc: 'Extreme risk. Correction likely within 12\u201324 months.' },
-                ] as const).map((item) => (
-                  <div key={item.range} style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
-                    <div
-                      style={{
-                        width: 10,
-                        height: 10,
-                        borderRadius: '50%',
-                        backgroundColor: item.color,
-                        marginTop: 5,
-                        flexShrink: 0,
-                      }}
-                    />
-                    <div style={{ fontSize: 13 }}>
-                      <span style={{ fontWeight: 700, color: item.color }}>{item.range}</span>
-                      <span style={{ color: '#e6edf3', fontWeight: 600, marginLeft: 8 }}>{item.label}</span>
-                      <br />
-                      <span style={{ color: '#8b949e' }}>{item.desc}</span>
+              <div
+                className="rounded-sm border p-8"
+                style={{
+                  background: 'hsl(var(--av-surface) / 0.4)',
+                  borderColor: 'hsl(var(--av-border) / 0.6)',
+                }}
+              >
+                <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">
+                  Reference
+                </span>
+                <h2 className="mt-3 mb-5 font-serif text-3xl font-light text-foreground">
+                  Risk <span className="italic text-gold">scale</span>.
+                </h2>
+                <div className="flex flex-col gap-4">
+                  {([
+                    { range: '0 \u2013 30',   label: 'Healthy',           tone: 'primary' as Tone,     desc: 'Prices are in line with incomes and historical norms.' },
+                    { range: '30 \u2013 50',  label: 'Warming',           tone: 'warning-soft' as Tone, desc: 'Growth is above trend. Monitor closely.' },
+                    { range: '50 \u2013 70',  label: 'Overheating',       tone: 'warning' as Tone,     desc: 'Prices are significantly detached from fundamentals.' },
+                    { range: '70 \u2013 100', label: 'Bubble Territory',  tone: 'destructive' as Tone, desc: 'Extreme risk. Correction likely within 12\u201324 months.' },
+                  ]).map((item) => (
+                    <div key={item.range} className="flex items-start gap-4">
+                      <div
+                        className="mt-2 rounded-full flex-shrink-0"
+                        style={{ width: 8, height: 8, background: toneColor(item.tone) }}
+                      />
+                      <div className="text-sm">
+                        <span className="font-mono tabular" style={{ color: toneColor(item.tone) }}>
+                          {item.range}
+                        </span>
+                        <span className="ml-3 text-foreground font-light">{item.label}</span>
+                        <br />
+                        <span className="text-muted-foreground font-light">{item.desc}</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
-          </section>
+          </div>
+        </section>
 
-          {/* ---- METHODOLOGY ---- */}
-          <section
-            style={{
-              marginTop: 40,
-              backgroundColor: '#161b22',
-              border: '1px solid #30363d',
-              borderRadius: 8,
-              padding: 28,
-            }}
-          >
-            <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 12px', color: '#e6edf3' }}>
-              Methodology
-            </h2>
-            <p style={{ color: '#8b949e', fontSize: 14, lineHeight: 1.7, margin: 0, maxWidth: 800 }}>
-              Data is sourced from Eurostat housing price indices, ECB credit and monetary statistics,
-              national land registries, and Avena Terminal proprietary transaction feeds. Prices reflect
-              median asking prices for existing apartments in the city proper (not metro area). The
-              bubble score is recalculated daily and the methodology is fully documented on our{' '}
-              <Link href="/methodology" style={{ color: '#3fb950', textDecoration: 'underline', textUnderlineOffset: 3 }}>
-                methodology page
-              </Link>
-              . For academic citations, see{' '}
-              <Link href="/cite" style={{ color: '#3fb950', textDecoration: 'underline', textUnderlineOffset: 3 }}>
-                how to cite
-              </Link>
-              .
-            </p>
-          </section>
+        {/* ---- METHODOLOGY NOTE ---- */}
+        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-16">
+            <div
+              className="rounded-sm border p-8"
+              style={{
+                background: 'hsl(var(--av-surface) / 0.4)',
+                borderColor: 'hsl(var(--av-border) / 0.6)',
+              }}
+            >
+              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">
+                Sources
+              </span>
+              <h2 className="mt-3 mb-4 font-serif text-3xl font-light text-foreground">
+                Data <span className="italic text-gold">provenance</span>.
+              </h2>
+              <p className="max-w-3xl font-light text-muted-foreground leading-relaxed">
+                Data is sourced from Eurostat housing price indices, ECB credit and monetary statistics,
+                national land registries, and Avena Terminal proprietary transaction feeds. Prices reflect
+                median asking prices for existing apartments in the city proper (not metro area). The
+                bubble score is recalculated daily and the methodology is fully documented on our{' '}
+                <Link href="/methodology" className="text-primary underline underline-offset-4 transition-colors hover:text-foreground">
+                  methodology page
+                </Link>
+                . For academic citations, see{' '}
+                <Link href="/cite" className="text-primary underline underline-offset-4 transition-colors hover:text-foreground">
+                  how to cite
+                </Link>
+                .
+              </p>
+            </div>
+          </div>
+        </section>
 
-          {/* ---- SHARE ---- */}
-          <section
-            style={{
-              marginTop: 40,
-              backgroundColor: '#161b22',
-              border: '1px solid #30363d',
-              borderRadius: 8,
-              padding: 28,
-              textAlign: 'center',
-            }}
-          >
-            <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 8px', color: '#e6edf3' }}>
-              Share This Scanner
+        {/* ---- SHARE ---- */}
+        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-16 text-center">
+            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">
+              Share
+            </span>
+            <h2 className="mt-3 mb-4 font-serif text-3xl sm:text-4xl font-light text-foreground">
+              Spread the <span className="italic text-gold">signal</span>.
             </h2>
-            <p style={{ color: '#8b949e', fontSize: 13, marginBottom: 20, margin: '0 0 20px' }}>
-              Think someone should see their city&apos;s score? Spread the word.
+            <p className="mb-8 font-light text-muted-foreground">
+              Think someone should see their city&apos;s score?
             </p>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
+            <div className="flex justify-center gap-3 flex-wrap">
               <a
                 href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-sm border px-5 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground transition-colors hover:text-primary"
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  backgroundColor: '#21262d',
-                  color: '#e6edf3',
-                  border: '1px solid #30363d',
-                  borderRadius: 6,
-                  padding: '10px 20px',
-                  fontSize: 13,
-                  fontWeight: 600,
-                  textDecoration: 'none',
-                  transition: 'border-color 0.15s',
+                  background: 'hsl(var(--av-surface) / 0.4)',
+                  borderColor: 'hsl(var(--av-border-strong))',
                 }}
               >
-                Share on X / Twitter
+                Share on X
               </a>
               <a
                 href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent('https://avenaterminal.com/bubble-scanner')}`}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-sm border px-5 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground transition-colors hover:text-primary"
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  backgroundColor: '#21262d',
-                  color: '#e6edf3',
-                  border: '1px solid #30363d',
-                  borderRadius: 6,
-                  padding: '10px 20px',
-                  fontSize: 13,
-                  fontWeight: 600,
-                  textDecoration: 'none',
-                  transition: 'border-color 0.15s',
+                  background: 'hsl(var(--av-surface) / 0.4)',
+                  borderColor: 'hsl(var(--av-border-strong))',
                 }}
               >
                 Share on LinkedIn
               </a>
             </div>
-          </section>
+          </div>
+        </section>
 
-          {/* ---- SOURCE LINE ---- */}
-          <div
-            className="mt-14 pt-6 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground"
-            style={{ borderTop: '1px solid hsl(var(--av-border) / 0.6)' }}
-          >
+        {/* ---- SOURCE LINE ---- */}
+        <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-8">
+          <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
             Sources: Eurostat &middot; ECB &middot; National Land Registries
           </div>
         </div>

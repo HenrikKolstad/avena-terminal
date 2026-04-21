@@ -250,7 +250,7 @@ function YieldCard({
             className="group inline-flex items-center justify-center gap-2 w-full rounded-sm px-5 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
             style={{ background: 'var(--av-gradient-gold)' }}
           >
-            Contact Henrik about this deal
+            Contact Avena about this deal
             <ArrowUpRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </a>
         </div>

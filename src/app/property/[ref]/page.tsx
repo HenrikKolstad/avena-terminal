@@ -353,7 +353,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                 Ready to <span className="italic text-gold">analyse</span> this deal?
               </h2>
               <p className="text-muted-foreground mb-8 font-light max-w-md mx-auto">
-                Availability, payment plans, viewings. Henrik replies personally within 24h.
+                Availability, payment plans, viewings. Avena replies personally within 24h.
               </p>
               {(() => {
                 const subject = encodeURIComponent(`Enquiry: ${p.p} · ${p.l}`);
