@@ -5,22 +5,21 @@ import { ArrowUpRight, Check, Lock, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { trackEvent } from '@/lib/tracking';
 
-// Old Avena PRO feature list — the same benefits the original terminal had
+// Private Client inclusions — institutional feature set, editorial phrasing
 const PRO_FEATURES = [
-  'Unlimited Oracle AI queries',
-  'All 10 analytical tools unlocked',
-  'Live alpha signal alerts (8 classes)',
-  'Deal alerts by region + criteria',
-  'Developer stress scores',
-  'Priority deal rankings',
-  'Full dataset export (CSV + JSONL)',
-  'Private ROI / Mortgage / Tax calculators',
-  'Yield curve data per beach band',
-  'Historical price snapshots',
-  'API key for programmatic access',
-  'Founder office hours (bi-weekly)',
-  'Early access: Portugal Q3 / Italy Q4',
-  'Email support (24h response)',
+  'Unrestricted Oracle access · 10 analytical tools',
+  'Live alpha signal alerts · 8 anomaly classes',
+  'Deal alerts by region, yield, and price band',
+  'Developer stress scores · quarterly refresh',
+  'Priority deal rankings · first-look access',
+  'Dataset export · CSV, JSONL, SPARQL',
+  'Private ROI, mortgage, and tax calculators',
+  'Yield curve by beach-distance band',
+  'Historical price snapshots · monthly archive',
+  'Programmatic API access · personal key',
+  'Private office hours with the desk',
+  'Early access · Portugal Q3, Italy Q4',
+  'Discreet email support · 24h response',
 ];
 
 export function ProModal({
@@ -132,18 +131,21 @@ export function ProModal({
           className="absolute -top-px left-6 rounded-b-sm px-3 py-1 font-mono text-[9px] uppercase tracking-[0.3em] text-primary-foreground"
           style={{ background: 'var(--av-gradient-gold)' }}
         >
-          Avena PRO
+          Private Client
         </span>
 
         <div className="p-8 pt-10">
           {/* Headline */}
           <div className="mb-5 mt-2">
+            <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-3 inline-block">
+              Avena Terminal · Tier I
+            </span>
             <div className="flex items-baseline gap-3 mb-2">
               <span className="font-serif text-6xl font-light text-foreground tabular leading-none">€79</span>
               <span className="font-mono text-xs uppercase tracking-[0.22em] text-muted-foreground">/ month</span>
             </div>
             <p className="font-serif text-lg italic text-muted-foreground">
-              Unlock everything. Cancel anytime.
+              The full terminal. Private. Cancel at any time.
             </p>
           </div>
 

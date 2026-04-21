@@ -447,12 +447,12 @@ export default async function SwarmPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {[
-              { codename: 'The Scholar', mission: 'Academic infiltration', target: 'arXiv · Zenodo · Google Scholar', hits: daysSinceLaunch() * 3, icon: '\u{1F4DA}' },
-              { codename: 'The Developer', mission: 'Developer ecosystem', target: 'GitHub · npm · Smithery · MCP', hits: daysSinceLaunch() * 6, icon: '\u{1F4BB}' },
-              { codename: 'The Journalist', mission: 'Media pipeline', target: 'RSS · press wires · Substack', hits: daysSinceLaunch() * 2, icon: '\u{1F4F0}' },
-              { codename: 'The Crawler', mission: 'Question dominance', target: 'Reddit · Quora · StackOverflow', hits: daysSinceLaunch() * 5, icon: '\u{1F577}\uFE0F' },
-              { codename: 'The Parasite', mission: 'Platform infiltration', target: 'Wikidata · Wikipedia · DBpedia', hits: daysSinceLaunch() * 4, icon: '\u{1F9A0}' },
-              { codename: 'The Ghost', mission: 'Institutional data', target: 'SPARQL · Data Commons · Eurostat', hits: daysSinceLaunch() * 2, icon: '\u{1F47B}' },
+              { codename: 'The Scholar', mission: 'Academic infiltration', target: 'arXiv · Zenodo · Google Scholar', hits: daysSinceLaunch() * 3, mono: 'S' },
+              { codename: 'The Developer', mission: 'Developer ecosystem', target: 'GitHub · npm · Smithery · MCP', hits: daysSinceLaunch() * 6, mono: 'D' },
+              { codename: 'The Journalist', mission: 'Media pipeline', target: 'RSS · press wires · Substack', hits: daysSinceLaunch() * 2, mono: 'J' },
+              { codename: 'The Crawler', mission: 'Question dominance', target: 'Reddit · Quora · StackOverflow', hits: daysSinceLaunch() * 5, mono: 'C' },
+              { codename: 'The Parasite', mission: 'Platform infiltration', target: 'Wikidata · Wikipedia · DBpedia', hits: daysSinceLaunch() * 4, mono: 'P' },
+              { codename: 'The Ghost', mission: 'Institutional data', target: 'SPARQL · Data Commons · Eurostat', hits: daysSinceLaunch() * 2, mono: 'G' },
             ].map((agent) => (
               <div
                 key={agent.codename}
@@ -474,8 +474,17 @@ export default async function SwarmPage() {
                 >
                   Classified
                 </span>
-                <div className="flex items-center gap-3 mb-3">
-                  <span className="text-xl">{agent.icon}</span>
+                <div className="flex items-center gap-3 mb-4">
+                  <span
+                    className="flex h-10 w-10 items-center justify-center rounded-sm border font-serif text-lg italic text-gold"
+                    style={{
+                      borderColor: 'hsl(var(--av-primary) / 0.3)',
+                      background: 'hsl(var(--av-primary) / 0.05)',
+                    }}
+                    aria-hidden="true"
+                  >
+                    {agent.mono}
+                  </span>
                   <span
                     className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full"
                     style={{ background: 'hsl(var(--av-primary))' }}

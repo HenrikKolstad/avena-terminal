@@ -52,19 +52,22 @@ export function Nav() {
       style={scrolled ? { borderColor: 'hsl(var(--av-border) / 0.6)' } : {}}
     >
       <div className="mx-auto flex h-16 max-w-[1600px] items-center justify-between px-5 sm:px-8">
-        <Link href="/" className="flex items-center gap-2.5">
+        <Link href="/" className="group flex items-center gap-3">
           <span
-            className="flex h-8 w-8 items-center justify-center rounded-sm text-primary-foreground shadow-gold"
-            style={{ background: 'var(--av-gradient-gold)' }}
+            className="flex h-9 w-9 items-center justify-center rounded-sm border transition-colors group-hover:border-primary"
+            style={{
+              borderColor: 'hsl(var(--av-primary) / 0.35)',
+              background: 'hsl(var(--av-primary) / 0.06)',
+            }}
           >
-            <span className="font-serif text-base font-bold leading-none">A</span>
+            <span className="font-serif text-lg italic text-gold leading-none">A</span>
           </span>
           <div className="flex flex-col leading-none">
-            <span className="font-serif text-lg font-semibold tracking-wide text-foreground">
+            <span className="font-serif text-lg font-light tracking-wide text-foreground">
               Avena
             </span>
-            <span className="font-mono text-[9px] uppercase tracking-[0.28em] text-muted-foreground">
-              Terminal
+            <span className="font-mono text-[9px] uppercase tracking-[0.32em] text-muted-foreground mt-0.5">
+              Terminal · Est. 2026
             </span>
           </div>
         </Link>

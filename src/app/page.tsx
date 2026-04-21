@@ -3,6 +3,7 @@ import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { LiveCitations } from '@/components/v2/LiveCitations';
 import { TikTokStrip } from '@/components/v2/TikTokBadge';
+import { CredentialBar } from '@/components/v2/CredentialBar';
 import { Hero } from './preview/_components/Hero';
 import { Ticker } from './preview/_components/Ticker';
 import { Indices } from './preview/_components/Indices';
@@ -36,6 +37,7 @@ export default function HomePage() {
       <Nav />
       <main>
         <Hero />
+        <CredentialBar />
         <TikTokStrip />
         <Ticker />
         <LiveCitations variant="banner" />

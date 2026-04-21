@@ -71,7 +71,7 @@ export function Hero() {
               className="h-px w-10"
               style={{ background: 'hsl(var(--av-primary))' }}
             />
-            European Property Intelligence
+            European Property Intelligence · Est. 2026
           </span>
 
           <h1 className="font-serif text-[15vw] font-light leading-[0.92] tracking-tight text-foreground sm:text-[10vw] lg:text-[8.2rem] xl:text-[9.5rem]">
