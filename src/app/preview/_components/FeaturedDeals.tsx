@@ -20,6 +20,7 @@ export function FeaturedDeals() {
     const region = d.costa ? `ES · ${d.costa.replace('Costa ', 'C')}` : 'ES';
     const built = Math.round(d.bm || 0);
     const saved = Math.round((mm2 - pm2) * built);
+    const thumb = Array.isArray(d.imgs) && d.imgs.length > 0 ? d.imgs[0] : null;
 
     return {
       ref: d.ref ?? null,
@@ -35,6 +36,7 @@ export function FeaturedDeals() {
       saved,
       built,
       beds: d.bd ?? null,
+      thumb,
     };
   });
 

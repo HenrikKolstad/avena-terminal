@@ -20,6 +20,7 @@ export interface DealItem {
   saved: number;
   built: number;
   beds: number | null;
+  thumb: string | null;
 }
 
 const fmt = (n: number) => n.toLocaleString('en-US').replace(/,/g, ' ');
@@ -156,17 +157,36 @@ export function FeaturedDealsClient({ items, total }: { items: DealItem[]; total
                       </div>
                     </td>
                     <td className="border-b px-4 py-4" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
-                      <div className="flex flex-col">
-                        <Link
-                          href={href}
-                          className="font-serif text-base text-foreground transition-colors hover:text-primary max-w-[280px] truncate"
-                          title={d.project}
-                        >
-                          {d.project}
-                        </Link>
-                        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                          {d.town}
-                        </span>
+                      <div className="flex items-center gap-3">
+                        {d.thumb ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={d.thumb}
+                            alt=""
+                            aria-hidden="true"
+                            loading="lazy"
+                            className="h-12 w-16 flex-shrink-0 rounded-sm object-cover"
+                            style={{ background: 'hsl(var(--av-surface))' }}
+                          />
+                        ) : (
+                          <div
+                            className="h-12 w-16 flex-shrink-0 rounded-sm"
+                            style={{ background: 'hsl(var(--av-surface))' }}
+                            aria-hidden="true"
+                          />
+                        )}
+                        <div className="flex flex-col min-w-0">
+                          <Link
+                            href={href}
+                            className="font-serif text-base text-foreground transition-colors hover:text-primary max-w-[240px] truncate"
+                            title={d.project}
+                          >
+                            {d.project}
+                          </Link>
+                          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                            {d.town}
+                          </span>
+                        </div>
                       </div>
                     </td>
                     <td className="border-b px-4 py-4" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
@@ -265,6 +285,26 @@ export function FeaturedDealsClient({ items, total }: { items: DealItem[]; total
 
             const Card = (
               <>
+                {/* Thumbnail header */}
+                {d.thumb && (
+                  <div className="relative -m-4 mb-4 aspect-[16/9] overflow-hidden rounded-t-sm">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={d.thumb}
+                      alt={`${d.project} — ${d.town}`}
+                      loading="lazy"
+                      className="h-full w-full object-cover"
+                    />
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        background:
+                          'linear-gradient(180deg, transparent 50%, hsl(var(--av-background) / 0.8) 100%)',
+                      }}
+                    />
+                  </div>
+                )}
+
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">

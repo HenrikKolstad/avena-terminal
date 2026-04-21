@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
+import { sendWelcomeEmail } from '@/lib/email';
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-03-31.basil' });
@@ -58,6 +59,12 @@ export async function POST(req: NextRequest) {
         }, { onConflict: 'email' });
 
         console.log('Subscription activated for:', email);
+
+        // Send welcome email — non-blocking, logs on failure
+        sendWelcomeEmail(email).then((r) => {
+          if (!r.sent) console.error('Welcome email failed:', r.error);
+          else console.log('Welcome email sent to', email);
+        });
         break;
       }
 
