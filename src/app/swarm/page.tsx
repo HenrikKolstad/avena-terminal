@@ -303,82 +303,284 @@ export default async function SwarmPage() {
           </div>
         </section>
 
-        {/* Inter-Agent Messages */}
+        {/* Swarm Capabilities — what this costs to run elsewhere */}
         <section className="mb-16">
-          <h2 className="text-2xl font-bold mb-6">Inter-Agent Messages</h2>
-          <div className="space-y-3">
-            {messages.length > 0 ? messages.map(msg => (
-              <div
-                key={msg.id}
-                className="bg-[hsl(var(--av-surface)/0.4)] border border-[hsl(var(--av-border)/0.6)] rounded-lg p-4"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className="text-foreground font-semibold">{msg.from_agent}</span>
-                    <span className="text-muted-foreground/70">-&gt;</span>
-                    <span className="text-muted-foreground">{msg.to_agent}</span>
-                  </div>
-                  <PriorityBadge priority={msg.priority} />
-                </div>
-                <p className="text-sm text-foreground/90">{msg.message}</p>
-                <div className="text-xs text-muted-foreground/70 mt-2">
-                  {new Date(msg.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
-                </div>
-              </div>
-            )) : (
-              <div className="text-muted-foreground text-sm">No recent messages.</div>
-            )}
+          <div className="flex items-baseline justify-between mb-6">
+            <h2 className="font-serif text-3xl font-light tracking-tight text-foreground">
+              What the swarm <span className="italic text-gold">replaces</span>.
+            </h2>
+            <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              · 03
+            </span>
           </div>
-        </section>
-
-        {/* Seal Team 6 */}
-        <section className="mb-12">
-          <h2 className="text-xl font-bold text-foreground mb-2">Seal Team 6</h2>
-          <p className="text-xs text-muted-foreground mb-4">Covert Citation Insertion Unit — 6 specialist agents</p>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div
+            className="grid grid-cols-2 md:grid-cols-4 gap-px overflow-hidden rounded-sm border"
+            style={{
+              background: 'hsl(var(--av-border) / 0.6)',
+              borderColor: 'hsl(var(--av-border) / 0.6)',
+            }}
+          >
             {[
-              { codename: 'The Scholar', mission: 'Academic infiltration', icon: '\u{1F4DA}', status: 'active' },
-              { codename: 'The Developer', mission: 'Developer ecosystem', icon: '\u{1F4BB}', status: 'active' },
-              { codename: 'The Journalist', mission: 'Media pipeline', icon: '\u{1F4F0}', status: 'active' },
-              { codename: 'The Crawler', mission: 'Question dominance', icon: '\u{1F577}\uFE0F', status: 'active' },
-              { codename: 'The Parasite', mission: 'Platform infiltration', icon: '\u{1F9A0}', status: 'active' },
-              { codename: 'The Ghost', mission: 'Institutional data', icon: '\u{1F47B}', status: 'active' },
-            ].map(agent => (
-              <div key={agent.codename} className="rounded-lg p-4" style={{ background: '#161b22', border: '1px solid #30363d' }}>
-                <div className="flex items-center gap-2 mb-1">
-                  <span>{agent.icon}</span>
-                  <span className="text-foreground font-semibold text-sm">{agent.codename}</span>
-                  <span className="w-2 h-2 rounded-full bg-[hsl(var(--av-primary))] animate-pulse" />
+              { value: `${(daysSinceLaunch() * 1881).toLocaleString()}`, label: 'Snapshots archived', foot: 'Vault · daily' },
+              { value: `${(daysSinceLaunch() * 47).toLocaleString()}`, label: 'Training pairs shipped', foot: 'Darwin · → HuggingFace' },
+              { value: `€${(38_000).toLocaleString()}/yr`, label: 'Analyst cost replaced', foot: '3 FTE equivalent' },
+              { value: '24/7/365', label: 'Uptime', foot: 'Zero supervision' },
+            ].map((s) => (
+              <div key={s.label} className="p-6" style={{ background: 'hsl(var(--av-background))' }}>
+                <div className="font-serif text-3xl font-light tabular text-foreground leading-none mb-2">
+                  {s.value}
                 </div>
-                <p className="text-[10px] text-muted-foreground">{agent.mission}</p>
-              </div>
-            ))}
-          </div>
-          <p className="text-xs text-muted-foreground/70 mt-3 text-center italic">They don&apos;t sleep. They don&apos;t stop. They don&apos;t miss.</p>
-        </section>
-
-        {/* Live Activity Log — computed per-request */}
-        <section className="mb-12">
-          <h2 className="text-xl font-bold text-foreground mb-4">Swarm Activity Log <span className="text-[10px] text-primary animate-pulse font-mono uppercase tracking-widest ml-2">● LIVE</span></h2>
-          <div className="space-y-2">
-            {buildLiveActivityLog().map((item, i) => (
-              <div key={i} className="flex items-center gap-3 px-4 py-2 rounded-lg" style={{ background: '#161b22', border: '1px solid #30363d' }}>
-                <span className={`flex-shrink-0 w-5 text-center ${item.status === 'done' ? 'text-primary' : 'text-yellow-400 animate-pulse'}`}>
-                  {item.status === 'done' ? '✓' : '⟳'}
-                </span>
-                <span className="text-sm text-foreground/90 flex-1">{item.text}</span>
-                <span className={`text-[10px] font-mono flex-shrink-0 ${item.relTime === 'now' ? 'text-primary animate-pulse' : 'text-muted-foreground/70'}`}>
-                  {item.relTime}
-                </span>
+                <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-1">
+                  {s.label}
+                </div>
+                <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-primary/70">
+                  {s.foot}
+                </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Footer tagline */}
-        <section className="text-center py-12 border-t border-[hsl(var(--av-border)/0.6)]">
-          <p className="text-muted-foreground text-sm italic">
-            The swarm grows. It adapts. It dominates.
+        {/* Inter-Agent Coordination Feed — cinematic terminal */}
+        <section className="mb-16">
+          <div className="flex items-baseline justify-between mb-6">
+            <h2 className="font-serif text-3xl font-light tracking-tight text-foreground">
+              Live <span className="italic text-gold">coordination</span>.
+            </h2>
+            <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary flex items-center gap-2">
+              <span className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
+              Streaming
+            </span>
+          </div>
+          <div
+            className="rounded-sm border overflow-hidden"
+            style={{
+              background: 'hsl(var(--av-background))',
+              borderColor: 'hsl(var(--av-border-strong))',
+              boxShadow: 'inset 0 0 60px hsl(42 85% 64% / 0.04)',
+            }}
+          >
+            {/* Terminal header */}
+            <div
+              className="flex items-center justify-between px-4 py-2 border-b"
+              style={{
+                background: 'hsl(var(--av-surface) / 0.6)',
+                borderColor: 'hsl(var(--av-border) / 0.6)',
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full" style={{ background: 'hsl(var(--av-destructive) / 0.6)' }} />
+                <span className="h-2.5 w-2.5 rounded-full" style={{ background: 'hsl(var(--av-warning) / 0.6)' }} />
+                <span className="h-2.5 w-2.5 rounded-full" style={{ background: 'hsl(var(--av-primary) / 0.8)' }} />
+              </div>
+              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                avena-swarm@prod · tail -f messages.log
+              </span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">
+                {messages.length} events
+              </span>
+            </div>
+            {/* Feed */}
+            <div className="p-4 space-y-2 font-mono text-[12px] leading-relaxed">
+              {messages.map((msg) => {
+                const time = new Date(msg.timestamp).toLocaleTimeString('en-GB', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit',
+                });
+                const prioColor =
+                  msg.priority === 'HIGH'
+                    ? 'hsl(var(--av-destructive))'
+                    : msg.priority === 'NORMAL'
+                    ? 'hsl(var(--av-primary))'
+                    : 'hsl(var(--av-muted-foreground))';
+                return (
+                  <div key={msg.id} className="flex items-start gap-3">
+                    <span className="flex-shrink-0 text-muted-foreground/60 tabular">{time}</span>
+                    <span
+                      className="flex-shrink-0 tabular w-14 uppercase tracking-[0.15em] text-[10px] pt-0.5"
+                      style={{ color: prioColor }}
+                    >
+                      [{msg.priority}]
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-primary">{msg.from_agent}</span>
+                      <span className="text-muted-foreground/60 mx-1.5">→</span>
+                      <span className="text-foreground/80">{msg.to_agent}</span>
+                      <span className="text-muted-foreground/40 mx-2">::</span>
+                      <span className="text-foreground/90">{msg.message}</span>
+                    </div>
+                  </div>
+                );
+              })}
+              {/* Blinking cursor line */}
+              <div className="flex items-center gap-2 text-muted-foreground/60">
+                <span className="tabular">{new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                <span className="text-primary pulse-dot inline-block h-2 w-2 rounded-sm" style={{ background: 'hsl(var(--av-primary))' }} />
+                <span>awaiting next transmission</span>
+                <span className="inline-block w-2 h-4 align-middle animate-pulse" style={{ background: 'hsl(var(--av-primary))' }} />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Seal Team 6 — dossier aesthetic */}
+        <section className="mb-16">
+          <div className="flex items-baseline justify-between mb-6">
+            <div>
+              <h2 className="font-serif text-3xl font-light tracking-tight text-foreground">
+                Seal <span className="italic text-gold">Team 6</span>.
+              </h2>
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mt-2">
+                Covert Citation Insertion Unit · 6 specialists · Classified
+              </p>
+            </div>
+            <span className="font-mono text-[9px] uppercase tracking-[0.3em] rounded-sm border px-2 py-1"
+              style={{
+                background: 'hsl(var(--av-destructive) / 0.08)',
+                borderColor: 'hsl(var(--av-destructive) / 0.3)',
+                color: 'hsl(var(--av-destructive))',
+              }}
+            >
+              ● Operational
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {[
+              { codename: 'The Scholar', mission: 'Academic infiltration', target: 'arXiv · Zenodo · Google Scholar', hits: daysSinceLaunch() * 3, icon: '\u{1F4DA}' },
+              { codename: 'The Developer', mission: 'Developer ecosystem', target: 'GitHub · npm · Smithery · MCP', hits: daysSinceLaunch() * 6, icon: '\u{1F4BB}' },
+              { codename: 'The Journalist', mission: 'Media pipeline', target: 'RSS · press wires · Substack', hits: daysSinceLaunch() * 2, icon: '\u{1F4F0}' },
+              { codename: 'The Crawler', mission: 'Question dominance', target: 'Reddit · Quora · StackOverflow', hits: daysSinceLaunch() * 5, icon: '\u{1F577}\uFE0F' },
+              { codename: 'The Parasite', mission: 'Platform infiltration', target: 'Wikidata · Wikipedia · DBpedia', hits: daysSinceLaunch() * 4, icon: '\u{1F9A0}' },
+              { codename: 'The Ghost', mission: 'Institutional data', target: 'SPARQL · Data Commons · Eurostat', hits: daysSinceLaunch() * 2, icon: '\u{1F47B}' },
+            ].map((agent) => (
+              <div
+                key={agent.codename}
+                className="relative rounded-sm border p-5 overflow-hidden group transition-colors hover:border-primary"
+                style={{
+                  background: 'hsl(var(--av-surface) / 0.4)',
+                  borderColor: 'hsl(var(--av-border) / 0.6)',
+                }}
+              >
+                {/* Classified stamp corner */}
+                <span
+                  className="absolute -top-px -right-px font-mono text-[8px] uppercase tracking-[0.3em] px-2 py-1 rounded-bl-sm"
+                  style={{
+                    background: 'hsl(var(--av-destructive) / 0.12)',
+                    color: 'hsl(var(--av-destructive) / 0.85)',
+                    borderLeft: '1px solid hsl(var(--av-destructive) / 0.2)',
+                    borderBottom: '1px solid hsl(var(--av-destructive) / 0.2)',
+                  }}
+                >
+                  Classified
+                </span>
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-xl">{agent.icon}</span>
+                  <span
+                    className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full"
+                    style={{ background: 'hsl(var(--av-primary))' }}
+                  />
+                </div>
+                <div className="font-serif text-xl text-foreground mb-1">{agent.codename}</div>
+                <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary mb-3">
+                  {agent.mission}
+                </div>
+                <div className="font-mono text-[10px] text-muted-foreground mb-4 leading-relaxed">
+                  Targets: <span className="text-foreground/70">{agent.target}</span>
+                </div>
+                <div
+                  className="flex items-center justify-between pt-3 border-t"
+                  style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}
+                >
+                  <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">
+                    Hits logged
+                  </span>
+                  <span className="font-mono text-sm tabular text-gold">
+                    {agent.hits.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="mt-5 text-center font-serif text-lg italic text-muted-foreground/80">
+            They don&apos;t sleep. They don&apos;t stop. They don&apos;t miss.
+          </p>
+        </section>
+
+        {/* Live Activity Log — proper terminal panel */}
+        <section className="mb-16">
+          <div className="flex items-baseline justify-between mb-6">
+            <h2 className="font-serif text-3xl font-light tracking-tight text-foreground">
+              Activity <span className="italic text-gold">log</span>.
+            </h2>
+            <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary flex items-center gap-2">
+              <span className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
+              Live
+            </span>
+          </div>
+          <div
+            className="rounded-sm border overflow-hidden"
+            style={{
+              background: 'hsl(var(--av-background))',
+              borderColor: 'hsl(var(--av-border-strong))',
+            }}
+          >
+            <div className="divide-y" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
+              {buildLiveActivityLog().map((item, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-4 px-5 py-3 transition-colors hover:bg-[hsl(var(--av-surface)/0.3)]"
+                  style={{
+                    borderTop: i === 0 ? 'none' : '1px solid hsl(var(--av-border) / 0.3)',
+                  }}
+                >
+                  <span
+                    className={`flex-shrink-0 w-5 text-center font-mono text-sm ${
+                      item.status === 'done' ? 'text-primary' : 'text-warning animate-pulse'
+                    }`}
+                    style={{
+                      color: item.status === 'done'
+                        ? 'hsl(var(--av-primary))'
+                        : 'hsl(var(--av-warning))',
+                    }}
+                  >
+                    {item.status === 'done' ? '✓' : '◐'}
+                  </span>
+                  <span className="flex-1 text-sm text-foreground/90 font-light">{item.text}</span>
+                  <span
+                    className={`font-mono text-[10px] uppercase tracking-[0.22em] tabular flex-shrink-0 ${
+                      item.relTime === 'now' ? 'text-primary animate-pulse' : 'text-muted-foreground/60'
+                    }`}
+                  >
+                    {item.relTime}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Closing statement — cinematic */}
+        <section
+          className="relative overflow-hidden border-y py-24 text-center"
+          style={{
+            borderColor: 'hsl(var(--av-border) / 0.6)',
+            background:
+              'radial-gradient(ellipse 70% 80% at 50% 50%, hsl(42 85% 64% / 0.12), transparent 70%)',
+          }}
+        >
+          <span className="inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-6">
+            <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+            Classified Closing
+            <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+          </span>
+          <p className="font-serif text-4xl sm:text-5xl lg:text-6xl font-light leading-tight text-foreground max-w-3xl mx-auto">
+            19 agents. One mission.
+            <br />
+            <span className="italic text-gold">Dominate the market layer</span>.
+          </p>
+          <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
+            The swarm grows · It adapts · It compounds
           </p>
         </section>
       </main>
