@@ -166,12 +166,18 @@ export default async function CitationDashboardPage() {
                   borderColor: 'hsl(var(--av-border) / 0.6)',
                 }}
               >
-                <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-                  Awaiting first measurements
+                <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-primary">
+                  <span className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full mr-2" style={{ background: 'hsl(var(--av-primary))' }} />
+                  Awaiting first rollup
                 </p>
-                <p className="mt-2 font-serif text-lg text-foreground">
-                  Set <span className="italic text-gold">PERPLEXITY_API_KEY</span> and the
-                  citation-agent cron populates this daily.
+                <p className="mt-3 font-serif text-xl text-foreground">
+                  Agent <span className="italic text-gold">Cassandra</span> rolls up the first data
+                  point daily at 03:30 UTC.
+                </p>
+                <p className="mt-3 text-sm text-muted-foreground font-light max-w-lg mx-auto">
+                  Atlas polls Perplexity with ~50 questions at 03:00 UTC; Cassandra aggregates
+                  30 minutes later. Once the first row lands this chart fills in and the
+                  homepage ticker shows real <span className="font-mono text-foreground">CITE %</span>.
                 </p>
               </div>
             ) : (
