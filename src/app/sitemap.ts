@@ -289,6 +289,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Institutional
   entries.push({ url: `${base}/institutional`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
 
+  // Research paper (academic citation magnet)
+  entries.push({ url: `${base}/research/avena-methodology`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
+
+  // OpenAPI + embed widgets
+  entries.push({ url: `${base}/api/openapi.json`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 });
+  entries.push({ url: `${base}/embed/deal-of-day`, lastModified: now, changeFrequency: 'daily', priority: 0.5 });
+  entries.push({ url: `${base}/embed/prediction-ticker`, lastModified: now, changeFrequency: 'daily', priority: 0.5 });
+  entries.push({ url: `${base}/embed/yield-curve`, lastModified: now, changeFrequency: 'weekly', priority: 0.5 });
+
   // Nationality guides — programmatic long-tail
   entries.push({ url: `${base}/guides`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 });
   for (const code of ['norwegian', 'swedish', 'british', 'irish', 'dutch', 'german', 'danish', 'french', 'belgian', 'finnish']) {

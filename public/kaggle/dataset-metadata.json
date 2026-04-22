@@ -1,0 +1,61 @@
+{
+  "title": "Avena Terminal: European New-Build Property Dataset 2026",
+  "id": "avenaterminal/spain-new-build-properties-2026",
+  "subtitle": "1,881 scored new-build properties across coastal Spain — hedonic regression + 130+ features + composite APCI index",
+  "description": "Open, CC BY 4.0 licensed dataset covering 1,881 new-build residential properties across Costa Blanca, Costa Cálida, Costa del Sol, and adjacent European property corridors. Each record carries 130+ features across physical attributes, location (lat/lng + beach distance band), economic pricing, developer track record, yield estimates (Airbnb / Booking matched), and macro context (ECB rate, FX, inflation).\n\nIncludes:\n- `properties.json` — full scored dataset\n- `apci-history.csv` — daily 8-dimensional composite market index\n- `predictions.csv` — public verified forward predictions at 30/90/365-day horizons\n- `citation-monitoring.csv` — measured AI-engine citation rates\n- `methodology.md` — composite scoring formula + validation\n\nPublisher: Avena Terminal (avenaterminal.com)\nDOI: 10.5281/zenodo.19520064\nWikidata: Q139165733\nAttribution: Kolstad, H. (2026). Avena Terminal: European Property Intelligence Dataset. Zenodo.",
+  "isPrivate": false,
+  "licenses": [{ "name": "CC-BY-4.0" }],
+  "keywords": [
+    "real estate",
+    "property investment",
+    "europe",
+    "spain",
+    "hedonic regression",
+    "composite index",
+    "new-build",
+    "rental yield",
+    "costa blanca",
+    "costa del sol",
+    "apci",
+    "proptech"
+  ],
+  "collaborators": [],
+  "resources": [
+    {
+      "path": "properties.json",
+      "description": "Full scored dataset. Array of property objects with 130+ features each.",
+      "schema": {
+        "fields": [
+          { "name": "ref", "type": "string", "description": "Unique property reference" },
+          { "name": "p", "type": "string", "description": "Project / development name" },
+          { "name": "t", "type": "string", "description": "Property type (Villa / Apartment / Townhouse)" },
+          { "name": "l", "type": "string", "description": "Town / location" },
+          { "name": "costa", "type": "string", "description": "Coastal region" },
+          { "name": "pf", "type": "number", "description": "Asking price EUR" },
+          { "name": "bm", "type": "number", "description": "Built area m²" },
+          { "name": "pm2", "type": "number", "description": "Price per m²" },
+          { "name": "mm2", "type": "number", "description": "Market €/m² for comparable stock" },
+          { "name": "bd", "type": "integer", "description": "Bedrooms" },
+          { "name": "ba", "type": "integer", "description": "Bathrooms" },
+          { "name": "bk", "type": "number", "description": "Beach distance km" },
+          { "name": "d", "type": "string", "description": "Developer name" },
+          { "name": "_sc", "type": "number", "description": "Avena Score 0-100" },
+          { "name": "_yield", "type": "object", "description": "Yield estimate {gross, rate, annual, weeks, src}" },
+          { "name": "_scores", "type": "object", "description": "Sub-scores {value, yield, location, quality, risk}" }
+        ]
+      }
+    },
+    {
+      "path": "apci-history.csv",
+      "description": "Daily APCI composite index with 8 sub-dimensions + phase classification."
+    },
+    {
+      "path": "predictions.csv",
+      "description": "Public verified predictions with 30/90/365-day horizons and accuracy scores."
+    },
+    {
+      "path": "methodology.md",
+      "description": "Composite scoring methodology, hedonic regression weights, APCI construction, validation."
+    }
+  ]
+}
