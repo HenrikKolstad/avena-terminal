@@ -75,13 +75,13 @@ export function Hero() {
           </span>
 
           <h1 className="font-serif text-[15vw] font-light leading-[0.92] tracking-tight text-foreground sm:text-[10vw] lg:text-[8.2rem] xl:text-[9.5rem]">
-            Before the view,
+            The price
             <br />
-            the <span className="italic text-gold">numbers</span>.
+            before the <span className="italic text-gold">pitch</span>.
           </h1>
 
           <p className="mt-8 max-w-xl font-light text-base text-muted-foreground sm:text-lg">
-            Every new build in Spain, scored and ranked.
+            Every new build in Spain, scored before the agent speaks.
             <br />
             Average saving for Avena operators: <span className="text-gold font-medium">&euro;130,000</span>.
           </p>
