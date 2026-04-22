@@ -11,15 +11,24 @@ export function FeaturedDeals() {
     .sort((a, b) => (b._sc ?? 0) - (a._sc ?? 0))
     .slice(0, 50);
 
+  // Credibility cap — any deal showing more than 35% saved looks fake to cold
+  // visitors, even when the underlying comp is correct. Display is capped at
+  // 35%; internally we still track the raw off-plan discount in the data.
+  const DISPLAY_CAP_PCT = 35;
+
   const items: DealItem[] = top.map(d => {
     const score = Math.round(d._sc ?? 0);
     const pm2 = d.pm2 ?? 0;
     const mm2 = d.mm2 ?? 1;
-    const discount = Math.round((1 - pm2 / mm2) * 100);
+    const rawDiscount = Math.round((1 - pm2 / mm2) * 100);
+    const discount = Math.min(rawDiscount, DISPLAY_CAP_PCT);
     const project = d.p || `${d.t} in ${d.l}`;
     const region = d.costa ? `ES · ${d.costa.replace('Costa ', 'C')}` : 'ES';
     const built = Math.round(d.bm || 0);
-    const saved = Math.round((mm2 - pm2) * built);
+    const rawSaved = Math.round((mm2 - pm2) * built);
+    const saved = rawDiscount > DISPLAY_CAP_PCT
+      ? Math.round(pm2 * built * (DISPLAY_CAP_PCT / (100 - DISPLAY_CAP_PCT)))
+      : rawSaved;
     const thumb = Array.isArray(d.imgs) && d.imgs.length > 0 ? d.imgs[0] : null;
 
     return {

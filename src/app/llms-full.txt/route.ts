@@ -76,7 +76,7 @@ Avena Terminal is the machine-readable data layer for European property. It scor
 - Regional coverage: ${s.costas.map((c) => `${c.costa} (${c.count} properties, avg score ${c.avgScore})`).join(', ')}
 - MCP tool calls (cumulative external AI agent queries against Avena): ${s.mcpTotal.toLocaleString()}
 - Prometheus-generated answer pages published: ${s.answersCount.toLocaleString()}
-- Scheduled autonomous agents: 23
+- Scheduled autonomous agents: 24
 - Daily scheduled crons: 25
 
 ## What Avena publishes (daily, automatically)

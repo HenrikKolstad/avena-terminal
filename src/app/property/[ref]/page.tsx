@@ -90,8 +90,22 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
   const pm2 = p.bm > 0 ? Math.round(p.pf / p.bm) : null;
   const townSlug = slugify(p.l);
   const marketPm2 = p.mm2 && pm2 ? Math.round(p.mm2) : null;
-  const discount = marketPm2 && pm2 ? Math.round((1 - pm2 / marketPm2) * 100) : null;
-  const saved = marketPm2 && pm2 && p.bm ? Math.round((marketPm2 - pm2) * p.bm) : null;
+  const rawDiscount = marketPm2 && pm2 ? Math.round((1 - pm2 / marketPm2) * 100) : null;
+  const rawSaved = marketPm2 && pm2 && p.bm ? Math.round((marketPm2 - pm2) * p.bm) : null;
+
+  // Credibility cap: any single deal saving more than 35% looks fake to visitors
+  // even when the underlying comp is correct. Cap the DISPLAY at 35% and show
+  // an asterisk. Off-plan properties (completion > current year) legitimately
+  // trade at steeper discounts vs ready-market — this is a credibility display
+  // decision, not a data correction.
+  const DISPLAY_CAP_PCT = 35;
+  const isCapped = rawDiscount !== null && rawDiscount > DISPLAY_CAP_PCT;
+  const discount = rawDiscount !== null
+    ? Math.min(rawDiscount, DISPLAY_CAP_PCT)
+    : null;
+  const saved = isCapped && pm2 && p.bm
+    ? Math.round(pm2 * p.bm * (DISPLAY_CAP_PCT / (100 - DISPLAY_CAP_PCT)))
+    : rawSaved;
 
   const breadcrumb = {
     '@context': 'https://schema.org', '@type': 'BreadcrumbList',
