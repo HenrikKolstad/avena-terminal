@@ -9,7 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 const links = [
   { label: 'Deals', href: '/#deals' },
   { label: 'Yield', href: '/yield' },
-  { label: 'Intelligence', href: '/intelligence' },
+  { label: 'Manifesto', href: '/manifesto' },
   { label: 'Oracle', href: '/chat' },
   { label: 'Swarm', href: '/swarm' },
   { label: 'Method', href: '/methodology' },
