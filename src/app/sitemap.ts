@@ -289,6 +289,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Institutional
   entries.push({ url: `${base}/institutional`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
 
+  // Nationality guides — programmatic long-tail
+  entries.push({ url: `${base}/guides`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 });
+  for (const code of ['norwegian', 'swedish', 'british', 'irish', 'dutch', 'german', 'danish', 'french', 'belgian', 'finnish']) {
+    entries.push({
+      url: `${base}/guides/${code}-buyers-spain-2026`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    });
+  }
+
   // ZK Verification
   entries.push({ url: `${base}/zk`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 });
 
