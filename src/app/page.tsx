@@ -35,11 +35,11 @@ export default function HomePage() {
   return (
     <div className="avena-v2 relative min-h-screen w-full">
       <Nav />
-      <main>
+      <main className="pt-16">
+        <Ticker />
         <Hero />
         <CredentialBar />
         <TikTokStrip />
-        <Ticker />
         <LiveCitations variant="banner" />
         <FeaturedDeals />
         <Indices />
