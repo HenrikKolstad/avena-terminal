@@ -365,6 +365,25 @@ export async function runPrometheus(maxQuestions = 5): Promise<PrometheusRunSumm
   // 4. Ping IndexNow
   const pinged = await pingAnswers(newSlugs);
 
+  // 4b. Close the feedback loop — mark any gaps that produced answers as resolved
+  // so Cassandra/Shadow don't re-feed them tomorrow. This is what turns the
+  // citation moat into a compounding system: gap measured -> gap closed -> new
+  // gap surfaces -> repeat.
+  if (supabase && target.length > 0) {
+    try {
+      await supabase
+        .from('citation_gaps')
+        .update({
+          resolved: true,
+          resolved_at: new Date().toISOString(),
+        })
+        .in('question', target)
+        .eq('resolved', false);
+    } catch {
+      /* silent — table may not exist on first run */
+    }
+  }
+
   // 5. Track
   const summary: PrometheusRunSummary = {
     run_id: runId,
