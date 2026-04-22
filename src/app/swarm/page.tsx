@@ -103,10 +103,10 @@ function buildLiveActivityLog(): ActivityItem[] {
 
 export const metadata: Metadata = {
   title: 'Agent Swarm — Live Intelligence Network | Avena Terminal',
-  description: '19 autonomous agents. Self-organizing. Self-improving. The Avena Agent Swarm powers real-time property intelligence across Spain.',
+  description: '23 autonomous agents. Self-organizing. Self-improving. The Avena Agent Swarm powers real-time property intelligence across Spain.',
   openGraph: {
     title: 'Agent Swarm — Live Intelligence Network | Avena Terminal',
-    description: '19 autonomous agents delivering real-time property intelligence.',
+    description: '23 autonomous agents delivering real-time property intelligence.',
     type: 'website',
   },
 };
@@ -171,13 +171,17 @@ function getSwarmStatus(): SwarmData {
     { name: 'Agent Bull', id: 'bull-analyst', type: 'adversarial_bull', status: 'active', schedule: 'on-demand + 06:30 UTC', tasks_completed: days * 2, performance_score: 78, last_run: lastDailyRun(6) },
     { name: 'Agent Bear', id: 'bear-analyst', type: 'adversarial_bear', status: 'active', schedule: 'on-demand + 06:30 UTC', tasks_completed: days * 2, performance_score: 80, last_run: lastDailyRun(6) },
     { name: 'Agent Socrates', id: 'socrates-synthesis', type: 'synthesis_engine', status: 'active', schedule: 'on-demand + 06:30 UTC', tasks_completed: days * 2, performance_score: 84, last_run: lastDailyRun(6) },
+    { name: 'Agent Cassandra', id: 'citation-measure', type: 'citation_measurement', status: 'active', schedule: '03:30 UTC daily', tasks_completed: days * 50, performance_score: 86, last_run: lastDailyRun(3) },
+    { name: 'Agent Janus', id: 'crawler-submit', type: 'outbound_crawlers', status: 'active', schedule: 'Sunday 02:00', tasks_completed: weeks * 20, performance_score: 82, last_run: lastWeeklyRun(0, 2) },
+    { name: 'Agent Hermes', id: 'backlink-loop', type: 'backlink_drafting', status: 'active', schedule: 'Mon/Wed/Fri 10:00', tasks_completed: weeks * 9, performance_score: 79, last_run: lastDailyRun(10) },
+    { name: 'Agent Pythia', id: 'weekly-newsletter', type: 'weekly_publication', status: 'active', schedule: 'Monday 07:30', tasks_completed: weeks * 1, performance_score: 88, last_run: lastWeeklyRun(1, 7) },
   ];
   const scores = agents.map(a => a.performance_score);
   const total = agents.reduce((s, a) => s + a.tasks_completed, 0);
   return {
     swarm_name: 'Avena Agent Swarm',
     agents,
-    summary: { total_agents: 19, active_agents: 19, avg_performance: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length), total_tasks_completed: total, mcp_citations: 23 + days },
+    summary: { total_agents: agents.length, active_agents: agents.length, avg_performance: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length), total_tasks_completed: total, mcp_citations: 23 + days },
     health: 'GOOD',
     last_health_check: now,
   };
@@ -193,7 +197,7 @@ function getMessages(): AgentMessage[] {
     { id: '3', from_agent: 'Agent Oracle', to_agent: 'All Agents', message: `Market regime stable at GROWTH. APCI ${Math.round(64 + j(3))}. Confidence ${Math.round(73 + j(3))}%.`, timestamp: new Date(now - (12 + j(3) * 2) * 60000).toISOString(), priority: 'NORMAL', status: 'delivered' },
     { id: '4', from_agent: 'Agent Darwin', to_agent: 'HuggingFace', message: `Pushed ${Math.round(j(4) * 8 + 40)} new training pairs to avena-terminal/property-intelligence.`, timestamp: new Date(now - (18 + j(4) * 2) * 60000).toISOString(), priority: 'NORMAL', status: 'delivered' },
     { id: '5', from_agent: 'Agent Einstein', to_agent: 'Agent Bloodhound', message: 'Beach distance inversely correlates with yield (r = -0.41). Update hunting parameters.', timestamp: new Date(now - (28 + j(5)) * 60000).toISOString(), priority: 'NORMAL', status: 'delivered' },
-    { id: '6', from_agent: 'Agent Morpheus', to_agent: 'Swarm', message: 'All 19 agents performing within acceptable range. No intervention needed.', timestamp: new Date(now - (45 + j(6)) * 60000).toISOString(), priority: 'LOW', status: 'delivered' },
+    { id: '6', from_agent: 'Agent Morpheus', to_agent: 'Swarm', message: 'All 23 agents performing within acceptable range. No intervention needed.', timestamp: new Date(now - (45 + j(6)) * 60000).toISOString(), priority: 'LOW', status: 'delivered' },
     { id: '7', from_agent: 'Agent Shadow', to_agent: 'Agent Atlas', message: `Citation gap found: "best new builds ${['Marbella', 'Javea', 'Calpe', 'Altea', 'Denia'][Math.floor(j(7) * 5)]}". Generate AEO page.`, timestamp: new Date(now - (62 + j(7)) * 60000).toISOString(), priority: 'HIGH', status: 'delivered' },
   ];
 }
@@ -231,8 +235,8 @@ export default async function SwarmPage() {
 
   const agents = swarmData?.agents ?? [];
   const summary = swarmData?.summary ?? {
-    total_agents: 13,
-    active_agents: 13,
+    total_agents: 23,
+    active_agents: 23,
     avg_performance: 80,
     total_tasks_completed: 2196,
     mcp_citations: 0,
@@ -250,7 +254,7 @@ export default async function SwarmPage() {
           </h1>
           <p className="text-xl text-muted-foreground mb-2">Live Intelligence Network</p>
           <p className="text-sm text-muted-foreground max-w-xl mx-auto">
-            19 autonomous agents. Self-organizing. Self-improving.
+            23 autonomous agents. Self-organizing. Self-improving.
           </p>
         </section>
 
@@ -584,7 +588,7 @@ export default async function SwarmPage() {
             <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
           </span>
           <p className="font-serif text-4xl sm:text-5xl lg:text-6xl font-light leading-tight text-foreground max-w-3xl mx-auto">
-            19 agents. One mission.
+            23 agents. One mission.
             <br />
             <span className="italic text-gold">Dominate the market layer</span>.
           </p>

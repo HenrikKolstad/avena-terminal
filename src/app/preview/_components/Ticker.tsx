@@ -89,7 +89,7 @@ async function buildTicks(): Promise<Tick[]> {
     { sym: 'CITE', v: citeVal, d: citeTrend, up: hit.trend7d >= 0, label: 'AI-citation 7d' },
     { sym: 'MCP', v: mcpTotal.toLocaleString(), d: `${mcpMonth} / mo`, up: true, label: 'Agent calls' },
     { sym: 'AEO', v: promeCount.toLocaleString(), d: 'answers', up: true, label: 'Prometheus' },
-    { sym: 'AGENTS', v: '19 / 19', d: 'online', up: true, label: 'Swarm' },
+    { sym: 'AGENTS', v: '23 / 23', d: 'online', up: true, label: 'Swarm' },
     { sym: 'CRONS', v: '25', d: 'daily', up: true, label: 'Scheduled' },
     { sym: 'API', v: '208', d: 'routes', up: true, label: 'Surface' },
     { sym: 'FEAT', v: '130+', d: '/prop', up: true, label: 'Signals' },
