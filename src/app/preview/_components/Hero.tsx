@@ -81,7 +81,7 @@ export function Hero() {
           </h1>
 
           <p className="mt-8 max-w-xl font-light text-base text-muted-foreground sm:text-lg">
-            Every new build in Spain, scored before the agent speaks.
+            Every new build in Spain, scored and ranked.
             <br />
             Average saving for Avena operators: <span className="text-gold font-medium">&euro;130,000</span>.
           </p>
