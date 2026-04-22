@@ -4,6 +4,8 @@ import { Footer } from '@/components/v2/Footer';
 import { LiveCitations } from '@/components/v2/LiveCitations';
 import { TikTokStrip } from '@/components/v2/TikTokBadge';
 import { CredentialBar } from '@/components/v2/CredentialBar';
+import { NewsletterForm } from '@/components/v2/NewsletterForm';
+import { LaFincaProof } from '@/components/v2/LaFincaProof';
 import { Hero } from './preview/_components/Hero';
 import { Ticker } from './preview/_components/Ticker';
 import { Indices } from './preview/_components/Indices';
@@ -39,11 +41,13 @@ export default function HomePage() {
         <Ticker />
         <Hero />
         <CredentialBar />
-        <TikTokStrip />
-        <LiveCitations variant="banner" />
+        <LaFincaProof />
         <FeaturedDeals />
+        <NewsletterForm source="homepage" />
+        <LiveCitations variant="banner" />
         <Indices />
         <Regions />
+        <TikTokStrip />
         <CTA />
       </main>
       <Footer />
