@@ -1,95 +1,48 @@
 {
   "functions": {
-    "src/app/api/ai/memo/route.ts": {
-      "maxDuration": 60
-    },
-    "src/app/api/generate-pulse/route.ts": {
-      "maxDuration": 60
-    },
-    "src/app/api/detect-events/route.ts": {
-      "maxDuration": 60
-    }
+    "src/app/api/ai/memo/route.ts": { "maxDuration": 60 },
+    "src/app/api/generate-pulse/route.ts": { "maxDuration": 60 },
+    "src/app/api/detect-events/route.ts": { "maxDuration": 60 },
+    "src/app/api/cron/crawler-submit/route.ts": { "maxDuration": 300 },
+    "src/app/api/cron/prometheus/route.ts": { "maxDuration": 180 },
+    "src/app/api/cron/citation-agent/route.ts": { "maxDuration": 180 }
   },
   "crons": [
-    {
-      "path": "/api/cron/pulse",
-      "schedule": "0 7 * * *"
-    },
-    {
-      "path": "/api/cron/auto-post",
-      "schedule": "0 9 * * *"
-    },
-    {
-      "path": "/api/cron/auto-post",
-      "schedule": "0 13 * * *"
-    },
-    {
-      "path": "/api/cron/auto-post",
-      "schedule": "0 18 * * *"
-    },
-    {
-      "path": "/api/cron/deal-alerts",
-      "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/detect-events",
-      "schedule": "30 7 * * *"
-    },
-    {
-      "path": "/api/detect-anomalies",
-      "schedule": "45 7 * * *"
-    },
-    {
-      "path": "/api/weekly-alpha",
-      "schedule": "0 7 * * 1"
-    },
-    {
-      "path": "/api/snapshot-archive",
-      "schedule": "0 6 * * *"
-    },
-    {
-      "path": "/api/generate-briefs",
-      "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/weekly-science",
-      "schedule": "0 7 * * 5"
-    },
-    {
-      "path": "/api/cron/push-training-data",
-      "schedule": "0 5 * * *"
-    },
-    {
-      "path": "/api/cron/regime-check",
-      "schedule": "0 6 * * *"
-    },
-    {
-      "path": "/api/cron/developer-monitor",
-      "schedule": "0 4 * * 1"
-    },
-    {
-      "path": "/api/digest?generate=true",
-      "schedule": "0 6 * * 1"
-    },
-    {
-      "path": "/api/cron/citation-agent",
-      "schedule": "0 3 * * *"
-    },
-    {
-      "path": "/api/cron/prometheus",
-      "schedule": "0 4 * * *"
-    },
-    {
-      "path": "/api/cron/predictions/generate",
-      "schedule": "0 7 * * *"
-    },
-    {
-      "path": "/api/cron/predictions/verify",
-      "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/cron/causal-update",
-      "schedule": "30 6 * * *"
-    }
+    { "path": "/api/cron/pulse", "schedule": "0 7 * * *" },
+
+    { "path": "/api/cron/auto-post", "schedule": "0 9 * * *" },
+    { "path": "/api/cron/auto-post", "schedule": "0 13 * * *" },
+    { "path": "/api/cron/auto-post", "schedule": "0 18 * * *" },
+
+    { "path": "/api/cron/deal-alerts", "schedule": "0 8 * * *" },
+
+    { "path": "/api/detect-events", "schedule": "30 7 * * *" },
+    { "path": "/api/detect-anomalies", "schedule": "45 7 * * *" },
+
+    { "path": "/api/weekly-alpha", "schedule": "0 7 * * 1" },
+    { "path": "/api/snapshot-archive", "schedule": "0 6 * * *" },
+    { "path": "/api/generate-briefs", "schedule": "0 8 * * *" },
+    { "path": "/api/weekly-science", "schedule": "0 7 * * 5" },
+
+    { "path": "/api/cron/push-training-data", "schedule": "0 5 * * *" },
+    { "path": "/api/cron/regime-check", "schedule": "0 6 * * *" },
+    { "path": "/api/cron/developer-monitor", "schedule": "0 4 * * 1" },
+
+    { "path": "/api/digest?generate=true", "schedule": "0 6 * * 1" },
+
+    { "path": "/api/cron/citation-agent", "schedule": "0 3 * * *" },
+    { "path": "/api/cron/citation-measure", "schedule": "30 3 * * *" },
+
+    { "path": "/api/cron/prometheus", "schedule": "0 2 * * *" },
+    { "path": "/api/cron/prometheus", "schedule": "0 8 * * *" },
+    { "path": "/api/cron/prometheus", "schedule": "0 14 * * *" },
+    { "path": "/api/cron/prometheus", "schedule": "0 20 * * *" },
+
+    { "path": "/api/cron/predictions/generate", "schedule": "0 7 * * *" },
+    { "path": "/api/cron/predictions/verify", "schedule": "0 8 * * *" },
+
+    { "path": "/api/cron/causal-update", "schedule": "30 6 * * *" },
+
+    { "path": "/api/cron/crawler-submit", "schedule": "0 2 * * 0" }
   ]
 }

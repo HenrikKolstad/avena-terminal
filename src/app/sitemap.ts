@@ -280,6 +280,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   entries.push({ url: `${base}/contact`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
   entries.push({ url: `${base}/login`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 });
 
+  // Citation moat + API discovery — feed these to AI crawlers explicitly
+  entries.push({ url: `${base}/citation-dashboard`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+  entries.push({ url: `${base}/api-index`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 });
+  entries.push({ url: `${base}/llms.txt`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+
   // ZK Verification
   entries.push({ url: `${base}/zk`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 });
 

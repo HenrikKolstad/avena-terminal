@@ -9,8 +9,11 @@ export async function GET(req: NextRequest) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const max = parseInt(req.nextUrl.searchParams.get('max') || '5', 10);
-  const summary = await runPrometheus(Math.min(Math.max(max, 1), 10));
+  // Each run ships up to 8 answers (was 5). With 4 scheduled runs/day that's
+  // ~32 new AEO pages/day — compounds to ~11k/year. Enough to blanket the
+  // European property long-tail on Google + AI answer engines.
+  const max = parseInt(req.nextUrl.searchParams.get('max') || '8', 10);
+  const summary = await runPrometheus(Math.min(Math.max(max, 1), 20));
 
   return Response.json({
     agent: 'Prometheus',

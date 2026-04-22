@@ -179,6 +179,7 @@ interface ClaudePrediction {
   predicted_change_pct: number;
   confidence: number;
   reasoning: string;
+  horizon_days?: number;
 }
 
 export async function generateDaily(): Promise<{
@@ -215,7 +216,12 @@ ${snapshot.per_costa.map(c => `  · ${c.costa}: ${c.count} properties, €${c.av
 Top 10 towns by volume:
 ${snapshot.top_towns.slice(0, 10).map(t => `  · ${t.town}: ${t.count} properties, €${t.avg_price_per_m2}/m², ${t.avg_yield_gross_pct}% yield`).join('\n')}
 
-TASK: Generate exactly 10 specific, falsifiable Spanish property market predictions for the next 365 days.
+TASK: Generate exactly 10 specific, falsifiable Spanish property market predictions across a MIX of horizons so the Ledger ticks forward continuously (not only at 365d).
+
+Horizon mix (critical — MUST follow):
+- 4 predictions at horizon_days = 30   (short-term tactical calls)
+- 3 predictions at horizon_days = 90   (mid-term market-move calls)
+- 3 predictions at horizon_days = 365  (structural / annual calls)
 
 Requirements:
 1. Each prediction MUST be measurable against future Avena data.
@@ -223,9 +229,10 @@ Requirements:
 3. Mix targets across different costas + towns (not all Torrevieja).
 4. Valid metrics: price_per_m2, yield_gross, days_to_sellout, inventory_count, apci, transaction_volume.
 5. current_value must be a sensible number derived from the live data above.
-6. predicted_change_pct must be realistic (typically -15% to +15% on 1-year horizon).
-7. confidence 0-100 (be honest — rare calls can have high conviction, most should be 55-75).
+6. predicted_change_pct must be realistic for the horizon: 30d typically ±3%, 90d ±6%, 365d ±15%.
+7. confidence 0-100 (be honest — short-horizon calls should generally be higher confidence since less time for noise to accumulate).
 8. reasoning: EXACTLY 2 sentences. Data-grounded. No hype.
+9. INCLUDE the horizon_days field in EVERY prediction object.
 
 Return ONLY valid JSON (no prose, no markdown fences):
 
@@ -236,9 +243,10 @@ Return ONLY valid JSON (no prose, no markdown fences):
       "target": "Torrevieja new builds",
       "metric": "price_per_m2",
       "current_value": 2650,
-      "predicted_value": 2870,
-      "predicted_change_pct": 8.3,
-      "confidence": 72,
+      "predicted_value": 2720,
+      "predicted_change_pct": 2.6,
+      "confidence": 78,
+      "horizon_days": 30,
       "reasoning": "First sentence establishing the causal thesis. Second sentence grounding in specific data."
     }
   ]
@@ -262,7 +270,6 @@ Return ONLY valid JSON (no prose, no markdown fences):
     return { generated: 0, inserted: 0, errors };
   }
 
-  const verifyAt = new Date(Date.now() + 365 * 86400_000).toISOString();
   let inserted = 0;
 
   for (const p of claudePredictions.slice(0, 10)) {
@@ -272,6 +279,13 @@ Return ONLY valid JSON (no prose, no markdown fences):
         errors.push(`malformed: ${JSON.stringify(p).slice(0, 100)}`);
         continue;
       }
+      // Respect per-prediction horizon; fallback to 30 (near-term) if missing
+      const horizon =
+        Number.isFinite(p.horizon_days) && (p.horizon_days ?? 0) > 0
+          ? Math.min(720, Math.max(7, Math.round(p.horizon_days!)))
+          : 30;
+      const verifyAt = new Date(Date.now() + horizon * 86400_000).toISOString();
+
       const { error } = await supabase.from('predictions').insert({
         prediction_type: p.prediction_type,
         target: p.target,
@@ -280,7 +294,7 @@ Return ONLY valid JSON (no prose, no markdown fences):
         predicted_value: p.predicted_value,
         predicted_change_pct: Number((p.predicted_change_pct || 0).toFixed(2)),
         confidence: Math.max(0, Math.min(100, Math.round(p.confidence || 60))),
-        horizon_days: 365,
+        horizon_days: horizon,
         reasoning: (p.reasoning || '').slice(0, 2000),
         submitter: 'avena',
         submitter_type: 'avena',
