@@ -40,6 +40,7 @@ const cols: Array<{ title: string; items: Array<[string, string]> }> = [
     title: 'Avena',
     items: [
       ['About', '/about'],
+      ['Institutional', '/institutional'],
       ['Methodology', '/methodology'],
       ['Manifesto', '/manifesto'],
       ['Changelog', '/changelog'],
