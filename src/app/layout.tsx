@@ -5,6 +5,8 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import { getStructuredData } from "./structured-data";
 import { Analytics } from "@vercel/analytics/next";
 import { TikTokPixel } from "@/components/TikTokPixel";
+import { WhatsAppButton } from "@/components/v2/WhatsAppButton";
+import { ExitIntent } from "@/components/v2/ExitIntent";
 
 export const metadata: Metadata = {
   title: "Avena Terminal — Spain New Build Property Investment Scanner | 1,881 Properties",
@@ -77,7 +79,13 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-gray-950 text-gray-100 antialiased">
-        <LanguageProvider><AuthProvider>{children}</AuthProvider></LanguageProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            {children}
+            <WhatsAppButton />
+            <ExitIntent />
+          </AuthProvider>
+        </LanguageProvider>
         <Analytics />
         <TikTokPixel />
       </body>
