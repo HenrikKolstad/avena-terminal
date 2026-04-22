@@ -285,18 +285,18 @@ export function FeaturedDealsClient({ items, total }: { items: DealItem[]; total
 
             const Card = (
               <>
-                {/* Thumbnail header */}
+                {/* Thumbnail header — full card width, no horizontal overflow */}
                 {d.thumb && (
-                  <div className="relative -m-4 mb-4 aspect-[16/9] overflow-hidden rounded-t-sm">
+                  <div className="relative -mx-4 -mt-4 mb-4 aspect-[16/9] overflow-hidden rounded-t-sm max-w-[calc(100%+2rem)]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={d.thumb}
                       alt={`${d.project} — ${d.town}`}
                       loading="lazy"
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-cover block"
                     />
                     <div
-                      className="absolute inset-0"
+                      className="absolute inset-0 pointer-events-none"
                       style={{
                         background:
                           'linear-gradient(180deg, transparent 50%, hsl(var(--av-background) / 0.8) 100%)',
@@ -351,7 +351,7 @@ export function FeaturedDealsClient({ items, total }: { items: DealItem[]; total
                   key={d.ref || rank}
                   type="button"
                   onClick={() => setProOpen(true)}
-                  className="relative rounded-sm border p-4 text-left cursor-pointer active:opacity-80"
+                  className="relative rounded-sm border p-4 text-left cursor-pointer active:opacity-80 overflow-hidden w-full"
                   style={{
                     borderColor: 'hsl(var(--av-border) / 0.6)',
                     background: 'hsl(var(--av-surface) / 0.4)',
@@ -387,7 +387,7 @@ export function FeaturedDealsClient({ items, total }: { items: DealItem[]; total
               <Link
                 key={d.ref || rank}
                 href={href}
-                className="rounded-sm border p-4 active:opacity-80 transition-opacity"
+                className="rounded-sm border p-4 active:opacity-80 transition-opacity overflow-hidden block"
                 style={cardStyle}
               >
                 {Card}

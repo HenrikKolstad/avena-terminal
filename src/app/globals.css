@@ -50,6 +50,13 @@
      elements. Individual sections add their own gradient accents instead. */
 }
 
+/* Mobile-only guard against horizontal scroll caused by stray overflow
+   (negative-margin images, wide inline svgs, etc.). Desktop keeps natural
+   overflow so sticky + fixed positioning behaves. */
+@media (max-width: 1023px) {
+  html, body { overflow-x: clip; }
+}
+
 .avena-v2 .font-mono,
 .avena-v2 .tabular {
   font-variant-numeric: tabular-nums;
