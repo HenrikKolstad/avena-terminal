@@ -9,6 +9,7 @@ import { NewsletterForm } from '@/components/v2/NewsletterForm';
 import { DealAlertsForm } from '@/components/v2/DealAlertsForm';
 import { LaFincaProof } from '@/components/v2/LaFincaProof';
 import { AlphaOfTheWeek } from '@/components/v2/AlphaOfTheWeek';
+import { RecentlyViewedRail } from '@/components/v2/RecentlyViewedRail';
 import { Hero } from './preview/_components/Hero';
 import { Ticker } from './preview/_components/Ticker';
 import { Indices } from './preview/_components/Indices';
@@ -46,6 +47,7 @@ export default function HomePage() {
         <CredentialBar />
         <CoverageStrip />
         <LaFincaProof />
+        <RecentlyViewedRail />
         <AlphaOfTheWeek />
         <FeaturedDeals />
         <section

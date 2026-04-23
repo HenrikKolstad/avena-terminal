@@ -179,6 +179,7 @@ function getSwarmStatus(): SwarmData {
     { name: 'Agent Argus', id: 'comp-sanity', type: 'comp_validation', status: 'active', schedule: '06:00 UTC daily', tasks_completed: days * 1881, performance_score: 91, last_run: lastDailyRun(6) },
     { name: 'Agent Mentat', id: 'mentat', type: 'terminal_health', status: 'active', schedule: '4x daily (02/08/14/20:15)', tasks_completed: days * 4, performance_score: 93, last_run: lastDailyRun(2) },
     { name: 'Agent Courier', id: 'courier', type: 'deal_alerts_dispatch', status: 'active', schedule: '09:00 UTC daily', tasks_completed: days * 1, performance_score: 89, last_run: lastDailyRun(9) },
+    { name: 'Agent Scribe', id: 'scribe', type: 'score_snapshotting', status: 'active', schedule: '02:00 UTC daily', tasks_completed: days * 1, performance_score: 94, last_run: lastDailyRun(2) },
   ];
   const scores = agents.map(a => a.performance_score);
   const total = agents.reduce((s, a) => s + a.tasks_completed, 0);
