@@ -95,14 +95,25 @@ export async function queryMonitor(): Promise<CitationResult[]> {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'llama-3.1-sonar-small-128k-online',
+          // 'sonar' is Perplexity's current online-search model.
+          // The old 'llama-3.1-sonar-small-128k-online' name was deprecated
+          // in late 2024 — using the new name is why yesterday's polls
+          // returned empty despite valid API key + credits.
+          model: 'sonar',
           messages: [{ role: 'user', content: question }],
           return_citations: true,
+          return_related_questions: false,
         }),
       });
       if (!res.ok) { throw new Error(String(res.status)); }
       const data = await res.json();
-      const citations: string[] = data.citations || [];
+      // Perplexity's sonar returns citations either at top level or nested
+      // inside search_results — handle both for forward compatibility.
+      const citations: string[] =
+        data.citations ||
+        (Array.isArray(data.search_results)
+          ? data.search_results.map((r: { url?: string }) => r.url).filter(Boolean)
+          : []);
       const avena_cited = citations.some((c: string) => c.includes('avenaterminal.com'));
       const competitor_cited = citations.filter((c: string) =>
         /idealista|kyero|rightmove|zoopla|fotocasa|thinkspain|aplaceinthesun/i.test(c)
