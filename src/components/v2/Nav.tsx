@@ -8,8 +8,8 @@ import { useAuth } from '@/context/AuthContext';
 
 const links = [
   { label: 'Deals', href: '/#deals' },
-  { label: 'Yield', href: '/yield' },
-  { label: 'Manifesto', href: '/manifesto' },
+  { label: 'Coverage', href: '/coverage' },
+  { label: 'Terminal', href: '/terminal-v2' },
   { label: 'Oracle', href: '/chat' },
   { label: 'Swarm', href: '/swarm' },
   { label: 'Method', href: '/methodology' },

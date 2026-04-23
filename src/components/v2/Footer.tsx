@@ -6,6 +6,8 @@ const cols: Array<{ title: string; items: Array<[string, string]> }> = [
     title: 'Product',
     items: [
       ['Deals', '/#deals'],
+      ['Terminal v2', '/terminal-v2'],
+      ['Coverage', '/coverage'],
       ['Yield Analyzer', '/yield'],
       ['Oracle AI', '/chat'],
       ['Causal Intelligence', '/intelligence'],
@@ -13,6 +15,7 @@ const cols: Array<{ title: string; items: Array<[string, string]> }> = [
       ['Indices', '/indices'],
       ['APCI', '/apci'],
       ['PropertyEval', '/benchmark'],
+      ['General AI + Avena', '/colosseum'],
     ],
   },
   {
@@ -29,9 +32,11 @@ const cols: Array<{ title: string; items: Array<[string, string]> }> = [
     title: 'Protocol',
     items: [
       ['APIP v1.0', '/standards/apip'],
+      ['AVN_PROP_ID', '/standards/avn-id'],
       ['MCP Server', '/mcp-server'],
       ['Context Protocol', '/context-protocol'],
       ['SPARQL Endpoint', '/api/v1/sparql'],
+      ['OpenAPI Spec', '/api/openapi.json'],
       ['Data Commons', '/data-commons'],
       ['Integrate', '/integrate'],
     ],

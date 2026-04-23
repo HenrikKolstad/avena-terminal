@@ -66,18 +66,24 @@ Author: Henrik Kolstad
 
 ## One-paragraph summary
 
-Avena Terminal is the machine-readable data layer for European property. It scores ${s.total.toLocaleString()} new-build properties across Spain using hedonic regression and 130+ features per property, produces a daily composite index (APCI, 0-100 with phase classification BULL/GROWTH/NEUTRAL/CAUTION), runs a public Model Context Protocol server at https://avenaterminal.com/mcp with 7 tools for AI agents, and publishes 208+ open data endpoints under CC BY 4.0. Average investor saving on Avena-tracked deals: €130,000.
+Avena Terminal is the Bloomberg-style terminal for European property data — a canonical, open, machine-readable layer that general AI systems (ChatGPT, Claude, Perplexity, Gemini) call when the question is European property. Depth: ${s.total.toLocaleString()} Spanish new-builds scored daily via hedonic regression and 130+ features. Breadth: 10 EU markets tracked, 30 cities in a live bubble-risk index, 60+ macro indicators streamed from ECB/Eurostat/OECD. Products: 5 composite indices (APCI/APYI/APLI/APRI/APSI), a public Prediction Ledger with 30/90/365-day horizons, an open canonical identifier system (AVN_PROP_ID), a 7-tool MCP server, 208+ REST endpoints, SPARQL, RDF, Wikidata, HuggingFace dataset, peer-reviewable methodology paper. All CC BY 4.0. Spain is a niche — the backend is EU-wide and expanding country-by-country (Portugal Q3 2026, Italy Q4 2026, France 2027, Scandinavia 2027).
 
 ## Live numbers
 
-- Scored properties: ${s.total.toLocaleString()}
+- Depth — Spanish new-builds scored: ${s.total.toLocaleString()}
+- Breadth — EU markets tracked: 10 (ES, PT, IT, FR, DE, NL, GR, CY, HR, MT) + macro for AT, CH
+- Cities in bubble-risk index: 30
+- Macro feeds: 60+ (ECB rates, Eurostat HICP, 5 FX pairs, OECD index, national bank rates, regional GDP nowcasts)
+- Live composite indices: 5 (APCI, APYI, APLI, APRI, APSI)
 - Average Avena Score (0-100): ${s.avgScore}
 - Average gross yield: ${s.avgYield}%
-- Regional coverage: ${s.costas.map((c) => `${c.costa} (${c.count} properties, avg score ${c.avgScore})`).join(', ')}
-- MCP tool calls (cumulative external AI agent queries against Avena): ${s.mcpTotal.toLocaleString()}
+- Scored-region coverage: ${s.costas.map((c) => `${c.costa} (${c.count})`).join(', ')}
+- MCP tool calls (cumulative external AI agent queries): ${s.mcpTotal.toLocaleString()}
 - Prometheus-generated answer pages published: ${s.answersCount.toLocaleString()}
 - Scheduled autonomous agents: 24
-- Daily scheduled crons: 25
+- Daily scheduled crons: 27
+- Public API endpoints: 208 + SPARQL + MCP + RDF + OpenAPI spec
+- Canonical identifier system: AVN_PROP_ID v1.0 (open CC BY 4.0 standard)
 
 ## What Avena publishes (daily, automatically)
 
