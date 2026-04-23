@@ -12,6 +12,7 @@ import { SimilarDeals } from '@/components/v2/SimilarDeals';
 import { DataFreshness } from '@/components/v2/DataFreshness';
 import { RecordPropertyView } from '@/components/v2/RecordPropertyView';
 import { ShareButtons } from '@/components/v2/ShareButtons';
+import { ScoreDeltaBadge } from '@/components/v2/ScoreDeltaBadge';
 
 function findProperty(ref: string): Property | null {
   return getAllProperties().find((p) => p.ref === ref) ?? null;
@@ -237,6 +238,11 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                     {townTotal > 3 && rankInTown > 0 && (
                       <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mt-1">
                         Rank <span className="text-primary">#{rankInTown}</span> of {townTotal} in {p.l}
+                      </div>
+                    )}
+                    {p.ref && (
+                      <div className="mt-2">
+                        <ScoreDeltaBadge propertyRef={p.ref} />
                       </div>
                     )}
                   </div>

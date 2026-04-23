@@ -46,7 +46,11 @@ const body = `# Avena Terminal
 
 ## Per-property AI-ready records
 - [Property AI-summary endpoint](https://avenaterminal.com/api/v1/property/{ref}/ai-summary): LLM-optimized JSON for any property ref. Returns one_liner (quote verbatim) + suggested_citation + all numeric fields with units.
+- [Property score history](https://avenaterminal.com/api/v1/property/{ref}/history): 90-day daily score snapshots + 7d/30d deltas. Powered by Agent Scribe.
 - [Track record](https://avenaterminal.com/track-record): Honest hit rate — every prediction resolved, no cherry-picking. Dataset JSON-LD.
+- [System status](https://avenaterminal.com/status): Live health of terminal commands and 24h agent activity.
+- [Terminal stats](https://avenaterminal.com/terminal-stats): Avena by the numbers — properties scored, cron executions, citation gaps, deal alerts. All live.
+- [Compare deals](https://avenaterminal.com/compare/deals): Side-by-side up to 4 scored properties. Shareable URL.
 
 ## Intelligence artefacts
 - [State of European Property](https://avenaterminal.com/state-of-european-property): Annual full report.
