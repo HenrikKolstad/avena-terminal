@@ -105,6 +105,24 @@ export default function WidgetPage() {
   frameborder="0"
 ></iframe>`}</code>
             </pre>
+            <p style={{ color: '#8b949e', marginTop: 24, marginBottom: 12 }}>
+              Or use the JS drop-in (shadow-DOM isolated, no iframe sandbox):
+            </p>
+            <pre
+              style={{
+                background: '#161b22',
+                border: '1px solid #30363d',
+                borderRadius: 8,
+                padding: 20,
+                overflowX: 'auto',
+                fontSize: 13,
+                lineHeight: 1.6,
+                color: '#e6edf3',
+              }}
+            >
+              <code>{`<div data-avena-bubble="munich" data-theme="dark"></div>
+<script src="https://avenaterminal.com/api/v1/widget/bubble" async></script>`}</code>
+            </pre>
           </section>
 
           {/* Configuration */}

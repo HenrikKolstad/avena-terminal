@@ -14,6 +14,9 @@ import { LANGUAGES } from '@/lib/translations';
 import { BarChart3, Coins, Gem, Map, FolderOpen, TrendingUp, Star, Download, DollarSign, Heart, Crown, Settings, Info, Scale, Mail, BookOpen, Bitcoin, Menu, X, ChevronLeft, ChevronRight, Lock, User, ExternalLink, AlertTriangle, Check, Sparkles, FileText, Calculator, ArrowUpRight, Zap, MessageCircle, Search } from 'lucide-react';
 import DnaHelix from '@/components/DnaHelix';
 import CoreOrb from '@/components/OrbLightning';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
+import { ProModal } from '@/components/v2/ProModal';
 import CryptoTab from '@/components/CryptoTab';
 import YieldTab from '@/components/YieldTab';
 import MarketTab from '@/components/MarketTab';
@@ -79,25 +82,41 @@ const PRO_GATE_DESCRIPTIONS: Record<string, string> = {
 function ProGate({ onUpgrade, feature }: { onUpgrade: () => void; feature: string }) {
   const description = PRO_GATE_DESCRIPTIONS[feature] || 'Unlock full access to all analysis tools and data on Avena Terminal PRO.';
   return (
-    <div className="flex flex-col items-center justify-center min-h-[40vh] text-center px-6 py-16 relative overflow-hidden">
-      <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 50% 40%, #00b9ff 0%, transparent 70%)' }} />
-      <div className="relative z-10">
-        <div className="mb-4"><Lock size={40} className="mx-auto" style={{ color: '#00b9ff' }} /></div>
-        <h2 className="text-xl font-bold text-white mb-2">Unlock {feature}</h2>
-        <p className="text-gray-400 text-sm mb-6 max-w-sm">{description}</p>
-        <button onClick={onUpgrade}
-          className="px-8 py-3.5 rounded-xl font-bold text-sm shadow-lg hover:scale-[1.02] transition-all"
-          style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
-          Upgrade to PRO →
-        </button>
-        <p className="text-[11px] text-gray-600 mt-3">Cancel anytime · €79/month</p>
+    <div className="relative min-h-[40vh] overflow-hidden">
+      {/* Blurred faux preview */}
+      <div className="blur-[6px] select-none pointer-events-none px-6 py-16">
+        <div className="max-w-3xl mx-auto">
+          <div className="h-8 w-48 mb-6 rounded-sm bg-[hsl(var(--av-surface)/0.5)]" />
+          <div className="grid grid-cols-3 gap-3 mb-4">
+            <div className="h-24 rounded-sm bg-[hsl(var(--av-surface)/0.4)] border border-[hsl(var(--av-border)/0.6)]" />
+            <div className="h-24 rounded-sm bg-[hsl(var(--av-surface)/0.4)] border border-[hsl(var(--av-border)/0.6)]" />
+            <div className="h-24 rounded-sm bg-[hsl(var(--av-surface)/0.4)] border border-[hsl(var(--av-border)/0.6)]" />
+          </div>
+          <div className="h-40 rounded-sm bg-[hsl(var(--av-surface)/0.4)] border border-[hsl(var(--av-border)/0.6)]" />
+        </div>
       </div>
+      {/* PRO overlay */}
+      <button
+        onClick={onUpgrade}
+        className="absolute inset-0 flex flex-col items-center justify-center group text-center px-6"
+        aria-label={`Unlock ${feature}`}
+      >
+        <h2 className="font-serif font-light tracking-tight text-2xl text-foreground mb-2">Unlock {feature}</h2>
+        <p className="text-muted-foreground text-sm mb-6 max-w-sm">{description}</p>
+        <span
+          className="rounded-sm px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform group-hover:-translate-y-0.5"
+          style={{ background: 'var(--av-gradient-gold)' }}
+        >
+          🔒 PRO · Unlock for €79/mo
+        </span>
+        <p className="text-[11px] text-muted-foreground mt-3 font-mono">Cancel anytime</p>
+      </button>
     </div>
   );
 }
 
 export default function Explorer() {
-  const { user, isPaid, loading: authLoading, signInWithEmail, signInWithPassword, signOut, startCheckout } = useAuth();
+  const { user, isPaid, loading: authLoading, signInWithEmail, signInWithPassword, signOut } = useAuth();
   const { lang, setLang, t } = useLanguage();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
@@ -116,6 +135,7 @@ export default function Explorer() {
   const [imgIdx, setImgIdx] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
+  const [proModalOpen, setProModalOpen] = useState(false);
   const [authEmail, setAuthEmail] = useState('');
   const [authSent, setAuthSent] = useState(false);
   const [authMode, setAuthMode] = useState<'magic' | 'password'>('magic');
@@ -606,21 +626,23 @@ export default function Explorer() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0d1117' }}>
+      <div className="avena-v2 min-h-screen flex items-center justify-center bg-[hsl(var(--av-background))]">
         <div className="text-center">
           <div className="flex items-center justify-center gap-3 mb-3">
             <DnaHelix size={40} />
-            <div className="text-5xl font-bold font-serif tracking-[0.3em]" style={{ background: 'linear-gradient(90deg, #10B981, #34d399, #10B981)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>AVENA</div>
+            <div className="text-5xl font-serif font-light tracking-[0.3em] text-primary">AVENA</div>
           </div>
-          <div className="text-[10px] tracking-[6px] uppercase text-emerald-400/40 mb-8">TERMINAL</div>
-          <div className="text-xs text-gray-600 tracking-widest">Loading properties...</div>
+          <div className="text-[10px] tracking-[6px] uppercase text-primary/60 mb-8 font-mono">TERMINAL</div>
+          <div className="text-xs text-muted-foreground tracking-widest font-mono">Loading properties...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0d1117]">
+    <div className="avena-v2 min-h-screen bg-[hsl(var(--av-background))]">
+      <Nav />
+      <main className="pt-16">
       {/* HEADER — fixed top, full-width on mobile, offset left by sidebar on desktop */}
       <div ref={headerRef} className="fixed top-0 z-40 left-0 right-0"
         style={isDesktop ? {
@@ -1717,19 +1739,34 @@ export default function Explorer() {
                 </div>
               )}
 
-              {/* AI ANALYSIS BUTTON */}
-              {isPaid && (
-                <button
-                  onClick={fetchAiMemo}
-                  disabled={aiMemoLoading}
-                  className="w-full mb-4 py-2.5 bg-gradient-to-r from-purple-900/60 to-indigo-900/60 border border-purple-500/40 hover:border-purple-400/60 text-purple-300 font-semibold text-xs rounded-lg transition-all disabled:opacity-60 flex items-center justify-center gap-2">
-                  {aiMemoLoading ? (
-                    <><span className="animate-pulse">●</span> {t.memo_generating}</>
-                  ) : (
-                    <><span>✦</span> {t.btn_ai}</>
-                  )}
-                </button>
-              )}
+              {/* AI ANALYSIS BUTTON — PRO gated with blur overlay */}
+              <div className="relative mb-4">
+                <div className={isPaid ? '' : 'blur-[6px] select-none pointer-events-none'}>
+                  <button
+                    onClick={isPaid ? fetchAiMemo : undefined}
+                    disabled={aiMemoLoading}
+                    className="w-full py-2.5 bg-gradient-to-r from-purple-900/60 to-indigo-900/60 border border-purple-500/40 hover:border-purple-400/60 text-purple-300 font-semibold text-xs rounded-lg transition-all disabled:opacity-60 flex items-center justify-center gap-2">
+                    {aiMemoLoading ? (
+                      <><span className="animate-pulse">●</span> {t.memo_generating}</>
+                    ) : (
+                      <><span>✦</span> {t.btn_ai}</>
+                    )}
+                  </button>
+                </div>
+                {!isPaid && (
+                  <button
+                    onClick={() => setProModalOpen(true)}
+                    className="absolute inset-0 flex items-center justify-center group"
+                  >
+                    <span
+                      className="rounded-sm px-4 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform group-hover:-translate-y-0.5"
+                      style={{ background: 'var(--av-gradient-gold)' }}
+                    >
+                      🔒 PRO · Unlock AI Memo · €79/mo
+                    </span>
+                  </button>
+                )}
+              </div>
               {aiMemoError && <div className="mb-4 text-xs text-red-400 text-center">{aiMemoError}</div>}
 
               {/* AI MEMO RESULT */}
@@ -1859,23 +1896,40 @@ export default function Explorer() {
                 const pct5 = (((yr5 - base) / base) * 100).toFixed(1);
                 const fmtK = (v: number) => v >= 1_000_000 ? `€${(v/1_000_000).toFixed(2)}M` : `€${Math.round(v/1000)}k`;
                 return (
-                  <div className="mb-5 bg-[#12101a] border border-[#10B981]/20 rounded-xl overflow-hidden">
-                    <div className="px-4 py-3 border-b border-[#10B981]/15 flex items-center justify-between">
-                      <div className="text-[10px] uppercase tracking-widest text-emerald-400">5-Year Value Forecast</div>
-                      <div className="text-[9px] text-gray-600 uppercase tracking-wide">{(growthRate * 100).toFixed(1)}% avg/yr · {previewProp.r}</div>
-                    </div>
-                    <div className="grid grid-cols-3 divide-x divide-[#10B981]/10">
-                      {[['1 Year', fmtK(yr1), pct1], ['3 Years', fmtK(yr3), pct3], ['5 Years', fmtK(yr5), pct5]].map(([label, val, pct]) => (
-                        <div key={label} className="px-3 py-3 text-center">
-                          <div className="text-[9px] uppercase tracking-wide text-gray-600 mb-1">{label}</div>
-                          <div className="text-sm font-bold text-white">{val}</div>
-                          <div className="text-[10px] font-semibold text-emerald-400 mt-0.5">+{pct}%</div>
+                  <div className="relative mb-5">
+                    <div className={isPaid ? '' : 'blur-[6px] select-none pointer-events-none'}>
+                      <div className="bg-[hsl(var(--av-surface)/0.4)] border border-[hsl(var(--av-border)/0.6)] rounded-xl overflow-hidden">
+                        <div className="px-4 py-3 border-b border-[hsl(var(--av-border)/0.6)] flex items-center justify-between">
+                          <div className="text-[10px] uppercase tracking-widest text-primary font-mono">5-Year Value Forecast</div>
+                          <div className="text-[9px] text-muted-foreground uppercase tracking-wide font-mono">{(growthRate * 100).toFixed(1)}% avg/yr · {previewProp.r}</div>
                         </div>
-                      ))}
+                        <div className="grid grid-cols-3 divide-x divide-[hsl(var(--av-border)/0.6)]">
+                          {[['1 Year', fmtK(yr1), pct1], ['3 Years', fmtK(yr3), pct3], ['5 Years', fmtK(yr5), pct5]].map(([label, val, pct]) => (
+                            <div key={label} className="px-3 py-3 text-center">
+                              <div className="text-[9px] uppercase tracking-wide text-muted-foreground mb-1 font-mono">{label}</div>
+                              <div className="text-sm font-bold text-foreground font-mono">{val}</div>
+                              <div className="text-[10px] font-semibold text-primary mt-0.5 font-mono">+{pct}%</div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="px-4 py-2 border-t border-[hsl(var(--av-border)/0.6)]">
+                          <p className="text-[9px] text-muted-foreground leading-relaxed">Based on regional historical appreciation rates. New-build premium typically adds 5–10% over resale. Not financial advice.</p>
+                        </div>
+                      </div>
                     </div>
-                    <div className="px-4 py-2 border-t border-[#10B981]/10">
-                      <p className="text-[9px] text-gray-600 leading-relaxed">Based on regional historical appreciation rates. New-build premium typically adds 5–10% over resale. Not financial advice.</p>
-                    </div>
+                    {!isPaid && (
+                      <button
+                        onClick={() => setProModalOpen(true)}
+                        className="absolute inset-0 flex items-center justify-center group"
+                      >
+                        <span
+                          className="rounded-sm px-4 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform group-hover:-translate-y-0.5"
+                          style={{ background: 'var(--av-gradient-gold)' }}
+                        >
+                          🔒 PRO · Unlock for €79/mo
+                        </span>
+                      </button>
+                    )}
                   </div>
                 );
               })()}
@@ -2155,7 +2209,7 @@ export default function Explorer() {
             </ul>
             {user ? (
               <>
-                <button onClick={startCheckout} disabled={paywallLoading}
+                <button onClick={() => { setShowPaywall(false); setProModalOpen(true); }} disabled={paywallLoading}
                   className="w-full font-bold py-3.5 rounded-lg transition-all text-sm tracking-wide disabled:opacity-50 text-black"
                   style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}>
                   {paywallLoading ? 'Redirecting…' : 'Subscribe — €79/month →'}
@@ -2350,10 +2404,13 @@ export default function Explorer() {
         </div>
       )}
 
-      {/* Footer */}
-      <div className="border-t py-6 text-center" style={{ borderColor: '#1c2333', paddingLeft: isDesktop ? (sidebarCollapsed ? 32 : 240) : 0 }}>
-        <p className="text-[10px] text-gray-600 tracking-wide">© 2026 Avena Terminal · avenaterminal.com · Spain&apos;s first PropTech/FinTech terminal</p>
+      {/* Legacy inline footer note */}
+      <div className="border-t border-[hsl(var(--av-border)/0.6)] py-6 text-center" style={{ paddingLeft: isDesktop ? (sidebarCollapsed ? 32 : 240) : 0 }}>
+        <p className="text-[10px] text-muted-foreground tracking-wide font-mono">© 2026 Avena Terminal · avenaterminal.com · Spain&apos;s first PropTech/FinTech terminal</p>
       </div>
+      </main>
+      <Footer />
+      <ProModal open={proModalOpen} onClose={() => setProModalOpen(false)} />
     </div>
   );
 }

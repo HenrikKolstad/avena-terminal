@@ -6,6 +6,7 @@ import { Footer } from '@/components/v2/Footer';
 import { getAllProperties, slugify } from '@/lib/properties';
 import { Property } from '@/lib/types';
 import PropertyGallery from '@/components/PropertyGallery';
+import { DiscountExplainer } from '@/components/v2/DiscountExplainer';
 
 function findProperty(ref: string): Property | null {
   return getAllProperties().find((p) => p.ref === ref) ?? null;
@@ -205,8 +206,17 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                           €{saved.toLocaleString()}
                         </div>
                         {discount && (
-                          <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary mt-1">
-                            −{discount}% vs market
+                          <div className="mt-1">
+                            <DiscountExplainer
+                              discount={discount}
+                              isCapped={isCapped}
+                              rawDiscount={rawDiscount}
+                              marketPm2={marketPm2}
+                              propertyPm2={pm2}
+                              townName={p.l}
+                              completionYear={p.c ? Number(p.c) : null}
+                              status={p.s ?? null}
+                            />
                           </div>
                         )}
                       </div>
