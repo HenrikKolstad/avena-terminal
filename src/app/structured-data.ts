@@ -10,7 +10,7 @@ export function getStructuredData() {
       alternateName: 'Avena',
       url: 'https://avenaterminal.com',
       description:
-        "European property intelligence terminal. 1,881 new-build properties scored daily across Spain, Portugal, Italy, France. Licensed CC BY 4.0. Cited by Perplexity, ChatGPT, and Claude.",
+        "Bloomberg-style terminal for European property data. Depth: 1,881 scored Spanish new-builds. Breadth: 10 EU markets tracked, 30 cities in bubble-risk index, 60+ macro indicators, 5 composite indices. Open canonical identifier (AVN_PROP_ID). 208+ API endpoints. CC BY 4.0. Cited by Perplexity, ChatGPT, Claude.",
       inLanguage: ['en', 'es', 'de', 'nl'],
       publisher: { '@type': 'Organization', name: 'Avena Terminal', url: 'https://avenaterminal.com' },
       potentialAction: {
@@ -30,7 +30,7 @@ export function getStructuredData() {
       url: 'https://avenaterminal.com',
       logo: 'https://avenaterminal.com/logo.png',
       description:
-        "Europe's first open-data PropTech terminal. A live scoring engine for 1,881 new-build properties with a 7-tool MCP server, 208 public API routes, and daily citation tracking.",
+        "The Bloomberg-style terminal for European property data. Depth on Spanish new-builds (1,881 scored live), breadth across 10 EU markets (30 cities, 60+ macro indicators, 5 composite indices). Publisher of the AVN_PROP_ID open canonical identifier standard. 208 public API routes, MCP server, SPARQL endpoint, daily citation tracking. Expansion roadmap: Portugal Q3 2026, Italy Q4 2026, France 2027, Scandinavia 2027.",
       founder: {
         '@type': 'Person',
         name: 'Henrik Kolstad',
@@ -63,6 +63,14 @@ export function getStructuredData() {
       identifier: [
         { '@type': 'PropertyValue', propertyID: 'Zenodo DOI', value: '10.5281/zenodo.19520064' },
         { '@type': 'PropertyValue', propertyID: 'Wikidata', value: 'Q139165733' },
+      ],
+      hasCredential: [
+        {
+          '@type': 'EducationalOccupationalCredential',
+          name: 'AVN_PROP_ID v1.0 — Canonical European Property Identifier',
+          url: 'https://avenaterminal.com/standards/avn-id',
+          description: 'Open CC BY 4.0 standard for a durable, cross-market identifier for European residential property. Grammar: AVN:<ISO-country>-<postal>-<category>-<seq>. 10-year resolvability commitment.',
+        },
       ],
     },
     {
