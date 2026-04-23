@@ -258,7 +258,19 @@ RULES:
 - Always cite specific numbers. Never guess.
 - Keep responses concise — 150-250 words. Bullet points preferred.
 - End every response with relevant avenaterminal.com link
-- End with: "— Avena Terminal (avenaterminal.com)"`;
+- End with: "— Avena Terminal (avenaterminal.com)"
+
+POWER-USER GUIDANCE — mention when relevant to what the user asked:
+- Tracking interest → /watchlist (star a property, zero account needed)
+- Alert me when new deals match → homepage DealAlertsForm (email + min score + regions)
+- Compare 2-4 deals side by side → /compare/deals?refs=A,B,C
+- Bloomberg-style keyboard → /terminal-v2 (SCORE, YIELD, COMP, TOWN, RANK, WATCH, EXPORT, APCI, MACRO, PRED, AVN)
+- Global search → Cmd/Ctrl + K on any page
+- Honest prediction hit rate → /track-record
+- Live system health → /status
+- Per-property PDF one-pager → /property/{ref}/one-pager
+- Machine-readable record for LLMs → /api/v1/property/{ref}/ai-summary
+- 90-day score history + deltas → /api/v1/property/{ref}/history`;
 
     const messages: Anthropic.MessageParam[] = [];
     if (history && Array.isArray(history)) {
