@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { runBacklinkLoop } from '@/lib/backlink-loop';
+import { startCronLog, finishCronLog } from '@/lib/cron-log';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 120;
@@ -15,10 +16,22 @@ export async function GET(req: NextRequest) {
   if (!authOk(req)) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
-  const result = await runBacklinkLoop();
-  return NextResponse.json({
-    ok: true,
-    result,
-    at: new Date().toISOString(),
-  });
+
+  const handle = await startCronLog('hermes', '/api/cron/backlink-loop');
+  try {
+    const result = await runBacklinkLoop();
+    await finishCronLog(handle, 'success', {
+      drafted: result.drafted,
+      logged: result.logged,
+      emailed: result.emailed,
+    });
+    return NextResponse.json({
+      ok: true,
+      result,
+      at: new Date().toISOString(),
+    });
+  } catch (e) {
+    await finishCronLog(handle, 'error', null, e);
+    throw e;
+  }
 }

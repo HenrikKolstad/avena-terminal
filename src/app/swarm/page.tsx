@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { loadAgentCounts } from '@/lib/cron-log';
 
 export const dynamic = 'force-dynamic';
 
@@ -233,6 +234,25 @@ function PriorityBadge({ priority }: { priority: string }) {
 export default async function SwarmPage() {
   const swarmData = getSwarmStatus();
   const messages = getMessages();
+
+  // Replace fake formula-based counters with REAL cron_logs data.
+  // Some agents haven't been instrumented yet — those show 0 real runs
+  // until their next cron fires with the new logger.
+  const real = await loadAgentCounts();
+  // Overlay real counts on top of the agent list. Formula-based numbers
+  // still show as fallback if no real run is recorded yet, but the total
+  // at the top is honest.
+  for (const agent of swarmData.agents) {
+    const r = real.per_agent[agent.id];
+    if (r) {
+      agent.tasks_completed = r.runs;
+      if (r.last_run) agent.last_run = r.last_run;
+    } else {
+      // No real run logged yet — reset to 0 rather than showing inflated formula
+      agent.tasks_completed = 0;
+    }
+  }
+  swarmData.summary.total_tasks_completed = real.total;
 
   const agents = swarmData?.agents ?? [];
   const summary = swarmData?.summary ?? {
