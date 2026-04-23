@@ -36,6 +36,9 @@ const cols: Array<{ title: string; items: Array<[string, string]> }> = [
     items: [
       ['APIP v1.0', '/standards/apip'],
       ['AVN_PROP_ID', '/standards/avn-id'],
+      ['CLI', '/cli'],
+      ['API Playground', '/playground'],
+      ['Browser Extension', '/extension'],
       ['MCP Server', '/mcp-server'],
       ['Context Protocol', '/context-protocol'],
       ['SPARQL Endpoint', '/api/v1/sparql'],

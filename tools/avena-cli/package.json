@@ -1,0 +1,37 @@
+{
+  "name": "avena",
+  "version": "1.0.0",
+  "description": "Command-line tool for Avena Terminal — score, compare, and stream European property intelligence from your terminal.",
+  "keywords": [
+    "avena",
+    "property",
+    "real-estate",
+    "europe",
+    "spain",
+    "bloomberg",
+    "terminal",
+    "cli"
+  ],
+  "homepage": "https://avenaterminal.com/cli",
+  "bugs": "mailto:henrik@avenaterminal.com",
+  "license": "MIT",
+  "author": {
+    "name": "Henrik Kolstad",
+    "url": "https://avenaterminal.com"
+  },
+  "bin": {
+    "avena": "./bin/avena.js"
+  },
+  "files": [
+    "bin/",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HenrikKolstad/avena-terminal",
+    "directory": "tools/avena-cli"
+  }
+}
