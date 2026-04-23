@@ -13,3 +13,10 @@ audit-output.txt
 *.pdf
 THE-SECRET-FORMULA.pdf
 AVENA-TERMINAL-FINAL.pdf
+
+# Local scratch scripts — never commit
+set-*.js
+audit.js
+generate-pdf*.py
+.env.local.test
+/€*

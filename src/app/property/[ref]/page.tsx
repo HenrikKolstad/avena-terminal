@@ -301,8 +301,17 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                   </div>
                 );
               })()}
-              <div className="mt-4">
+              <div className="mt-4 flex flex-wrap items-center gap-3">
                 <DataFreshness label="Property data" />
+                {p.ref && (
+                  <Link
+                    href={`/property/${encodeURIComponent(p.ref)}/one-pager`}
+                    className="inline-flex items-center gap-2 rounded-sm border px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+                    style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+                  >
+                    Download one-pager
+                  </Link>
+                )}
               </div>
             </div>
           </section>

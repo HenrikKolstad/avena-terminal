@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { TikTokPixel } from "@/components/TikTokPixel";
 import { WhatsAppButton } from "@/components/v2/WhatsAppButton";
 import { ExitIntent } from "@/components/v2/ExitIntent";
+import { KeyboardShortcuts } from "@/components/v2/KeyboardShortcuts";
 
 export const metadata: Metadata = {
   title: "Avena Terminal — Spain New Build Property Investment Scanner | 1,881 Properties",
@@ -84,6 +85,7 @@ export default function RootLayout({
             {children}
             <WhatsAppButton />
             <ExitIntent />
+            <KeyboardShortcuts />
           </AuthProvider>
         </LanguageProvider>
         <Analytics />
