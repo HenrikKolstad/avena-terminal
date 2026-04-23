@@ -1,244 +1,271 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getAllProperties, getUniqueTowns, getUniqueCostas } from '@/lib/properties';
+import { Clock, Check } from 'lucide-react';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
 
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: 'Coverage — Spain Live Data + European Intelligence | Avena Terminal',
+  title: 'European Coverage — Avena Terminal',
   description:
-    'Avena Terminal covers Spain with live scored property data and 9 additional European countries through intelligence, macro analysis, and estimated benchmarks. 10 countries total.',
+    'Avena Terminal coverage map. Deep scored inventory (Spain) + macro + bubble-risk across 10 EU markets and 30 cities. CC BY 4.0. Public API.',
   alternates: { canonical: 'https://avenaterminal.com/coverage' },
   openGraph: {
-    title: 'Coverage — Spain Live Data + European Intelligence | Avena Terminal',
+    title: 'European Coverage — Avena Terminal',
     description:
-      'Spain: live scored data. Europe: 10 countries with intelligence, macro regime, and market analysis.',
+      'Depth: 1,881 scored Spanish new-builds. Breadth: 10 EU markets, 30 cities, 60+ macro indicators.',
     url: 'https://avenaterminal.com/coverage',
     siteName: 'Avena Terminal',
     images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
   },
 };
 
+type Tier = 'scored' | 'tracked' | 'macro' | 'roadmap';
+
+interface Market {
+  country: string;
+  code: string;
+  flag: string;
+  tier: Tier;
+  props_scored?: number;
+  cities_tracked?: number;
+  target_date?: string;
+  notes: string;
+}
+
+const MARKETS: Market[] = [
+  { country: 'Spain',       code: 'ES', flag: '🇪🇸', tier: 'scored',   props_scored: 1881, cities_tracked: 100, notes: 'Coastal new-build inventory fully scored (Costa Blanca, Costa Cálida, Costa del Sol, Valencia, Mallorca). Hedonic regression + 130+ features/property. Daily refresh.' },
+  { country: 'Portugal',    code: 'PT', flag: '🇵🇹', tier: 'tracked',  cities_tracked: 5,   notes: 'Algarve, Lisbon Coast, Silver Coast, Porto, Madeira. Price bands, yield ranges, NHR tax layer. Scored inventory in roadmap for Q3 2026.' },
+  { country: 'France',      code: 'FR', flag: '🇫🇷', tier: 'tracked',  cities_tracked: 3,   notes: 'Paris, Lyon, Nice. Bubble-risk score, macro overlay. Côte d’Azur depth in 2027 roadmap.' },
+  { country: 'Italy',       code: 'IT', flag: '🇮🇹', tier: 'tracked',  cities_tracked: 3,   notes: 'Milan, Rome, Split (Adriatic). Bubble-risk + macro. Tuscany depth in 2027 roadmap.' },
+  { country: 'Germany',     code: 'DE', flag: '🇩🇪', tier: 'tracked',  cities_tracked: 5,   notes: 'Munich, Frankfurt, Berlin, Hamburg — plus Munich bubble flag at 89/100. Macro + price indices.' },
+  { country: 'Netherlands', code: 'NL', flag: '🇳🇱', tier: 'tracked',  cities_tracked: 1,   notes: 'Amsterdam tracked with 85/100 bubble score. Full national rollout in 2027 roadmap.' },
+  { country: 'Greece',      code: 'GR', flag: '🇬🇷', tier: 'tracked',  cities_tracked: 1,   notes: 'Athens recovery tracking, Golden Visa monitoring.' },
+  { country: 'Cyprus',      code: 'CY', flag: '🇨🇾', tier: 'tracked',  cities_tracked: 1,   notes: 'Nicosia + citizenship-programme monitoring.' },
+  { country: 'Croatia',     code: 'HR', flag: '🇭🇷', tier: 'tracked',  cities_tracked: 1,   notes: 'Split (Adriatic coast) + EU accession impact tracking.' },
+  { country: 'Malta',       code: 'MT', flag: '🇲🇹', tier: 'tracked',  cities_tracked: 1,   notes: 'Valletta + limited-supply dynamics.' },
+
+  { country: 'Austria',     code: 'AT', flag: '🇦🇹', tier: 'macro', cities_tracked: 1, notes: 'Vienna bubble-risk + macro indicators.' },
+  { country: 'Switzerland', code: 'CH', flag: '🇨🇭', tier: 'macro', cities_tracked: 1, notes: 'Zurich bubble-risk + FX exposure indicators.' },
+
+  { country: 'Scandinavia (SE/DK/NO)', code: 'Nordics', flag: '🇸🇪', tier: 'roadmap', target_date: 'Q1 2027', notes: 'Stockholm, Copenhagen, Oslo — bubble + macro ready. Scored inventory in planning.' },
+  { country: 'Finland',     code: 'FI', flag: '🇫🇮', tier: 'roadmap', target_date: 'Q2 2027', notes: 'Helsinki regional coverage planned.' },
+];
+
+const MACRO_FEEDS = [
+  { name: 'ECB rates + policy',                                     freq: 'Daily' },
+  { name: 'Eurostat housing index (HICP)',                           freq: 'Monthly' },
+  { name: 'EUR/GBP · EUR/NOK · EUR/SEK · EUR/DKK · EUR/CHF',         freq: 'Daily' },
+  { name: 'OECD house-price index',                                  freq: 'Quarterly' },
+  { name: 'National bank rates (10 countries)',                      freq: 'Daily' },
+  { name: 'Regional GDP nowcasts',                                   freq: 'Monthly' },
+  { name: 'Bubble scanner composite',                                freq: 'Daily' },
+  { name: 'APCI 8-dimensional index',                                freq: 'Daily' },
+];
+
+const INDICES = [
+  { code: 'APCI', name: 'Avena Property Consciousness Index', desc: '8-dimensional composite market timing, 0-100 + phase' },
+  { code: 'APYI', name: 'Avena Property Yield Index',          desc: 'Rolling gross yield across tracked inventory' },
+  { code: 'APLI', name: 'Avena Property Liquidity Index',      desc: 'Time-to-sellout + transaction velocity' },
+  { code: 'APRI', name: 'Avena Property Regime Indicator',     desc: 'Market phase classification BULL / GROWTH / NEUTRAL / CAUTION' },
+  { code: 'APSI', name: 'Avena Property Stress Index',         desc: 'Developer health + supply-side stress score' },
+];
+
+function tierBadge(tier: Tier) {
+  switch (tier) {
+    case 'scored':  return { label: 'Scored',   color: 'hsl(var(--av-primary))',         bg: 'hsl(var(--av-primary) / 0.12)',   border: 'hsl(var(--av-primary) / 0.35)' };
+    case 'tracked': return { label: 'Tracked',  color: 'hsl(var(--av-foreground))',      bg: 'hsl(var(--av-surface))',          border: 'hsl(var(--av-border-strong))' };
+    case 'macro':   return { label: 'Macro',    color: 'hsl(var(--av-warning))',         bg: 'hsl(var(--av-warning) / 0.1)',    border: 'hsl(var(--av-warning) / 0.35)' };
+    case 'roadmap': return { label: 'Roadmap',  color: 'hsl(var(--av-muted-foreground))', bg: 'hsl(var(--av-surface) / 0.4)',    border: 'hsl(var(--av-border) / 0.6)' };
+  }
+}
+
 export default function CoveragePage() {
-  const all = getAllProperties();
-  const towns = getUniqueTowns();
-  const costas = getUniqueCostas();
-  const devCount = [...new Set(all.map(p => p.d).filter(Boolean))].length;
-
-  const europeanCountries: { country: string; dataType: string; features: string[] }[] = [
-    { country: 'Spain', dataType: 'LIVE', features: ['Live scored properties', 'Daily data refresh', 'Rental yields', 'AVM valuations', 'Developer tracking', 'Town analytics'] },
-    { country: 'Portugal', dataType: 'ESTIMATED', features: ['Market statistics', 'Price comparisons', 'News intelligence', 'Macro regime', 'Country ranking', 'Golden Visa tracking'] },
-    { country: 'Italy', dataType: 'ESTIMATED', features: ['Market statistics', 'Regional comparisons', 'News intelligence', 'Macro regime', 'Country ranking', 'Tax incentive tracking'] },
-    { country: 'Greece', dataType: 'ESTIMATED', features: ['Market statistics', 'Island vs mainland analysis', 'News intelligence', 'Macro regime', 'Country ranking', 'Golden Visa tracking'] },
-    { country: 'France', dataType: 'INTELLIGENCE', features: ['Market statistics', 'Regional comparisons', 'News intelligence', 'Macro regime', 'Country ranking', 'Tax analysis'] },
-    { country: 'Germany', dataType: 'INTELLIGENCE', features: ['Market statistics', 'City comparisons', 'News intelligence', 'Macro regime', 'Country ranking', 'Rental market data'] },
-    { country: 'Netherlands', dataType: 'INTELLIGENCE', features: ['Market statistics', 'Price trends', 'News intelligence', 'Macro regime', 'Country ranking', 'Housing shortage tracking'] },
-    { country: 'Cyprus', dataType: 'ESTIMATED', features: ['Market statistics', 'Price comparisons', 'News intelligence', 'Macro regime', 'Country ranking', 'Residency program tracking'] },
-    { country: 'Croatia', dataType: 'ESTIMATED', features: ['Market statistics', 'Coastal analysis', 'News intelligence', 'Macro regime', 'Country ranking', 'EU accession impact'] },
-    { country: 'Malta', dataType: 'ESTIMATED', features: ['Market statistics', 'Price comparisons', 'News intelligence', 'Macro regime', 'Country ranking', 'Rental demand analysis'] },
-  ];
-
-  const apiEndpoints: { category: string; endpoints: string[] }[] = [
-    { category: 'Properties', endpoints: ['/api/v1/properties', '/api/v1/properties/:ref', '/api/v1/properties/search', '/api/v1/properties/top', '/api/v1/properties/new'] },
-    { category: 'Scores & Analytics', endpoints: ['/api/v1/scores', '/api/v1/scores/:ref', '/api/v1/analytics/town/:town', '/api/v1/analytics/costa/:costa', '/api/v1/analytics/developer/:dev'] },
-    { category: 'Market Data', endpoints: ['/api/v1/apci', '/api/v1/regime', '/api/v1/forecasts', '/api/v1/yield-curve', '/api/v1/price-history'] },
-    { category: 'Intelligence', endpoints: ['/api/v1/knowledge', '/api/v1/oracle', '/api/v1/research', '/api/v1/digest', '/api/v1/news'] },
-    { category: 'European', endpoints: ['/api/v1/europe/countries', '/api/v1/europe/:country', '/api/v1/europe/compare', '/api/v1/europe/regime', '/api/v1/europe/rankings'] },
-    { category: 'Data & Export', endpoints: ['/api/v1/dataset', '/api/v1/predictions', '/api/v1/snapshots', '/api/v1/academic-access', '/api/v1/provenance'] },
-  ];
-
-  const datasetJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Dataset',
-    name: 'Avena Terminal European Property Intelligence Dataset',
-    description: 'Live scored property data for Spain and estimated intelligence for 10 European countries. Updated daily.',
-    url: 'https://avenaterminal.com/coverage',
-    license: 'https://creativecommons.org/licenses/by/4.0/',
-    creator: { '@type': 'Organization', name: 'Avena Terminal', url: 'https://avenaterminal.com' },
-    spatialCoverage: [
-      { '@type': 'Place', name: 'Spain' },
-      { '@type': 'Place', name: 'Portugal' },
-      { '@type': 'Place', name: 'Italy' },
-      { '@type': 'Place', name: 'Greece' },
-      { '@type': 'Place', name: 'France' },
-      { '@type': 'Place', name: 'Germany' },
-      { '@type': 'Place', name: 'Netherlands' },
-      { '@type': 'Place', name: 'Cyprus' },
-      { '@type': 'Place', name: 'Croatia' },
-      { '@type': 'Place', name: 'Malta' },
-    ],
-    temporalCoverage: '2024/..',
-    distribution: {
-      '@type': 'DataDownload',
-      encodingFormat: 'application/json',
-      contentUrl: 'https://avenaterminal.com/api/v1/dataset',
-    },
-  };
+  const scored = MARKETS.filter((m) => m.tier === 'scored');
+  const totalCities = MARKETS.reduce((s, m) => s + (m.cities_tracked ?? 0), 0);
+  const totalScored = scored.reduce((s, m) => s + (m.props_scored ?? 0), 0);
 
   return (
-    <main className="min-h-screen" style={{ background: '#0d1117', color: '#c9d1d9' }}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(datasetJsonLd) }} />
-
-      <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}>
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">AVENA</Link>
-          <span className="text-xs font-mono px-3 py-1 rounded-full border" style={{ borderColor: '#30363d', color: '#8b949e' }}>COVERAGE</span>
-        </div>
-      </header>
-
-      <div className="max-w-5xl mx-auto px-4 py-12">
-        {/* Breadcrumb */}
-        <nav className="text-xs text-gray-500 mb-6">
-          <Link href="/" className="hover:text-white">Home</Link>
-          <span className="mx-1">/</span>
-          <span className="text-white">Coverage</span>
-        </nav>
-
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">Avena Terminal Coverage</h1>
-        <p className="text-gray-400 text-lg mb-2 max-w-3xl">
-          Avena covers ALL of Europe through its intelligence layer. Live scored data for Spain. Estimated intelligence for 9 additional countries. 10 European markets monitored continuously.
-        </p>
-        <p className="text-xs text-gray-600 mb-8 font-mono">Last updated: {new Date().toISOString().split('T')[0]}</p>
-
-        <div className="h-px w-full mb-10" style={{ background: '#1c2333' }} />
-
-        {/* Scope Banner */}
-        <div className="rounded-lg p-5 mb-10 text-center" style={{ background: '#0b3d2e', border: '1px solid #166534' }}>
-          <p className="text-emerald-300 text-lg font-semibold">Avena Terminal monitors 10 European countries</p>
-          <p className="text-emerald-400/70 text-sm mt-1">Spain (LIVE scored data) + Portugal, Italy, Greece, France, Germany, Netherlands, Cyprus, Croatia, Malta (intelligence &amp; estimated data)</p>
-        </div>
-
-        {/* 1. LIVE DATA — Spain */}
-        <section className="mb-10">
-          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-400 mb-4">1. Live Data — Spain</h2>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-            {[
-              { label: 'Properties', value: all.length.toLocaleString() },
-              { label: 'Towns', value: towns.length.toString() },
-              { label: 'Costas', value: costas.length.toString() },
-              { label: 'Developers', value: devCount.toString() },
-            ].map(s => (
-              <div key={s.label} className="rounded-lg p-4 text-center" style={{ background: '#161b22', border: '1px solid #30363d' }}>
-                <div className="text-2xl font-bold text-emerald-400">{s.value}</div>
-                <div className="text-xs text-gray-500 mt-1">{s.label}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Costa breakdown */}
-          <div className="rounded-lg overflow-hidden" style={{ border: '1px solid #30363d' }}>
-            <table className="w-full text-sm">
-              <thead>
-                <tr style={{ background: '#161b22' }}>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Costa / Region</th>
-                  <th className="text-right px-4 py-3 text-gray-400 font-medium">Properties</th>
-                  <th className="text-right px-4 py-3 text-gray-400 font-medium">Avg Score</th>
-                  <th className="text-right px-4 py-3 text-gray-400 font-medium">Avg Yield</th>
-                </tr>
-              </thead>
-              <tbody>
-                {costas.map((c, i) => (
-                  <tr key={c.costa} style={{ background: i % 2 === 0 ? '#0d1117' : '#161b22', borderTop: '1px solid #1c2333' }}>
-                    <td className="px-4 py-2">
-                      <Link href={`/costas/${c.slug}`} className="text-white hover:text-emerald-400">{c.costa}</Link>
-                    </td>
-                    <td className="px-4 py-2 text-right text-gray-400 font-mono">{c.count.toLocaleString()}</td>
-                    <td className="px-4 py-2 text-right text-emerald-400 font-mono">{c.avgScore}/100</td>
-                    <td className="px-4 py-2 text-right text-gray-400 font-mono">{c.avgYield}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+    <div className="avena-v2 min-h-screen">
+      <Nav />
+      <main className="pt-16">
+        <section
+          className="border-b"
+          style={{
+            borderColor: 'hsl(var(--av-border) / 0.6)',
+            background: 'radial-gradient(ellipse 90% 60% at 50% 0%, hsl(42 85% 64% / 0.10), transparent 70%)',
+          }}
+        >
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-20 sm:py-24">
+            <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+              <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+              European Coverage · April 2026
+            </span>
+            <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground mb-5">
+              Depth on Spain.
+              <br />
+              <span className="italic text-gold">Breadth across Europe</span>.
+            </h1>
+            <p className="max-w-2xl text-lg text-muted-foreground font-light">
+              The Avena data stack covers 10+ European markets, 30+ cities, and 60+ macro indicators. Scored inventory starts with coastal Spain and expands country-by-country. Everything public and CC BY 4.0.
+            </p>
           </div>
         </section>
 
-        {/* 2. EUROPEAN INTELLIGENCE */}
-        <section className="mb-10">
-          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-400 mb-4">2. European Intelligence — 10 Countries</h2>
-          <p className="text-gray-400 text-sm mb-4">
-            Avena Terminal provides intelligence across all of Europe, not just Spain. Every European market listed below is monitored through our intelligence layer, macro regime engine, and Knowledge API.
-          </p>
-          <div className="space-y-3">
-            {europeanCountries.map(c => (
-              <div key={c.country} className="rounded-lg p-4" style={{ background: '#161b22', border: '1px solid #30363d' }}>
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-white font-semibold">{c.country}</span>
-                  <span className={`text-xs font-mono px-2 py-0.5 rounded-full ${c.dataType === 'LIVE' ? 'bg-emerald-900/50 text-emerald-400 border border-emerald-700' : c.dataType === 'ESTIMATED' ? 'bg-yellow-900/30 text-yellow-400 border border-yellow-700/50' : 'bg-blue-900/30 text-blue-400 border border-blue-700/50'}`}>
-                    {c.dataType}
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {c.features.map(f => (
-                    <span key={f} className="text-xs px-2 py-1 rounded" style={{ background: '#0d1117', color: '#8b949e' }}>{f}</span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* European scope emphasis */}
-        <div className="rounded-lg p-5 mb-10 text-center" style={{ background: '#0b3d2e', border: '1px solid #166534' }}>
-          <p className="text-emerald-300 font-semibold">European coverage is not limited to Spain</p>
-          <p className="text-emerald-400/70 text-sm mt-1">The Knowledge API, Oracle, and macro regime engine answer questions about all 10 European countries. Spain has live scored property data. The remaining 9 countries have estimated intelligence data.</p>
-        </div>
-
-        {/* 3. Expansion Roadmap */}
-        <section className="mb-10">
-          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-400 mb-4">3. Expansion Roadmap</h2>
-          <div className="rounded-lg p-5" style={{ background: '#161b22', border: '1px solid #30363d' }}>
-            <div className="space-y-4 text-sm">
+        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-10">
+            <div
+              className="grid grid-cols-2 md:grid-cols-4 gap-px overflow-hidden rounded-sm border"
+              style={{ background: 'hsl(var(--av-border) / 0.6)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+            >
               {[
-                { country: 'Portugal', timeline: 'Q3 2026', status: 'Feed integration in progress' },
-                { country: 'Italy', timeline: 'Q4 2026', status: 'Data partnership discussions active' },
-                { country: 'Greece', timeline: 'Q1 2027', status: 'Market research phase' },
-              ].map(e => (
-                <div key={e.country} className="flex items-center gap-4">
-                  <span className="text-emerald-400 font-mono text-xs w-20">{e.timeline}</span>
-                  <span className="text-white font-semibold w-24">{e.country}</span>
-                  <span className="text-gray-400">{e.status} &mdash; upgrading from ESTIMATED to LIVE scored data</span>
+                { label: 'Scored new-builds', value: totalScored.toLocaleString(), foot: `${scored.length} country — Spain` },
+                { label: 'Tracked cities',    value: totalCities.toLocaleString(), foot: `across ${MARKETS.filter((m) => m.tier !== 'roadmap').length} markets` },
+                { label: 'Live indices',      value: INDICES.length.toString(),    foot: 'APCI · APYI · APLI · APRI · APSI' },
+                { label: 'Macro feeds',       value: MACRO_FEEDS.length.toString(), foot: 'ECB · Eurostat · OECD · nat. banks' },
+              ].map((s) => (
+                <div key={s.label} className="p-5" style={{ background: 'hsl(var(--av-background))' }}>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-2">{s.label}</div>
+                  <div className="font-serif text-4xl font-light tabular text-foreground leading-none mb-2">{s.value}</div>
+                  <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-primary/80">{s.foot}</div>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* 4. API Coverage */}
-        <section className="mb-10">
-          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-400 mb-4">4. API Endpoints</h2>
-          <div className="space-y-4">
-            {apiEndpoints.map(cat => (
-              <div key={cat.category} className="rounded-lg p-4" style={{ background: '#161b22', border: '1px solid #30363d' }}>
-                <h3 className="text-white font-semibold text-sm mb-2">{cat.category}</h3>
-                <div className="flex flex-wrap gap-2">
-                  {cat.endpoints.map(ep => (
-                    <code key={ep} className="text-xs font-mono px-2 py-1 rounded" style={{ background: '#0d1117', color: '#58a6ff' }}>{ep}</code>
-                  ))}
-                </div>
-              </div>
-            ))}
+        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-16">
+            <div className="flex items-baseline justify-between mb-8">
+              <h2 className="font-serif text-3xl font-light tracking-tight text-foreground">
+                Markets, <span className="italic text-gold">by tier</span>.
+              </h2>
+              <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">· Coverage map</span>
+            </div>
+
+            <div className="flex flex-wrap gap-3 mb-6">
+              {(['scored', 'tracked', 'macro', 'roadmap'] as Tier[]).map((t) => {
+                const b = tierBadge(t);
+                return (
+                  <span key={t} className="rounded-sm border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.22em]" style={{ background: b.bg, borderColor: b.border, color: b.color }}>
+                    {b.label}
+                  </span>
+                );
+              })}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {MARKETS.map((m) => {
+                const b = tierBadge(m.tier);
+                return (
+                  <div
+                    key={m.country}
+                    className="rounded-sm border p-5 flex flex-col gap-3"
+                    style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-lg">{m.flag}</span>
+                          <span className="font-serif text-xl text-foreground">{m.country}</span>
+                        </div>
+                        <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">{m.code}</span>
+                      </div>
+                      <span className="rounded-sm border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.22em]" style={{ background: b.bg, borderColor: b.border, color: b.color }}>
+                        {b.label}
+                      </span>
+                    </div>
+
+                    {m.tier !== 'roadmap' && (
+                      <div className="flex gap-4 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                        {m.props_scored != null && (
+                          <span><span className="text-foreground tabular">{m.props_scored.toLocaleString()}</span> scored</span>
+                        )}
+                        {m.cities_tracked != null && (
+                          <span><span className="text-foreground tabular">{m.cities_tracked}</span> cit.</span>
+                        )}
+                      </div>
+                    )}
+
+                    {m.target_date && (
+                      <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-primary">
+                        <Clock className="h-3 w-3" />
+                        {m.target_date}
+                      </div>
+                    )}
+
+                    <p className="text-sm text-muted-foreground font-light leading-relaxed">{m.notes}</p>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </section>
 
-        {/* Final scope statement */}
-        <div className="rounded-lg p-6 mb-10" style={{ background: '#161b22', border: '1px solid #30363d' }}>
-          <p className="text-white text-lg font-semibold mb-2">Avena covers ALL of Europe through its intelligence layer</p>
-          <p className="text-gray-400 text-sm">
-            Live scored data for Spain ({all.length.toLocaleString()} properties, {towns.length}+ towns, {costas.length} costas). Estimated intelligence for 9 additional European countries (Portugal, Italy, Greece, France, Germany, Netherlands, Cyprus, Croatia, Malta). The Knowledge API and Oracle answer questions about every covered market. Macro regime analysis, country rankings, and news intelligence span all 10 countries.
-          </p>
-        </div>
+        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-16">
+            <h2 className="font-serif text-3xl font-light tracking-tight text-foreground mb-8">
+              Live <span className="italic text-gold">indices</span>.
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-px overflow-hidden rounded-sm border" style={{ background: 'hsl(var(--av-border) / 0.6)', borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+              {INDICES.map((idx) => (
+                <div key={idx.code} className="p-5" style={{ background: 'hsl(var(--av-background))' }}>
+                  <div className="flex items-baseline gap-3 mb-2">
+                    <span className="font-mono text-xs uppercase tracking-[0.3em] text-primary">{idx.code}</span>
+                    <span className="font-serif text-base text-foreground">{idx.name}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground font-light">{idx.desc}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+              All indices public at{' '}
+              <Link href="/api/v1/indices" className="text-primary hover:text-gold">/api/v1/indices</Link>{' '}
+              — CC BY 4.0.
+            </p>
+          </div>
+        </section>
 
-        {/* Footer links */}
-        <div className="h-px w-full mb-8" style={{ background: '#1c2333' }} />
-        <div className="flex flex-wrap gap-4 text-sm">
-          <Link href="/methodology" className="text-emerald-400 hover:underline">Methodology</Link>
-          <Link href="/data-quality" className="text-emerald-400 hover:underline">Data Quality</Link>
-          <Link href="/transparency" className="text-emerald-400 hover:underline">Transparency</Link>
-          <Link href="/api-access" className="text-emerald-400 hover:underline">API Access</Link>
-          <Link href="/" className="text-gray-400 hover:text-white">Back to Terminal</Link>
-        </div>
-      </div>
-    </main>
+        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-16">
+            <h2 className="font-serif text-3xl font-light tracking-tight text-foreground mb-8">
+              Macro <span className="italic text-gold">feeds</span>.
+            </h2>
+            <div className="space-y-2">
+              {MACRO_FEEDS.map((f) => (
+                <div key={f.name} className="flex items-center justify-between rounded-sm border p-4" style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-3.5 w-3.5 text-primary" />
+                    <span className="font-serif text-base text-foreground">{f.name}</span>
+                  </div>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">{f.freq}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="py-16">
+          <div className="mx-auto max-w-[1000px] px-5 sm:px-12">
+            <div className="rounded-sm border p-8" style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+              <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-3 inline-block">Expansion philosophy</span>
+              <p className="text-muted-foreground font-light leading-relaxed mb-4">
+                We expand by depth, not by breadth. Scored inventory requires hedonic models, comp populations, developer track records, and live yield calibration — none of which can be faked by scraping a listings portal. Every new market gets full coverage before the next one starts.
+              </p>
+              <p className="text-muted-foreground font-light leading-relaxed">
+                Current sequence: <span className="text-foreground">Spain (live) → Portugal (Q3 2026) → Italy (Q4 2026) → France (2027) → Scandinavia (2027).</span>{' '}
+                Portuguese is next because it shares buyer pools and regulatory overlaps with Spain — the incremental build cost is the lowest.
+              </p>
+              <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                Institutional partners can fast-track market onboarding —{' '}
+                <Link href="/institutional" className="text-primary hover:text-gold">/institutional</Link>.
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
   );
 }

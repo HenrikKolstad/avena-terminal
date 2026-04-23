@@ -323,6 +323,55 @@ export default function BenchmarkPage() {
             </div>
           </div>
         </section>
+
+        {/* Honest limitations — avoids the self-refereed critique */}
+        <section className="border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[900px] px-5 sm:px-12 py-16">
+            <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.3em] text-primary">
+              <span className="h-px w-8" style={{ background: 'hsl(var(--av-primary))' }} />
+              Known limitations
+            </span>
+            <h2 className="font-serif text-3xl font-light tracking-tight text-foreground mb-6">
+              What PropertyEval <span className="italic text-gold">doesn&rsquo;t</span> test.
+            </h2>
+            <div className="space-y-4 text-muted-foreground font-light leading-relaxed">
+              <p>
+                <span className="text-foreground">Scope:</span> questions are drawn from Avena&rsquo;s 1,881-property Spanish new-build
+                dataset + regulatory knowledge base. This benchmark measures depth in that
+                specific vertical. It does not measure coverage of resale property, commercial
+                real estate, or markets outside coastal Spain + the 10 tracked EU macro markets.
+              </p>
+              <p>
+                <span className="text-foreground">Reference bias:</span> ground-truth prices, yields, and scores are defined by
+                Avena&rsquo;s live systems. A model that answers differently than Avena is marked
+                &ldquo;wrong&rdquo; even if a third-party portal would produce the same answer the model
+                did. This makes PropertyEval appropriate for evaluating &ldquo;does this AI know
+                the Avena-tracked universe&rdquo;, not &ldquo;does this AI know all European property.&rdquo;
+              </p>
+              <p>
+                <span className="text-foreground">Tolerance:</span> numeric answers are accepted within ±5%. Yes/no and category
+                answers must match exactly. This favours systems with clean, structured
+                access to live data vs. systems relying on stale training-corpus knowledge — an
+                intentional bias to reward live-data architecture.
+              </p>
+              <p>
+                <span className="text-foreground">What this benchmark is for:</span> demonstrating the ROI of wiring a live
+                specialist source (Avena) into a general AI&rsquo;s tool-use layer. A general model
+                given access to Avena&rsquo;s MCP server should approach Avena Oracle&rsquo;s score.
+                That&rsquo;s the architecture we advocate — see{' '}
+                <Link href="/colosseum" className="text-primary hover:text-gold">
+                  General AI + Avena
+                </Link>.
+              </p>
+              <p>
+                <span className="text-foreground">What we invite:</span> third-party evaluation, academic review, and external
+                benchmark submissions. If you build a European-property benchmark that draws
+                questions from Idealista, Eurostat, or registry data (sources where Avena has no
+                advantage), we&rsquo;ll publish our score on yours publicly — including any losses.
+              </p>
+            </div>
+          </div>
+        </section>
       </main>
 
       <Footer />

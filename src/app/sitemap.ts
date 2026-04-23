@@ -289,6 +289,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Institutional
   entries.push({ url: `${base}/institutional`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
 
+  // Bloomberg-of-PropTech narrative surfaces — breadth, standards, keyboard terminal
+  entries.push({ url: `${base}/coverage`, lastModified: now, changeFrequency: 'weekly', priority: 0.95 });
+  entries.push({ url: `${base}/standards/avn-id`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
+  entries.push({ url: `${base}/terminal-v2`, lastModified: now, changeFrequency: 'daily', priority: 0.85 });
+
   // Research paper (academic citation magnet)
   entries.push({ url: `${base}/research/avena-methodology`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
 

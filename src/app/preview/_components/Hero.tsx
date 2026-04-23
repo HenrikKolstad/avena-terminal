@@ -66,12 +66,14 @@ export function Hero() {
         </div>
 
         <div className="max-w-5xl fade-up">
-          <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+          <span className="mb-6 inline-flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
             <span
               className="h-px w-10"
               style={{ background: 'hsl(var(--av-primary))' }}
             />
-            European Property Intelligence · Est. 2026
+            <span>European Property Intelligence · Est. 2026</span>
+            <span className="text-muted-foreground/60">·</span>
+            <span className="text-muted-foreground">10 markets · 30 cities · 1 881 scored new-builds</span>
           </span>
 
           <h1 className="font-serif text-[15vw] font-light leading-[0.92] tracking-tight text-foreground sm:text-[10vw] lg:text-[8.2rem] xl:text-[9.5rem]">
