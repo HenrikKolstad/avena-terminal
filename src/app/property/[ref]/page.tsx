@@ -7,6 +7,9 @@ import { getAllProperties, slugify } from '@/lib/properties';
 import { Property } from '@/lib/types';
 import PropertyGallery from '@/components/PropertyGallery';
 import { DiscountExplainer } from '@/components/v2/DiscountExplainer';
+import { WatchlistButton } from '@/components/v2/WatchlistButton';
+import { SimilarDeals } from '@/components/v2/SimilarDeals';
+import { DataFreshness } from '@/components/v2/DataFreshness';
 
 function findProperty(ref: string): Property | null {
   return getAllProperties().find((p) => p.ref === ref) ?? null;
@@ -243,16 +246,22 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                 );
                 const mailto = `mailto:henrik@xaviaestate.com?subject=${subject}&body=${body}`;
                 return (
-                  <a
-                    href={mailto}
-                    className="group inline-flex items-center justify-center gap-3 rounded-sm px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5 w-full sm:w-auto"
-                    style={{ background: 'var(--av-gradient-gold)' }}
-                  >
-                    Contact Avena
-                    <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                  </a>
+                  <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    <a
+                      href={mailto}
+                      className="group inline-flex items-center justify-center gap-3 rounded-sm px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5 flex-1"
+                      style={{ background: 'var(--av-gradient-gold)' }}
+                    >
+                      Contact Avena
+                      <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </a>
+                    {p.ref && <WatchlistButton propertyRef={p.ref} size="md" />}
+                  </div>
                 );
               })()}
+              <div className="mt-4">
+                <DataFreshness label="Property data" />
+              </div>
             </div>
           </section>
 
@@ -408,6 +417,14 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
               })()}
             </div>
           </section>
+
+          {/* Similar deals in the same town */}
+          <SimilarDeals
+            currentRef={p.ref ?? ''}
+            town={p.l}
+            type={p.t}
+            price={p.pf}
+          />
         </div>
       </main>
 

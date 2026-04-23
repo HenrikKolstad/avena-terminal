@@ -12,6 +12,10 @@ type CommandKey =
   | 'PRED'
   | 'MACRO'
   | 'AVN'
+  | 'TOWN'
+  | 'RANK'
+  | 'WATCH'
+  | 'EXPORT'
   | 'HELP'
   | 'HOME';
 
@@ -19,23 +23,29 @@ interface TerminalState {
   query: string;
   history: string[];
   focus: number;
-  activeView: 'search' | 'detail' | 'help' | 'dashboard';
+  activeView: 'search' | 'detail' | 'help' | 'dashboard' | 'town' | 'rank';
   activeCommand?: CommandKey;
   activeProperty?: TerminalProperty;
+  activeTownName?: string;
+  activeRegion?: string;
   avnResolved?: unknown;
   message?: string;
 }
 
 const COMMANDS: Array<{ key: CommandKey; desc: string; usage: string }> = [
-  { key: 'SCORE', desc: 'Avena Score breakdown (V·Y·L·Q·R)',         usage: 'SCORE [ref]' },
-  { key: 'YIELD', desc: 'Gross yield + rent estimate + band position', usage: 'YIELD [ref]' },
-  { key: 'COMP',  desc: 'Comparable properties in same town',          usage: 'COMP [ref]' },
-  { key: 'APCI',  desc: 'Live APCI composite index (0–100)',           usage: 'APCI' },
-  { key: 'PRED',  desc: 'Active predictions + leaderboard',            usage: 'PRED' },
-  { key: 'MACRO', desc: 'Macro dashboard (ECB, FX, inflation)',        usage: 'MACRO' },
-  { key: 'AVN',   desc: 'Resolve AVN_PROP_ID inline',                  usage: 'AVN <id>' },
-  { key: 'HELP',  desc: 'Show all commands',                           usage: 'HELP' },
-  { key: 'HOME',  desc: 'Return to search',                            usage: 'HOME' },
+  { key: 'SCORE',  desc: 'Avena Score breakdown (V·Y·L·Q·R)',         usage: 'SCORE [ref]' },
+  { key: 'YIELD',  desc: 'Gross yield + rent estimate + band',         usage: 'YIELD [ref]' },
+  { key: 'COMP',   desc: 'Comparable properties in same town',         usage: 'COMP [ref]' },
+  { key: 'TOWN',   desc: 'Market snapshot for a town',                 usage: 'TOWN <name>' },
+  { key: 'RANK',   desc: 'Top 10 scored properties (optional region)', usage: 'RANK [region]' },
+  { key: 'WATCH',  desc: 'Add property to your watchlist',             usage: 'WATCH [ref]' },
+  { key: 'EXPORT', desc: 'Copy property JSON to clipboard',            usage: 'EXPORT [ref]' },
+  { key: 'APCI',   desc: 'Live APCI composite index (0–100)',          usage: 'APCI' },
+  { key: 'PRED',   desc: 'Active predictions + leaderboard',           usage: 'PRED' },
+  { key: 'MACRO',  desc: 'Macro dashboard (ECB, FX, inflation)',       usage: 'MACRO' },
+  { key: 'AVN',    desc: 'Resolve AVN_PROP_ID inline',                 usage: 'AVN <id>' },
+  { key: 'HELP',   desc: 'Show all commands',                          usage: 'HELP' },
+  { key: 'HOME',   desc: 'Return to search',                           usage: 'HOME' },
 ];
 
 function fmt(n: number): string {
@@ -131,6 +141,72 @@ export function TerminalV2({ properties }: { properties: TerminalProperty[] }) {
             setState((s) => ({ ...s, avnResolved: data, message: r.ok ? `AVN · ${arg}` : `AVN · not found` }));
           } catch {
             setState((s) => ({ ...s, message: 'AVN resolver unreachable' }));
+          }
+          return;
+        }
+
+        // TOWN — inline market snapshot
+        if (cmd === 'TOWN') {
+          const needle = arg || state.activeProperty?.town || '';
+          if (!needle) {
+            setState((s) => ({ ...s, query: '', history, message: 'TOWN needs a town. Try: TOWN Torrevieja' }));
+            return;
+          }
+          setState((s) => ({
+            ...s,
+            query: '',
+            history,
+            activeView: 'town',
+            activeCommand: 'TOWN',
+            activeTownName: needle,
+            message: `TOWN · ${needle}`,
+          }));
+          return;
+        }
+
+        // RANK — top 10 by score
+        if (cmd === 'RANK') {
+          setState((s) => ({
+            ...s,
+            query: '',
+            history,
+            activeView: 'rank',
+            activeCommand: 'RANK',
+            activeRegion: arg || undefined,
+            message: arg ? `RANK · ${arg}` : 'RANK · all',
+          }));
+          return;
+        }
+
+        // WATCH — toggle watchlist client-side
+        if (cmd === 'WATCH') {
+          const prop = properties.find((p) => p.ref === arg) || state.activeProperty;
+          if (!prop) {
+            setState((s) => ({ ...s, query: '', history, message: 'WATCH needs a property. Search, click, then WATCH.' }));
+            return;
+          }
+          try {
+            const mod = await import('@/lib/watchlist');
+            const { added } = mod.toggleWatchlist(prop.ref);
+            setState((s) => ({ ...s, query: '', history, message: `${added ? '★ Added' : '☆ Removed'} · ${prop.ref}` }));
+          } catch {
+            setState((s) => ({ ...s, query: '', history, message: 'Watchlist unavailable in this environment' }));
+          }
+          return;
+        }
+
+        // EXPORT — copy JSON to clipboard
+        if (cmd === 'EXPORT') {
+          const prop = properties.find((p) => p.ref === arg) || state.activeProperty;
+          if (!prop) {
+            setState((s) => ({ ...s, query: '', history, message: 'EXPORT needs a property.' }));
+            return;
+          }
+          try {
+            await navigator.clipboard.writeText(JSON.stringify(prop, null, 2));
+            setState((s) => ({ ...s, query: '', history, message: `Copied JSON · ${prop.ref}` }));
+          } catch {
+            setState((s) => ({ ...s, query: '', history, message: 'Clipboard blocked' }));
           }
           return;
         }
@@ -267,6 +343,10 @@ export function TerminalV2({ properties }: { properties: TerminalProperty[] }) {
               />
             ) : state.activeView === 'dashboard' ? (
               <Dashboard command={state.activeCommand} avnResolved={state.avnResolved} />
+            ) : state.activeView === 'town' && state.activeTownName ? (
+              <TownPanel town={state.activeTownName} properties={properties} />
+            ) : state.activeView === 'rank' ? (
+              <RankPanel region={state.activeRegion} properties={properties} onPick={(p) => setState((s) => ({ ...s, activeView: 'detail', activeProperty: p, activeCommand: undefined }))} />
             ) : (
               <EmptyDetail />
             )}
@@ -793,5 +873,103 @@ function DashLink({ href, label }: { href: string; label: string }) {
         {label} →
       </Link>
     </div>
+  );
+}
+
+/* ── TOWN / RANK panels ─────────────────────────────────────────── */
+
+function TownPanel({ town, properties }: { town: string; properties: TerminalProperty[] }) {
+  const inTown = properties.filter((p) => p.town.toLowerCase() === town.toLowerCase());
+  if (inTown.length === 0) {
+    return (
+      <PanelShell title={`TOWN · ${town}`} subtitle="No matches in working set">
+        <div className="font-mono text-[11px] text-muted-foreground">
+          No properties indexed for {town}. Try Torrevieja, Javea, Altea, Estepona, Marbella, Mijas.
+        </div>
+      </PanelShell>
+    );
+  }
+  const avgScore = Math.round(inTown.reduce((s, p) => s + p.score, 0) / inTown.length);
+  const avgPrice = Math.round(inTown.reduce((s, p) => s + p.price, 0) / inTown.length);
+  const avgYield = inTown.reduce((s, p) => s + p.yield_gross, 0) / inTown.length;
+  const avgPm2 = inTown.reduce((s, p) => s + (p.pm2 || 0), 0) / Math.max(1, inTown.filter(p => p.pm2).length);
+  const top5 = [...inTown].sort((a, b) => b.score - a.score).slice(0, 5);
+
+  return (
+    <PanelShell title={`TOWN · ${town}`} subtitle={`${inTown.length} indexed`}>
+      <div className="grid grid-cols-4 gap-px overflow-hidden rounded-sm border mb-5" style={{ background: 'hsl(var(--av-border) / 0.6)', borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+        {[
+          { k: 'Avg Score', v: avgScore, accent: true },
+          { k: 'Avg Price', v: `€${fmt(avgPrice)}` },
+          { k: 'Avg €/m²', v: `€${fmt(Math.round(avgPm2))}` },
+          { k: 'Avg yield', v: `${avgYield.toFixed(2)}%` },
+        ].map((r) => (
+          <div key={r.k} className="p-3" style={{ background: 'hsl(var(--av-background))' }}>
+            <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-1">{r.k}</div>
+            <div className={`font-mono tabular text-sm ${r.accent ? 'text-primary' : 'text-foreground'}`}>{r.v}</div>
+          </div>
+        ))}
+      </div>
+      <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-2">Top 5 by score</div>
+      <div className="rounded-sm border overflow-hidden" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+        {top5.map((p, i) => (
+          <Link
+            key={p.ref}
+            href={`/property/${encodeURIComponent(p.ref)}`}
+            className="flex items-center justify-between px-4 py-2 border-b transition-colors hover:bg-primary/5"
+            style={{ borderColor: i < top5.length - 1 ? 'hsl(var(--av-border) / 0.3)' : 'transparent', background: 'hsl(var(--av-background))' }}
+          >
+            <div className="min-w-0">
+              <div className="font-serif text-sm text-foreground truncate">{p.project}</div>
+              <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">{p.type} · {p.beds}bed</div>
+            </div>
+            <div className="text-right flex-shrink-0">
+              <div className="font-mono tabular text-sm text-gold">{p.score}</div>
+              <div className="font-mono text-[9px] text-muted-foreground">€{fmt(p.price)}</div>
+            </div>
+          </Link>
+        ))}
+      </div>
+      <DashLink href={`/towns/${encodeURIComponent(town.toLowerCase().replace(/\s+/g, '-'))}`} label={`Full ${town} page`} />
+    </PanelShell>
+  );
+}
+
+function RankPanel({ region, properties, onPick }: { region?: string; properties: TerminalProperty[]; onPick: (p: TerminalProperty) => void }) {
+  const filtered = region
+    ? properties.filter((p) =>
+        (p.region?.toLowerCase().includes(region.toLowerCase())) ||
+        (p.town?.toLowerCase().includes(region.toLowerCase()))
+      )
+    : properties;
+  const top10 = [...filtered].sort((a, b) => b.score - a.score).slice(0, 10);
+
+  return (
+    <PanelShell title={`RANK · Top 10${region ? ` in ${region}` : ''}`} subtitle={`${filtered.length} eligible`}>
+      {top10.length === 0 ? (
+        <div className="font-mono text-[11px] text-muted-foreground">No matches for {region}.</div>
+      ) : (
+        <div className="rounded-sm border overflow-hidden" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          {top10.map((p, i) => (
+            <button
+              key={p.ref}
+              onClick={() => onPick(p)}
+              className="w-full text-left flex items-center gap-3 px-4 py-2 border-b transition-colors hover:bg-primary/5"
+              style={{ borderColor: i < top10.length - 1 ? 'hsl(var(--av-border) / 0.3)' : 'transparent', background: 'hsl(var(--av-background))' }}
+            >
+              <span className="font-mono tabular text-[10px] text-muted-foreground w-5">{i + 1}</span>
+              <div className="min-w-0 flex-1">
+                <div className="font-serif text-sm text-foreground truncate">{p.project}</div>
+                <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground truncate">{p.town} · {p.type}</div>
+              </div>
+              <div className="text-right flex-shrink-0">
+                <div className="font-mono tabular text-sm text-gold">{p.score}</div>
+                <div className="font-mono text-[9px] text-muted-foreground">€{fmt(p.price)}</div>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </PanelShell>
   );
 }

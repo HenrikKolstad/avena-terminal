@@ -1,9 +1,10 @@
 'use client';
 
-import { Menu, Search, X, LogIn, User as UserIcon } from 'lucide-react';
+import { Menu, Search, X, LogIn, Star, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { ProModal } from './ProModal';
+import { WatchlistBadge } from './WatchlistButton';
 import { useAuth } from '@/context/AuthContext';
 
 const links = [
@@ -95,6 +96,14 @@ export function Nav() {
           >
             <Search className="h-4 w-4" />
           </button>
+          <Link
+            href="/watchlist"
+            aria-label="Watchlist"
+            className="hidden h-9 items-center justify-center rounded-sm px-2 text-muted-foreground transition-colors hover:text-primary lg:inline-flex"
+          >
+            <Star className="h-4 w-4" />
+            <WatchlistBadge />
+          </Link>
           {user ? (
             <Link
               href="/login"
