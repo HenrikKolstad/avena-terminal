@@ -10,6 +10,8 @@ import { DiscountExplainer } from '@/components/v2/DiscountExplainer';
 import { WatchlistButton } from '@/components/v2/WatchlistButton';
 import { SimilarDeals } from '@/components/v2/SimilarDeals';
 import { DataFreshness } from '@/components/v2/DataFreshness';
+import { RecordPropertyView } from '@/components/v2/RecordPropertyView';
+import { ShareButtons } from '@/components/v2/ShareButtons';
 
 function findProperty(ref: string): Property | null {
   return getAllProperties().find((p) => p.ref === ref) ?? null;
@@ -163,6 +165,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }} />
 
       <Nav />
+      {p.ref && <RecordPropertyView propertyRef={p.ref} />}
 
       <main className="pt-16">
         <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-10">
@@ -313,6 +316,15 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                   </Link>
                 )}
               </div>
+              {p.ref && (
+                <div className="mt-4">
+                  <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-2">Share</div>
+                  <ShareButtons
+                    url={`https://avenaterminal.com/property/${encodeURIComponent(p.ref)}`}
+                    text={`${p.p || `${p.t} in ${p.l}`} · Avena Score ${Math.round(p._sc ?? 0)}/100 · €${p.pf.toLocaleString()}${discount ? ` · ${discount}% below market` : ''}`}
+                  />
+                </div>
+              )}
             </div>
           </section>
 

@@ -91,10 +91,16 @@ export function Nav() {
 
         <div className="flex items-center gap-2">
           <button
-            className="hidden h-9 w-9 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-foreground lg:flex"
-            aria-label="Search"
+            onClick={() => {
+              // trigger Cmd+K palette via synthetic keydown
+              document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
+            }}
+            className="hidden h-9 items-center gap-2 rounded-sm border px-2.5 text-muted-foreground transition-colors hover:text-foreground lg:flex"
+            aria-label="Search (Cmd + K)"
+            style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
           >
-            <Search className="h-4 w-4" />
+            <Search className="h-3.5 w-3.5" />
+            <kbd className="font-mono text-[9px] uppercase tracking-[0.22em]">⌘K</kbd>
           </button>
           <Link
             href="/watchlist"
