@@ -1,166 +1,210 @@
-// Avena Intelligence Chrome Extension — Content Script
-// Detects property listings and overlays Avena intelligence
+// Avena Terminal — Browser Extension content script
+// Overlays the Avena Score on property listings across idealista, kyero,
+// rightmove, fotocasa, aplaceinthesun, spainhouses, thinkspain.
+//
+// v1.1.0 — luxe brand + row badges + floating card + listing-page detection
 
-(function() {
+(function () {
   'use strict';
 
-  const AVENA_API = 'https://avenaterminal.com/api/v1/extension/analyze';
+  const API = 'https://avenaterminal.com/api/v1/extension/analyze';
+  const BASE = 'https://avenaterminal.com';
 
-  // Platform-specific selectors for extracting property data
+  // Scraper per hostname
   const PLATFORMS = {
     'kyero.com': {
-      priceSelector: '.price, [class*="price"]',
-      locationSelector: '.location, [class*="location"], h1',
-      typeSelector: '[class*="type"], .property-type',
-      listingSelector: '.listing-card, .property-card, article',
+      price: '.price, [class*="price"], h2.price',
+      location: '.location, [class*="location"], h1',
+      type: '[class*="type"], .property-type',
+      listing: '.listing-card, .property-card, article',
     },
     'idealista.com': {
-      priceSelector: '.item-price, .price-row',
-      locationSelector: '.item-detail-char .item-location, .main-info__title-main',
-      typeSelector: '.item-detail-char .item-typology',
-      listingSelector: 'article.item, .item-multimedia-container',
+      price: '.item-price, .price-row, .price',
+      location: '.item-detail-char .item-location, .main-info__title-main',
+      type: '.item-detail-char .item-typology',
+      listing: 'article.item, .item-multimedia-container',
     },
     'rightmove.co.uk': {
-      priceSelector: '.propertyCard-priceValue, .price',
-      locationSelector: '.propertyCard-address, address',
-      typeSelector: '.propertyCard-details .property-information',
-      listingSelector: '.propertyCard, .l-searchResult',
+      price: '.propertyCard-priceValue, .price',
+      location: '.propertyCard-address, address',
+      type: '.propertyCard-details .property-information',
+      listing: '.propertyCard, .l-searchResult',
     },
     'aplaceinthesun.com': {
-      priceSelector: '.price, [class*="price"]',
-      locationSelector: '.location, [class*="location"]',
-      typeSelector: '[class*="type"]',
-      listingSelector: '.property-card, .listing',
+      price: '.price, [class*="price"]',
+      location: '.location, h1, [class*="location"]',
+      type: '.property-type',
+      listing: '.property-card, article',
     },
     'fotocasa.es': {
-      priceSelector: '.re-CardPrice, [class*="price"]',
-      locationSelector: '.re-CardTitle, [class*="location"]',
-      typeSelector: '[class*="typology"]',
-      listingSelector: '.re-SearchResult, article',
+      price: '.re-DetailHeader-price, .re-CardPrice',
+      location: '.re-DetailHeader-propertyTitle, .re-CardTitle',
+      type: '.re-DetailHeader-propertyType',
+      listing: '.re-CardPackAdvance, article',
+    },
+    'spainhouses.net': {
+      price: '.price, [class*="price"]',
+      location: '.location, h1',
+      type: '.type',
+      listing: '.property, article',
+    },
+    'thinkspain.com': {
+      price: '.price, [class*="price"]',
+      location: '.location, h1',
+      type: '.type',
+      listing: '.listing, article',
     },
   };
 
-  function detectPlatform() {
-    const host = window.location.hostname.replace('www.', '');
-    return PLATFORMS[host] || null;
+  function getHost() {
+    const h = window.location.hostname.replace(/^www\./, '');
+    return Object.keys(PLATFORMS).find((k) => h.endsWith(k));
   }
 
-  function extractText(el, selector) {
-    const found = el.querySelector(selector);
-    return found ? found.textContent.trim() : null;
+  function parsePrice(s) {
+    if (!s) return null;
+    const digits = s.replace(/[^\d]/g, '');
+    const n = parseInt(digits, 10);
+    return isFinite(n) && n > 10000 ? n : null;
   }
 
-  function extractPrice(text) {
-    if (!text) return null;
-    const match = text.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(',', '.');
-    const num = parseFloat(match);
-    return isNaN(num) ? null : num;
+  function scoreToneColor(score) {
+    if (score >= 80) return '#F5A623'; // gold
+    if (score >= 65) return '#F5B555'; // amber
+    if (score >= 50) return '#C9C0B6'; // muted
+    return '#E07A1F';                  // accent
   }
 
-  function createBadge(data) {
-    const badge = document.createElement('div');
-    badge.className = 'avena-intelligence-badge';
-
-    const scoreColor = data.deal_score >= 75 ? '#10b981' : data.deal_score >= 60 ? '#fbbf24' : data.deal_score >= 45 ? '#f97316' : '#f87171';
-    const scoreBar = data.deal_score ? Math.round(data.deal_score / 100 * 5) : 0;
-    const barFill = '\u2588'.repeat(scoreBar) + '\u2592'.repeat(5 - scoreBar);
-
-    badge.innerHTML = `
-      <div style="background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:10px 12px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:11px;color:#c9d1d9;min-width:220px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:99999;position:relative;">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;border-bottom:1px solid #1c2333;padding-bottom:6px;">
-          <span style="color:#10b981;font-weight:bold;font-size:10px;letter-spacing:1px;">⬡ AVENA INTELLIGENCE</span>
-          ${data.match_type === 'ESTIMATE' ? '<span style="background:#fbbf2420;color:#fbbf24;font-size:8px;padding:1px 4px;border-radius:3px;">EST</span>' : ''}
-        </div>
-        ${data.deal_score !== null ? `
-        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-          <span style="color:#8b949e;">Deal Score</span>
-          <span style="color:${scoreColor};font-weight:bold;">${data.deal_score}/100 <span style="font-size:9px;letter-spacing:-1px;">${barFill}</span></span>
-        </div>` : ''}
-        ${data.yield_estimate ? `
-        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-          <span style="color:#8b949e;">Est. Yield</span>
-          <span style="color:#c9d1d9;">${data.yield_estimate}%</span>
-        </div>` : ''}
-        ${data.developer_rating ? `
-        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-          <span style="color:#8b949e;">Developer</span>
-          <span style="color:#10b981;">${data.developer_rating} ✓</span>
-        </div>` : ''}
-        ${data.market_regime ? `
-        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-          <span style="color:#8b949e;">Regime</span>
-          <span style="color:#34d399;">${data.market_regime} ↑</span>
-        </div>` : ''}
-        ${data.vs_market ? `
-        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-          <span style="color:#8b949e;">vs Market</span>
-          <span style="color:#10b981;">${data.vs_market}</span>
-        </div>` : ''}
-        ${data.match_type === 'OUT_OF_MARKET' ? `
-        <div style="color:#8b949e;font-size:10px;">${data.message}</div>
-        <div style="color:#fbbf24;font-size:9px;margin-top:4px;">${data.coverage}</div>` : ''}
-        <div style="border-top:1px solid #1c2333;margin-top:6px;padding-top:6px;">
-          <a href="${data.full_analysis_url || 'https://avenaterminal.com'}" target="_blank" style="color:#10b981;text-decoration:none;font-size:10px;">
-            View full analysis → avenaterminal.com
-          </a>
-        </div>
-      </div>
-    `;
-
-    return badge;
+  function extractListingData() {
+    const host = getHost();
+    if (!host) return null;
+    const sel = PLATFORMS[host];
+    const price = parsePrice(document.querySelector(sel.price)?.textContent || '');
+    const location = (document.querySelector(sel.location)?.textContent || '').trim().slice(0, 120);
+    const type = (document.querySelector(sel.type)?.textContent || '').trim().slice(0, 40);
+    if (!price && !location) return null;
+    return { price, location, type, source_url: window.location.href };
   }
 
-  async function analyzeAndInject(listing, platform) {
-    if (listing.querySelector('.avena-intelligence-badge')) return;
-
-    const priceText = extractText(listing, platform.priceSelector);
-    const locationText = extractText(listing, platform.locationSelector);
-    const typeText = extractText(listing, platform.typeSelector);
-
-    const price = extractPrice(priceText);
-
+  async function queryAvena(payload) {
     try {
-      const res = await fetch(AVENA_API, {
+      const r = await fetch(API, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          price,
-          location: locationText,
-          type: typeText,
-          source_url: window.location.href,
-        }),
+        body: JSON.stringify(payload),
       });
-
-      const data = await res.json();
-      const badge = createBadge(data);
-
-      listing.style.position = listing.style.position || 'relative';
-      badge.style.position = 'absolute';
-      badge.style.top = '8px';
-      badge.style.right = '8px';
-      badge.style.zIndex = '99999';
-      listing.appendChild(badge);
-    } catch (err) {
-      console.log('Avena Intelligence: analysis failed for listing');
+      if (!r.ok) return null;
+      return await r.json();
+    } catch {
+      return null;
     }
   }
 
-  function scanPage() {
-    const platform = detectPlatform();
-    if (!platform) return;
+  function renderFloatingCard(data, listing) {
+    // Remove any existing
+    const existing = document.querySelector('.avena-badge-root');
+    if (existing) existing.remove();
 
-    const listings = document.querySelectorAll(platform.listingSelector);
-    listings.forEach(listing => analyzeAndInject(listing, platform));
+    const root = document.createElement('div');
+    root.className = 'avena-badge-root';
+    const score = Math.round(data?.score ?? 0);
+    const toneColor = scoreToneColor(score);
+
+    const discount = data?.discount_vs_market ?? null;
+    const townMedian = data?.town_median_m2 ?? null;
+    const marketVerdict = data?.verdict ?? '';
+
+    const metrics = [
+      ['Your price',   listing.price ? `€${listing.price.toLocaleString()}` : '—', false],
+      ['Town median',  townMedian ? `€${townMedian.toLocaleString()}/m²` : '—', false],
+      ['Discount',     discount != null ? `${discount > 0 ? '−' : '+'}${Math.abs(discount)}%` : '—', discount != null && discount > 0],
+      ['Verdict',      marketVerdict || '—', false],
+    ];
+
+    root.innerHTML = `
+      <div class="avena-card">
+        <div class="avena-header">
+          <div class="avena-mono">A</div>
+          <div class="avena-title">Avena Score</div>
+          <button class="avena-close" aria-label="Close">×</button>
+        </div>
+        <div class="avena-score-row">
+          <div class="avena-score" style="color:${toneColor}">${score || '—'}</div>
+          <div class="avena-score-meta">
+            <div class="label">out of 100</div>
+            <div class="value">${listing.location || 'Property detected'}</div>
+          </div>
+        </div>
+        <div class="avena-metrics">
+          ${metrics.map(([k, v, accent]) => `
+            <div class="avena-metric ${accent ? 'accent' : ''}">
+              <div class="k">${k}</div>
+              <div class="v">${v}</div>
+            </div>
+          `).join('')}
+        </div>
+        <a class="avena-cta" href="${BASE}" target="_blank" rel="noopener">Open Avena Terminal →</a>
+        <div class="avena-sub">CC BY 4.0 · avenaterminal.com</div>
+      </div>
+    `;
+
+    root.querySelector('.avena-close').addEventListener('click', () => root.remove());
+    document.body.appendChild(root);
   }
 
-  // Initial scan
-  setTimeout(scanPage, 2000);
+  function injectRowBadges() {
+    const host = getHost();
+    if (!host) return;
+    const sel = PLATFORMS[host];
+    const nodes = document.querySelectorAll(sel.listing);
+    nodes.forEach((node) => {
+      if (node.dataset.avenaInjected) return;
+      node.dataset.avenaInjected = '1';
+      const priceEl = node.querySelector(sel.price);
+      if (!priceEl) return;
+      const price = parsePrice(priceEl.textContent || '');
+      if (!price) return;
+      const badge = document.createElement('span');
+      badge.className = 'avena-row-badge avena-badge-root';
+      badge.innerHTML = `<span class="a">A</span>SCORE`;
+      badge.title = 'Click for Avena Score';
+      badge.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const locEl = node.querySelector(sel.location);
+        const location = (locEl?.textContent || '').trim();
+        const data = await queryAvena({ price, location, source_url: window.location.href });
+        renderFloatingCard(data || { score: null }, { price, location });
+      });
+      priceEl.appendChild(badge);
+    });
+  }
 
-  // Watch for dynamic content (infinite scroll, AJAX loads)
-  const observer = new MutationObserver(() => {
-    setTimeout(scanPage, 500);
-  });
-  observer.observe(document.body, { childList: true, subtree: true });
+  async function main() {
+    const host = getHost();
+    if (!host) return;
 
-  console.log('Avena Intelligence extension loaded — avenaterminal.com');
+    // Detection: is this a detail page or a list?
+    const listing = extractListingData();
+    if (listing && listing.price) {
+      // Detail page — auto-show card after a short delay
+      setTimeout(async () => {
+        const data = await queryAvena(listing);
+        renderFloatingCard(data || { score: null }, listing);
+      }, 800);
+    }
+
+    // Inject row badges on list pages
+    injectRowBadges();
+
+    // Watch for SPA-style navigation and re-inject
+    const observer = new MutationObserver(() => injectRowBadges());
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', main);
+  } else {
+    main();
+  }
 })();

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Avena Intelligence — Property Scorer",
-  "version": "1.0.0",
-  "description": "See AI-powered deal scores, rental yields, and market intelligence on any Spanish property listing. Powered by Avena Terminal.",
+  "name": "Avena Terminal — Property Score Overlay",
+  "version": "1.1.0",
+  "description": "Overlays the Avena Score (0–100) on property listings across idealista, kyero, rightmove, fotocasa and more. Spot below-market deals instantly.",
   "permissions": ["activeTab"],
   "host_permissions": [
     "https://www.kyero.com/*",
@@ -25,7 +25,8 @@
         "https://www.thinkspain.com/*"
       ],
       "js": ["content.js"],
-      "css": ["badge.css"]
+      "css": ["badge.css"],
+      "run_at": "document_idle"
     }
   ],
   "icons": {
@@ -35,6 +36,8 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_icon": "icon48.png"
-  }
+    "default_icon": "icon48.png",
+    "default_title": "Avena Terminal"
+  },
+  "homepage_url": "https://avenaterminal.com/extension"
 }

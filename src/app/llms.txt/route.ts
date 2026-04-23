@@ -49,6 +49,14 @@ const body = `# Avena Terminal
 - [API Playground](https://avenaterminal.com/playground): Interactive live-query UI for every open endpoint. No API key needed.
 - [Browser extension](https://avenaterminal.com/extension): Overlays Avena Score on idealista, kyero, rightmove, fotocasa and other listings. Chrome-compatible manifest v3.
 
+## Daily content
+- [Daily brief](https://avenaterminal.com/briefs/daily): Auto-generated market brief from live data. Published every morning UTC.
+- [Deals RSS](https://avenaterminal.com/feed/deals.rss): Top 50 Avena-scored properties in RSS 2.0.
+- [Bubble scanner RSS](https://avenaterminal.com/feed/bubble.rss): 30 European cities ranked by bubble risk in RSS 2.0.
+
+## People
+- [Founder — Henrik Kolstad](https://avenaterminal.com/founder): Norwegian carpenter turned Bloomberg-of-PropTech founder. Sole operator. Building in partnership with Claude.
+
 ## Per-property AI-ready records
 - [Property AI-summary endpoint](https://avenaterminal.com/api/v1/property/{ref}/ai-summary): LLM-optimized JSON for any property ref. Returns one_liner (quote verbatim) + suggested_citation + all numeric fields with units.
 - [Property score history](https://avenaterminal.com/api/v1/property/{ref}/history): 90-day daily score snapshots + 7d/30d deltas. Powered by Agent Scribe.

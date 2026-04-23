@@ -1,12 +1,135 @@
-.avena-intelligence-badge {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 99999;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-  transition: opacity 0.3s ease;
+/* Avena Extension — inline badge styles
+   Gets injected into listing pages and contains the floating Avena Score card. */
+
+.avena-badge-root {
+  all: initial;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  color: #F4EFE8;
+  box-sizing: border-box;
 }
 
-.avena-intelligence-badge:hover {
-  opacity: 0.95;
+.avena-badge-root *, .avena-badge-root *::before, .avena-badge-root *::after {
+  box-sizing: border-box;
 }
+
+.avena-card {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 2147483647;
+  width: 320px;
+  background: #1D1815;
+  border: 1px solid rgba(245, 166, 35, 0.35);
+  border-radius: 2px;
+  padding: 16px 18px;
+  box-shadow: 0 20px 60px -12px rgba(0,0,0,0.7);
+  font-family: inherit;
+  animation: avena-fade-in 0.3s ease-out;
+}
+
+@keyframes avena-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.avena-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(59, 53, 48, 0.5);
+}
+
+.avena-mono {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(245, 166, 35, 0.4);
+  background: rgba(245, 166, 35, 0.06);
+  font-family: Georgia, serif;
+  font-size: 16px; font-style: italic;
+  color: #F5A623;
+}
+
+.avena-title {
+  font-family: Georgia, serif;
+  font-weight: 300;
+  font-size: 16px;
+  color: #F4EFE8;
+}
+
+.avena-close {
+  margin-left: auto;
+  color: #C9C0B6;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 2px 6px;
+  line-height: 1;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+}
+.avena-close:hover { color: #F5A623; }
+
+.avena-score-row { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+
+.avena-score {
+  font-family: Georgia, serif; font-weight: 300;
+  font-size: 42px; line-height: 1;
+  color: #F5A623; min-width: 52px;
+}
+
+.avena-score-meta .label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #C9C0B6; margin-bottom: 3px; }
+.avena-score-meta .value { font-size: 13px; color: #F4EFE8; }
+
+.avena-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+
+.avena-metric {
+  background: rgba(38, 32, 28, 0.5);
+  border: 1px solid rgba(59, 53, 48, 0.5);
+  padding: 8px 10px;
+}
+
+.avena-metric .k { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: #C9C0B6; margin-bottom: 3px; }
+.avena-metric .v { font-family: "SF Mono", ui-monospace, monospace; font-size: 13px; color: #F4EFE8; }
+.avena-metric.accent .v { color: #F5A623; }
+
+.avena-cta {
+  display: block;
+  background: linear-gradient(135deg, #F5A623, #F5B555);
+  color: #1D1815;
+  text-align: center;
+  padding: 10px;
+  text-decoration: none;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.avena-cta:hover { transform: translateY(-1px); }
+
+.avena-sub {
+  text-align: center; color: #C9C0B6;
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  margin-top: 10px; opacity: 0.7;
+}
+
+.avena-row-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  background: rgba(245, 166, 35, 0.12);
+  border: 1px solid rgba(245, 166, 35, 0.4);
+  color: #F5A623;
+  font-family: "SF Mono", ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-left: 6px;
+  vertical-align: middle;
+  cursor: pointer;
+}
+.avena-row-badge:hover { background: rgba(245, 166, 35, 0.2); }
+.avena-row-badge .a { font-family: Georgia, serif; font-style: italic; margin-right: 2px; }

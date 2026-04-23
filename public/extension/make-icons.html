@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Avena Extension — Icon generator</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #1D1815; color: #F4EFE8; padding: 40px; max-width: 800px; margin: 0 auto; }
+    h1 { font-family: Georgia, serif; font-weight: 300; color: #F5A623; font-style: italic; }
+    p { color: #C9C0B6; line-height: 1.6; }
+    .row { display: flex; gap: 24px; align-items: center; margin: 24px 0; padding: 24px; border: 1px solid #3B3530; background: #26201C; }
+    canvas { border: 1px solid #3B3530; image-rendering: pixelated; }
+    button { background: linear-gradient(135deg, #F5A623, #F5B555); border: none; color: #1D1815; padding: 10px 20px; font-family: inherit; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; font-size: 11px; cursor: pointer; }
+    button:hover { transform: translateY(-1px); }
+    .dim { color: #C9C0B6; font-size: 12px; }
+    code { background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 2px; font-size: 13px; color: #F5A623; }
+  </style>
+</head>
+<body>
+  <h1>Avena icon generator</h1>
+  <p>
+    Chrome Web Store requires PNG icons at 16, 48, and 128 px. This page renders
+    them from <code>icon.svg</code> via canvas, then downloads the PNGs so you
+    can drop them back into <code>public/extension/</code>.
+  </p>
+  <p class="dim">Click each button to download. Zip the full folder to submit the extension.</p>
+
+  <div class="row" id="row-16"></div>
+  <div class="row" id="row-48"></div>
+  <div class="row" id="row-128"></div>
+
+  <p class="dim">After you have the three PNG files in this folder, run:</p>
+  <pre style="background:#26201C;padding:16px;border:1px solid #3B3530;overflow-x:auto;font-size:12px">cd public/extension
+zip -r extension.zip . -x "make-icons.html" "icon.svg"</pre>
+
+  <script>
+    async function render(size, rowId) {
+      const row = document.getElementById(rowId);
+      const canvas = document.createElement('canvas');
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = 'icon.svg';
+      await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
+      ctx.drawImage(img, 0, 0, size, size);
+
+      const label = document.createElement('div');
+      label.innerHTML = `<strong>icon${size}.png</strong> — ${size} × ${size}`;
+      row.appendChild(canvas);
+      row.appendChild(label);
+
+      const btn = document.createElement('button');
+      btn.textContent = `Download icon${size}.png`;
+      btn.onclick = () => {
+        const a = document.createElement('a');
+        a.download = `icon${size}.png`;
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+      };
+      row.appendChild(btn);
+    }
+    render(16,  'row-16');
+    render(48,  'row-48');
+    render(128, 'row-128');
+  </script>
+</body>
+</html>

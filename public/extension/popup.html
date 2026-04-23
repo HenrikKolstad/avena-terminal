@@ -1,42 +1,120 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <style>
-    body { width: 280px; background: #0d1117; color: #c9d1d9; font-family: -apple-system, sans-serif; padding: 16px; margin: 0; }
-    h1 { color: #10b981; font-size: 14px; margin: 0 0 4px 0; letter-spacing: 2px; }
-    .sub { color: #8b949e; font-size: 10px; margin-bottom: 12px; }
-    .stat { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1c2333; font-size: 11px; }
-    .stat-label { color: #8b949e; }
-    .stat-value { color: #10b981; font-weight: bold; }
-    .cta { display: block; background: #10b981; color: #0d1117; text-align: center; padding: 8px; border-radius: 6px; text-decoration: none; font-size: 11px; font-weight: bold; margin-top: 12px; }
-    .cta:hover { opacity: 0.9; }
-    .footer { text-align: center; color: #6e7681; font-size: 9px; margin-top: 8px; }
+    :root {
+      --bg: #1D1815;
+      --surface: #26201C;
+      --border: #3B3530;
+      --fg: #F4EFE8;
+      --muted: #C9C0B6;
+      --gold: #F5A623;
+      --gold-bright: #F5B555;
+    }
+    body {
+      width: 320px;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      padding: 20px;
+      margin: 0;
+    }
+    .header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .mono {
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid rgba(245, 166, 35, 0.4);
+      background: rgba(245, 166, 35, 0.06);
+      font-family: Georgia, "Cormorant Garamond", serif;
+      font-size: 22px; font-style: italic;
+      color: var(--gold);
+    }
+    .brand h1 {
+      margin: 0;
+      font-family: Georgia, serif;
+      font-weight: 300;
+      font-size: 18px;
+      color: var(--fg);
+    }
+    .brand .tag {
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .lead {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin: 10px 0 16px;
+    }
+    .stats {
+      border: 1px solid var(--border);
+      background: rgba(38, 32, 28, 0.4);
+      padding: 10px 14px;
+      margin-bottom: 14px;
+    }
+    .stat {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(59, 53, 48, 0.4);
+      font-size: 11px;
+    }
+    .stat:last-child { border-bottom: none; }
+    .stat-label { color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; font-size: 9px; }
+    .stat-value { color: var(--gold); font-family: "SF Mono", ui-monospace, monospace; font-weight: 600; font-size: 13px; }
+    .cta {
+      display: block;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-bright) 100%);
+      color: #1D1815;
+      text-align: center;
+      padding: 10px;
+      text-decoration: none;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .cta.secondary {
+      background: transparent;
+      color: var(--gold);
+      border: 1px solid rgba(245, 166, 35, 0.4);
+    }
+    .footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-top: 10px;
+      opacity: 0.7;
+    }
   </style>
 </head>
 <body>
-  <h1>⬡ AVENA</h1>
-  <div class="sub">Property Intelligence Extension</div>
+  <div class="header">
+    <div class="mono">A</div>
+    <div class="brand">
+      <h1>Avena</h1>
+      <div class="tag">Terminal · Est. 2026</div>
+    </div>
+  </div>
 
-  <div class="stat">
-    <span class="stat-label">Properties Scored</span>
-    <span class="stat-value">1,881</span>
-  </div>
-  <div class="stat">
-    <span class="stat-label">Market Regime</span>
-    <span class="stat-value">GROWTH ↑</span>
-  </div>
-  <div class="stat">
-    <span class="stat-label">APCI Index</span>
-    <span class="stat-value">74/100</span>
-  </div>
-  <div class="stat">
-    <span class="stat-label">Coverage</span>
-    <span class="stat-value">Spain (EU soon)</span>
+  <div class="lead">Scoring any property you browse — idealista, kyero, rightmove, fotocasa and more. Overlay the Avena Score on listings in real time.</div>
+
+  <div class="stats">
+    <div class="stat"><span class="stat-label">Properties scored</span><span class="stat-value">1 881</span></div>
+    <div class="stat"><span class="stat-label">Markets tracked</span><span class="stat-value">10 EU · 30 cities</span></div>
+    <div class="stat"><span class="stat-label">Agents live</span><span class="stat-value">27</span></div>
+    <div class="stat"><span class="stat-label">Data license</span><span class="stat-value">CC BY 4.0</span></div>
   </div>
 
   <a class="cta" href="https://avenaterminal.com" target="_blank">Open Avena Terminal →</a>
-  <a class="cta" href="https://avenaterminal.com/api-access" target="_blank" style="background:#161b22;color:#10b981;border:1px solid #10b981;">Upgrade to PRO</a>
+  <a class="cta secondary" href="https://avenaterminal.com/watchlist" target="_blank">Your watchlist →</a>
 
-  <div class="footer">avenaterminal.com · v1.0.0</div>
+  <div class="footer">avenaterminal.com · v1.1.0</div>
 </body>
 </html>

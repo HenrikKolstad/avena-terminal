@@ -50,8 +50,10 @@ const cols: Array<{ title: string; items: Array<[string, string]> }> = [
   {
     title: 'Avena',
     items: [
+      ['Founder', '/founder'],
       ['About', '/about'],
       ['Institutional', '/institutional'],
+      ['Daily brief', '/briefs/daily'],
       ['Methodology', '/methodology'],
       ['Manifesto', '/manifesto'],
       ['Changelog', '/changelog'],
