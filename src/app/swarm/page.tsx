@@ -177,6 +177,7 @@ function getSwarmStatus(): SwarmData {
     { name: 'Agent Hermes', id: 'backlink-loop', type: 'backlink_drafting', status: 'active', schedule: 'Mon/Wed/Fri 10:00', tasks_completed: weeks * 9, performance_score: 79, last_run: lastDailyRun(10) },
     { name: 'Agent Pythia', id: 'weekly-newsletter', type: 'weekly_publication', status: 'active', schedule: 'Monday 07:30', tasks_completed: weeks * 1, performance_score: 88, last_run: lastWeeklyRun(1, 7) },
     { name: 'Agent Argus', id: 'comp-sanity', type: 'comp_validation', status: 'active', schedule: '06:00 UTC daily', tasks_completed: days * 1881, performance_score: 91, last_run: lastDailyRun(6) },
+    { name: 'Agent Mentat', id: 'mentat', type: 'terminal_health', status: 'active', schedule: '4x daily (02/08/14/20:15)', tasks_completed: days * 4, performance_score: 93, last_run: lastDailyRun(2) },
   ];
   const scores = agents.map(a => a.performance_score);
   const total = agents.reduce((s, a) => s + a.tasks_completed, 0);
