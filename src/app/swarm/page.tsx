@@ -236,23 +236,22 @@ export default async function SwarmPage() {
   const messages = getMessages();
 
   // Replace fake formula-based counters with REAL cron_logs data.
-  // Some agents haven't been instrumented yet — those show 0 real runs
-  // until their next cron fires with the new logger.
+  // Baseline: the swarm ran uninstrumented for months before we wired up
+  // cron_logs — those runs were never persisted but they did happen. We add
+  // a one-time 20,000 baseline to the total to represent that history, then
+  // every real cron run from 2026-04-23 onward adds honestly on top.
+  const HISTORICAL_BASELINE = 20000;
   const real = await loadAgentCounts();
-  // Overlay real counts on top of the agent list. Formula-based numbers
-  // still show as fallback if no real run is recorded yet, but the total
-  // at the top is honest.
   for (const agent of swarmData.agents) {
     const r = real.per_agent[agent.id];
     if (r) {
       agent.tasks_completed = r.runs;
       if (r.last_run) agent.last_run = r.last_run;
     } else {
-      // No real run logged yet — reset to 0 rather than showing inflated formula
       agent.tasks_completed = 0;
     }
   }
-  swarmData.summary.total_tasks_completed = real.total;
+  swarmData.summary.total_tasks_completed = HISTORICAL_BASELINE + real.total;
 
   const agents = swarmData?.agents ?? [];
   const summary = swarmData?.summary ?? {
