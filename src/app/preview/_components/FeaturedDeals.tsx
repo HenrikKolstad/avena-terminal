@@ -30,6 +30,18 @@ export function FeaturedDeals() {
       ? Math.round(pm2 * built * (DISPLAY_CAP_PCT / (100 - DISPLAY_CAP_PCT)))
       : rawSaved;
     const thumb = Array.isArray(d.imgs) && d.imgs.length > 0 ? d.imgs[0] : null;
+    const yieldGross = d._yield?.gross ?? 0;
+
+    // "Why this is alpha" — single dominant signal that made the deal surface.
+    let alphaTag: string | null = null;
+    if (score >= 88)                alphaTag = 'Alpha score · top 1%';
+    else if (discount >= 30)        alphaTag = 'Deep value · steep comp gap';
+    else if (yieldGross >= 6.5)     alphaTag = 'Yield hunter · 6.5%+';
+    else if (saved >= 80000)        alphaTag = 'Six-figure savings';
+    else if (d.pf <= 200000 && score >= 65) alphaTag = 'Entry point · sub-€200k';
+    else if (score >= 80)           alphaTag = 'High conviction · score 80+';
+    else if (discount >= 20)        alphaTag = 'Clear discount · −20%+';
+    else if (yieldGross >= 5)       alphaTag = 'Solid yield · 5%+';
 
     return {
       ref: d.ref ?? null,
@@ -46,6 +58,7 @@ export function FeaturedDeals() {
       built,
       beds: d.bd ?? null,
       thumb,
+      alphaTag,
     };
   });
 

@@ -6,6 +6,7 @@ import { TikTokStrip } from '@/components/v2/TikTokBadge';
 import { CredentialBar } from '@/components/v2/CredentialBar';
 import { CoverageStrip } from '@/components/v2/CoverageStrip';
 import { NewsletterForm } from '@/components/v2/NewsletterForm';
+import { DealAlertsForm } from '@/components/v2/DealAlertsForm';
 import { LaFincaProof } from '@/components/v2/LaFincaProof';
 import { Hero } from './preview/_components/Hero';
 import { Ticker } from './preview/_components/Ticker';
@@ -45,6 +46,22 @@ export default function HomePage() {
         <CoverageStrip />
         <LaFincaProof />
         <FeaturedDeals />
+        <section
+          className="border-y"
+          style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-surface) / 0.3)' }}
+        >
+          <div className="mx-auto max-w-[900px] px-5 sm:px-12 py-16">
+            <div className="mb-6">
+              <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+                Never miss alpha
+              </span>
+              <h2 className="mt-2 font-serif text-3xl sm:text-4xl font-light tracking-tight text-foreground">
+                Get the <span className="italic text-gold">next deal</span> before the market does.
+              </h2>
+            </div>
+            <DealAlertsForm />
+          </div>
+        </section>
         <NewsletterForm source="homepage" />
         <LiveCitations variant="banner" />
         <Indices />

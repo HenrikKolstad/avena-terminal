@@ -21,6 +21,7 @@ export interface DealItem {
   built: number;
   beds: number | null;
   thumb: string | null;
+  alphaTag?: string | null;
 }
 
 const fmt = (n: number) => n.toLocaleString('en-US').replace(/,/g, ' ');
@@ -186,6 +187,11 @@ export function FeaturedDealsClient({ items, total }: { items: DealItem[]; total
                           <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
                             {d.town}
                           </span>
+                          {d.alphaTag && (
+                            <span className="mt-0.5 font-mono text-[9px] uppercase tracking-[0.22em] text-primary/90 italic">
+                              {d.alphaTag}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </td>
@@ -326,6 +332,11 @@ export function FeaturedDealsClient({ items, total }: { items: DealItem[]; total
                 <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
                   {d.town} · {d.type}
                 </p>
+                {d.alphaTag && (
+                  <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.22em] text-primary/90 italic">
+                    {d.alphaTag}
+                  </p>
+                )}
                 <div
                   className="mt-4 flex items-end justify-between border-t pt-3"
                   style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}

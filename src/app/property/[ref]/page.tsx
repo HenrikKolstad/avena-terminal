@@ -111,6 +111,12 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
     ? Math.round(pm2 * p.bm * (DISPLAY_CAP_PCT / (100 - DISPLAY_CAP_PCT)))
     : rawSaved;
 
+  // Rank-in-town: "this is the Nth best-scored property out of M in {town}"
+  const townSet = getAllProperties().filter((x) => x.l === p.l && x._sc != null);
+  const sorted = [...townSet].sort((a, b) => (b._sc ?? 0) - (a._sc ?? 0));
+  const rankInTown = sorted.findIndex((x) => x.ref === p.ref) + 1;
+  const townTotal = townSet.length;
+
   const breadcrumb = {
     '@context': 'https://schema.org', '@type': 'BreadcrumbList',
     itemListElement: [
@@ -121,9 +127,40 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
     ],
   };
 
+  // Rich product JSON-LD — machine-readable for LLM quotation
+  const productJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Residence',
+    name: p.p || `${p.t} in ${p.l}`,
+    url: `https://avenaterminal.com/property/${encodeURIComponent(p.ref ?? '')}`,
+    identifier: p.ref,
+    address: { '@type': 'PostalAddress', addressLocality: p.l, addressRegion: p.costa ?? undefined, addressCountry: 'ES' },
+    numberOfRooms: p.bd,
+    numberOfBathroomsTotal: p.ba,
+    floorSize: p.bm ? { '@type': 'QuantitativeValue', value: p.bm, unitCode: 'MTK' } : undefined,
+    offers: {
+      '@type': 'Offer',
+      price: p.pf,
+      priceCurrency: 'EUR',
+      availability: p.s === 'ready' ? 'https://schema.org/InStock' : 'https://schema.org/PreOrder',
+      seller: { '@type': 'Organization', name: p.d ?? 'Avena Terminal' },
+    },
+    additionalProperty: [
+      { '@type': 'PropertyValue', name: 'avena_score', value: Math.round(p._sc ?? 0), maxValue: 100 },
+      p.mm2 ? { '@type': 'PropertyValue', name: 'town_median_eur_m2', value: Math.round(p.mm2) } : null,
+      pm2 ? { '@type': 'PropertyValue', name: 'price_eur_m2', value: pm2 } : null,
+      discount ? { '@type': 'PropertyValue', name: 'discount_vs_town_pct', value: discount } : null,
+      p._yield?.gross ? { '@type': 'PropertyValue', name: 'yield_gross_pct', value: Number(p._yield.gross.toFixed(2)) } : null,
+      townTotal > 0 ? { '@type': 'PropertyValue', name: 'rank_in_town', value: rankInTown, maxValue: townTotal } : null,
+    ].filter(Boolean),
+    isAccessibleForFree: true,
+    license: 'https://creativecommons.org/licenses/by/4.0/',
+  };
+
   return (
     <div className="avena-v2 min-h-screen">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }} />
 
       <Nav />
 
@@ -194,6 +231,11 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                     }`}>
                       {Math.round(p._sc)}
                     </div>
+                    {townTotal > 3 && rankInTown > 0 && (
+                      <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mt-1">
+                        Rank <span className="text-primary">#{rankInTown}</span> of {townTotal} in {p.l}
+                      </div>
+                    )}
                   </div>
                   {saved && saved > 0 && (
                     <>
