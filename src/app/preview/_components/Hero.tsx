@@ -81,19 +81,48 @@ export function Hero() {
               href="https://www.rics.org/news-insights/rics-tech-partner-programme"
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex items-center gap-2.5 rounded-sm border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.3em] transition-colors hover:border-primary"
+              aria-label="Official RICS Tech Partner · 2026"
+              className="group inline-flex items-stretch overflow-hidden rounded-sm border transition-all hover:-translate-y-px"
               style={{
-                background: 'hsl(var(--av-primary) / 0.08)',
-                borderColor: 'hsl(var(--av-primary) / 0.4)',
-                color: 'hsl(var(--av-primary))',
+                borderColor: 'hsl(var(--av-primary) / 0.45)',
+                boxShadow: '0 6px 20px -10px hsl(42 85% 64% / 0.35)',
               }}
             >
+              {/* RICS mark block — navy, serif, institutional */}
               <span
-                className="inline-block h-1.5 w-1.5 rounded-full"
-                style={{ background: 'hsl(var(--av-primary))' }}
-              />
-              Official RICS Tech Partner · 2026
-              <span className="text-muted-foreground/60 group-hover:text-primary">↗</span>
+                className="flex items-center px-3 py-2 border-r"
+                style={{
+                  background: 'linear-gradient(135deg, #0B2240 0%, #16335B 100%)',
+                  borderColor: 'hsl(var(--av-primary) / 0.45)',
+                }}
+              >
+                <span
+                  className="font-serif font-bold leading-none text-white"
+                  style={{ fontSize: 13, letterSpacing: '0.18em' }}
+                >
+                  RICS
+                </span>
+              </span>
+
+              {/* Partner block — gold, mono, luxe */}
+              <span
+                className="flex items-center gap-2 px-3 py-2 font-mono uppercase"
+                style={{
+                  background: 'linear-gradient(135deg, hsl(42 85% 64% / 0.14) 0%, hsl(26 88% 62% / 0.10) 100%)',
+                  color: 'hsl(var(--av-primary))',
+                  fontSize: 10,
+                  letterSpacing: '0.32em',
+                }}
+              >
+                <span
+                  className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full"
+                  style={{ background: 'hsl(var(--av-primary))' }}
+                />
+                <span>Official Tech Partner</span>
+                <span className="opacity-40">·</span>
+                <span className="text-foreground/90">2026</span>
+                <span className="opacity-50 group-hover:opacity-100 transition-opacity">↗</span>
+              </span>
             </a>
           </div>
 
