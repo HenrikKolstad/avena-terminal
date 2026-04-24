@@ -311,6 +311,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   entries.push({ url: `${base}/research/avena-score`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
   entries.push({ url: `${base}/challenge/score-2026`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 });
   entries.push({ url: `${base}/indices/avena`, lastModified: now, changeFrequency: 'daily', priority: 0.95 });
+  entries.push({ url: `${base}/best`, lastModified: now, changeFrequency: 'daily', priority: 0.85 });
+  const bestSlugs = ['spain-under-200k','costa-blanca-villas','costa-del-sol-apartments','high-yield-spain','alpha-score','steep-discount','beachfront','off-plan-2027','move-in-ready','three-bed-family','entry-point-investor','luxury-over-500k'];
+  for (const slug of bestSlugs) {
+    entries.push({ url: `${base}/best/${slug}`, lastModified: now, changeFrequency: 'daily', priority: 0.8 });
+  }
 
   // Research paper (academic citation magnet)
   entries.push({ url: `${base}/research/avena-methodology`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
