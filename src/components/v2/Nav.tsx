@@ -9,11 +9,8 @@ import { useAuth } from '@/context/AuthContext';
 
 const links = [
   { label: 'Deals', href: '/#deals' },
-  { label: 'Score', href: '/score' },
-  { label: 'Coverage', href: '/coverage' },
-  { label: 'Oracle', href: '/chat' },
+  { label: 'Agent', href: '/agent' },
   { label: 'Swarm', href: '/swarm' },
-  { label: 'Contact', href: '/contact' },
 ];
 
 export function Nav() {

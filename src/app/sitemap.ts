@@ -316,6 +316,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const slug of bestSlugs) {
     entries.push({ url: `${base}/best/${slug}`, lastModified: now, changeFrequency: 'daily', priority: 0.8 });
   }
+  entries.push({ url: `${base}/agent`, lastModified: now, changeFrequency: 'weekly', priority: 0.98 });
+  entries.push({ url: `${base}/standards/avp`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
+  entries.push({ url: `${base}/radar`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
 
   // Research paper (academic citation magnet)
   entries.push({ url: `${base}/research/avena-methodology`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });

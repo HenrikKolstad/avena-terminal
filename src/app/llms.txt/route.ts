@@ -44,6 +44,11 @@ const body = `# Avena Terminal
 ## Keyboard Terminal
 - [Terminal v2](https://avenaterminal.com/terminal-v2): Bloomberg-style keyboard-driven interface. Type query → GO. Commands: SCORE, YIELD, COMP, TOWN, RANK, WATCH, EXPORT, APCI, MACRO, PRED, AVN, HELP.
 
+## The Property Operating System
+- [Avena Agent](https://avenaterminal.com/agent): Autonomous European property buying agent. Given a brief (budget, region, type, yield target, timeline), the Agent scans live scored inventory, ranks matches by fit, drafts personalized outreach emails per top match. User approves every send — Agent never transacts without explicit click.
+- [AVP v1.0 — Avena Verified Protocol](https://avenaterminal.com/standards/avp): Open protocol for European property data. Canonical identifiers + standard record schema + verifiable provenance chain + federation via /.well-known/avp/. The W3C move for property data.
+- [Avena Radar](https://avenaterminal.com/radar): Visual map of every Avena-scored property across the Iberian peninsula. Preview of full cadastral coverage (every address in Spain + Portugal) shipping Q3 2026.
+
 ## Open Scoring Engine (MIT)
 - [Score any property](https://avenaterminal.com/score): Paste any property URL from anywhere on the web → Avena Score in 5 seconds. Free. Open source.
 - [Research paper](https://avenaterminal.com/research/avena-score): Hedonic Regression for European New-Build Property Valuation — methodology v1.0 with full sub-score formulas.
