@@ -11,7 +11,6 @@ import { LaFincaProof } from '@/components/v2/LaFincaProof';
 import { AlphaOfTheWeek } from '@/components/v2/AlphaOfTheWeek';
 import { RecentlyViewedRail } from '@/components/v2/RecentlyViewedRail';
 import { Hero } from './preview/_components/Hero';
-import { Ticker } from './preview/_components/Ticker';
 import { Indices } from './preview/_components/Indices';
 import { FeaturedDeals } from './preview/_components/FeaturedDeals';
 import { Regions } from './preview/_components/Regions';
@@ -42,7 +41,6 @@ export default function HomePage() {
     <div className="avena-v2 relative min-h-screen w-full">
       <Nav />
       <main className="pt-16">
-        <Ticker />
         <Hero />
         <AlphaOfTheWeek />
         <FeaturedDeals />
