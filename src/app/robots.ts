@@ -45,6 +45,20 @@ const BROAD_ALLOW: string[] = [
   '/mcp',
   '/ontology/',
   '/sitemap.xml',
+  '/score',
+  '/best/',
+  '/indices/',
+  '/api/v1/score',
+  '/api/v1/indices/',
+  '/api/v1/property/',
+  '/research/',
+  '/challenge/',
+  '/briefs/',
+  '/track-record',
+  '/roadmap',
+  '/badge/',
+  '/cli',
+  '/playground',
 ];
 
 const TRAINING_ALLOW: string[] = [
