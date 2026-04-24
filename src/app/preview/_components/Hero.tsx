@@ -76,6 +76,27 @@ export function Hero() {
             <span className="text-muted-foreground">10 markets · 30 cities · 1 881 scored new-builds</span>
           </span>
 
+          <div className="mb-6">
+            <a
+              href="https://www.rics.org/news-insights/rics-tech-partner-programme"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-2.5 rounded-sm border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.3em] transition-colors hover:border-primary"
+              style={{
+                background: 'hsl(var(--av-primary) / 0.08)',
+                borderColor: 'hsl(var(--av-primary) / 0.4)',
+                color: 'hsl(var(--av-primary))',
+              }}
+            >
+              <span
+                className="inline-block h-1.5 w-1.5 rounded-full"
+                style={{ background: 'hsl(var(--av-primary))' }}
+              />
+              Official RICS Tech Partner · 2026
+              <span className="text-muted-foreground/60 group-hover:text-primary">↗</span>
+            </a>
+          </div>
+
           <h1 className="font-serif text-[15vw] font-light leading-[0.92] tracking-tight text-foreground sm:text-[10vw] lg:text-[8.2rem] xl:text-[9.5rem]">
             The price
             <br />
