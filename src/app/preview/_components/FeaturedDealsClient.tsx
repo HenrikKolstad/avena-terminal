@@ -1,8 +1,8 @@
 'use client';
 
-import { ArrowUpRight, Lock } from 'lucide-react';
+import { ArrowUpRight, Lock, X, SlidersHorizontal } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { ProModal } from '@/components/v2/ProModal';
 
@@ -28,9 +28,61 @@ const fmt = (n: number) => n.toLocaleString('en-US').replace(/,/g, ' ');
 
 const FREE_VISIBLE = 3;
 
-export function FeaturedDealsClient({ items, total }: { items: DealItem[]; total: number }) {
+const PRICE_MIN = 50_000;
+const PRICE_MAX = 5_000_000;
+
+export function FeaturedDealsClient({ items: rawItems, total }: { items: DealItem[]; total: number }) {
   const { isPaid } = useAuth();
   const [proOpen, setProOpen] = useState(false);
+
+  // Filters
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [town, setTown] = useState<string>('');
+  const [region, setRegion] = useState<string>('');
+  const [priceMin, setPriceMin] = useState<number>(PRICE_MIN);
+  const [priceMax, setPriceMax] = useState<number>(PRICE_MAX);
+  const [minScore, setMinScore] = useState<number>(0);
+  const [minDiscount, setMinDiscount] = useState<number>(0);
+
+  // Options derived from items
+  const towns = useMemo(() => {
+    const map = new Map<string, number>();
+    rawItems.forEach((d) => map.set(d.town, (map.get(d.town) ?? 0) + 1));
+    return Array.from(map.entries()).sort((a, b) => b[1] - a[1]).slice(0, 40).map(([t]) => t);
+  }, [rawItems]);
+
+  const regions = useMemo(() => {
+    const set = new Set(rawItems.map((d) => d.region).filter(Boolean));
+    return Array.from(set).sort();
+  }, [rawItems]);
+
+  const items = useMemo(() => {
+    return rawItems.filter((d) => {
+      if (town && d.town !== town) return false;
+      if (region && d.region !== region) return false;
+      if (d.price < priceMin) return false;
+      if (d.price > priceMax) return false;
+      if (d.score < minScore) return false;
+      if (d.discount < minDiscount) return false;
+      return true;
+    });
+  }, [rawItems, town, region, priceMin, priceMax, minScore, minDiscount]);
+
+  const activeFilters =
+    (town ? 1 : 0) +
+    (region ? 1 : 0) +
+    (priceMin > PRICE_MIN || priceMax < PRICE_MAX ? 1 : 0) +
+    (minScore > 0 ? 1 : 0) +
+    (minDiscount > 0 ? 1 : 0);
+
+  const resetFilters = () => {
+    setTown('');
+    setRegion('');
+    setPriceMin(PRICE_MIN);
+    setPriceMax(PRICE_MAX);
+    setMinScore(0);
+    setMinDiscount(0);
+  };
 
   const isGated = (idx: number) => !isPaid && idx >= FREE_VISIBLE;
 
@@ -89,6 +141,207 @@ export function FeaturedDealsClient({ items, total }: { items: DealItem[]; total
             )}
           </div>
         </div>
+
+        {/* Filters bar */}
+        <div
+          className="mb-6 rounded-sm border"
+          style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+        >
+          <div className="flex flex-wrap items-center gap-3 px-4 py-3">
+            <button
+              onClick={() => setFiltersOpen((v) => !v)}
+              className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-foreground hover:text-primary transition-colors"
+            >
+              <SlidersHorizontal className="h-3.5 w-3.5" />
+              Filters
+              {activeFilters > 0 && (
+                <span
+                  className="inline-flex items-center justify-center rounded-full px-1.5 font-mono text-[9px] text-primary-foreground"
+                  style={{ background: 'hsl(var(--av-primary))', minWidth: 16 }}
+                >
+                  {activeFilters}
+                </span>
+              )}
+            </button>
+            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+              {items.length.toLocaleString()} of {rawItems.length.toLocaleString()} deals
+            </span>
+            {activeFilters > 0 && (
+              <button
+                onClick={resetFilters}
+                className="ml-auto inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground hover:text-destructive transition-colors"
+              >
+                <X className="h-3 w-3" /> Clear all
+              </button>
+            )}
+          </div>
+
+          {filtersOpen && (
+            <div className="border-t px-4 py-5 space-y-5" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
+              {/* Towns */}
+              <div>
+                <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-2">Town</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {towns.slice(0, 24).map((t) => {
+                    const on = town === t;
+                    return (
+                      <button
+                        key={t}
+                        onClick={() => setTown(on ? '' : t)}
+                        className="rounded-sm border px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] transition-colors"
+                        style={{
+                          borderColor: on ? 'hsl(var(--av-primary) / 0.5)' : 'hsl(var(--av-border) / 0.6)',
+                          background: on ? 'hsl(var(--av-primary) / 0.1)' : 'transparent',
+                          color: on ? 'hsl(var(--av-primary))' : 'hsl(var(--av-muted-foreground))',
+                        }}
+                      >
+                        {t}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Regions */}
+              <div>
+                <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-2">Region</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {regions.map((r) => {
+                    const on = region === r;
+                    return (
+                      <button
+                        key={r}
+                        onClick={() => setRegion(on ? '' : r)}
+                        className="rounded-sm border px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] transition-colors"
+                        style={{
+                          borderColor: on ? 'hsl(var(--av-primary) / 0.5)' : 'hsl(var(--av-border) / 0.6)',
+                          background: on ? 'hsl(var(--av-primary) / 0.1)' : 'transparent',
+                          color: on ? 'hsl(var(--av-primary))' : 'hsl(var(--av-muted-foreground))',
+                        }}
+                      >
+                        {r}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Price range */}
+              <div>
+                <div className="flex items-baseline justify-between mb-2">
+                  <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">Price range</div>
+                  <div className="font-mono text-[11px] text-primary tabular">
+                    €{fmt(priceMin)} — €{fmt(priceMax)}
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <label className="block">
+                    <div className="font-mono text-[9px] text-muted-foreground mb-1">Min</div>
+                    <input
+                      type="range"
+                      min={PRICE_MIN}
+                      max={PRICE_MAX}
+                      step={10000}
+                      value={priceMin}
+                      onChange={(e) => setPriceMin(Math.min(Number(e.target.value), priceMax - 10000))}
+                      className="w-full accent-primary"
+                    />
+                  </label>
+                  <label className="block">
+                    <div className="font-mono text-[9px] text-muted-foreground mb-1">Max</div>
+                    <input
+                      type="range"
+                      min={PRICE_MIN}
+                      max={PRICE_MAX}
+                      step={10000}
+                      value={priceMax}
+                      onChange={(e) => setPriceMax(Math.max(Number(e.target.value), priceMin + 10000))}
+                      className="w-full accent-primary"
+                    />
+                  </label>
+                </div>
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {[
+                    { label: 'Any', lo: PRICE_MIN, hi: PRICE_MAX },
+                    { label: '< 200k', lo: PRICE_MIN, hi: 200_000 },
+                    { label: '200–350k', lo: 200_000, hi: 350_000 },
+                    { label: '350–500k', lo: 350_000, hi: 500_000 },
+                    { label: '500k–1m', lo: 500_000, hi: 1_000_000 },
+                    { label: '1m+', lo: 1_000_000, hi: PRICE_MAX },
+                  ].map((p) => {
+                    const on = priceMin === p.lo && priceMax === p.hi;
+                    return (
+                      <button
+                        key={p.label}
+                        onClick={() => { setPriceMin(p.lo); setPriceMax(p.hi); }}
+                        className="rounded-sm border px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] transition-colors"
+                        style={{
+                          borderColor: on ? 'hsl(var(--av-primary) / 0.5)' : 'hsl(var(--av-border) / 0.6)',
+                          background: on ? 'hsl(var(--av-primary) / 0.1)' : 'transparent',
+                          color: on ? 'hsl(var(--av-primary))' : 'hsl(var(--av-muted-foreground))',
+                        }}
+                      >
+                        {p.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Min score + min discount */}
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <div className="flex items-baseline justify-between mb-2">
+                    <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">Min Avena Score</div>
+                    <div className="font-mono text-[11px] text-primary tabular">{minScore || '—'}</div>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={95}
+                    step={5}
+                    value={minScore}
+                    onChange={(e) => setMinScore(Number(e.target.value))}
+                    className="w-full accent-primary"
+                  />
+                </div>
+                <div>
+                  <div className="flex items-baseline justify-between mb-2">
+                    <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">Min discount</div>
+                    <div className="font-mono text-[11px] text-primary tabular">{minDiscount ? `${minDiscount}%` : '—'}</div>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={35}
+                    step={5}
+                    value={minDiscount}
+                    onChange={(e) => setMinDiscount(Number(e.target.value))}
+                    className="w-full accent-primary"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {items.length === 0 && (
+          <div
+            className="mb-6 rounded-sm border p-8 text-center"
+            style={{ background: 'hsl(var(--av-surface) / 0.3)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+          >
+            <div className="font-serif text-lg text-foreground mb-1">No deals match these filters.</div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-4">
+              Try loosening price range or minimum score.
+            </div>
+            <button
+              onClick={resetFilters}
+              className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-gold"
+            >
+              <X className="h-3 w-3" /> Clear all filters
+            </button>
+          </div>
+        )}
 
         {/* Desktop table */}
         <div
