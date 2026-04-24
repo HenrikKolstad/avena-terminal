@@ -51,6 +51,19 @@ const body = `# Avena Terminal
 - [Scoring Challenge 2026](https://avenaterminal.com/challenge/score-2026): Public leaderboard — beat the baseline on 2026 holdout data.
 - [Live scorer API](https://avenaterminal.com/api/v1/score): POST any property URL or structured input.
 
+## Best-of rankings (programmatic SEO)
+- [/best](https://avenaterminal.com/best): Index of 12 curated live-ranked cuts.
+- /best/spain-under-200k · /best/costa-blanca-villas · /best/costa-del-sol-apartments
+- /best/high-yield-spain · /best/alpha-score · /best/steep-discount · /best/beachfront
+- /best/off-plan-2027 · /best/move-in-ready · /best/three-bed-family
+- /best/entry-point-investor · /best/luxury-over-500k
+- Each has ItemList JSON-LD and updates hourly from live data.
+
+## Embed widgets
+- [/embed/score/{ref}](https://avenaterminal.com/embed/score/N9171): Per-property 320x180 iframe score card.
+- [/badge/{ref}.svg](https://avenaterminal.com/badge/N9171.svg): Shields.io-style SVG badge.
+- [/embed/bubble?city={slug}](https://avenaterminal.com/embed/bubble?city=munich): City bubble-risk card.
+
 ## AVENA Index (daily close)
 - [AVENA Index](https://avenaterminal.com/indices/avena): Flagship daily composite for European new-build property. Base 1000 on 2026-01-01. Ticker AVENA.TERMINAL.
 - [Historical CSV](https://avenaterminal.com/api/v1/indices/avena?history=all&format=csv): Full daily-close history.
