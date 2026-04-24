@@ -161,7 +161,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
   };
 
   return (
-    <div className="avena-v2 min-h-screen">
+    <div className="avena-v2 min-h-screen overflow-x-hidden">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }} />
 
@@ -202,12 +202,12 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                 </p>
               )}
 
-              <div className="flex items-baseline gap-4 mb-3">
-                <span className="font-serif text-5xl sm:text-6xl font-light text-foreground tabular">
+              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 mb-3">
+                <span className="font-serif text-4xl sm:text-5xl md:text-6xl font-light text-foreground tabular break-words">
                   €{p.pf.toLocaleString()}
                 </span>
                 {p.pt > p.pf && (
-                  <span className="font-serif text-xl text-muted-foreground">
+                  <span className="font-serif text-lg sm:text-xl text-muted-foreground">
                     – €{p.pt.toLocaleString()}
                   </span>
                 )}
@@ -220,7 +220,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
 
               {p._sc != null && (
                 <div
-                  className="inline-flex items-center gap-6 rounded-sm border p-5 mb-6 w-fit"
+                  className="flex flex-wrap items-start gap-4 sm:gap-6 rounded-sm border p-5 mb-6 max-w-full"
                   style={{
                     background: 'hsl(var(--av-surface) / 0.4)',
                     borderColor: 'hsl(var(--av-border) / 0.6)',
@@ -230,7 +230,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                     <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
                       Avena Score
                     </div>
-                    <div className={`font-serif text-6xl font-light tabular ${
+                    <div className={`font-serif text-5xl sm:text-6xl font-light tabular ${
                       p._sc >= 70 ? 'text-primary' : p._sc >= 50 ? 'text-accent' : 'text-destructive'
                     }`}>
                       {Math.round(p._sc)}
