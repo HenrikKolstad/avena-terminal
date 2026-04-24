@@ -1,0 +1,9 @@
+feed.xml
+*.log
+.env.local
+.env.local.test
+audit.js
+generate-pdf*.py
+set-*.js
+THE-SECRET-FORMULA.pdf
+AVENA-TERMINAL-FINAL.pdf
