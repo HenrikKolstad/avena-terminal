@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Check, Copy, Send, AlertTriangle, Sparkles } from 'lucide-react';
+import { ArrowRight, Check, Copy, Send, AlertTriangle, Sparkles, RotateCcw } from 'lucide-react';
+
+const STORAGE_KEY = 'avena_agent_state_v1';
 
 interface Match {
   ref: string;
@@ -68,6 +70,49 @@ export function AgentClient() {
   const [loading, setLoading] = useState(false);
   const [mission, setMission] = useState<MissionResponse | null>(null);
   const [copiedRef, setCopiedRef] = useState<string | null>(null);
+  const [hydrated, setHydrated] = useState(false);
+
+  // Restore form + mission from localStorage on mount — so returning from a
+  // property page lands you back on the same results you left.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.form) {
+          setBudget(parsed.form.budget ?? '400000');
+          setRegions(parsed.form.regions ?? ['costa blanca']);
+          setTypes(parsed.form.types ?? ['villa']);
+          setMinBeds(parsed.form.minBeds ?? '3');
+          setMinYield(parsed.form.minYield ?? '');
+          setMinScore(parsed.form.minScore ?? '65');
+          setTimeline(parsed.form.timeline ?? '8');
+          setPersona(parsed.form.persona ?? 'investor');
+          setNationality(parsed.form.nationality ?? 'Norwegian');
+          setNotes(parsed.form.notes ?? '');
+        }
+        if (parsed.mission) setMission(parsed.mission);
+      }
+    } catch { /* silent */ }
+    setHydrated(true);
+  }, []);
+
+  // Persist whenever anything changes (after hydration) so navigating away
+  // and coming back preserves state.
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        form: { budget, regions, types, minBeds, minYield, minScore, timeline, persona, nationality, notes },
+        mission,
+      }));
+    } catch { /* silent */ }
+  }, [hydrated, budget, regions, types, minBeds, minYield, minScore, timeline, persona, nationality, notes, mission]);
+
+  const clearMission = () => {
+    setMission(null);
+    try { localStorage.removeItem(STORAGE_KEY); } catch { /* noop */ }
+  };
 
   const toggleRegion = (r: string) =>
     setRegions((p) => (p.includes(r) ? p.filter((x) => x !== r) : [...p, r]));
@@ -225,7 +270,7 @@ export function AgentClient() {
             </div>
           </div>
 
-          <div className="mt-7 flex items-center gap-3">
+          <div className="mt-7 flex flex-wrap items-center gap-3">
             <button
               type="submit"
               disabled={loading}
@@ -234,12 +279,25 @@ export function AgentClient() {
             >
               {loading ? (
                 <><Sparkles className="h-3.5 w-3.5 animate-pulse" /> Agent is working…</>
+              ) : mission ? (
+                <>Re-run with these settings <ArrowRight className="h-3.5 w-3.5" /></>
               ) : (
                 <>Dispatch the Agent <ArrowRight className="h-3.5 w-3.5" /></>
               )}
             </button>
+            {mission && (
+              <button
+                type="button"
+                onClick={clearMission}
+                className="inline-flex items-center gap-2 rounded-sm border px-4 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground hover:text-destructive hover:border-destructive transition-colors"
+                style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                New brief
+              </button>
+            )}
             <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">
-              The Agent never sends without your approval
+              {mission ? 'Brief + results saved — navigating away and back is safe' : 'The Agent never sends without your approval'}
             </span>
           </div>
         </form>
@@ -292,9 +350,11 @@ export function AgentClient() {
                         <div className="min-w-0">
                           <Link
                             href={`/property/${encodeURIComponent(m.ref)}`}
+                            target="_blank"
+                            rel="noopener"
                             className="font-serif text-lg text-foreground hover:text-primary transition-colors"
                           >
-                            {m.project}
+                            {m.project} ↗
                           </Link>
                           <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mt-1">
                             {m.town}{m.region ? ` · ${m.region}` : ''} · {m.beds}bed · {m.built}m²

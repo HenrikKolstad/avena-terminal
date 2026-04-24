@@ -44,8 +44,8 @@ export default function HomePage() {
       <main className="pt-16">
         <Ticker />
         <Hero />
-        <FeaturedDeals />
         <AlphaOfTheWeek />
+        <FeaturedDeals />
         <CredentialBar />
         <CoverageStrip />
         <LaFincaProof />
