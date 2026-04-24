@@ -85,7 +85,6 @@ export default function AgentPage() {
               </li>
             </ol>
             <p className="mt-8 text-sm text-muted-foreground font-light">
-              Built on Claude (Anthropic) via the Avena scoring + MCP data layer.
               Engine is open — see{' '}
               <a href="/research/avena-score" className="text-primary hover:text-gold">the methodology paper</a>.
             </p>
