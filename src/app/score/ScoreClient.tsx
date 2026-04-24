@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Copy, Check, ArrowRight } from 'lucide-react';
 
@@ -25,7 +26,17 @@ interface ScoreResponse {
 }
 
 export function ScoreClient() {
+  return (
+    <Suspense fallback={null}>
+      <ScoreClientInner />
+    </Suspense>
+  );
+}
+
+function ScoreClientInner() {
+  const searchParams = useSearchParams();
   const [url, setUrl] = useState('');
+  const autoRan = useRef(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ScoreResponse | null>(null);
   const [copied, setCopied] = useState(false);
@@ -91,6 +102,35 @@ export function ScoreClient() {
 
   const inputCls = 'w-full rounded-sm border px-3 py-2 text-sm bg-transparent text-foreground focus:outline-none focus:border-primary font-mono';
   const inputStyle = { borderColor: 'hsl(var(--av-border) / 0.6)' };
+
+  // Auto-score when URL is passed via ?url= query param
+  useEffect(() => {
+    if (autoRan.current) return;
+    const fromQuery = searchParams.get('url');
+    if (fromQuery) {
+      autoRan.current = true;
+      setUrl(fromQuery);
+      // Fire the score request directly (avoids needing a form event)
+      (async () => {
+        setLoading(true);
+        setResult(null);
+        try {
+          const r = await fetch('/api/v1/score', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: fromQuery }),
+          });
+          const data = await r.json();
+          setResult(data);
+          if (data.error) setManualOpen(true);
+        } catch (err) {
+          setResult({ error: String(err) } as ScoreResponse);
+          setManualOpen(true);
+        }
+        setLoading(false);
+      })();
+    }
+  }, [searchParams]);
 
   const copyShareUrl = async () => {
     try {
