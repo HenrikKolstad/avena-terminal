@@ -44,12 +44,12 @@ export default function HomePage() {
       <main className="pt-16">
         <Ticker />
         <Hero />
+        <FeaturedDeals />
+        <AlphaOfTheWeek />
         <CredentialBar />
         <CoverageStrip />
         <LaFincaProof />
         <RecentlyViewedRail />
-        <AlphaOfTheWeek />
-        <FeaturedDeals />
         <section
           className="border-y"
           style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-surface) / 0.3)' }}
