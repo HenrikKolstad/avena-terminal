@@ -200,6 +200,8 @@ export async function runAgent(brief: AgentBrief, approvedRefs: string[] = []): 
   try {
     const draftPrompt = `You are the Avena Agent — an autonomous European property buying agent acting on behalf of a user.
 
+Every drafted email is addressed to HENRIK KOLSTAD at Xavia Estate (henrik@xaviaestate.com). Henrik is the user's broker — he has direct relationships with Spanish developers. The Agent hands the buyer's brief to Henrik so he can contact the developer, negotiate, and coordinate viewings. The buyer is NOT contacting the developer directly.
+
 USER BRIEF:
 ${JSON.stringify(brief, null, 2)}
 
@@ -207,10 +209,10 @@ TOP MATCHES (already ranked by fit):
 ${JSON.stringify(targetsForOutreach, null, 2)}
 
 Your job:
-1. Write a 2–3 sentence EXECUTIVE SUMMARY of the match set — what the agent found, what the best 1–2 deals are, any standout observations.
-2. For each match, DRAFT a professional outreach email to the developer. Tone: warm but concise, positions the buyer as serious, anchors on the Avena Score and comp data as a negotiation footing. The buyer's nationality may matter (adjust language if non-native).
-3. Write 3–5 RECOMMENDATIONS — concrete next-step actions (e.g. "request floor plans for top 2", "ask developer X about payment plan flexibility", "send a conservative opening offer 8% below ask").
-4. Flag any WARNINGS (red flags from the data — discount too deep, off-plan completion too far, etc).
+1. Write a 2–3 sentence EXECUTIVE SUMMARY of the match set for the buyer.
+2. For each match, DRAFT a professional email from the BUYER to HENRIK (broker) asking him to facilitate outreach to the developer. Tone: warm but direct, references Avena Score + comp data as negotiation footing, asks Henrik for: viewing slots, payment plan, contract PDF, developer contact. Buyer's nationality may influence language choice.
+3. Write 3–5 RECOMMENDATIONS — concrete next-step actions (e.g. "ask Henrik to request floor plans for top 2", "ask Henrik to pre-negotiate payment plan with developer X").
+4. Flag any WARNINGS (red flags from the data).
 
 Return ONLY a JSON object matching this exact shape:
 {
@@ -220,8 +222,8 @@ Return ONLY a JSON object matching this exact shape:
   "outreach": [
     {
       "ref": string,
-      "to_role": "developer" | "agent",
-      "to_email": "contact@developer.example",
+      "to_role": "broker",
+      "to_email": "henrik@xaviaestate.com",
       "subject": string,
       "body": string,
       "draft_notes": string
@@ -230,12 +232,13 @@ Return ONLY a JSON object matching this exact shape:
 }
 
 Constraints:
-- Email body in English unless nationality is explicitly Spanish/Norwegian.
-- Subject lines 40–70 characters.
+- to_email MUST be "henrik@xaviaestate.com" for every entry.
+- to_role MUST be "broker".
+- Email body in English unless nationality is Spanish or Norwegian.
+- Subject lines 40–70 characters, reference the specific project name.
 - Body 100–180 words, three short paragraphs.
-- Use the Avena Score + discount figures to anchor value in the body (never asks for a discount explicitly — anchors on "market data suggests").
-- to_email: use the developer field if present, formatted as contact@{developer-slug}.com — user will replace with real email before sending. This is a draft.
-- draft_notes: 1 sentence for the user explaining what the email anchors on.`;
+- Use the Avena Score + discount to anchor value (never ask for a discount directly — frame as "Avena data suggests current pricing is [X]%  below town median").
+- draft_notes: 1 sentence telling the user what the email anchors on.`;
 
     const response = await client.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -255,6 +258,12 @@ Constraints:
       recommendations = Array.isArray(parsed.recommendations) ? parsed.recommendations : [];
       outreach = Array.isArray(parsed.outreach) ? parsed.outreach : [];
       if (Array.isArray(parsed.warnings)) warnings.push(...parsed.warnings);
+      // Safety net: enforce broker routing through Henrik regardless of LLM output
+      outreach = outreach.map((o) => ({
+        ...o,
+        to_role: 'agent' as const,
+        to_email: 'henrik@xaviaestate.com',
+      }));
     }
   } catch (e) {
     warnings.push(`LLM draft layer unavailable (${e instanceof Error ? e.message.slice(0, 80) : 'unknown'}). Matches ranked heuristically; re-run when key is set.`);
