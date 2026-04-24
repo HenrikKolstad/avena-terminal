@@ -100,7 +100,7 @@ export function Nav() {
             style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
           >
             <Search className="h-3.5 w-3.5" />
-            <kbd className="font-mono text-[9px] uppercase tracking-[0.22em]">⌘K</kbd>
+            <kbd className="font-mono text-[9px] uppercase tracking-[0.22em]">CMD&nbsp;K</kbd>
           </button>
           <Link
             href="/watchlist"

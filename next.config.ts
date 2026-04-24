@@ -1,6 +1,17 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: '**.apinmo.com' },
+      { protocol: 'https', hostname: 'fotos15.apinmo.com' },
+      { protocol: 'https', hostname: 'avenaterminal.com' },
+      { protocol: 'https', hostname: '**.avenaterminal.com' },
+      { protocol: 'https', hostname: '**.amazonaws.com' },
+      { protocol: 'https', hostname: '**.cloudfront.net' },
+      { protocol: 'https', hostname: '**.cdn.com' },
+    ],
+  },
   async redirects() {
     return [
       {
