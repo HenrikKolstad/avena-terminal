@@ -54,7 +54,8 @@
     { "path": "/api/cron/argus", "schedule": "0 6 * * *" },
     { "path": "/api/cron/mentat", "schedule": "15 8 * * *" },
     { "path": "/api/cron/courier", "schedule": "0 9 * * *" },
-    { "path": "/api/cron/scribe",  "schedule": "0 2 * * *" }
+    { "path": "/api/cron/scribe",  "schedule": "0 2 * * *" },
+    { "path": "/api/cron/curator", "schedule": "50 23 * * *" }
   ],
   "$schema": "https://openapi.vercel.sh/vercel.json"
 }

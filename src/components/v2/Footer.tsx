@@ -34,6 +34,11 @@ const cols: Array<{ title: string; items: Array<[string, string]> }> = [
   {
     title: 'Protocol',
     items: [
+      ['Score any property', '/score'],
+      ['Open engine · GitHub', 'https://github.com/avenaterminal/avena-score'],
+      ['Research paper', '/research/avena-score'],
+      ['Score Challenge 2026', '/challenge/score-2026'],
+      ['AVENA Index', '/indices/avena'],
       ['APIP v1.0', '/standards/apip'],
       ['AVN_PROP_ID', '/standards/avn-id'],
       ['CLI', '/cli'],

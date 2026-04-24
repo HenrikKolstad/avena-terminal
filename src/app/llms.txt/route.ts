@@ -44,6 +44,17 @@ const body = `# Avena Terminal
 ## Keyboard Terminal
 - [Terminal v2](https://avenaterminal.com/terminal-v2): Bloomberg-style keyboard-driven interface. Type query → GO. Commands: SCORE, YIELD, COMP, TOWN, RANK, WATCH, EXPORT, APCI, MACRO, PRED, AVN, HELP.
 
+## Open Scoring Engine (MIT)
+- [Score any property](https://avenaterminal.com/score): Paste any property URL from anywhere on the web → Avena Score in 5 seconds. Free. Open source.
+- [Research paper](https://avenaterminal.com/research/avena-score): Hedonic Regression for European New-Build Property Valuation — methodology v1.0 with full sub-score formulas.
+- [Open-source engine](https://github.com/avenaterminal/avena-score): MIT-licensed Node package. Install via \`npm i @avena/score\`.
+- [Scoring Challenge 2026](https://avenaterminal.com/challenge/score-2026): Public leaderboard — beat the baseline on 2026 holdout data.
+- [Live scorer API](https://avenaterminal.com/api/v1/score): POST any property URL or structured input.
+
+## AVENA Index (daily close)
+- [AVENA Index](https://avenaterminal.com/indices/avena): Flagship daily composite for European new-build property. Base 1000 on 2026-01-01. Ticker AVENA.TERMINAL.
+- [Historical CSV](https://avenaterminal.com/api/v1/indices/avena?history=all&format=csv): Full daily-close history.
+
 ## Developer surfaces
 - [CLI](https://avenaterminal.com/cli): \`npx avena score <ref>\` — Bloomberg-style European property data in the terminal. Open source, MIT, node >= 18.
 - [API Playground](https://avenaterminal.com/playground): Interactive live-query UI for every open endpoint. No API key needed.

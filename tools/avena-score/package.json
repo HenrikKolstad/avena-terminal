@@ -1,0 +1,40 @@
+{
+  "name": "@avena/score",
+  "version": "1.0.0",
+  "description": "Open-source European property scoring engine. 0–100 Avena Score with full auditable component breakdown.",
+  "keywords": [
+    "avena",
+    "property",
+    "real-estate",
+    "scoring",
+    "hedonic",
+    "europe",
+    "proptech",
+    "investment"
+  ],
+  "homepage": "https://avenaterminal.com/score",
+  "bugs": "mailto:henrik@avenaterminal.com",
+  "license": "MIT",
+  "author": {
+    "name": "Henrik Kolstad",
+    "url": "https://avenaterminal.com"
+  },
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "bin": {
+    "avena-score": "./bin/cli.js"
+  },
+  "files": [
+    "src/",
+    "bin/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/avenaterminal/avena-score"
+  }
+}
