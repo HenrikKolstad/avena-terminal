@@ -29,6 +29,15 @@ export function ScoreClient() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ScoreResponse | null>(null);
   const [copied, setCopied] = useState(false);
+  const [manualOpen, setManualOpen] = useState(false);
+
+  const [mPrice, setMPrice] = useState('');
+  const [mBuilt, setMBuilt] = useState('');
+  const [mBeds, setMBeds] = useState('');
+  const [mType, setMType] = useState('villa');
+  const [mRegion, setMRegion] = useState('costa blanca');
+  const [mTown, setMTown] = useState('');
+  const [mBeach, setMBeach] = useState('');
 
   const submit = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -43,11 +52,45 @@ export function ScoreClient() {
       });
       const data = await r.json();
       setResult(data);
+      if (data.error) setManualOpen(true);
+    } catch (err) {
+      setResult({ error: String(err) } as ScoreResponse);
+      setManualOpen(true);
+    }
+    setLoading(false);
+  };
+
+  const submitManual = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    const price_eur = parseInt(mPrice.replace(/[^\d]/g, ''), 10);
+    const built_m2 = parseInt(mBuilt.replace(/[^\d]/g, ''), 10);
+    if (!price_eur || !built_m2) return;
+    setLoading(true);
+    setResult(null);
+    try {
+      const r = await fetch('/api/v1/score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          price_eur,
+          built_m2,
+          bedrooms: mBeds ? parseInt(mBeds, 10) : undefined,
+          property_type: mType,
+          region: mRegion,
+          town: mTown || undefined,
+          beach_km: mBeach ? parseFloat(mBeach) : null,
+        }),
+      });
+      const data = await r.json();
+      setResult(data);
     } catch (err) {
       setResult({ error: String(err) } as ScoreResponse);
     }
     setLoading(false);
   };
+
+  const inputCls = 'w-full rounded-sm border px-3 py-2 text-sm bg-transparent text-foreground focus:outline-none focus:border-primary font-mono';
+  const inputStyle = { borderColor: 'hsl(var(--av-border) / 0.6)' };
 
   const copyShareUrl = async () => {
     try {
@@ -105,14 +148,80 @@ export function ScoreClient() {
 
         {result && result.error && (
           <div
-            className="rounded-sm border p-5"
+            className="rounded-sm border p-5 mb-6"
             style={{ background: 'hsl(var(--av-destructive) / 0.08)', borderColor: 'hsl(var(--av-destructive) / 0.4)' }}
           >
-            <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-destructive mb-2">Could not score</div>
-            <p className="text-sm text-foreground">{result.error}</p>
-            {result.hint && <p className="text-xs text-muted-foreground mt-2 font-light">{result.hint}</p>}
+            <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-destructive mb-2">Could not extract from URL</div>
+            <p className="text-sm text-foreground mb-2">{result.error}</p>
+            <p className="text-xs text-muted-foreground font-light">
+              Some portals (idealista, Zillow) block automated extraction via Cloudflare. Use the manual form below — works on any property.
+            </p>
           </div>
         )}
+
+        {/* Manual fallback — always visible toggle, auto-opens on extraction failure */}
+        <div
+          className="rounded-sm border mb-6"
+          style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+        >
+          <button
+            type="button"
+            onClick={() => setManualOpen((v) => !v)}
+            className="w-full text-left px-5 py-4 flex items-center justify-between"
+          >
+            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-foreground">
+              Or score manually · always works
+            </span>
+            <span className="font-mono text-[10px] text-primary">{manualOpen ? '−' : '+'}</span>
+          </button>
+          {manualOpen && (
+            <form onSubmit={submitManual} className="px-5 pb-5 space-y-4 border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
+                <label className="block">
+                  <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-1">Price (EUR) *</div>
+                  <input type="text" inputMode="numeric" required value={mPrice} onChange={(e) => setMPrice(e.target.value)} placeholder="385000" className={inputCls} style={inputStyle} />
+                </label>
+                <label className="block">
+                  <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-1">Built m² *</div>
+                  <input type="text" inputMode="numeric" required value={mBuilt} onChange={(e) => setMBuilt(e.target.value)} placeholder="176" className={inputCls} style={inputStyle} />
+                </label>
+                <label className="block">
+                  <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-1">Bedrooms</div>
+                  <input type="text" inputMode="numeric" value={mBeds} onChange={(e) => setMBeds(e.target.value)} placeholder="3" className={inputCls} style={inputStyle} />
+                </label>
+                <label className="block">
+                  <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-1">Beach distance (km)</div>
+                  <input type="text" inputMode="decimal" value={mBeach} onChange={(e) => setMBeach(e.target.value)} placeholder="0.8" className={inputCls} style={inputStyle} />
+                </label>
+                <label className="block">
+                  <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-1">Type</div>
+                  <select value={mType} onChange={(e) => setMType(e.target.value)} className={inputCls} style={inputStyle}>
+                    {['villa','apartment','penthouse','townhouse','bungalow','studio'].map((t) => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </label>
+                <label className="block">
+                  <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-1">Region</div>
+                  <select value={mRegion} onChange={(e) => setMRegion(e.target.value)} className={inputCls} style={inputStyle}>
+                    {['costa blanca','costa del sol','costa calida','costa brava','balearics','canary islands','algarve','lisbon','madrid metro','valencia','paris','côte d\'azur','milan','riviera'].map((r) => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                </label>
+                <label className="block sm:col-span-2">
+                  <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-1">Town (optional)</div>
+                  <input type="text" value={mTown} onChange={(e) => setMTown(e.target.value)} placeholder="Torrevieja" className={inputCls} style={inputStyle} />
+                </label>
+              </div>
+              <button
+                type="submit"
+                disabled={loading || !mPrice || !mBuilt}
+                className="inline-flex items-center justify-center gap-2 rounded-sm px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold disabled:opacity-40"
+                style={{ background: 'var(--av-gradient-gold)' }}
+              >
+                {loading ? 'Scoring…' : 'Score it'}
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            </form>
+          )}
+        </div>
 
         {result && !result.error && (
           <div className="space-y-6">

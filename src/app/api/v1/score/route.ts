@@ -30,7 +30,11 @@ async function extractFromUrl(url: string): Promise<ScoreInput | null> {
   let html: string;
   try {
     const r = await fetch(url, {
-      headers: { 'user-agent': 'Mozilla/5.0 AvenaTerminalBot/1.0 (+https://avenaterminal.com)' },
+      headers: {
+        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'accept-language': 'en-US,en;q=0.9,es;q=0.8',
+      },
       redirect: 'follow',
       signal: AbortSignal.timeout(15000),
     });
@@ -40,22 +44,58 @@ async function extractFromUrl(url: string): Promise<ScoreInput | null> {
     return null;
   }
 
+  // Extract OG / meta tags first (more reliable than body scraping)
+  const metaMatch = (name: string) => {
+    const re = new RegExp(`<meta[^>]+(?:property|name)=["']${name}["'][^>]+content=["']([^"']+)["']`, 'i');
+    return html.match(re)?.[1] ?? null;
+  };
+  const ogTitle = metaMatch('og:title') ?? metaMatch('twitter:title') ?? '';
+  const ogDesc  = metaMatch('og:description') ?? metaMatch('description') ?? '';
+  const jsonLdBlocks = Array.from(html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi))
+    .map((m) => m[1])
+    .join('\n');
+
   // Normalize whitespace
-  const text = html.replace(/\s+/g, ' ');
+  const text = (html + ' ' + ogTitle + ' ' + ogDesc + ' ' + jsonLdBlocks).replace(/\s+/g, ' ');
 
-  // Price — look for €XXX,XXX or EUR XXX patterns
-  const priceMatch = text.match(/(?:€|EUR\s?)[\s\u00A0]?([\d\s.,]{4,12})/i);
-  let price = 0;
-  if (priceMatch) {
-    const cleaned = priceMatch[1].replace(/[^\d]/g, '');
-    price = parseInt(cleaned, 10);
+  // Price — multi-currency, handle dots/commas/spaces as thousands separators.
+  // Try highest-value match (avoids catching "200€ per month" rent listings).
+  const priceCandidates: number[] = [];
+  const priceRe = /(?:€|EUR|eur|kr|NOK|£|GBP|\$|USD)[\s\u00A0]?([\d][\d.,\s\u00A0]{3,15})|([\d][\d.,\s\u00A0]{5,15})[\s\u00A0]?(?:€|EUR|eur|kr|NOK|£|GBP|\$|USD)/gi;
+  let m;
+  while ((m = priceRe.exec(text)) !== null) {
+    const raw = (m[1] || m[2] || '').replace(/[\s\u00A0.,]/g, '');
+    const n = parseInt(raw, 10);
+    if (isFinite(n) && n >= 30000 && n <= 20_000_000) priceCandidates.push(n);
   }
-  if (!price || price < 20000 || price > 50_000_000) return null;
+  // Also try JSON-LD Offer.price
+  const jsonPriceMatch = jsonLdBlocks.match(/"price"\s*:\s*"?(\d{4,10})/);
+  if (jsonPriceMatch) {
+    const n = parseInt(jsonPriceMatch[1], 10);
+    if (isFinite(n) && n >= 30000 && n <= 20_000_000) priceCandidates.push(n);
+  }
+  if (priceCandidates.length === 0) return null;
+  // Pick the most common mid-range value (reduces chance of catching square-meter prices)
+  priceCandidates.sort((a, b) => a - b);
+  const price = priceCandidates[Math.floor(priceCandidates.length / 2)];
 
-  // Built m² — patterns like "176 m²", "176m²", "176 sqm"
-  const m2Match = text.match(/(\d{2,4})\s?(?:m²|m2|sqm|sq\.?\s?m)/i);
-  const built_m2 = m2Match ? parseInt(m2Match[1], 10) : 0;
-  if (!built_m2 || built_m2 < 20 || built_m2 > 5000) return null;
+  // Built m² — multiple patterns
+  const m2Candidates: number[] = [];
+  const m2Re = /(\d{2,4})\s?(?:m²|m2|sqm|sq\.?\s?m|kvm|square\s?meter)/gi;
+  while ((m = m2Re.exec(text)) !== null) {
+    const n = parseInt(m[1], 10);
+    if (isFinite(n) && n >= 25 && n <= 3000) m2Candidates.push(n);
+  }
+  // JSON-LD floorSize
+  const jsonFloorMatch = jsonLdBlocks.match(/"floorSize"[^}]*"value"\s*:\s*"?(\d{2,4})/);
+  if (jsonFloorMatch) {
+    const n = parseInt(jsonFloorMatch[1], 10);
+    if (isFinite(n) && n >= 25 && n <= 3000) m2Candidates.push(n);
+  }
+  if (m2Candidates.length === 0) return null;
+  // Pick median (same logic — avoid catching plot sizes etc)
+  m2Candidates.sort((a, b) => a - b);
+  const built_m2 = m2Candidates[Math.floor(m2Candidates.length / 2)];
 
   // Bedrooms
   const bdMatch = text.match(/(\d)\s?(?:bed|bedroom|dormitorio|chambre|zimmer)/i);
