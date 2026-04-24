@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export function Hero() {
   return (
-    <section className="relative isolate min-h-[100svh] w-full overflow-hidden">
+    <section className="relative isolate min-h-[85svh] w-full overflow-hidden">
       {/* Background image */}
       <Image
         src="/assets/v2/hero-villa.jpg"
@@ -49,9 +49,9 @@ export function Hero() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1600px] flex-col justify-end px-5 pb-24 pt-32 sm:px-12 sm:pb-32">
+      <div className="relative z-10 mx-auto flex min-h-[85svh] max-w-[1600px] flex-col justify-end px-5 pb-20 pt-14 sm:px-12 sm:pb-24 sm:pt-16">
         {/* Top meta line */}
-        <div className="absolute left-5 right-5 top-24 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground sm:left-12 sm:right-12">
+        <div className="absolute left-5 right-5 top-6 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground sm:left-12 sm:right-12 sm:top-8">
           <div className="flex items-center gap-3">
             <span
               className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full"
