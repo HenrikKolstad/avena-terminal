@@ -66,7 +66,7 @@ export function Hero() {
         </div>
 
         <div className="max-w-5xl fade-up">
-          <span className="mb-6 inline-flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+          <span className="mb-6 hidden sm:inline-flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
             <span
               className="h-px w-10"
               style={{ background: 'hsl(var(--av-primary))' }}
