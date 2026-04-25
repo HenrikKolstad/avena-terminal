@@ -82,46 +82,70 @@ export function Hero() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Official RICS Tech Partner · 2026"
-              className="group inline-flex items-stretch overflow-hidden rounded-sm border transition-all hover:-translate-y-px"
+              className="rics-badge group relative inline-flex items-stretch overflow-hidden rounded-sm border transition-all duration-300 hover:-translate-y-px"
               style={{
-                borderColor: 'hsl(var(--av-primary) / 0.45)',
-                boxShadow: '0 6px 20px -10px hsl(42 85% 64% / 0.35)',
+                borderImage: 'linear-gradient(135deg, hsl(42 85% 64% / 0.7) 0%, hsl(26 88% 62% / 0.4) 50%, hsl(42 85% 64% / 0.7) 100%) 1',
+                borderColor: 'hsl(42 85% 64% / 0.55)',
+                boxShadow: '0 8px 30px -10px hsl(42 85% 64% / 0.45), 0 0 0 1px hsl(42 85% 64% / 0.1) inset',
               }}
             >
-              {/* RICS mark block — navy, serif, institutional */}
+              {/* RICS mark block — navy, serif, with subtle metallic sheen on text */}
               <span
-                className="flex items-center px-3 py-2 border-r"
+                className="relative flex items-center px-3 py-2 border-r overflow-hidden"
                 style={{
-                  background: 'linear-gradient(135deg, #0B2240 0%, #16335B 100%)',
-                  borderColor: 'hsl(var(--av-primary) / 0.45)',
+                  background: 'linear-gradient(135deg, #0B2240 0%, #1a3a6b 50%, #0B2240 100%)',
+                  borderColor: 'hsl(42 85% 64% / 0.55)',
                 }}
               >
                 <span
-                  className="font-serif font-bold leading-none text-white"
-                  style={{ fontSize: 13, letterSpacing: '0.18em' }}
+                  className="font-serif font-bold leading-none"
+                  style={{
+                    fontSize: 13,
+                    letterSpacing: '0.18em',
+                    backgroundImage: 'linear-gradient(180deg, #ffffff 0%, #d8d4cb 50%, #ffffff 100%)',
+                    WebkitBackgroundClip: 'text',
+                    backgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    color: 'transparent',
+                  }}
                 >
                   RICS
                 </span>
               </span>
 
-              {/* Partner block — gold, mono, luxe */}
+              {/* Partner block — gold gradient text, shimmer sweep */}
               <span
-                className="flex items-center gap-2 px-3 py-2 font-mono uppercase"
+                className="relative flex items-center gap-2 px-3 py-2 font-mono uppercase overflow-hidden"
                 style={{
                   background: 'linear-gradient(135deg, hsl(42 85% 64% / 0.14) 0%, hsl(26 88% 62% / 0.10) 100%)',
-                  color: 'hsl(var(--av-primary))',
                   fontSize: 10,
                   letterSpacing: '0.32em',
                 }}
               >
+                {/* Shimmer sweep layer */}
+                <span
+                  aria-hidden="true"
+                  className="rics-shimmer pointer-events-none absolute inset-0"
+                />
                 <span
                   className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full"
-                  style={{ background: 'hsl(var(--av-primary))' }}
+                  style={{ background: 'hsl(42 85% 64%)' }}
                 />
-                <span>Official Tech Partner</span>
-                <span className="opacity-40">·</span>
-                <span className="text-foreground/90">2026</span>
-                <span className="opacity-50 group-hover:opacity-100 transition-opacity">↗</span>
+                <span
+                  className="relative font-bold"
+                  style={{
+                    backgroundImage: 'linear-gradient(135deg, hsl(42 85% 70%) 0%, hsl(40 95% 78%) 35%, hsl(26 88% 62%) 100%)',
+                    WebkitBackgroundClip: 'text',
+                    backgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    color: 'transparent',
+                  }}
+                >
+                  Official Tech Partner
+                </span>
+                <span className="relative opacity-40" style={{ color: 'hsl(42 85% 64%)' }}>·</span>
+                <span className="relative text-foreground/90 font-bold">2026</span>
+                <span className="relative opacity-60 group-hover:opacity-100 transition-opacity" style={{ color: 'hsl(42 85% 64%)' }}>↗</span>
               </span>
             </a>
           </div>

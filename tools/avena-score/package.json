@@ -1,5 +1,5 @@
 {
-  "name": "@avena/score",
+  "name": "avena-score",
   "version": "1.0.0",
   "description": "Open-source European property scoring engine. 0–100 Avena Score with full auditable component breakdown.",
   "keywords": [

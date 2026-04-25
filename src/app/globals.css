@@ -240,3 +240,27 @@
 .animate-region-pulse {
   animation: region-pulse 3s ease-in-out infinite;
 }
+
+/* RICS Tech Partner badge — shimmer sweep + glow lift on hover */
+.rics-shimmer {
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    transparent 35%,
+    rgba(245, 166, 35, 0.18) 50%,
+    transparent 65%,
+    transparent 100%
+  );
+  background-size: 250% 100%;
+  background-position: 200% 0;
+  animation: rics-shimmer-sweep 5.5s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+@keyframes rics-shimmer-sweep {
+  0%, 30%   { background-position: 200% 0; opacity: 0.0; }
+  50%       { opacity: 1; }
+  60%, 100% { background-position: -50% 0; opacity: 0.0; }
+}
+.rics-badge:hover {
+  box-shadow: 0 14px 40px -8px hsl(42 85% 64% / 0.55), 0 0 0 1px hsl(42 85% 64% / 0.25) inset !important;
+}

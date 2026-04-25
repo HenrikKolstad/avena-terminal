@@ -192,7 +192,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                 {p.costa && <span className="text-muted-foreground">· {p.costa}</span>}
               </span>
 
-              <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-light leading-[1] tracking-tight text-foreground mb-4">
+              <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light leading-[1.05] tracking-tight text-foreground mb-4 break-words hyphens-auto">
                 {p.p}
               </h1>
 
@@ -220,7 +220,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
 
               {p._sc != null && (
                 <div
-                  className="flex flex-wrap items-start gap-4 sm:gap-6 rounded-sm border p-5 mb-6 max-w-full"
+                  className="flex flex-col sm:flex-row sm:flex-wrap sm:items-start gap-4 sm:gap-6 rounded-sm border p-4 sm:p-5 mb-6 max-w-full"
                   style={{
                     background: 'hsl(var(--av-surface) / 0.4)',
                     borderColor: 'hsl(var(--av-border) / 0.6)',
