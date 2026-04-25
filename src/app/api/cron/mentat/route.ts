@@ -23,29 +23,43 @@ interface CheckResult {
   error?: string;
 }
 
-const CHECKS: Array<{ command: string; endpoint: string }> = [
+interface CheckSpec {
+  command: string;
+  endpoint: string;
+  /**
+   * Status codes that count as "endpoint healthy" beyond 2xx.
+   * E.g. AVN lookup of a non-existent ID returns 404 with structured
+   * `{ status: 'not_found' }` — that proves the endpoint is alive,
+   * not broken. Default: only 2xx counts as healthy.
+   */
+  acceptable_statuses?: number[];
+}
+
+const CHECKS: CheckSpec[] = [
   { command: 'APCI',  endpoint: '/api/v1/apci' },
   { command: 'PRED',  endpoint: '/api/predictions?status=active&limit=1' },
-  { command: 'AVN',   endpoint: '/api/v1/avn/AVN:ES-03185-NB-0421' },
+  { command: 'AVN',   endpoint: '/api/v1/avn/AVN:ES-03185-NB-0421', acceptable_statuses: [404] },
   { command: 'BUBL',  endpoint: '/api/v1/bubble-scanner?city=munich' },
 ];
 
-async function ping(base: string, endpoint: string): Promise<CheckResult> {
-  const url = base + endpoint;
+async function ping(base: string, spec: CheckSpec): Promise<CheckResult> {
+  const url = base + spec.endpoint;
   const start = Date.now();
   try {
     const r = await fetch(url, { cache: 'no-store' });
+    const acceptable = spec.acceptable_statuses ?? [];
+    const ok = r.ok || acceptable.includes(r.status);
     return {
-      command: endpoint,
-      endpoint,
-      ok: r.ok,
+      command: spec.command,
+      endpoint: spec.endpoint,
+      ok,
       status: r.status,
       duration_ms: Date.now() - start,
     };
   } catch (e) {
     return {
-      command: endpoint,
-      endpoint,
+      command: spec.command,
+      endpoint: spec.endpoint,
       ok: false,
       status: null,
       duration_ms: Date.now() - start,
@@ -64,8 +78,7 @@ export async function GET(req: NextRequest) {
 
   const results: CheckResult[] = [];
   for (const c of CHECKS) {
-    const r = await ping(base, c.endpoint);
-    r.command = c.command;
+    const r = await ping(base, c);
     results.push(r);
   }
 

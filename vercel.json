@@ -5,7 +5,7 @@
     "src/app/api/detect-events/route.ts": { "maxDuration": 60 },
     "src/app/api/cron/crawler-submit/route.ts": { "maxDuration": 300 },
     "src/app/api/cron/prometheus/route.ts": { "maxDuration": 180 },
-    "src/app/api/cron/citation-agent/route.ts": { "maxDuration": 180 },
+    "src/app/api/cron/citation-agent/route.ts": { "maxDuration": 300 },
     "src/app/api/cron/weekly-newsletter/route.ts": { "maxDuration": 300 },
     "src/app/api/cron/backlink-loop/route.ts": { "maxDuration": 120 }
   },
