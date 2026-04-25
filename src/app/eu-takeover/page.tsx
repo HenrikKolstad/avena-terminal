@@ -6,6 +6,8 @@ import { INGESTION_SWARM, agentStatus, todayCount, recentActivity, totalsToday, 
 import { TickClient } from './TickClient';
 import { WarRoomClock } from './WarRoomClock';
 import { EuropeMap } from './EuropeMap';
+import { MissionControlBar } from './MissionControlBar';
+import { DealFlowTicker } from './DealFlowTicker';
 
 export const dynamic = 'force-dynamic';
 
@@ -79,6 +81,8 @@ export default function EUTakeoverPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
       <main className="pt-16">
+        <MissionControlBar />
+        <DealFlowTicker />
         {/* HERO — operations clock + manifesto */}
         <section
           className="border-b relative overflow-hidden"
