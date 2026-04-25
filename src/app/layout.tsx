@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { LanguageProvider } from "@/context/LanguageContext";
@@ -9,6 +9,14 @@ import { WhatsAppButton } from "@/components/v2/WhatsAppButton";
 import { ExitIntent } from "@/components/v2/ExitIntent";
 import { KeyboardShortcuts } from "@/components/v2/KeyboardShortcuts";
 import { CommandPalette } from "@/components/v2/CommandPalette";
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: 'cover',
+  themeColor: '#1D1815',
+};
 
 export const metadata: Metadata = {
   title: "Avena Terminal — Spain New Build Property Investment Scanner | 1,881 Properties",
@@ -60,7 +68,6 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta name="robots" content="max-image-preview:large" />
-        <meta name="theme-color" content="#0d0d14" />
         <link rel="alternate" hrefLang="en" href="https://avenaterminal.com" />
         <link rel="alternate" hrefLang="es" href="https://avenaterminal.com/es" />
         <link rel="alternate" hrefLang="de" href="https://avenaterminal.com/de" />
