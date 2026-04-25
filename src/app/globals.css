@@ -264,3 +264,16 @@
 .rics-badge:hover {
   box-shadow: 0 14px 40px -8px hsl(42 85% 64% / 0.55), 0 0 0 1px hsl(42 85% 64% / 0.25) inset !important;
 }
+
+/* EU Takeover war-room city pings */
+.war-ping circle:last-child {
+  animation: war-ping-pulse 2.4s ease-in-out infinite;
+}
+@keyframes war-ping-pulse {
+  0%, 100% { transform: scale(1);   opacity: 1; }
+  50%      { transform: scale(1.4); opacity: 0.55; }
+}
+.war-ping {
+  transform-box: fill-box;
+  transform-origin: center;
+}

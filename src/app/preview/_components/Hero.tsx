@@ -89,14 +89,21 @@ export function Hero() {
                 boxShadow: '0 8px 30px -10px hsl(42 85% 64% / 0.45), 0 0 0 1px hsl(42 85% 64% / 0.1) inset',
               }}
             >
-              {/* RICS mark block — navy, serif, with subtle metallic sheen on text */}
+              {/* RICS mark block — navy, serif, with crest + metallic sheen */}
               <span
-                className="relative flex items-center px-3 py-2 border-r overflow-hidden"
+                className="relative flex items-center gap-1.5 px-3 py-2 border-r overflow-hidden"
                 style={{
                   background: 'linear-gradient(135deg, #0B2240 0%, #1a3a6b 50%, #0B2240 100%)',
                   borderColor: 'hsl(42 85% 64% / 0.55)',
                 }}
               >
+                <svg
+                  width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"
+                  style={{ flexShrink: 0 }}
+                >
+                  <path d="M2 2 L4 2 L4 3.5 L5.3 3.5 L5.3 2 L8.7 2 L8.7 3.5 L10 3.5 L10 2 L12 2 L12 5 L10.5 5 L10.5 11 L12 11 L12 12.5 L2 12.5 L2 11 L3.5 11 L3.5 5 L2 5 Z" fill="#ffffff"/>
+                  <rect x="6" y="7" width="2" height="4" fill="#0B2240"/>
+                </svg>
                 <span
                   className="font-serif font-bold leading-none"
                   style={{
