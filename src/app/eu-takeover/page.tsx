@@ -2,12 +2,13 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
-import { INGESTION_SWARM, agentStatus, todayCount, recentActivity, totalsToday, type IngestionAgent } from './_agents';
+import { INGESTION_SWARM, agentStatus, type IngestionAgent } from './_agents';
 import { TickClient } from './TickClient';
 import { WarRoomClock } from './WarRoomClock';
 import { EuropeMap } from './EuropeMap';
 import { MissionControlBar } from './MissionControlBar';
 import { DealFlowTicker } from './DealFlowTicker';
+import { totalFindings, findingsRecent, findingsByCountry, findingsByAgent, findingsLatest } from '@/lib/findings';
 
 export const dynamic = 'force-dynamic';
 
@@ -48,18 +49,33 @@ const CAMPAIGN: CampaignMilestone[] = [
   { quarter: '2027',    label: 'Scandinavia activation',      status: 'planned',   detail: 'SE · DK · NO · FI · cold-market pioneer agents' },
 ];
 
-export default function EUTakeoverPage() {
+export default async function EUTakeoverPage() {
   const now = new Date();
-  const totals = totalsToday(now);
-  const activity = recentActivity(now, 28);
 
-  const byCountry = INGESTION_SWARM.reduce<Record<string, IngestionAgent[]>>((acc, a) => {
+  // REAL data from the findings ledger
+  const [allTime, last24, byCountry, byAgent, latest] = await Promise.all([
+    totalFindings(),
+    findingsRecent(24),
+    findingsByCountry(24),
+    findingsByAgent(24),
+    findingsLatest(28),
+  ]);
+
+  const totals = {
+    allTime,
+    ingested: last24.ingested,
+    scored: last24.scored,
+    countriesActive: Math.max(1, Object.keys(byCountry).length),
+    agentsLive: INGESTION_SWARM.filter((a) => a.active).length,
+  };
+
+  const agentsByCountry = INGESTION_SWARM.reduce<Record<string, IngestionAgent[]>>((acc, a) => {
     if (!acc[a.country]) acc[a.country] = [];
     acc[a.country].push(a);
     return acc;
   }, {});
 
-  const coverage = Object.entries(byCountry).map(([country, agents]) => ({
+  const coverage = Object.entries(agentsByCountry).map(([country, agents]) => ({
     name: country,
     flag: agents[0].flag,
     pct: Math.round(agents.reduce((s, a) => s + a.scope_pct, 0) / agents.length),
@@ -229,7 +245,7 @@ export default function EUTakeoverPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {INGESTION_SWARM.map((agent) => {
                 const { status, nextRunMin } = agentStatus(agent, now);
-                const count = todayCount(agent, now);
+                const count = byAgent[agent.id] ?? 0;
                 const meta = STATUS_META[status];
                 const inactive = !agent.active;
                 return (
@@ -311,35 +327,38 @@ export default function EUTakeoverPage() {
             >
               <div className="px-4 py-2 border-b font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground flex justify-between" style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-surface) / 0.5)' }}>
                 <span>$ tail -f /var/log/avena/ingestion.log</span>
-                <span className="text-primary">{activity.length} events</span>
+                <span className="text-primary">{latest.length} events · all-time {allTime.toLocaleString()}</span>
               </div>
-              {activity.length === 0 ? (
+              {latest.length === 0 ? (
                 <div className="p-6 font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-                  Quiet window — agents on next-cron-tick rotation.
+                  First ingestion tick lands at 12:30 UTC daily — counter starts climbing then.
                 </div>
               ) : (
-                activity.map((e, i) => (
-                  <div
-                    key={i}
-                    className="px-4 py-1.5 border-b flex items-center gap-3 font-mono text-[12px] hover:bg-primary/5 transition-colors"
-                    style={{ borderColor: 'hsl(var(--av-border) / 0.3)' }}
-                  >
-                    <span className="text-muted-foreground tabular w-12 text-right shrink-0">
-                      {e.minutesAgo === 0 ? 'now' : `T-${String(e.minutesAgo).padStart(2, '0')}m`}
-                    </span>
-                    <span className="text-base shrink-0">{e.flag}</span>
-                    <span className="text-foreground/90 truncate">
-                      <span className="text-primary">{e.agent}</span>
-                      <span className="text-muted-foreground"> // </span>
-                      <span style={{ color: e.action === 'ingested' ? 'hsl(var(--av-primary))' : e.action === 'scored' ? 'hsl(var(--av-warning))' : 'hsl(var(--av-foreground))' }}>{e.action.toUpperCase()}</span>
-                      <span className="text-muted-foreground"> </span>
-                      <span className="text-foreground">{e.count}</span>
-                      <span className="text-muted-foreground"> from </span>
-                      <span className="text-foreground">{e.source}</span>
-                      <span className="text-muted-foreground"> · {e.region}</span>
-                    </span>
-                  </div>
-                ))
+                latest.map((e) => {
+                  const ago = Math.floor((now.getTime() - new Date(e.recorded_at).getTime()) / 60000);
+                  const flag = e.country === 'Spain' ? '🇪🇸' : e.country === 'Portugal' ? '🇵🇹' : e.country === 'France' ? '🇫🇷' : e.country === 'Italy' ? '🇮🇹' : e.country === 'Greece' ? '🇬🇷' : '🇪🇺';
+                  return (
+                    <div
+                      key={e.id}
+                      className="px-4 py-1.5 border-b flex items-center gap-3 font-mono text-[12px] hover:bg-primary/5 transition-colors"
+                      style={{ borderColor: 'hsl(var(--av-border) / 0.3)' }}
+                    >
+                      <span className="text-muted-foreground tabular w-12 text-right shrink-0">
+                        {ago <= 0 ? 'now' : `T-${String(Math.min(ago, 999)).padStart(2, '0')}m`}
+                      </span>
+                      <span className="text-base shrink-0">{flag}</span>
+                      <span className="text-foreground/90 truncate">
+                        <span className="text-primary">{e.agent_name ?? e.agent_id}</span>
+                        <span className="text-muted-foreground"> // </span>
+                        <span style={{ color: e.action === 'ingested' ? 'hsl(var(--av-primary))' : e.action === 'scored' ? 'hsl(var(--av-warning))' : 'hsl(var(--av-foreground))' }}>{e.action.toUpperCase()}</span>
+                        {e.property_ref && <span className="text-foreground"> {e.property_ref}</span>}
+                        {e.score != null && <span className="text-foreground"> @ {e.score}</span>}
+                        {e.source && <><span className="text-muted-foreground"> from </span><span className="text-foreground">{e.source}</span></>}
+                        {e.region && <span className="text-muted-foreground"> · {e.region}</span>}
+                      </span>
+                    </div>
+                  );
+                })
               )}
             </div>
           </div>

@@ -55,7 +55,8 @@
     { "path": "/api/cron/mentat", "schedule": "15 8 * * *" },
     { "path": "/api/cron/courier", "schedule": "0 9 * * *" },
     { "path": "/api/cron/scribe",  "schedule": "0 2 * * *" },
-    { "path": "/api/cron/curator", "schedule": "50 23 * * *" }
+    { "path": "/api/cron/curator", "schedule": "50 23 * * *" },
+    { "path": "/api/cron/eu-ingestion", "schedule": "30 12 * * *" }
   ],
   "$schema": "https://openapi.vercel.sh/vercel.json"
 }
