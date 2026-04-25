@@ -18,14 +18,15 @@ const COUNTRY_BY_REGION: Record<string, string> = {
 };
 
 function genEvent(seed: number): FlowEvent {
-  const region = REGIONS[seed % REGIONS.length];
+  const s = Math.abs(Math.floor(seed));
+  const region = REGIONS[s % REGIONS.length];
   const country = COUNTRY_BY_REGION[region] ?? 'ES';
-  const slug = (region.slice(0, 4) + (1000 + (seed * 17) % 8999)).slice(0, 8);
-  const id = `AVN:${country}-${slug}-NB-${String(seed % 9999).padStart(4, '0')}`;
+  const slug = (region.slice(0, 4) + (1000 + (s * 17) % 8999)).slice(0, 8);
+  const id = `AVN:${country}-${slug}-NB-${String(s % 9999).padStart(4, '0')}`;
   const actions: FlowEvent['action'][] = ['INGESTED', 'SCORED', 'INDEXED', 'SIGNED'];
-  const action = actions[seed % actions.length];
-  const score = action === 'SCORED' ? 50 + (seed * 13) % 45 : undefined;
-  const delta = action === 'SCORED' ? ((seed * 7) % 11) - 5 : undefined;
+  const action = actions[s % actions.length];
+  const score = action === 'SCORED' ? 50 + (s * 13) % 45 : undefined;
+  const delta = action === 'SCORED' ? ((s * 7) % 11) - 5 : undefined;
   return { id, action, score, region, delta };
 }
 
@@ -48,7 +49,7 @@ export function DealFlowTicker() {
       setEvents((prev) => {
         const next = [...prev];
         next.shift();
-        next.push(genEvent(Date.now() / 1000 + Math.random() * 1000));
+        next.push(genEvent(Math.floor(Date.now() / 1000 + Math.random() * 1000)));
         return next;
       });
     }, 3500);
