@@ -236,18 +236,30 @@ Return ONLY the answer text, no preamble.`,
   }
 
   if (supabase && generated.length > 0) {
-    const date = new Date().toISOString().slice(0, 10);
+    // Write to generated_answers (the table /answers/[slug] actually reads).
+    // Use insert with onConflict ignore so we never clobber Prometheus's
+    // hand-tuned answers if a slug collides.
     try {
-      void supabase.from('citation_content').insert(
-        generated.map(g => ({
-          question: g.question,
+      const rows = generated.map(g => {
+        const title = g.question
+          .replace(/^./, (c) => c.toUpperCase())
+          .replace(/\?$/, '')
+          .slice(0, 120);
+        return {
           slug: g.slug,
-          answer: g.answer,
-          schema: g.schema,
-          date,
-          deployed: false,
-        }))
-      );
+          question: g.question,
+          title,
+          answer_markdown: g.answer,
+          key_facts: null,
+          tags: ['atlas', 'citation-gap', 'auto-generated'],
+          source: 'atlas',
+          doi: '10.5281/zenodo.19520064',
+          generated_at: new Date().toISOString(),
+        };
+      });
+      void supabase
+        .from('generated_answers')
+        .upsert(rows, { onConflict: 'slug', ignoreDuplicates: true });
     } catch { /* ignore */ }
   }
 

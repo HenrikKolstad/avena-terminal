@@ -122,19 +122,21 @@ async function logCommonCrawlIntent(): Promise<void> {
   }
 }
 
-/** Google — push sitemap via ping (deprecated but still honored in many cases). */
+/**
+ * Google — sitemap ping endpoint was retired by Google in June 2023.
+ * The replacement path is Search Console (manual) or the Indexing API
+ * (job-postings + livestream content only — not eligible for property pages).
+ *
+ * Until we wire a Search Console OAuth flow, the right move is to skip
+ * the call entirely and rely on IndexNow + Internet Archive submissions
+ * + organic crawl from sitemap.xml (which Googlebot reads on its own).
+ */
 async function submitGoogleSitemap(): Promise<{ ok: boolean; detail: string }> {
   const sitemap = `${DOMAIN}/sitemap.xml`;
-  try {
-    const res = await fetch(
-      `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemap)}`
-    );
-    await log('google-sitemap', sitemap, res.ok ? 'success' : 'failed', { status: res.status });
-    return { ok: res.ok, detail: `HTTP ${res.status}` };
-  } catch (e) {
-    await log('google-sitemap', sitemap, 'failed', { error: String(e) });
-    return { ok: false, detail: 'network' };
-  }
+  await log('google-sitemap', sitemap, 'queued', {
+    reason: 'Google retired the ping endpoint in June 2023. Sitemap remains in robots.txt; Googlebot crawls it organically. Treated as queued/skipped.',
+  });
+  return { ok: true, detail: 'skipped (endpoint retired June 2023)' };
 }
 
 /** Run the full outbound crawler-submission pass. */
