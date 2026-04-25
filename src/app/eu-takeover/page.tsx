@@ -142,10 +142,10 @@ export default async function EUTakeoverPage() {
                 Theatre <span className="italic text-gold">of operations</span>.
               </h2>
               <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-                Pings = active scans · gold = ≥80% covered
+                Live · ranked by 24h ingestion velocity
               </span>
             </div>
-            <EuropeMap countries={coverage} />
+            <EuropeMap countries={coverage} byAgent={byAgent} />
           </div>
         </section>
 
