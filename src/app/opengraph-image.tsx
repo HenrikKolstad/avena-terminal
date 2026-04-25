@@ -1,103 +1,240 @@
 import { ImageResponse } from 'next/og';
 
-export const runtime = 'edge';
-export const alt = 'Avena Terminal — Spain Property Investment Scanner';
+export const alt = 'Avena Terminal — European Property Intelligence';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
+/**
+ * Open Graph card. Warm-dark + gold brand. Updated 2026-04 to match
+ * the Avena Terminal v2 visual identity (Cormorant italic, JetBrains
+ * Mono, #1D1815 background, #F5A623 gold accent).
+ */
 export default function Image() {
+  const BG = '#1D1815';
+  const BG_HI = '#251E1A';
+  const GOLD = '#F5A623';
+  const GOLD_HI = '#F5C97A';
+  const FG = '#F5EFE7';
+  const MUTED = '#A39689';
+  const BORDER = 'rgba(245,166,35,0.22)';
+
   return new ImageResponse(
     (
       <div
         style={{
-          background: 'linear-gradient(135deg, #0d0d14 0%, #0a1628 50%, #0d0d14 100%)',
           width: '100%',
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: 'system-ui, sans-serif',
+          background: `linear-gradient(135deg, ${BG} 0%, ${BG_HI} 50%, ${BG} 100%)`,
+          fontFamily: 'Georgia, "Times New Roman", serif',
           position: 'relative',
-          overflow: 'hidden',
+          padding: '60px 70px',
         }}
       >
-        {/* Subtle grid overlay */}
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundImage: 'linear-gradient(rgba(16,185,129,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.03) 1px, transparent 1px)',
-          backgroundSize: '40px 40px',
-        }} />
+        {/* Grid overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage:
+              'linear-gradient(rgba(245,166,35,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(245,166,35,0.04) 1px, transparent 1px)',
+            backgroundSize: '40px 40px',
+          }}
+        />
 
-        {/* AVENA TERMINAL */}
-        <div style={{
-          fontSize: 56,
-          fontWeight: 700,
-          letterSpacing: '0.25em',
-          marginBottom: '8px',
-          background: 'linear-gradient(90deg, #6ee7b7, #10b981, #059669)',
-          backgroundClip: 'text',
-          color: 'transparent',
-        }}>AVENA TERMINAL</div>
-
-        {/* Tagline */}
-        <div style={{
-          fontSize: 20,
-          color: '#9ca3af',
-          letterSpacing: '0.12em',
-          marginBottom: '36px',
-          textTransform: 'uppercase',
-        }}>European Property Intelligence Infrastructure</div>
-
-        {/* Stats row */}
-        <div style={{ display: 'flex', gap: '20px', alignItems: 'center', marginBottom: '28px' }}>
-          {[
-            { value: '1,881', label: 'Scored Properties' },
-            { value: '5', label: 'Market Indices' },
-            { value: '19', label: 'AI Agents' },
-            { value: '200+', label: 'Live Systems' },
-          ].map(({ value, label }) => (
-            <div key={label} style={{
+        {/* Top bar — wordmark + status */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            zIndex: 1,
+          }}
+        >
+          <div
+            style={{
               display: 'flex',
-              flexDirection: 'column',
               alignItems: 'center',
-              background: 'rgba(16,185,129,0.06)',
-              border: '1px solid rgba(16,185,129,0.15)',
-              borderRadius: '10px',
-              padding: '12px 24px',
-              minWidth: '140px',
-            }}>
-              <span style={{ fontSize: 32, fontWeight: 800, color: '#10b981' }}>{value}</span>
-              <span style={{ fontSize: 10, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.15em', marginTop: '4px' }}>{label}</span>
+              gap: 14,
+            }}
+          >
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                background: BG,
+                border: `2px solid ${GOLD}`,
+                borderRadius: 4,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontFamily: 'Georgia, serif',
+                fontStyle: 'italic',
+                fontSize: 28,
+                color: GOLD,
+                lineHeight: 1,
+              }}
+            >
+              A
+            </div>
+            <div
+              style={{
+                fontFamily: 'monospace',
+                fontSize: 16,
+                color: FG,
+                letterSpacing: '0.32em',
+              }}
+            >
+              AVENA TERMINAL
+            </div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              fontFamily: 'monospace',
+              fontSize: 12,
+              color: GOLD,
+              letterSpacing: '0.3em',
+            }}
+          >
+            <span
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                background: GOLD,
+                boxShadow: `0 0 10px ${GOLD}`,
+              }}
+            />
+            LIVE · 2026
+          </div>
+        </div>
+
+        {/* Hero block */}
+        <div
+          style={{
+            marginTop: 60,
+            display: 'flex',
+            flexDirection: 'column',
+            zIndex: 1,
+          }}
+        >
+          <div
+            style={{
+              fontFamily: 'monospace',
+              fontSize: 13,
+              color: GOLD,
+              letterSpacing: '0.4em',
+              marginBottom: 20,
+            }}
+          >
+            EUROPEAN PROPERTY INTELLIGENCE
+          </div>
+          <div
+            style={{
+              fontSize: 92,
+              fontWeight: 300,
+              color: FG,
+              lineHeight: 0.95,
+              letterSpacing: '-0.02em',
+              display: 'flex',
+              flexWrap: 'wrap',
+            }}
+          >
+            <span>The terminal&nbsp;</span>
+            <span style={{ fontStyle: 'italic', color: GOLD_HI }}>for property</span>
+          </div>
+          <div
+            style={{
+              fontSize: 26,
+              color: MUTED,
+              marginTop: 18,
+              maxWidth: 900,
+              lineHeight: 1.35,
+            }}
+          >
+            Score, rank and audit every European new-build. RICS Tech Partner. Open methodology.
+          </div>
+        </div>
+
+        {/* Stat strip */}
+        <div
+          style={{
+            marginTop: 'auto',
+            display: 'flex',
+            gap: 0,
+            border: `1px solid ${BORDER}`,
+            borderRadius: 4,
+            overflow: 'hidden',
+            zIndex: 1,
+          }}
+        >
+          {[
+            { value: '1,881', label: 'Properties scored' },
+            { value: '14', label: 'Ingestion agents' },
+            { value: '5', label: 'Countries live' },
+            { value: '24/7', label: 'Cron pipeline' },
+          ].map((s, i) => (
+            <div
+              key={s.label}
+              style={{
+                flex: 1,
+                padding: '22px 26px',
+                display: 'flex',
+                flexDirection: 'column',
+                background: i % 2 === 0 ? 'rgba(245,166,35,0.04)' : 'transparent',
+                borderRight: i < 3 ? `1px solid ${BORDER}` : 'none',
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: 'Georgia, serif',
+                  fontSize: 44,
+                  color: GOLD_HI,
+                  lineHeight: 1,
+                  fontWeight: 300,
+                }}
+              >
+                {s.value}
+              </span>
+              <span
+                style={{
+                  fontFamily: 'monospace',
+                  fontSize: 11,
+                  color: MUTED,
+                  letterSpacing: '0.28em',
+                  marginTop: 8,
+                  textTransform: 'uppercase',
+                }}
+              >
+                {s.label}
+              </span>
             </div>
           ))}
         </div>
 
-        {/* Feature tags */}
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', justifyContent: 'center', maxWidth: '900px' }}>
-          {['MCP Server', 'PropertyEval Benchmark', 'SPARQL', 'RDF', 'Bubble Scanner', 'Oracle AI', 'Context Protocol', 'CC BY 4.0'].map(tag => (
-            <span key={tag} style={{
-              fontSize: 11,
-              color: '#6b7280',
-              border: '1px solid rgba(107,114,128,0.2)',
-              borderRadius: '20px',
-              padding: '4px 14px',
-              letterSpacing: '0.05em',
-            }}>{tag}</span>
-          ))}
-        </div>
-
-        {/* Bottom bar */}
-        <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-          <span style={{ fontSize: 15, color: '#10b981', letterSpacing: '0.1em', fontWeight: 600 }}>avenaterminal.com</span>
-          <span style={{ fontSize: 12, color: '#4b5563' }}>DOI: 10.5281/zenodo.19520064</span>
+        {/* Footer bar */}
+        <div
+          style={{
+            marginTop: 22,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            fontFamily: 'monospace',
+            fontSize: 12,
+            color: MUTED,
+            letterSpacing: '0.22em',
+            zIndex: 1,
+          }}
+        >
+          <span style={{ color: GOLD, letterSpacing: '0.18em' }}>avenaterminal.com</span>
+          <span>RICS TECH PARTNER · DOI 10.5281/ZENODO.19520064</span>
         </div>
       </div>
     ),
-    { ...size }
+    { ...size },
   );
 }
