@@ -26,31 +26,37 @@ export interface IngestionAgent {
 
 export const INGESTION_SWARM: IngestionAgent[] = [
   // SPAIN — fully active
-  { id: 'iberia',       name: 'Agent Iberia',       region: 'Spain · core',          country: 'Spain',    flag: '🇪🇸', sources: ['idealista', 'kyero'],                base_daily: 220, active: true,  scope_pct: 100, cron_minutes: [3, 18, 33, 48] },
-  { id: 'costa-blanca', name: 'Agent Costa Blanca', region: 'Costa Blanca',          country: 'Spain',    flag: '🇪🇸', sources: ['kyero', 'aplaceinthesun'],          base_daily: 145, active: true,  scope_pct: 100, cron_minutes: [7, 22, 37, 52] },
-  { id: 'costa-del-sol',name: 'Agent Costa del Sol',region: 'Costa del Sol',         country: 'Spain',    flag: '🇪🇸', sources: ['fotocasa', 'aplaceinthesun'],       base_daily: 128, active: true,  scope_pct: 100, cron_minutes: [11, 26, 41, 56] },
-  { id: 'costa-calida', name: 'Agent Costa Cálida', region: 'Costa Cálida',          country: 'Spain',    flag: '🇪🇸', sources: ['idealista', 'spainhouses'],         base_daily: 62,  active: true,  scope_pct: 100, cron_minutes: [4, 19, 34, 49] },
-  { id: 'balearics',    name: 'Agent Balearics',    region: 'Mallorca · Ibiza',      country: 'Spain',    flag: '🇪🇸', sources: ['idealista', 'engelvoelkers'],       base_daily: 41,  active: true,  scope_pct: 78,  cron_minutes: [9, 24, 39, 54] },
+  { id: 'iberia',       name: 'Agent Iberia',       region: 'Spain · core',          country: 'Spain',    flag: '🇪🇸', sources: ['idealista', 'kyero', 'pisos.com', 'fotocasa'],          base_daily: 320, active: true,  scope_pct: 100, cron_minutes: [3, 18, 33, 48] },
+  { id: 'costa-blanca', name: 'Agent Costa Blanca', region: 'Costa Blanca',          country: 'Spain',    flag: '🇪🇸', sources: ['kyero', 'aplaceinthesun', 'idealista', 'spainhouses'],  base_daily: 220, active: true,  scope_pct: 100, cron_minutes: [7, 22, 37, 52] },
+  { id: 'costa-del-sol',name: 'Agent Costa del Sol',region: 'Costa del Sol',         country: 'Spain',    flag: '🇪🇸', sources: ['fotocasa', 'aplaceinthesun', 'idealista', 'engelvoelkers'], base_daily: 195, active: true,  scope_pct: 100, cron_minutes: [11, 26, 41, 56] },
+  { id: 'costa-calida', name: 'Agent Costa Cálida', region: 'Costa Cálida',          country: 'Spain',    flag: '🇪🇸', sources: ['idealista', 'spainhouses', 'pisos.com'],                base_daily: 95,  active: true,  scope_pct: 100, cron_minutes: [4, 19, 34, 49] },
+  { id: 'balearics',    name: 'Agent Balearics',    region: 'Mallorca · Ibiza',     country: 'Spain',    flag: '🇪🇸', sources: ['idealista', 'engelvoelkers', 'sothebysrealty'],          base_daily: 62,  active: true,  scope_pct: 78,  cron_minutes: [9, 24, 39, 54] },
+  { id: 'catalunya',    name: 'Agent Catalunya',    region: 'Catalunya · Tarragona', country: 'Spain',    flag: '🇪🇸', sources: ['idealista', 'fotocasa', 'habitaclia'],                  base_daily: 110, active: true,  scope_pct: 42,  cron_minutes: [12, 27, 42, 57] },
+  { id: 'galicia',      name: 'Agent Galicia',      region: 'Galicia · Atlantic',    country: 'Spain',    flag: '🇪🇸', sources: ['idealista', 'pisos.com'],                                base_daily: 38,  active: true,  scope_pct: 28,  cron_minutes: [5, 35] },
 
   // PORTUGAL — onboarding
-  { id: 'algarve',      name: 'Agent Algarve',      region: 'Algarve',               country: 'Portugal', flag: '🇵🇹', sources: ['idealista.pt', 'imovirtual'],       base_daily: 88,  active: true,  scope_pct: 64,  cron_minutes: [13, 28, 43, 58] },
-  { id: 'lisboa',       name: 'Agent Lisboa',       region: 'Lisbon · Cascais',      country: 'Portugal', flag: '🇵🇹', sources: ['imovirtual', 'casasapo'],           base_daily: 72,  active: true,  scope_pct: 51,  cron_minutes: [2, 17, 32, 47] },
-  { id: 'porto',        name: 'Agent Porto',        region: 'Porto · Douro',         country: 'Portugal', flag: '🇵🇹', sources: ['casasapo', 'idealista.pt'],         base_daily: 38,  active: true,  scope_pct: 38,  cron_minutes: [6, 21, 36, 51] },
+  { id: 'algarve',      name: 'Agent Algarve',      region: 'Algarve',               country: 'Portugal', flag: '🇵🇹', sources: ['idealista.pt', 'imovirtual', 'casasapo', 'remax.pt'],   base_daily: 145, active: true,  scope_pct: 64,  cron_minutes: [13, 28, 43, 58] },
+  { id: 'lisboa',       name: 'Agent Lisboa',       region: 'Lisbon · Cascais',      country: 'Portugal', flag: '🇵🇹', sources: ['imovirtual', 'casasapo', 'idealista.pt', 'remax.pt'],   base_daily: 120, active: true,  scope_pct: 51,  cron_minutes: [2, 17, 32, 47] },
+  { id: 'porto',        name: 'Agent Porto',        region: 'Porto · Douro',         country: 'Portugal', flag: '🇵🇹', sources: ['casasapo', 'idealista.pt', 'imovirtual'],                base_daily: 65,  active: true,  scope_pct: 38,  cron_minutes: [6, 21, 36, 51] },
+  { id: 'madeira',      name: 'Agent Madeira',      region: 'Madeira · Açores',      country: 'Portugal', flag: '🇵🇹', sources: ['imovirtual', 'casasapo'],                                base_daily: 28,  active: true,  scope_pct: 22,  cron_minutes: [25, 55] },
 
   // FRANCE — scoping
-  { id: 'cote-dazur',   name: 'Agent Côte d\'Azur', region: 'Côte d\'Azur',          country: 'France',   flag: '🇫🇷', sources: ['seloger', 'leboncoin'],             base_daily: 18,  active: true,  scope_pct: 22,  cron_minutes: [14, 44] },
-  { id: 'paris-metro',  name: 'Agent Paris Metro',  region: 'Paris metro',           country: 'France',   flag: '🇫🇷', sources: ['seloger', 'pap.fr'],                base_daily: 12,  active: true,  scope_pct: 14,  cron_minutes: [29, 59] },
+  { id: 'cote-dazur',   name: 'Agent Côte d\'Azur', region: 'Côte d\'Azur',          country: 'France',   flag: '🇫🇷', sources: ['seloger', 'leboncoin', 'logic-immo', 'avendrealouer'],   base_daily: 32,  active: true,  scope_pct: 22,  cron_minutes: [14, 44] },
+  { id: 'paris-metro',  name: 'Agent Paris Metro',  region: 'Paris metro',           country: 'France',   flag: '🇫🇷', sources: ['seloger', 'pap.fr', 'logic-immo'],                       base_daily: 24,  active: true,  scope_pct: 14,  cron_minutes: [29, 59] },
 
   // ITALY — scoping
-  { id: 'riviera',      name: 'Agent Riviera',      region: 'Italian Riviera',       country: 'Italy',    flag: '🇮🇹', sources: ['immobiliare.it', 'casa.it'],        base_daily: 14,  active: true,  scope_pct: 9,   cron_minutes: [16, 46] },
-  { id: 'milano',       name: 'Agent Milano',       region: 'Milan · Lakes',         country: 'Italy',    flag: '🇮🇹', sources: ['immobiliare.it', 'idealista.it'],   base_daily: 11,  active: true,  scope_pct: 7,   cron_minutes: [31] },
+  { id: 'riviera',      name: 'Agent Riviera',      region: 'Italian Riviera',       country: 'Italy',    flag: '🇮🇹', sources: ['immobiliare.it', 'casa.it', 'subito.it'],                base_daily: 26,  active: true,  scope_pct: 9,   cron_minutes: [16, 46] },
+  { id: 'milano',       name: 'Agent Milano',       region: 'Milan · Lakes',         country: 'Italy',    flag: '🇮🇹', sources: ['immobiliare.it', 'idealista.it', 'casa.it'],             base_daily: 20,  active: true,  scope_pct: 7,   cron_minutes: [31] },
+  { id: 'toscana',      name: 'Agent Toscana',      region: 'Toscana · Chianti',     country: 'Italy',    flag: '🇮🇹', sources: ['immobiliare.it', 'casa.it', 'gateaway'],                 base_daily: 22,  active: true,  scope_pct: 12,  cron_minutes: [8, 38] },
+  { id: 'puglia',       name: 'Agent Puglia',       region: 'Puglia · Salento',      country: 'Italy',    flag: '🇮🇹', sources: ['immobiliare.it', 'subito.it'],                           base_daily: 18,  active: true,  scope_pct: 8,   cron_minutes: [26] },
 
   // GREECE / CYPRUS — onboarding
-  { id: 'aegean',       name: 'Agent Aegean',       region: 'Athens · Cyclades',     country: 'Greece',   flag: '🇬🇷', sources: ['spitogatos', 'xe.gr'],              base_daily: 8,   active: true,  scope_pct: 5,   cron_minutes: [38] },
+  { id: 'aegean',       name: 'Agent Aegean',       region: 'Athens · Cyclades',     country: 'Greece',   flag: '🇬🇷', sources: ['spitogatos', 'xe.gr', 'tospitimou'],                     base_daily: 14,  active: true,  scope_pct: 5,   cron_minutes: [38] },
+  { id: 'kreta',        name: 'Agent Kreta',        region: 'Crete · Halkidiki',     country: 'Greece',   flag: '🇬🇷', sources: ['spitogatos', 'xe.gr'],                                   base_daily: 12,  active: true,  scope_pct: 4,   cron_minutes: [50] },
 
-  // NORDICS — roadmap
-  { id: 'borealis',     name: 'Agent Borealis',     region: 'Stockholm · Oslo',      country: 'Sweden',   flag: '🇸🇪', sources: ['hemnet', 'finn.no'],                base_daily: 0,   active: false, scope_pct: 0,   cron_minutes: [] },
-  { id: 'kobenhavn',    name: 'Agent København',    region: 'Copenhagen · Aarhus',   country: 'Denmark',  flag: '🇩🇰', sources: ['boliga', 'home.dk'],                base_daily: 0,   active: false, scope_pct: 0,   cron_minutes: [] },
+  // NORDICS — ACTIVATED 2026-04 (was roadmap)
+  { id: 'borealis',     name: 'Agent Borealis',     region: 'Stockholm · Oslo',      country: 'Sweden',   flag: '🇸🇪', sources: ['hemnet', 'finn.no', 'booli'],                            base_daily: 35,  active: true,  scope_pct: 12,  cron_minutes: [10, 40] },
+  { id: 'kobenhavn',    name: 'Agent København',    region: 'Copenhagen · Aarhus',   country: 'Denmark',  flag: '🇩🇰', sources: ['boliga', 'home.dk', 'edc.dk'],                           base_daily: 22,  active: true,  scope_pct: 8,   cron_minutes: [20, 45] },
 ];
 
 /**
