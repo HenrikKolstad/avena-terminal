@@ -58,6 +58,7 @@ export async function POST(req: NextRequest) {
     const session_token: string | undefined = body.session_token;
     const property_refs: string[] = Array.isArray(body.property_refs) ? body.property_refs.slice(0, 10) : [];
     const buyer_email: string = body.buyer_email || body.user_email || '';
+    const test_mode: boolean = body.test_mode === true;
 
     if (!mission_id || property_refs.length === 0) {
       return NextResponse.json(
@@ -99,13 +100,23 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
+      // Test mode: redirect all sends to the buyer's own inbox so the user
+      // can verify the full pipeline (Resend, AVP, headers, attachment)
+      // without spamming real developers. Subject is prefixed [TEST] and
+      // the original recipient is logged in the body for transparency.
+      const effectiveTo = test_mode && buyer_email ? buyer_email : out.to_email;
+      const effectiveSubject = test_mode ? `[TEST → ${out.to_email}] ${out.subject}` : out.subject;
+      const effectiveBody = test_mode
+        ? `[AVENA TEST DISPATCH]\n\nThis is a test fire. In production this email would have been sent to: ${out.to_email}\n\n— — — — — — — — — — — — — — —\n\n${out.body}`
+        : out.body;
+
       const sendRes = await sendAgentOutreach({
         mission_id: mission.id,
         property_ref: ref,
-        to_email: out.to_email,
+        to_email: effectiveTo,
         to_role: out.to_role,
-        subject: out.subject,
-        body: out.body,
+        subject: effectiveSubject,
+        body: effectiveBody,
         buyer_email: buyer_email || undefined,
         asking_price_eur: match.price,
         buyer_persona: mission.brief.buyer_persona,

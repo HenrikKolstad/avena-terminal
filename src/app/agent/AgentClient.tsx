@@ -89,6 +89,7 @@ export function AgentClient() {
 
   // Avena Citizen mode — autonomous send via Resend + AVP-signed offers
   const [autonomousMode, setAutonomousMode] = useState(false);
+  const [testMode, setTestMode] = useState(true); // default ON for safety
   const [buyerEmail, setBuyerEmail] = useState('');
   const [dispatchingRef, setDispatchingRef] = useState<string | null>(null);
   const [dispatchResults, setDispatchResults] = useState<Record<string, DispatchResult>>({});
@@ -114,6 +115,7 @@ export function AgentClient() {
         }
         if (parsed.mission) setMission(parsed.mission);
         if (parsed.autonomousMode != null) setAutonomousMode(!!parsed.autonomousMode);
+        if (parsed.testMode != null) setTestMode(!!parsed.testMode);
         if (parsed.buyerEmail) setBuyerEmail(parsed.buyerEmail);
         if (parsed.dispatchResults) setDispatchResults(parsed.dispatchResults);
       }
@@ -130,11 +132,12 @@ export function AgentClient() {
         form: { budget, regions, types, minBeds, minYield, minScore, timeline, persona, nationality, notes },
         mission,
         autonomousMode,
+        testMode,
         buyerEmail,
         dispatchResults,
       }));
     } catch { /* silent */ }
-  }, [hydrated, budget, regions, types, minBeds, minYield, minScore, timeline, persona, nationality, notes, mission, autonomousMode, buyerEmail, dispatchResults]);
+  }, [hydrated, budget, regions, types, minBeds, minYield, minScore, timeline, persona, nationality, notes, mission, autonomousMode, testMode, buyerEmail, dispatchResults]);
 
   const clearMission = () => {
     setMission(null);
@@ -212,6 +215,7 @@ export function AgentClient() {
           session_token: mission.session_token,
           property_refs: [ref],
           buyer_email: buyerEmail,
+          test_mode: testMode,
         }),
       });
       const data: DispatchResponse = await r.json();
@@ -380,6 +384,35 @@ export function AgentClient() {
                   <span>From: agent@avenaterminal.com · Reply-to: you</span>
                 </div>
               </div>
+            )}
+            {autonomousMode && (
+              <label className="mt-3 flex items-start gap-3 cursor-pointer rounded-sm border p-3"
+                style={{
+                  background: testMode ? 'hsl(var(--av-warning) / 0.08)' : 'hsl(var(--av-background))',
+                  borderColor: testMode ? 'hsl(var(--av-warning) / 0.4)' : 'hsl(var(--av-border) / 0.5)',
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={testMode}
+                  onChange={(e) => setTestMode(e.target.checked)}
+                  className="mt-0.5 accent-primary"
+                />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em]"
+                    style={{ color: testMode ? 'hsl(var(--av-warning))' : 'hsl(var(--av-muted-foreground))' }}
+                  >
+                    <AlertTriangle className="h-3 w-3" />
+                    Test mode {testMode ? '— ON (safe to fire)' : '— OFF (live sends to real developers)'}
+                  </div>
+                  <div className="mt-1 text-xs text-foreground/80 font-light leading-snug">
+                    {testMode
+                      ? <>All dispatches loop back to <span className="font-mono text-primary">{buyerEmail || 'your email'}</span>. Real developers receive nothing. Subject is prefixed [TEST →]. Use this to verify the full pipeline (Resend, AVP signing, headers, attachment) before going live.</>
+                      : <>⚠ Dispatches go to the real developer email shown on each card. AVP-signed and traceable.</>
+                    }
+                  </div>
+                </div>
+              </label>
             )}
           </div>
 
