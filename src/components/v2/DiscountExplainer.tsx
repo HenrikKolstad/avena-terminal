@@ -48,7 +48,7 @@ export function DiscountExplainer({
 
       {/* Tooltip panel — pure CSS hover + focus-within for keyboard */}
       <span
-        className="pointer-events-none absolute left-0 top-full z-40 mt-2 w-[320px] rounded-sm border p-4 opacity-0 translate-y-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-y-0"
+        className="pointer-events-none absolute left-0 top-full z-40 mt-2 w-[min(320px,calc(100vw-2.5rem))] max-w-[320px] rounded-sm border p-4 opacity-0 translate-y-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-y-0"
         style={{
           background: 'hsl(var(--av-background))',
           borderColor: 'hsl(var(--av-border))',

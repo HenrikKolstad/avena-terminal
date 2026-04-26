@@ -192,7 +192,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                 {p.costa && <span className="text-muted-foreground">· {p.costa}</span>}
               </span>
 
-              <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light leading-[1.05] tracking-tight text-foreground mb-4 break-words hyphens-auto">
+              <h1 className="font-serif text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-light leading-[1.1] tracking-tight text-foreground mb-4 break-words hyphens-auto" style={{ overflowWrap: 'anywhere' }}>
                 {p.p}
               </h1>
 
@@ -202,12 +202,12 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                 </p>
               )}
 
-              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 mb-3">
-                <span className="font-serif text-4xl sm:text-5xl md:text-6xl font-light text-foreground tabular break-words">
+              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 mb-3 max-w-full">
+                <span className="font-serif text-3xl sm:text-5xl md:text-6xl font-light text-foreground tabular break-words" style={{ overflowWrap: 'anywhere' }}>
                   €{p.pf.toLocaleString()}
                 </span>
                 {p.pt > p.pf && (
-                  <span className="font-serif text-lg sm:text-xl text-muted-foreground">
+                  <span className="font-serif text-base sm:text-xl text-muted-foreground">
                     – €{p.pt.toLocaleString()}
                   </span>
                 )}
@@ -394,7 +394,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                   <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-3">
                     Gross yield
                   </div>
-                  <div className="font-serif text-5xl font-light text-primary tabular">
+                  <div className="font-serif text-3xl sm:text-4xl md:text-5xl font-light text-primary tabular">
                     {p._yield.gross.toFixed(1)}%
                   </div>
                 </div>
@@ -402,7 +402,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                   <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-3">
                     Annual income
                   </div>
-                  <div className="font-serif text-5xl font-light text-foreground tabular">
+                  <div className="font-serif text-2xl sm:text-3xl md:text-5xl font-light text-foreground tabular break-words" style={{ overflowWrap: 'anywhere' }}>
                     €{Math.round(p._yield.annual).toLocaleString()}
                   </div>
                 </div>
@@ -410,7 +410,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                   <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-3">
                     Weekly rent
                   </div>
-                  <div className="font-serif text-5xl font-light text-foreground tabular">
+                  <div className="font-serif text-2xl sm:text-3xl md:text-5xl font-light text-foreground tabular break-words" style={{ overflowWrap: 'anywhere' }}>
                     €{Math.round(p._yield.rate * 7).toLocaleString()}
                   </div>
                 </div>

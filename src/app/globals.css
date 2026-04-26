@@ -51,10 +51,31 @@
 }
 
 /* Mobile-only guard against horizontal scroll caused by stray overflow
-   (negative-margin images, wide inline svgs, etc.). Desktop keeps natural
-   overflow so sticky + fixed positioning behaves. */
+   (fixed-width tooltips, wide images, long unbroken strings, etc.).
+   Multiple layers of defence because iOS Safari has historically buggy
+   overflow-x: clip support; we belt-and-suspender it with hidden + max-width.
+   Desktop keeps natural overflow so sticky/fixed positioning behaves. */
 @media (max-width: 1023px) {
-  html, body { overflow-x: clip; }
+  html, body {
+    overflow-x: hidden;
+    overflow-x: clip;          /* progressive enhancement — clip > hidden when supported */
+    max-width: 100vw;
+    position: relative;
+  }
+  /* Prevent any element from forcing a wider layout than the viewport */
+  body * {
+    max-width: 100vw;
+  }
+  /* Long words / URLs / property refs inside text elements should wrap */
+  h1, h2, h3, p, span, a, li, dd, dt {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+  /* Images and media should never exceed the viewport */
+  img, video, iframe, svg {
+    max-width: 100%;
+    height: auto;
+  }
 }
 
 .avena-v2 .font-mono,

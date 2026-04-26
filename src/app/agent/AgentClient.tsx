@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Check, Copy, Send, AlertTriangle, Sparkles, RotateCcw } from 'lucide-react';
+import { ArrowRight, Check, Copy, Send, AlertTriangle, Sparkles, RotateCcw, Zap, Shield } from 'lucide-react';
 
-const STORAGE_KEY = 'avena_agent_state_v1';
+const STORAGE_KEY = 'avena_agent_state_v2';
 
 interface Match {
   ref: string;
@@ -45,6 +45,21 @@ interface MissionResponse {
   warnings: string[];
 }
 
+interface DispatchResult {
+  ref: string;
+  ok: boolean;
+  error?: string;
+  avp_signature?: string;
+}
+
+interface DispatchResponse {
+  ok: boolean;
+  sent: number;
+  failed: number;
+  results: DispatchResult[];
+  error?: string;
+}
+
 const REGIONS = [
   'costa blanca', 'costa del sol', 'costa calida', 'costa brava',
   'balearics', 'canary islands', 'algarve', 'lisbon',
@@ -72,6 +87,12 @@ export function AgentClient() {
   const [copiedRef, setCopiedRef] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
 
+  // Avena Citizen mode — autonomous send via Resend + AVP-signed offers
+  const [autonomousMode, setAutonomousMode] = useState(false);
+  const [buyerEmail, setBuyerEmail] = useState('');
+  const [dispatchingRef, setDispatchingRef] = useState<string | null>(null);
+  const [dispatchResults, setDispatchResults] = useState<Record<string, DispatchResult>>({});
+
   // Restore form + mission from localStorage on mount — so returning from a
   // property page lands you back on the same results you left.
   useEffect(() => {
@@ -92,6 +113,9 @@ export function AgentClient() {
           setNotes(parsed.form.notes ?? '');
         }
         if (parsed.mission) setMission(parsed.mission);
+        if (parsed.autonomousMode != null) setAutonomousMode(!!parsed.autonomousMode);
+        if (parsed.buyerEmail) setBuyerEmail(parsed.buyerEmail);
+        if (parsed.dispatchResults) setDispatchResults(parsed.dispatchResults);
       }
     } catch { /* silent */ }
     setHydrated(true);
@@ -105,9 +129,12 @@ export function AgentClient() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         form: { budget, regions, types, minBeds, minYield, minScore, timeline, persona, nationality, notes },
         mission,
+        autonomousMode,
+        buyerEmail,
+        dispatchResults,
       }));
     } catch { /* silent */ }
-  }, [hydrated, budget, regions, types, minBeds, minYield, minScore, timeline, persona, nationality, notes, mission]);
+  }, [hydrated, budget, regions, types, minBeds, minYield, minScore, timeline, persona, nationality, notes, mission, autonomousMode, buyerEmail, dispatchResults]);
 
   const clearMission = () => {
     setMission(null);
@@ -167,6 +194,38 @@ export function AgentClient() {
   const mailto = (o: Outreach) => {
     const url = `mailto:${o.to_email}?subject=${encodeURIComponent(o.subject)}&body=${encodeURIComponent(o.body)}`;
     window.open(url, '_blank');
+  };
+
+  const dispatchSend = async (ref: string) => {
+    if (!mission?.mission_id) return;
+    if (!buyerEmail || !buyerEmail.includes('@')) {
+      alert('Add your email above first — replies need to reach you.');
+      return;
+    }
+    setDispatchingRef(ref);
+    try {
+      const r = await fetch('/api/agent/dispatch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mission_id: mission.mission_id,
+          session_token: mission.session_token,
+          property_refs: [ref],
+          buyer_email: buyerEmail,
+        }),
+      });
+      const data: DispatchResponse = await r.json();
+      const result = data.results?.[0];
+      if (result) {
+        setDispatchResults((prev) => ({ ...prev, [ref]: result }));
+      }
+    } catch (e) {
+      setDispatchResults((prev) => ({
+        ...prev,
+        [ref]: { ref, ok: false, error: e instanceof Error ? e.message : String(e) },
+      }));
+    }
+    setDispatchingRef(null);
   };
 
   const inputCls = 'w-full rounded-sm border px-3 py-2 text-sm bg-transparent text-foreground focus:outline-none focus:border-primary font-mono';
@@ -270,7 +329,61 @@ export function AgentClient() {
             </div>
           </div>
 
-          <div className="mt-7 flex flex-wrap items-center gap-3">
+          {/* Avena Citizen mode — autonomous send */}
+          <div
+            className="mt-6 rounded-sm border p-4"
+            style={{
+              background: autonomousMode ? 'hsl(var(--av-primary) / 0.08)' : 'hsl(var(--av-surface) / 0.3)',
+              borderColor: autonomousMode ? 'hsl(var(--av-primary) / 0.5)' : 'hsl(var(--av-border) / 0.6)',
+            }}
+          >
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={autonomousMode}
+                onChange={(e) => setAutonomousMode(e.target.checked)}
+                className="mt-1 accent-primary"
+              />
+              <div className="flex-1">
+                <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-primary">
+                  <Zap className="h-3 w-3" />
+                  Avena Citizen mode — autonomous send
+                </div>
+                <div className="mt-1 text-xs text-foreground/80 font-light leading-relaxed">
+                  When enabled, you can dispatch outreach directly via Avena.
+                  Each email carries an{' '}
+                  <Link href="/standards/avp" className="text-primary hover:text-gold underline" target="_blank">
+                    AVP-signed offer document
+                  </Link>{' '}
+                  for cryptographic provenance. Replies route back to your inbox.
+                  This is the first transactional AI agent in European property.
+                </div>
+              </div>
+            </label>
+            {autonomousMode && (
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label className="block">
+                  <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-1">
+                    Your email (replies go here) *
+                  </div>
+                  <input
+                    type="email"
+                    value={buyerEmail}
+                    onChange={(e) => setBuyerEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className={inputCls}
+                    style={inputStyle}
+                  />
+                </label>
+                <div className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground self-end pb-2">
+                  <Shield className="h-3 w-3 text-primary" />
+                  <span>From: agent@avenaterminal.com · Reply-to: you</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-6 flex flex-wrap items-center gap-3">
             <button
               type="submit"
               disabled={loading}
@@ -392,7 +505,7 @@ export function AgentClient() {
                               Subject: <span className="text-foreground">{hasOutreach.subject}</span>
                             </div>
                           </div>
-                          <div className="flex gap-2 flex-shrink-0">
+                          <div className="flex gap-2 flex-shrink-0 flex-wrap justify-end">
                             <button
                               onClick={() => copyEmail(hasOutreach)}
                               className="inline-flex items-center gap-1.5 rounded-sm border px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground hover:text-primary hover:border-primary transition-colors"
@@ -401,14 +514,48 @@ export function AgentClient() {
                               {copiedRef === hasOutreach.ref ? <Check className="h-3 w-3 text-primary" /> : <Copy className="h-3 w-3" />}
                               {copiedRef === hasOutreach.ref ? 'Copied' : 'Copy'}
                             </button>
-                            <button
-                              onClick={() => mailto(hasOutreach)}
-                              className="inline-flex items-center gap-1.5 rounded-sm px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold"
-                              style={{ background: 'var(--av-gradient-gold)' }}
-                            >
-                              <Send className="h-3 w-3" />
-                              Open in mail
-                            </button>
+                            {!autonomousMode && (
+                              <button
+                                onClick={() => mailto(hasOutreach)}
+                                className="inline-flex items-center gap-1.5 rounded-sm px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold"
+                                style={{ background: 'var(--av-gradient-gold)' }}
+                              >
+                                <Send className="h-3 w-3" />
+                                Open in mail
+                              </button>
+                            )}
+                            {autonomousMode && (() => {
+                              const r = dispatchResults[hasOutreach.ref];
+                              const isLoading = dispatchingRef === hasOutreach.ref;
+                              if (r?.ok) {
+                                return (
+                                  <span
+                                    className="inline-flex items-center gap-1.5 rounded-sm px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.22em]"
+                                    style={{ background: 'hsl(var(--av-primary) / 0.15)', color: 'hsl(var(--av-primary))' }}
+                                    title={r.avp_signature ? `AVP signature: ${r.avp_signature.slice(0, 16)}…` : 'Sent'}
+                                  >
+                                    <Shield className="h-3 w-3" />
+                                    Sent · AVP signed
+                                  </span>
+                                );
+                              }
+                              return (
+                                <button
+                                  onClick={() => dispatchSend(hasOutreach.ref)}
+                                  disabled={isLoading}
+                                  className="inline-flex items-center gap-1.5 rounded-sm px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold disabled:opacity-50"
+                                  style={{ background: 'var(--av-gradient-gold)' }}
+                                >
+                                  {isLoading ? (
+                                    <><Sparkles className="h-3 w-3 animate-pulse" /> Dispatching…</>
+                                  ) : r?.error ? (
+                                    <><AlertTriangle className="h-3 w-3" /> Retry · {r.error.slice(0, 24)}</>
+                                  ) : (
+                                    <><Zap className="h-3 w-3" /> Dispatch via Avena</>
+                                  )}
+                                </button>
+                              );
+                            })()}
                           </div>
                         </div>
                         <pre className="font-mono text-[11px] text-foreground/90 whitespace-pre-wrap leading-relaxed">{hasOutreach.body}</pre>
