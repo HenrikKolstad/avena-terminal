@@ -582,7 +582,7 @@ export function AgentClient() {
                                   {isLoading ? (
                                     <><Sparkles className="h-3 w-3 animate-pulse" /> Dispatching…</>
                                   ) : r?.error ? (
-                                    <><AlertTriangle className="h-3 w-3" /> Retry · {r.error.slice(0, 24)}</>
+                                    <><AlertTriangle className="h-3 w-3" /> Retry · {String(r.error).slice(0, 80)}</>
                                   ) : (
                                     <><Zap className="h-3 w-3" /> Dispatch via Avena</>
                                   )}

@@ -11,7 +11,30 @@ import { Resend } from 'resend';
 import { supabase } from '@/lib/supabase';
 import { buildAvpOffer, type AvpOfferDocument } from '@/lib/avp-offer';
 
-const FROM_DEFAULT = 'Avena Agent <agent@avenaterminal.com>';
+/**
+ * From-address strategy:
+ * - If AVENA_AGENT_FROM env var is set (after you verify avenaterminal.com
+ *   in Resend), use it.
+ * - Otherwise fall back to Resend's pre-verified onboarding sender, which
+ *   works on any new Resend account without DNS setup.
+ *
+ * To upgrade later: verify avenaterminal.com in Resend → set env var:
+ *   AVENA_AGENT_FROM='Avena Agent <agent@avenaterminal.com>'
+ */
+const FROM_DEFAULT = process.env.AVENA_AGENT_FROM || 'Avena Agent <onboarding@resend.dev>';
+
+/** Extract a human-readable message from a Resend error object. */
+function errorMessage(err: unknown): string {
+  if (!err) return 'unknown error';
+  if (typeof err === 'string') return err;
+  if (err instanceof Error) return err.message;
+  if (typeof err === 'object') {
+    const e = err as { message?: string; name?: string; statusCode?: number };
+    if (e.message) return `${e.name ? e.name + ': ' : ''}${e.message}${e.statusCode ? ' (' + e.statusCode + ')' : ''}`;
+    try { return JSON.stringify(err); } catch { return String(err); }
+  }
+  return String(err);
+}
 
 export interface SendInput {
   mission_id: number;
@@ -160,15 +183,16 @@ export async function sendAgentOutreach(input: SendInput): Promise<SendResult> {
     });
 
     if (result.error) {
+      const msg = errorMessage(result.error);
       await appendEvent({
         mission_id: input.mission_id,
         actor: 'system',
         event_type: 'send_failed',
         property_ref: input.property_ref,
         to_email: input.to_email,
-        metadata: { error: String(result.error) },
+        metadata: { error: msg, raw: result.error },
       });
-      return { ok: false, error: String(result.error) };
+      return { ok: false, error: msg };
     }
 
     await appendEvent({
@@ -185,15 +209,16 @@ export async function sendAgentOutreach(input: SendInput): Promise<SendResult> {
 
     return { ok: true, email_id: result.data?.id, avp_doc: avpDoc };
   } catch (e) {
+    const msg = errorMessage(e);
     await appendEvent({
       mission_id: input.mission_id,
       actor: 'system',
       event_type: 'send_failed',
       property_ref: input.property_ref,
       to_email: input.to_email,
-      metadata: { error: String(e) },
+      metadata: { error: msg },
     });
-    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+    return { ok: false, error: msg };
   }
 }
 
