@@ -454,7 +454,17 @@ export function AgentClient() {
             className="rounded-sm border p-6 mb-6"
             style={{ background: 'hsl(var(--av-primary) / 0.06)', borderColor: 'hsl(var(--av-primary) / 0.35)' }}
           >
-            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-3">Agent summary</div>
+            <div className="flex flex-wrap items-baseline justify-between gap-3 mb-3">
+              <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary">Agent summary</div>
+              {mission.mission_id && (
+                <Link
+                  href={`/agent/mission/${mission.mission_id}`}
+                  className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-gold flex items-center gap-1"
+                >
+                  Public mission AVN-MIS-{mission.mission_id} →
+                </Link>
+              )}
+            </div>
             <p className="font-serif text-lg text-foreground leading-relaxed">{mission.summary}</p>
           </div>
         )}
