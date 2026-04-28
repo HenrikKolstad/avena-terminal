@@ -168,8 +168,8 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
       <Nav />
       {p.ref && <RecordPropertyView propertyRef={p.ref} />}
 
-      <main className="pt-16">
-        <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-10">
+      <main className="pt-16 overflow-x-clip" style={{ maxWidth: '100vw' }}>
+        <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-10 min-w-0" style={{ width: '100%' }}>
           {/* Breadcrumb */}
           <nav className="mb-8 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground flex flex-wrap items-center gap-2">
             <Link href="/" className="hover:text-primary">Home</Link>
@@ -182,17 +182,19 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
           </nav>
 
           {/* Hero */}
-          <section className="grid lg:grid-cols-2 gap-10 mb-16">
-            <PropertyGallery images={p.imgs || []} alt={`${p.p} in ${p.l}`} />
+          <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-16 min-w-0">
+            <div className="min-w-0 max-w-full">
+              <PropertyGallery images={p.imgs || []} alt={`${p.p} in ${p.l}`} />
+            </div>
 
-            <div className="flex flex-col justify-center">
-              <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
-                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
-                {p.t} · {p.l}
+            <div className="flex flex-col justify-center min-w-0 max-w-full">
+              <span className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.22em] sm:tracking-[0.4em] text-primary">
+                <span className="h-px w-6 sm:w-10 hidden sm:inline-block" style={{ background: 'hsl(var(--av-primary))' }} />
+                <span>{p.t} · {p.l}</span>
                 {p.costa && <span className="text-muted-foreground">· {p.costa}</span>}
               </span>
 
-              <h1 className="font-serif text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-light leading-[1.1] tracking-tight text-foreground mb-4 break-words hyphens-auto" style={{ overflowWrap: 'anywhere' }}>
+              <h1 className="font-serif text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-light leading-[1.1] tracking-tight text-foreground mb-4 break-words" style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
                 {p.p}
               </h1>
 

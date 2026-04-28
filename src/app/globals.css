@@ -88,6 +88,18 @@
     overflow-wrap: anywhere;
     word-break: normal;
   }
+  /* CRITICAL: flex/grid items default to min-width: auto which means
+     they won't shrink below their intrinsic content width. This is THE
+     reason "overflow-x: hidden on body" doesn't help — children are
+     wider than parent and force horizontal scroll. Override it. */
+  main, section, article, aside, header, footer, nav,
+  main *, section *, article * {
+    min-width: 0;
+  }
+  /* Inline-flex with long children doesn't wrap by default. Force it
+     to wrap on mobile so credential strips, tag rows, breadcrumbs
+     never overflow. */
+  .inline-flex { flex-wrap: wrap; }
   /* Images and media should never exceed the viewport */
   img, video, iframe, svg {
     max-width: 100%;
