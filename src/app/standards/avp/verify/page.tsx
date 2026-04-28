@@ -95,10 +95,13 @@ export default async function AvpVerifyPage({ searchParams }: { searchParams: Pr
                   type="text"
                   name="sig"
                   defaultValue={sig}
-                  placeholder="64-character hex string (e.g. 3c84c4737ddbae828cee4875b7c9d0975bb390fb03c35e3182a0b10e17bc29c8)"
+                  placeholder="64-character hex string"
                   className="w-full rounded-sm border px-3 py-3 text-sm bg-transparent text-foreground focus:outline-none focus:border-primary font-mono"
                   style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
                   spellCheck={false}
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  inputMode="text"
                 />
               </label>
               <button

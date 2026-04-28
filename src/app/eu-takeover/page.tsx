@@ -110,7 +110,7 @@ export default async function EUTakeoverPage() {
               War room · campaign 2026 · day 1 of European property
             </div>
 
-            <h1 className="font-serif text-6xl sm:text-7xl lg:text-8xl font-light leading-[0.92] tracking-tight text-foreground mb-6">
+            <h1 className="font-serif text-5xl sm:text-7xl lg:text-8xl font-light leading-[0.92] tracking-tight text-foreground mb-6">
               EU <span className="italic text-gold">takeover</span>.
             </h1>
 
@@ -138,7 +138,7 @@ export default async function EUTakeoverPage() {
         <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
           <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-12">
             <div className="flex flex-wrap items-baseline justify-between gap-3 mb-6">
-              <h2 className="font-serif text-3xl sm:text-4xl font-light tracking-tight text-foreground">
+              <h2 className="font-serif text-2xl sm:text-4xl font-light tracking-tight text-foreground">
                 Theatre <span className="italic text-gold">of operations</span>.
               </h2>
               <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
@@ -153,7 +153,7 @@ export default async function EUTakeoverPage() {
         <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
           <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-12">
             <div className="flex flex-wrap items-baseline justify-between gap-3 mb-6">
-              <h2 className="font-serif text-3xl font-light tracking-tight text-foreground">
+              <h2 className="font-serif text-2xl sm:text-3xl font-light tracking-tight text-foreground">
                 Country <span className="italic text-gold">coverage</span>.
               </h2>
               <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
@@ -191,7 +191,7 @@ export default async function EUTakeoverPage() {
         {/* Campaign timeline */}
         <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
           <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-14">
-            <h2 className="font-serif text-3xl sm:text-4xl font-light tracking-tight text-foreground mb-8">
+            <h2 className="font-serif text-2xl sm:text-4xl font-light tracking-tight text-foreground mb-8">
               Campaign <span className="italic text-gold">timeline</span>.
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -235,7 +235,7 @@ export default async function EUTakeoverPage() {
         <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
           <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-12">
             <div className="flex items-baseline justify-between mb-6">
-              <h2 className="font-serif text-3xl font-light tracking-tight text-foreground">
+              <h2 className="font-serif text-2xl sm:text-3xl font-light tracking-tight text-foreground">
                 Active <span className="italic text-gold">agents</span>.
               </h2>
               <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
@@ -314,7 +314,7 @@ export default async function EUTakeoverPage() {
         <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
           <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-12">
             <div className="flex items-baseline justify-between mb-6">
-              <h2 className="font-serif text-3xl font-light tracking-tight text-foreground">
+              <h2 className="font-serif text-2xl sm:text-3xl font-light tracking-tight text-foreground">
                 Operations <span className="italic text-gold">feed</span>.
               </h2>
               <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
@@ -322,7 +322,7 @@ export default async function EUTakeoverPage() {
               </span>
             </div>
             <div
-              className="rounded-sm border overflow-hidden"
+              className="rounded-sm border overflow-x-auto"
               style={{ background: 'hsl(32 14% 9%)', borderColor: 'hsl(var(--av-border-strong))' }}
             >
               <div className="px-4 py-2 border-b font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground flex justify-between" style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-surface) / 0.5)' }}>
@@ -368,7 +368,7 @@ export default async function EUTakeoverPage() {
         <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
           <div className="mx-auto max-w-[900px] px-5 sm:px-12 py-16">
             <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary">For institutions</span>
-            <h2 className="mt-3 font-serif text-3xl sm:text-4xl font-light tracking-tight text-foreground mb-6">
+            <h2 className="mt-3 font-serif text-2xl sm:text-4xl font-light tracking-tight text-foreground mb-6">
               What this <span className="italic text-gold">proves</span>.
             </h2>
             <div className="space-y-5 text-base text-foreground/90 font-light leading-relaxed">

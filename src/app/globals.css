@@ -50,6 +50,23 @@
      elements. Individual sections add their own gradient accents instead. */
 }
 
+/* RICS badge mobile sizing — shrink down so the wordmark + partner line
+   never wraps into the body text below. The fontSize on the badge is
+   set inline (gradient-clipped text), so we override here with !important. */
+@media (max-width: 640px) {
+  .rics-badge .font-serif {
+    font-size: 11px !important;
+    letter-spacing: 0.14em !important;
+  }
+  .rics-badge .font-mono {
+    font-size: 8px !important;
+    letter-spacing: 0.24em !important;
+  }
+  .rics-badge > span {
+    padding: 6px 8px !important;
+  }
+}
+
 /* Mobile-only guard against horizontal scroll caused by stray overflow
    (fixed-width tooltips, wide images, long unbroken strings, etc.).
    Multiple layers of defence because iOS Safari has historically buggy

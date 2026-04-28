@@ -27,7 +27,7 @@ export function Regions() {
               Coverage · 03
             </span>
             <h2 className="font-serif text-5xl font-light leading-[1] tracking-tight text-foreground sm:text-6xl lg:text-7xl">
-              Six markets.
+              Four markets live.
               <br />
               <span className="italic text-gold">One signal.</span>
             </h2>

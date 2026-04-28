@@ -93,7 +93,7 @@ export default async function TownPage({ params }: { params: Promise<{ town: str
                 <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
                 {costa ?? 'Spain'}
               </span>
-              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
+              <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground" style={{ overflowWrap: 'anywhere' }}>
                 {name}
                 <br />
                 <span className="italic text-gold">{costa ?? 'Spain'}</span>.

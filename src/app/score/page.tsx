@@ -38,7 +38,7 @@ export default function ScorePage() {
               <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
               Open Scoring Engine · MIT · free forever
             </span>
-            <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground mb-6">
+            <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground mb-6">
               Score <span className="italic text-gold">any</span> property.
             </h1>
             <p className="max-w-2xl text-base sm:text-lg text-muted-foreground font-light">

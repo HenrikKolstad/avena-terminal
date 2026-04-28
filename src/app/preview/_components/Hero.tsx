@@ -151,7 +151,7 @@ export function Hero() {
             </a>
           </div>
 
-          <h1 className="font-serif text-[15vw] font-light leading-[0.92] tracking-tight text-foreground sm:text-[10vw] lg:text-[8.2rem] xl:text-[9.5rem]">
+          <h1 className="font-serif text-[12vw] font-light leading-[0.95] tracking-tight text-foreground sm:text-[10vw] lg:text-[8.2rem] xl:text-[9.5rem]">
             The price
             <br />
             before the <span className="italic text-gold">pitch</span>.
