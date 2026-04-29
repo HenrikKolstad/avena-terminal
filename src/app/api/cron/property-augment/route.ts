@@ -18,6 +18,7 @@ import { supabase } from '@/lib/supabase';
 import { getCadastralRefByCoords } from '@/lib/data-sources/catastro';
 import { getBuildingAtCoords, getAmenityDistances } from '@/lib/data-sources/osm';
 import { getClimateRisk } from '@/lib/data-sources/climate';
+import { getMarketContext } from '@/lib/data-sources/eurostat';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
@@ -29,6 +30,7 @@ interface PropertyRow {
   country: string;
   lat: number | null;
   lng: number | null;
+  postal_code: string | null;
   cadastral_ref: string | null;
   osm_id: string | null;
 }
@@ -49,7 +51,7 @@ export async function GET(req: NextRequest) {
   // Pull a batch of Spanish properties that have lat/lng but no cadastral_ref yet
   const { data, error } = await supabase
     .from('properties_registry')
-    .select('avn_prop_id, country, lat, lng, cadastral_ref, osm_id')
+    .select('avn_prop_id, country, lat, lng, postal_code, cadastral_ref, osm_id')
     .eq('country', 'ES')
     .not('lat', 'is', null)
     .not('lng', 'is', null)
@@ -68,6 +70,7 @@ export async function GET(req: NextRequest) {
   let osmOk = 0;
   let climateOk = 0;
   let geoOk = 0;
+  let marketOk = 0;
   let failed = 0;
 
   for (const row of rows) {
@@ -151,6 +154,23 @@ export async function GET(req: NextRequest) {
         climateOk++;
       }
     } catch { failed++; }
+
+    // 6. Market context (Eurostat) → property_market
+    // Uses postal_code → NUTS3 lookup → Eurostat regional stats
+    try {
+      const market = await getMarketContext(row.country, row.postal_code);
+      if (market) {
+        await supabase
+          .from('property_market')
+          .upsert({
+            avn_prop_id: row.avn_prop_id,
+            ...market,
+            computed_at: new Date().toISOString(),
+          }, { onConflict: 'avn_prop_id' });
+        marketOk++;
+      }
+    } catch { failed++; }
+    await new Promise((r) => setTimeout(r, 1000));
   }
 
   const summary = {
@@ -159,6 +179,7 @@ export async function GET(req: NextRequest) {
     osm_matched: osmOk,
     geo_computed: geoOk,
     climate_computed: climateOk,
+    market_computed: marketOk,
     failed,
   };
 
