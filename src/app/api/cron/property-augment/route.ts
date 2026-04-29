@@ -23,7 +23,7 @@ import { getMarketContext } from '@/lib/data-sources/eurostat';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
 
-const BATCH_SIZE = 30;
+const BATCH_SIZE = 12;  // Reduced from 30 — Catastro + OSM + Eurostat serial calls = ~10s/property
 
 interface PropertyRow {
   avn_prop_id: string;
