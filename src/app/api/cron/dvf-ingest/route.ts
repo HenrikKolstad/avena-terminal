@@ -100,16 +100,25 @@ export async function GET(req: NextRequest) {
     };
   });
 
-  // Upsert registry rows in chunks
-  const CHUNK = 200;
+  // Upsert registry rows in chunks (smaller chunks for safety + better error surfacing)
+  const CHUNK = 50;
   let registryUpserted = 0;
+  const errors: string[] = [];
   for (let i = 0; i < registryRows.length; i += CHUNK) {
     try {
       const { error } = await supabase
         .from('properties_registry')
         .upsert(registryRows.slice(i, i + CHUNK), { onConflict: 'source_portal,source_listing_id', ignoreDuplicates: false });
-      if (!error) registryUpserted += Math.min(CHUNK, registryRows.length - i);
-    } catch { /* silent */ }
+      if (!error) {
+        registryUpserted += Math.min(CHUNK, registryRows.length - i);
+      } else if (errors.length < 3) {
+        errors.push(`chunk ${i}: ${error.message}`);
+      }
+    } catch (e) {
+      if (errors.length < 3) {
+        errors.push(`chunk ${i}: ${e instanceof Error ? e.message : String(e)}`);
+      }
+    }
   }
 
   // Insert transaction rows
@@ -131,8 +140,16 @@ export async function GET(req: NextRequest) {
       const { error } = await supabase
         .from('property_transactions')
         .insert(txRows.slice(i, i + CHUNK));
-      if (!error) txInserted += Math.min(CHUNK, txRows.length - i);
-    } catch { /* silent */ }
+      if (!error) {
+        txInserted += Math.min(CHUNK, txRows.length - i);
+      } else if (errors.length < 5) {
+        errors.push(`tx chunk ${i}: ${error.message}`);
+      }
+    } catch (e) {
+      if (errors.length < 5) {
+        errors.push(`tx chunk ${i}: ${e instanceof Error ? e.message : String(e)}`);
+      }
+    }
   }
 
   const summary = {
@@ -142,6 +159,7 @@ export async function GET(req: NextRequest) {
     transactions_fetched: rows.length,
     registry_upserted: registryUpserted,
     transactions_inserted: txInserted,
+    errors: errors.slice(0, 5),
   };
 
   await finishCronLog(log, 'success', summary);
