@@ -9,6 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 
 const links = [
   { label: 'Deals', href: '/#deals' },
+  { label: 'Registry', href: '/registry' },
   { label: 'Agent', href: '/agent' },
   { label: 'Takeover', href: '/eu-takeover' },
   { label: 'Oracle', href: '/chat' },
