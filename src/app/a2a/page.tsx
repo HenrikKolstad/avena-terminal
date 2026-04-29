@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: 'A2A Protocol — Agent-to-Agent Communication | Avena Terminal',
   description: "First property platform supporting Google's A2A (Agent-to-Agent) protocol. AI agents can discover and communicate with Avena Terminal autonomously for Spanish property intelligence.",
   alternates: { canonical: 'https://avenaterminal.com/a2a' },
+  robots: { index: false, follow: false },
 };
 
 export default function A2APage() {

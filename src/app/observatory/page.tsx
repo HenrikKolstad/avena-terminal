@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: 'Living Dataset Observatory — Watch AI Learn in Real-Time | Avena Terminal',
   description: 'The world watches Avena Terminal learn. Real-time dataset improvements, agent activity, training pair generation, and accuracy tracking. Updated continuously.',
   alternates: { canonical: 'https://avenaterminal.com/observatory' },
+  robots: { index: false, follow: false },
 };
 export const revalidate = 28800; // 3x daily
 

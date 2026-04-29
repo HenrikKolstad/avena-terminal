@@ -269,8 +269,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // State of European Property
   entries.push({ url: `${base}/state-of-european-property`, lastModified: now, changeFrequency: 'daily', priority: 1.0 });
 
-  // Causal Intelligence
-  entries.push({ url: `${base}/causal`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
+  // /causal — temporarily de-listed from sitemap; product not yet productized.
+  // Page still exists at /causal but is noindex. Re-list when fleshed out.
 
   // Embeddable widget
   entries.push({ url: `${base}/integrate/widget`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 });
@@ -309,7 +309,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   entries.push({ url: `${base}/feed/bubble.rss`, lastModified: now, changeFrequency: 'hourly', priority: 0.5 });
   entries.push({ url: `${base}/score`, lastModified: now, changeFrequency: 'weekly', priority: 0.95 });
   entries.push({ url: `${base}/research/avena-score`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
-  entries.push({ url: `${base}/challenge/score-2026`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 });
+  // /challenge/score-2026 — de-listed; concept page, no live submissions yet.
   entries.push({ url: `${base}/indices/avena`, lastModified: now, changeFrequency: 'daily', priority: 0.95 });
   entries.push({ url: `${base}/best`, lastModified: now, changeFrequency: 'daily', priority: 0.85 });
   const bestSlugs = ['spain-under-200k','costa-blanca-villas','costa-del-sol-apartments','high-yield-spain','alpha-score','steep-discount','beachfront','off-plan-2027','move-in-ready','three-bed-family','entry-point-investor','luxury-over-500k'];
@@ -330,7 +330,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   entries.push({ url: `${base}/api/openapi.json`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 });
   entries.push({ url: `${base}/embed/deal-of-day`, lastModified: now, changeFrequency: 'daily', priority: 0.5 });
   entries.push({ url: `${base}/embed/prediction-ticker`, lastModified: now, changeFrequency: 'daily', priority: 0.5 });
-  entries.push({ url: `${base}/embed/yield-curve`, lastModified: now, changeFrequency: 'weekly', priority: 0.5 });
+  // /embed/yield-curve — de-listed; embed not yet productized.
 
   // Nationality guides — programmatic long-tail
   entries.push({ url: `${base}/guides`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 });
@@ -343,8 +343,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   }
 
-  // ZK Verification
-  entries.push({ url: `${base}/zk`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 });
+  // /zk — de-listed; concept page, ZK proof flow not yet shipped to users.
 
   // Forecast
   entries.push({ url: `${base}/forecast`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
@@ -367,8 +366,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Avena Index
   entries.push({ url: `${base}/avena-index`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 });
 
-  // A2A Protocol
-  entries.push({ url: `${base}/a2a`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 });
+  // /a2a — de-listed; concept page, A2A handshake not yet wired in production.
 
   // Semantic Search
   entries.push({ url: `${base}/search`, lastModified: now, changeFrequency: 'daily', priority: 0.8 });
@@ -412,8 +410,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // PropertyEval Leaderboard + Colosseum + Observatory + Context Protocol
   entries.push({ url: `${base}/benchmark`, lastModified: now, changeFrequency: 'weekly', priority: 1.0 });
-  entries.push({ url: `${base}/colosseum`, lastModified: now, changeFrequency: 'daily', priority: 1.0 });
-  entries.push({ url: `${base}/observatory`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+  // /colosseum and /observatory — de-listed; concept pages.
+  // Pages still exist but are noindex until they have real product behind them.
   entries.push({ url: `${base}/context-protocol`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
 
   // Knowledge Graph

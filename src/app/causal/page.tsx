@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: 'Causal Intelligence — Why Markets Move | Avena Terminal',
   description: 'Causal chain analysis of Spanish coastal property markets. Understand the macro triggers, transmission mechanisms, and downstream effects driving real estate prices.',
   alternates: { canonical: 'https://avenaterminal.com/causal' },
+  robots: { index: false, follow: false },
 };
 
 type ChainStatus = 'ACTIVE' | 'MONITORING' | 'DORMANT';

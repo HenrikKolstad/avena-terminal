@@ -14,6 +14,7 @@ export const metadata: Metadata = {
     description: 'Beat the open scoring engine on backtest data. Public leaderboard.',
     url: 'https://avenaterminal.com/challenge/score-2026',
   },
+  robots: { index: false, follow: false },
 };
 
 export default function ChallengePage() {

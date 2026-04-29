@@ -16,6 +16,7 @@ export const metadata: Metadata = {
     url: 'https://avenaterminal.com/colosseum',
     siteName: 'Avena Terminal',
   },
+  robots: { index: false, follow: false },
 };
 export const revalidate = 86400;
 

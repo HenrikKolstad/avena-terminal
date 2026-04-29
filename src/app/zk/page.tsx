@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: 'Zero-Knowledge Buyer Verification — Privacy-Preserving Property | Avena Terminal',
   description: 'Prove you can afford a property without revealing your bank account. First zero-knowledge verification system in European property. Verifiable credentials for serious buyers.',
   alternates: { canonical: 'https://avenaterminal.com/zk' },
+  robots: { index: false, follow: false },
 };
 
 export default function ZKPage() {
