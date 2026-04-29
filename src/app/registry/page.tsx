@@ -55,19 +55,23 @@ const COUNTRY_NAMES: Record<string, { name: string; flag: string }> = {
   NO: { name: 'Norway',   flag: '🇳🇴' },
 };
 
-async function loadCoverage(): Promise<{ coverage: CoverageRow[]; total: number }> {
-  if (!supabase) return { coverage: [], total: 0 };
+async function loadCoverage(): Promise<{ coverage: CoverageRow[]; total: number; cadastralMatched: number; metricsTracked: number }> {
+  const empty = { coverage: [], total: 0, cadastralMatched: 0, metricsTracked: 60 };
+  if (!supabase) return empty;
   try {
-    const [coverageRes, countRes] = await Promise.all([
+    const [coverageRes, countRes, cadastralRes] = await Promise.all([
       supabase.from('properties_coverage').select('*').order('record_count', { ascending: false }),
       supabase.from('properties_registry').select('avn_prop_id', { count: 'exact', head: true }),
+      supabase.from('properties_registry').select('avn_prop_id', { count: 'exact', head: true }).not('cadastral_ref', 'is', null),
     ]);
     return {
       coverage: (coverageRes.data as CoverageRow[]) ?? [],
       total: countRes.count ?? 0,
+      cadastralMatched: cadastralRes.count ?? 0,
+      metricsTracked: 60, // Total metric slots in the data sheet (8 categories)
     };
   } catch {
-    return { coverage: [], total: 0 };
+    return empty;
   }
 }
 
@@ -88,7 +92,7 @@ async function loadSample(): Promise<SampleRow[]> {
 const fmt = (n: number) => n.toLocaleString('en-US').replace(/,/g, ' ');
 
 export default async function RegistryPage() {
-  const [{ coverage, total }, sample] = await Promise.all([loadCoverage(), loadSample()]);
+  const [{ coverage, total, cadastralMatched, metricsTracked }, sample] = await Promise.all([loadCoverage(), loadSample()]);
 
   const countryRollup = coverage.reduce<Record<string, { count: number; scored: number; portals: Set<string> }>>((acc, r) => {
     if (!acc[r.country]) acc[r.country] = { count: 0, scored: 0, portals: new Set() };
@@ -152,10 +156,26 @@ export default async function RegistryPage() {
             <div className="flex flex-wrap items-baseline gap-x-10 gap-y-4">
               <div>
                 <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-1">
-                  Total records
+                  Properties
                 </div>
                 <div className="font-serif text-5xl sm:text-6xl tabular text-primary leading-none break-words">
                   {fmt(total)}
+                </div>
+              </div>
+              <div>
+                <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-1">
+                  Cadastral verified
+                </div>
+                <div className="font-serif text-5xl sm:text-6xl tabular text-foreground leading-none">
+                  {fmt(cadastralMatched)}
+                </div>
+              </div>
+              <div>
+                <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-1">
+                  Metric slots
+                </div>
+                <div className="font-serif text-5xl sm:text-6xl tabular text-foreground leading-none">
+                  {metricsTracked}
                 </div>
               </div>
               <div>
@@ -164,14 +184,6 @@ export default async function RegistryPage() {
                 </div>
                 <div className="font-serif text-5xl sm:text-6xl tabular text-foreground leading-none">
                   {countryRows.length}
-                </div>
-              </div>
-              <div>
-                <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-1">
-                  Source portals
-                </div>
-                <div className="font-serif text-5xl sm:text-6xl tabular text-foreground leading-none">
-                  {Object.keys(portalRollup).length}
                 </div>
               </div>
             </div>

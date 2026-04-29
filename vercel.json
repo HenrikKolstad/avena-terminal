@@ -9,7 +9,8 @@
     "src/app/api/cron/weekly-newsletter/route.ts": { "maxDuration": 300 },
     "src/app/api/cron/backlink-loop/route.ts": { "maxDuration": 120 },
     "src/app/api/cron/eu-ingestion/route.ts":  { "maxDuration": 120 },
-    "src/app/api/cron/eu-rescore/route.ts":    { "maxDuration": 120 }
+    "src/app/api/cron/eu-rescore/route.ts":    { "maxDuration": 120 },
+    "src/app/api/cron/property-augment/route.ts": { "maxDuration": 300 }
   },
   "crons": [
     { "path": "/api/cron/pulse", "schedule": "0 7 * * *" },
@@ -68,7 +69,14 @@
     { "path": "/api/cron/eu-rescore", "schedule": "0 9 * * *" },
     { "path": "/api/cron/eu-rescore", "schedule": "0 13 * * *" },
     { "path": "/api/cron/eu-rescore", "schedule": "0 17 * * *" },
-    { "path": "/api/cron/eu-rescore", "schedule": "0 21 * * *" }
+    { "path": "/api/cron/eu-rescore", "schedule": "0 21 * * *" },
+
+    { "path": "/api/cron/property-augment", "schedule": "0 1 * * *" },
+    { "path": "/api/cron/property-augment", "schedule": "0 5 * * *" },
+    { "path": "/api/cron/property-augment", "schedule": "0 9 * * *" },
+    { "path": "/api/cron/property-augment", "schedule": "0 13 * * *" },
+    { "path": "/api/cron/property-augment", "schedule": "0 17 * * *" },
+    { "path": "/api/cron/property-augment", "schedule": "0 21 * * *" }
   ],
   "$schema": "https://openapi.vercel.sh/vercel.json"
 }
