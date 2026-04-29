@@ -9,6 +9,70 @@ import { EuropeMap } from './EuropeMap';
 import { MissionControlBar } from './MissionControlBar';
 import { DealFlowTicker } from './DealFlowTicker';
 import { totalFindings, findingsRecent, findingsByCountry, findingsByAgent, findingsLatest } from '@/lib/findings';
+import { supabase } from '@/lib/supabase';
+
+interface RegistryStats {
+  total: number;
+  cadastralVerified: number;
+  osmMatched: number;
+  transactionRecords: number;
+  marketContextPopulated: number;
+  perCountry: Array<{ country: string; count: number; portals: number }>;
+  topMunicipalities: Array<{ municipality: string; country: string; count: number }>;
+}
+
+async function loadRegistryStats(): Promise<RegistryStats> {
+  const empty: RegistryStats = {
+    total: 0, cadastralVerified: 0, osmMatched: 0, transactionRecords: 0,
+    marketContextPopulated: 0, perCountry: [], topMunicipalities: [],
+  };
+  if (!supabase) return empty;
+  try {
+    const [totalRes, cadRes, osmRes, txRes, mktRes, byCountryRes, byMuniRes] = await Promise.all([
+      supabase.from('properties_registry').select('avn_prop_id', { count: 'exact', head: true }),
+      supabase.from('properties_registry').select('avn_prop_id', { count: 'exact', head: true }).not('cadastral_ref', 'is', null),
+      supabase.from('properties_registry').select('avn_prop_id', { count: 'exact', head: true }).not('osm_id', 'is', null),
+      supabase.from('property_transactions').select('id', { count: 'exact', head: true }),
+      supabase.from('property_market').select('avn_prop_id', { count: 'exact', head: true }),
+      supabase.from('properties_coverage').select('*'),
+      supabase.from('properties_registry').select('municipality, country').not('municipality', 'is', null).limit(5000),
+    ]);
+
+    const muniCounts = new Map<string, { count: number; country: string }>();
+    for (const r of (byMuniRes.data ?? []) as Array<{ municipality: string; country: string }>) {
+      const key = `${r.country}|${r.municipality}`;
+      const cur = muniCounts.get(key) ?? { count: 0, country: r.country };
+      muniCounts.set(key, { count: cur.count + 1, country: r.country });
+    }
+    const topMunicipalities = [...muniCounts.entries()]
+      .map(([key, v]) => ({ municipality: key.split('|')[1], country: v.country, count: v.count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 8);
+
+    const countryRollup = new Map<string, { count: number; portals: Set<string> }>();
+    for (const r of (byCountryRes.data ?? []) as Array<{ country: string; record_count: number; source_portal: string }>) {
+      const cur = countryRollup.get(r.country) ?? { count: 0, portals: new Set() };
+      cur.count += r.record_count;
+      cur.portals.add(r.source_portal);
+      countryRollup.set(r.country, cur);
+    }
+    const perCountry = [...countryRollup.entries()]
+      .map(([country, v]) => ({ country, count: v.count, portals: v.portals.size }))
+      .sort((a, b) => b.count - a.count);
+
+    return {
+      total: totalRes.count ?? 0,
+      cadastralVerified: cadRes.count ?? 0,
+      osmMatched: osmRes.count ?? 0,
+      transactionRecords: txRes.count ?? 0,
+      marketContextPopulated: mktRes.count ?? 0,
+      perCountry,
+      topMunicipalities,
+    };
+  } catch {
+    return empty;
+  }
+}
 
 export const dynamic = 'force-dynamic';
 
@@ -52,13 +116,14 @@ const CAMPAIGN: CampaignMilestone[] = [
 export default async function EUTakeoverPage() {
   const now = new Date();
 
-  // REAL data from the findings ledger
-  const [allTime, last24, byCountry, byAgent, latest] = await Promise.all([
+  // REAL data from the findings ledger + properties registry
+  const [allTime, last24, byCountry, byAgent, latest, registryStats] = await Promise.all([
     totalFindings(),
     findingsRecent(24),
     findingsByCountry(24),
     findingsByAgent(24),
     findingsLatest(28),
+    loadRegistryStats(),
   ]);
 
   const totals = {
@@ -185,6 +250,126 @@ export default async function EUTakeoverPage() {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* Property registry depth — institutional inventory */}
+        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-12">
+            <div className="flex flex-wrap items-baseline justify-between gap-3 mb-6">
+              <h2 className="font-serif text-3xl sm:text-4xl font-light tracking-tight text-foreground">
+                Property <span className="italic text-gold">registry</span>.
+              </h2>
+              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                Canonical AVN_PROP_ID · cadastrally verified · CC BY 4.0
+              </span>
+            </div>
+
+            {/* Hero counters */}
+            <div
+              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px overflow-hidden rounded-sm border mb-6"
+              style={{ background: 'hsl(var(--av-border) / 0.6)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+            >
+              {[
+                { label: 'Properties', value: fmt(registryStats.total), accent: true },
+                { label: 'Cadastral verified', value: fmt(registryStats.cadastralVerified) },
+                { label: 'OSM matched', value: fmt(registryStats.osmMatched) },
+                { label: 'Transactions', value: fmt(registryStats.transactionRecords) },
+                { label: 'Market context', value: fmt(registryStats.marketContextPopulated) },
+              ].map((s) => (
+                <div key={s.label} className="p-5" style={{ background: 'hsl(var(--av-background))' }}>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">{s.label}</div>
+                  <div className={`mt-2 font-serif font-light tabular text-3xl sm:text-4xl leading-none ${s.accent ? 'text-primary' : 'text-foreground'}`}>
+                    {s.value}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Per-country + top-municipalities side by side */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+              <div
+                className="rounded-sm border overflow-hidden"
+                style={{ background: '#100E0C', borderColor: 'hsl(var(--av-border-strong))' }}
+              >
+                <div
+                  className="px-4 py-2.5 border-b font-mono text-[9px] uppercase tracking-[0.3em] text-primary"
+                  style={{ borderColor: 'hsl(var(--av-border) / 0.5)', background: 'hsl(var(--av-surface) / 0.4)' }}
+                >
+                  Records by country
+                </div>
+                {registryStats.perCountry.length === 0 ? (
+                  <div className="p-5 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                    Registry seed pending
+                  </div>
+                ) : (
+                  <div className="divide-y" style={{ borderColor: 'hsl(var(--av-border) / 0.3)' }}>
+                    {registryStats.perCountry.map((c) => (
+                      <div
+                        key={c.country}
+                        className="px-4 py-3 grid grid-cols-[36px_1fr_auto] items-center gap-3"
+                        style={{ borderColor: 'hsl(var(--av-border) / 0.3)' }}
+                      >
+                        <div className="font-mono text-[11px] tabular text-center py-1 rounded-sm border text-primary"
+                          style={{ borderColor: 'hsl(var(--av-primary) / 0.4)', background: 'hsl(var(--av-primary) / 0.08)' }}
+                        >
+                          {c.country}
+                        </div>
+                        <div className="font-mono text-xs text-foreground/85">
+                          {c.portals} portal{c.portals === 1 ? '' : 's'}
+                        </div>
+                        <div className="font-mono tabular text-sm text-foreground text-right">
+                          {fmt(c.count)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div
+                className="rounded-sm border overflow-hidden"
+                style={{ background: '#100E0C', borderColor: 'hsl(var(--av-border-strong))' }}
+              >
+                <div
+                  className="px-4 py-2.5 border-b font-mono text-[9px] uppercase tracking-[0.3em] text-primary"
+                  style={{ borderColor: 'hsl(var(--av-border) / 0.5)', background: 'hsl(var(--av-surface) / 0.4)' }}
+                >
+                  Deepest municipalities
+                </div>
+                {registryStats.topMunicipalities.length === 0 ? (
+                  <div className="p-5 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                    Registry seed pending
+                  </div>
+                ) : (
+                  <div className="divide-y" style={{ borderColor: 'hsl(var(--av-border) / 0.3)' }}>
+                    {registryStats.topMunicipalities.map((m, i) => (
+                      <div
+                        key={`${m.country}-${m.municipality}`}
+                        className="px-4 py-2.5 grid grid-cols-[24px_1fr_auto] items-center gap-3"
+                      >
+                        <span className="font-mono text-[10px] tabular text-muted-foreground text-right">
+                          {String(i + 1).padStart(2, '0')}
+                        </span>
+                        <span className="font-mono text-xs text-foreground/90 truncate">
+                          {m.country} · {m.municipality}
+                        </span>
+                        <span className="font-mono tabular text-sm text-foreground">
+                          {fmt(m.count)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <p className="mt-5 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+              Per-property institutional data sheets at{' '}
+              <span className="text-foreground">/property/&#123;ref&#125;/data-sheet</span>
+              {' '}· bundled API at{' '}
+              <span className="text-foreground">/api/v1/property/&#123;avn_prop_id&#125;</span>
+            </p>
           </div>
         </section>
 

@@ -17,6 +17,10 @@ export const metadata: Metadata = {
     description: 'The canonical EU property registry. Cross-country, AVP-compliant, daily-refreshed, citable.',
     url: 'https://avenaterminal.com/registry',
   },
+  // De-listed from indexing until registry has multi-country depth.
+  // Stats now surface on /eu-takeover instead. Underlying tables continue
+  // to populate via crons; flip this back to indexed when ready.
+  robots: { index: false, follow: false },
 };
 
 interface CoverageRow {

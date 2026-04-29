@@ -165,12 +165,26 @@ export async function fetchCommuneYear(insee: string, dept: string, year: number
 /**
  * Mint a deterministic AVN_PROP_ID for a DVF transaction.
  * Format: AVN:FR-{postal_5}-EX-{hash8}
+ *
+ * Includes surface + plot area in the seed so multi-parcel transactions
+ * (where one id_mutation has multiple CSV rows for different parcels)
+ * each get a distinct AVN_PROP_ID.
  */
 export function mintAvnIdForDvf(row: DvfRow): string {
   const postal = (row.code_postal || '00000').replace(/\D/g, '').padStart(5, '0').slice(0, 5);
-  const seed = `dvf::${row.id_mutation}::${row.date_mutation}::${row.valeur_fonciere}::${row.latitude ?? 0}::${row.longitude ?? 0}`;
+  const seed = `dvf::${row.id_mutation}::${row.date_mutation}::${row.valeur_fonciere}::${row.surface_reelle_bati ?? 0}::${row.surface_terrain ?? 0}::${row.type_local ?? ''}::${row.latitude ?? 0}::${row.longitude ?? 0}`;
   const hash = createHash('sha256').update(seed).digest('hex').slice(0, 8).toUpperCase();
   return `AVN:FR-${postal}-EX-${hash}`;
+}
+
+/**
+ * Mint a deterministic source_listing_id for a DVF row.
+ * Must be unique per CSV row to avoid ON CONFLICT collisions.
+ */
+export function mintSourceListingIdForDvf(row: DvfRow): string {
+  const seed = `${row.id_mutation}|${row.surface_reelle_bati ?? 0}|${row.surface_terrain ?? 0}|${row.type_local ?? ''}|${row.latitude ?? 0}|${row.longitude ?? 0}`;
+  const hash = createHash('sha256').update(seed).digest('hex').slice(0, 12);
+  return `dvf-${row.id_mutation}-${hash}`;
 }
 
 /** Map French type_local to Avena property_type taxonomy. */

@@ -318,7 +318,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
   entries.push({ url: `${base}/agent`, lastModified: now, changeFrequency: 'weekly', priority: 0.98 });
   entries.push({ url: `${base}/agent/mission/1`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 });
-  entries.push({ url: `${base}/registry`, lastModified: now, changeFrequency: 'daily', priority: 0.95 });
+  // /registry — de-listed from sitemap until registry has multi-country
+  // depth. Per-property data sheets stay indexed. Stats surface on
+  // /eu-takeover instead.
 
   // Per-property data sheets — institutional artifact for every listing.
   // Indexed so AI crawlers + search engines surface them when banks/funds

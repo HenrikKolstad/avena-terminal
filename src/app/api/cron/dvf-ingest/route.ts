@@ -18,6 +18,7 @@ import { supabase } from '@/lib/supabase';
 import {
   fetchCommuneYear,
   mintAvnIdForDvf,
+  mintSourceListingIdForDvf,
   mapPropertyType,
   FRANCE_PRIORITY_COMMUNES,
 } from '@/lib/data-sources/dvf';
@@ -72,10 +73,17 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: true, commune: commune.name, year, fetched: 0 });
   }
 
-  // Transform each DVF row into a properties_registry row + a property_transactions row
-  const registryRows = rows.map((row) => {
+  // Transform each DVF row into a properties_registry row.
+  // De-dupe within batch by source_listing_id — DVF can have multiple CSV
+  // rows that hash to the same parcel (rare but possible).
+  const seenIds = new Set<string>();
+  const registryRows: Array<Record<string, unknown>> = [];
+  for (const row of rows) {
     const avn = mintAvnIdForDvf(row);
-    return {
+    const listingId = mintSourceListingIdForDvf(row);
+    if (seenIds.has(listingId)) continue;
+    seenIds.add(listingId);
+    registryRows.push({
       avn_prop_id: avn,
       country: 'FR',
       region: commune.nuts3,
@@ -89,16 +97,15 @@ export async function GET(req: NextRequest) {
       bedrooms: row.nombre_pieces_principales ?? null,
       built_m2: row.surface_reelle_bati ?? null,
       plot_m2: row.surface_terrain ?? null,
-      // Records-tier: not for sale today, just a historical transaction
       tier: 'record',
       is_for_sale: false,
       source_portal: 'dvf-fr',
-      source_listing_id: `dvf-${row.id_mutation}`,
+      source_listing_id: listingId,
       source_url: `https://app.dvf.etalab.gouv.fr/?lat=${row.latitude}&lng=${row.longitude}`,
       raw: { dvf: { ...row } },
       last_seen_at: new Date().toISOString(),
-    };
-  });
+    });
+  }
 
   // Upsert registry rows in chunks (smaller chunks for safety + better error surfacing)
   const CHUNK = 50;
@@ -121,18 +128,27 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // Insert transaction rows
-  const txRows = rows.map((row) => ({
-    avn_prop_id: mintAvnIdForDvf(row),
-    transacted_at: row.date_mutation,
-    price_eur: row.valeur_fonciere,
-    price_per_m2_eur:
-      row.surface_reelle_bati && row.surface_reelle_bati > 0
-        ? Math.round((row.valeur_fonciere / row.surface_reelle_bati) * 100) / 100
-        : null,
-    source: 'dvf-fr',
-    raw: row,
-  }));
+  // Insert transaction rows — de-dupe by AVN to avoid duplicate transaction entries
+  // for the same property/date (caused by repeated CSV rows for same parcel)
+  const txSeen = new Set<string>();
+  const txRows: Array<Record<string, unknown>> = [];
+  for (const row of rows) {
+    const avn = mintAvnIdForDvf(row);
+    const txKey = `${avn}|${row.date_mutation}`;
+    if (txSeen.has(txKey)) continue;
+    txSeen.add(txKey);
+    txRows.push({
+      avn_prop_id: avn,
+      transacted_at: row.date_mutation,
+      price_eur: row.valeur_fonciere,
+      price_per_m2_eur:
+        row.surface_reelle_bati && row.surface_reelle_bati > 0
+          ? Math.round((row.valeur_fonciere / row.surface_reelle_bati) * 100) / 100
+          : null,
+      source: 'dvf-fr',
+      raw: row,
+    });
+  }
 
   let txInserted = 0;
   for (let i = 0; i < txRows.length; i += CHUNK) {
