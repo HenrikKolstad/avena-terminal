@@ -318,6 +318,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
   entries.push({ url: `${base}/agent`, lastModified: now, changeFrequency: 'weekly', priority: 0.98 });
   entries.push({ url: `${base}/agent/mission/1`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 });
+  entries.push({ url: `${base}/registry`, lastModified: now, changeFrequency: 'daily', priority: 0.95 });
+
+  // Per-property data sheets — institutional artifact for every listing.
+  // Indexed so AI crawlers + search engines surface them when banks/funds
+  // search for cadastrally-verified property data.
+  for (const p of getAllProperties()) {
+    if (!p.ref) continue;
+    entries.push({
+      url: `${base}/property/${encodeURIComponent(p.ref)}/data-sheet`,
+      lastModified: now,
+      changeFrequency: 'daily',
+      priority: 0.85,
+    });
+  }
   entries.push({ url: `${base}/eu-takeover`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 });
   entries.push({ url: `${base}/standards/avp`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
   entries.push({ url: `${base}/standards/avp/verify`, lastModified: now, changeFrequency: 'monthly', priority: 0.85 });

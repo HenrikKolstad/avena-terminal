@@ -10,7 +10,8 @@
     "src/app/api/cron/backlink-loop/route.ts": { "maxDuration": 120 },
     "src/app/api/cron/eu-ingestion/route.ts":  { "maxDuration": 120 },
     "src/app/api/cron/eu-rescore/route.ts":    { "maxDuration": 120 },
-    "src/app/api/cron/property-augment/route.ts": { "maxDuration": 300 }
+    "src/app/api/cron/property-augment/route.ts": { "maxDuration": 300 },
+    "src/app/api/cron/pricing-history/route.ts": { "maxDuration": 120 }
   },
   "crons": [
     { "path": "/api/cron/pulse", "schedule": "0 7 * * *" },
@@ -76,7 +77,12 @@
     { "path": "/api/cron/property-augment", "schedule": "0 9 * * *" },
     { "path": "/api/cron/property-augment", "schedule": "0 13 * * *" },
     { "path": "/api/cron/property-augment", "schedule": "0 17 * * *" },
-    { "path": "/api/cron/property-augment", "schedule": "0 21 * * *" }
+    { "path": "/api/cron/property-augment", "schedule": "0 21 * * *" },
+
+    { "path": "/api/cron/pricing-history", "schedule": "20 2 * * *" },
+    { "path": "/api/cron/pricing-history", "schedule": "20 8 * * *" },
+    { "path": "/api/cron/pricing-history", "schedule": "20 14 * * *" },
+    { "path": "/api/cron/pricing-history", "schedule": "20 20 * * *" }
   ],
   "$schema": "https://openapi.vercel.sh/vercel.json"
 }
