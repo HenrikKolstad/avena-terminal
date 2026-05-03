@@ -58,27 +58,27 @@ async function log(
   }
 }
 
-/** Internet Archive — Save Page Now. Unauthenticated, rate-limited but works. */
+/**
+ * Internet Archive — Save Page Now. Unauthenticated, rate-limited but works.
+ * 25s per-URL timeout — IA's "Save Page Now" can hang forever otherwise.
+ */
 async function submitInternetArchive(url: string): Promise<{ ok: boolean; detail: string }> {
   try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 25000);
     const res = await fetch(`https://web.archive.org/save/${encodeURI(url)}`, {
       method: 'GET',
-      headers: {
-        'User-Agent': 'AvenaTerminalBot/1.0 (+https://avenaterminal.com)',
-      },
+      headers: { 'User-Agent': 'AvenaTerminalBot/1.0 (+https://avenaterminal.com)' },
       redirect: 'follow',
+      signal: ctrl.signal,
     });
+    clearTimeout(timer);
     const ok = res.ok || res.status === 429;
-    await log(
-      'internet-archive',
-      url,
-      ok ? 'success' : 'failed',
-      { status: res.status }
-    );
+    await log('internet-archive', url, ok ? 'success' : 'failed', { status: res.status });
     return { ok, detail: `HTTP ${res.status}` };
   } catch (e) {
     await log('internet-archive', url, 'failed', { error: String(e) });
-    return { ok: false, detail: 'network' };
+    return { ok: false, detail: e instanceof Error && e.name === 'AbortError' ? 'timeout' : 'network' };
   }
 }
 
@@ -147,14 +147,23 @@ export async function runCrawlerSubmit(): Promise<{
   google_sitemap: { ok: boolean; detail: string };
   common_crawl_logged: boolean;
 }> {
-  // Internet Archive — respect rate limit (~5 req / 30s)
+  // Internet Archive — process a rotating subset of 8 URLs per run to stay
+  // within Vercel's 300s function limit. SEED_URLS has 20+ URLs — at ~30s
+  // per archive (timeout) + 6.5s rate-limit gap = ~40s/URL × 20 = 800s.
+  // Way over budget. Process 8/run, rotating by day-of-week, full pass
+  // every ~3 days. IndexNow handles the rest in real-time anyway.
+  const dayBucket = Math.floor(Date.now() / 86400_000) % 3;
+  const sliceStart = dayBucket * 8;
+  const archiveBatch = SEED_URLS.slice(sliceStart, sliceStart + 8);
+
   let iaSuccess = 0;
   let iaFail = 0;
-  for (const url of SEED_URLS) {
+  for (const url of archiveBatch) {
     const r = await submitInternetArchive(url);
     if (r.ok) iaSuccess++;
     else iaFail++;
-    await new Promise((res) => setTimeout(res, 6500));
+    // 4s between IA submissions — within their ~5 req / 30s rate limit
+    await new Promise((res) => setTimeout(res, 4000));
   }
 
   const indexnow = await submitIndexNow(SEED_URLS);

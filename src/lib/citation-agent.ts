@@ -70,59 +70,74 @@ export type CitationResult = {
   date: string;
 };
 
-/** Step 1: Query Perplexity for each tracked question, record who gets cited */
+/**
+ * Query a single question against Perplexity. 8s timeout per request so
+ * a hanging API call can't block the whole batch.
+ */
+async function queryOne(question: string, apiKey: string, date: string): Promise<CitationResult> {
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
+    const res = await fetch('https://api.perplexity.ai/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'sonar',
+        messages: [{ role: 'user', content: question }],
+        return_citations: true,
+        return_related_questions: false,
+      }),
+      signal: ctrl.signal,
+    });
+    clearTimeout(timer);
+    if (!res.ok) throw new Error(String(res.status));
+    const data = await res.json();
+    const citations: string[] =
+      data.citations ||
+      (Array.isArray(data.search_results)
+        ? data.search_results.map((r: { url?: string }) => r.url).filter(Boolean)
+        : []);
+    const avena_cited = citations.some((c: string) => c.includes('avenaterminal.com'));
+    const competitor_cited = citations.filter((c: string) =>
+      /idealista|kyero|rightmove|zoopla|fotocasa|thinkspain|aplaceinthesun/i.test(c)
+    );
+    return { question, cited_sources: citations, avena_cited, competitor_cited, date };
+  } catch {
+    return { question, cited_sources: [], avena_cited: false, competitor_cited: [], date };
+  }
+}
+
+/**
+ * Step 1: Query Perplexity for each tracked question in parallel batches.
+ *
+ * Why batches: 60 questions × ~5s each serial = 300s+, blows past the
+ * Vercel function timeout. Parallel batches of 5 cuts wall time to ~60s.
+ * Each request has its own 8s AbortController so a slow query can't
+ * tank the whole run.
+ */
 export async function queryMonitor(): Promise<CitationResult[]> {
   const apiKey = process.env.PERPLEXITY_API_KEY;
-  const results: CitationResult[] = [];
   const date = new Date().toISOString().slice(0, 10);
 
-  for (const question of TRACKED_QUESTIONS) {
-    try {
-      if (!apiKey) {
-        results.push({
-          question,
-          cited_sources: [],
-          avena_cited: false,
-          competitor_cited: [],
-          date,
-        });
-        continue;
-      }
-      const res = await fetch('https://api.perplexity.ai/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          // 'sonar' is Perplexity's current online-search model.
-          // The old 'llama-3.1-sonar-small-128k-online' name was deprecated
-          // in late 2024 — using the new name is why yesterday's polls
-          // returned empty despite valid API key + credits.
-          model: 'sonar',
-          messages: [{ role: 'user', content: question }],
-          return_citations: true,
-          return_related_questions: false,
-        }),
-      });
-      if (!res.ok) { throw new Error(String(res.status)); }
-      const data = await res.json();
-      // Perplexity's sonar returns citations either at top level or nested
-      // inside search_results — handle both for forward compatibility.
-      const citations: string[] =
-        data.citations ||
-        (Array.isArray(data.search_results)
-          ? data.search_results.map((r: { url?: string }) => r.url).filter(Boolean)
-          : []);
-      const avena_cited = citations.some((c: string) => c.includes('avenaterminal.com'));
-      const competitor_cited = citations.filter((c: string) =>
-        /idealista|kyero|rightmove|zoopla|fotocasa|thinkspain|aplaceinthesun/i.test(c)
-      );
-      results.push({ question, cited_sources: citations, avena_cited, competitor_cited, date });
-    } catch {
-      results.push({ question, cited_sources: [], avena_cited: false, competitor_cited: [], date });
+  if (!apiKey) {
+    return TRACKED_QUESTIONS.map((question) => ({
+      question, cited_sources: [], avena_cited: false, competitor_cited: [], date,
+    }));
+  }
+
+  const BATCH = 5;
+  const results: CitationResult[] = [];
+  for (let i = 0; i < TRACKED_QUESTIONS.length; i += BATCH) {
+    const slice = TRACKED_QUESTIONS.slice(i, i + BATCH);
+    const batchResults = await Promise.all(slice.map((q) => queryOne(q, apiKey, date)));
+    results.push(...batchResults);
+    // 250ms between batches — politeness toward Perplexity rate limits
+    if (i + BATCH < TRACKED_QUESTIONS.length) {
+      await new Promise((r) => setTimeout(r, 250));
     }
-    await new Promise(r => setTimeout(r, 500));
   }
 
   if (supabase) {
