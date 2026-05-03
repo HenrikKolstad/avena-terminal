@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
           ?? stripeSub.billing_cycle_anchor;
         const periodEnd = new Date(rawPeriodEnd * 1000).toISOString();
 
-        await supabase.from('subscriptions').upsert({
+        const { error: upsertErr } = await supabase.from('subscriptions').upsert({
           email,
           stripe_customer_id: customerId,
           stripe_subscription_id: subscriptionId,
@@ -58,6 +58,11 @@ export async function POST(req: NextRequest) {
           updated_at: new Date().toISOString(),
         }, { onConflict: 'email' });
 
+        if (upsertErr) {
+          // CRITICAL: paying customer did not get marked as paid. Loud failure.
+          console.error('CRITICAL: subscription upsert failed for', email, upsertErr);
+          return NextResponse.json({ error: 'subscription record write failed', detail: upsertErr.message }, { status: 500 });
+        }
         console.log('Subscription activated for:', email);
 
         // Send welcome email — non-blocking, logs on failure
@@ -87,7 +92,7 @@ export async function POST(req: NextRequest) {
           ?? sub.billing_cycle_anchor;
         const periodEnd = new Date(rawSubPeriodEnd * 1000).toISOString();
 
-        await supabase.from('subscriptions').upsert({
+        const { error: updateErr } = await supabase.from('subscriptions').upsert({
           email: resolvedEmail,
           stripe_customer_id: customerId,
           stripe_subscription_id: sub.id,
@@ -98,6 +103,10 @@ export async function POST(req: NextRequest) {
           updated_at: new Date().toISOString(),
         }, { onConflict: 'email' });
 
+        if (updateErr) {
+          console.error('CRITICAL: subscription update failed for', resolvedEmail, updateErr);
+          return NextResponse.json({ error: 'subscription update failed', detail: updateErr.message }, { status: 500 });
+        }
         console.log('Subscription updated for:', resolvedEmail, '→', sub.status);
         break;
       }

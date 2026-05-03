@@ -47,11 +47,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     if (!supabase) return;
+    // Use maybeSingle — non-paying users have no row, .single() throws PGRST116
     const { data } = await supabase
       .from('subscriptions')
       .select('status, current_period_end')
       .eq('email', email)
-      .single();
+      .maybeSingle();
 
     if (data?.status === 'active' || data?.status === 'trialing') {
       // Check period hasn't expired

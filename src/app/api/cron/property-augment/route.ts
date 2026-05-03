@@ -183,6 +183,9 @@ export async function GET(req: NextRequest) {
     failed,
   };
 
-  await finishCronLog(log, failed === 0 ? 'success' : 'success', summary);
+  // Mark error if more than half the operations failed (real signal something is broken)
+  const totalOps = rows.length * 4;
+  const status = failed > totalOps / 2 ? 'error' : 'success';
+  await finishCronLog(log, status, summary);
   return NextResponse.json({ ok: true, ...summary });
 }

@@ -4,7 +4,55 @@ import { notFound } from 'next/navigation';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { supabase } from '@/lib/supabase';
-import { Shield, Lock, ArrowUpRight, FileJson, Download, MapPin, Building, Cloud, Briefcase, Scale, TrendingUp, History } from 'lucide-react';
+import { cookies } from 'next/headers';
+import { Shield, Lock, ArrowUpRight, FileJson, MapPin, Building, Cloud, Briefcase, Scale, TrendingUp, History } from 'lucide-react';
+
+const ADMIN_EMAILS = new Set(
+  ['henrik@xaviaestate.com', 'henrik@betongsproyting.no', 'jesper.troan@gmail.com'].map((e) => e.toLowerCase())
+);
+
+/**
+ * Server-side paid check — reads the Supabase auth cookie, looks up
+ * the user's email, and checks for active subscription OR admin status.
+ * Falls through to free tier on any error.
+ */
+async function checkPaidServerSide(): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const cookieStore = await cookies();
+    // Supabase session cookies vary by project ref; pull all matching the pattern
+    const allCookies = cookieStore.getAll();
+    const authCookie = allCookies.find((c) => c.name.startsWith('sb-') && c.name.includes('-auth-token'));
+    if (!authCookie?.value) return false;
+
+    // Decode the auth cookie to extract the email — Supabase stores JSON
+    let email: string | undefined;
+    try {
+      const raw = authCookie.value.startsWith('base64-')
+        ? Buffer.from(authCookie.value.slice(7), 'base64').toString('utf-8')
+        : authCookie.value;
+      const parsed = JSON.parse(raw);
+      email = parsed?.user?.email || parsed?.[0]?.user?.email;
+    } catch { return false; }
+    if (!email) return false;
+
+    if (ADMIN_EMAILS.has(email.toLowerCase())) return true;
+
+    const { data } = await supabase
+      .from('subscriptions')
+      .select('status, current_period_end')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (data?.status === 'active' || data?.status === 'trialing') {
+      const periodEnd = data.current_period_end ? new Date(data.current_period_end) : null;
+      return !periodEnd || periodEnd > new Date();
+    }
+    return false;
+  } catch {
+    return false;
+  }
+}
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 300;
@@ -194,8 +242,7 @@ export default async function DataSheetPage({ params }: { params: Promise<{ ref:
   if (!sheet.core) notFound();
 
   const c = sheet.core;
-  // For now: free tier sees free sections; paid sections always locked (to be wired with auth + Stripe later)
-  const isPaid = false;
+  const isPaid = await checkPaidServerSide();
 
   const jsonLd = {
     '@context': 'https://schema.org',
