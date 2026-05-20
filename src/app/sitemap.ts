@@ -316,6 +316,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const slug of bestSlugs) {
     entries.push({ url: `${base}/best/${slug}`, lastModified: now, changeFrequency: 'daily', priority: 0.8 });
   }
+  // Operation Precursor / Genesis / Counterpart — institutional intelligence
+  entries.push({ url: `${base}/precursor`, lastModified: now, changeFrequency: 'daily', priority: 0.98 });
+  entries.push({ url: `${base}/genesis`, lastModified: now, changeFrequency: 'daily', priority: 0.98 });
+  entries.push({ url: `${base}/counterpart`, lastModified: now, changeFrequency: 'daily', priority: 0.98 });
+
   entries.push({ url: `${base}/agent`, lastModified: now, changeFrequency: 'weekly', priority: 0.98 });
   entries.push({ url: `${base}/agent/mission/1`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 });
   // /registry — de-listed from sitemap until registry has multi-country
