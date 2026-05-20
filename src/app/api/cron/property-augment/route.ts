@@ -108,14 +108,17 @@ export async function GET(req: NextRequest) {
     }
 
     // 3. Persist core registry updates
-    if (Object.keys(updates).length > 1) {
-      try {
-        await supabase
-          .from('properties_registry')
-          .update(updates)
-          .eq('avn_prop_id', row.avn_prop_id);
-      } catch { failed++; }
-    }
+    // CRITICAL: always update last_augmented_at, even if Catastro + OSM both
+    // returned null. Otherwise this property keeps getting picked first by
+    // the `nulls first, asc` order — cron loops on the same 12 broken
+    // properties forever. Writing last_augmented_at moves it to the back
+    // of the queue so the next batch processes 12 new properties.
+    try {
+      await supabase
+        .from('properties_registry')
+        .update(updates)
+        .eq('avn_prop_id', row.avn_prop_id);
+    } catch { failed++; }
 
     // 4. Amenity distances → property_geo
     try {
