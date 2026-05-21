@@ -8,6 +8,7 @@ import { CoverageStrip } from '@/components/v2/CoverageStrip';
 import { NewsletterForm } from '@/components/v2/NewsletterForm';
 import { DealAlertsForm } from '@/components/v2/DealAlertsForm';
 import { LaFincaProof } from '@/components/v2/LaFincaProof';
+import { IntelligenceTriadTeasers } from '@/components/v2/IntelligenceTriadTeasers';
 import { AlphaOfTheWeek } from '@/components/v2/AlphaOfTheWeek';
 import { RecentlyViewedRail } from '@/components/v2/RecentlyViewedRail';
 import { Hero } from './preview/_components/Hero';
@@ -42,6 +43,7 @@ export default function HomePage() {
       <Nav />
       <main className="pt-16">
         <Hero />
+        <IntelligenceTriadTeasers />
         <AlphaOfTheWeek />
         <FeaturedDeals />
         <CredentialBar />

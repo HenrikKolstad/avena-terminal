@@ -4,7 +4,8 @@ import { notFound } from 'next/navigation';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { supabase } from '@/lib/supabase';
-import { ArrowLeft, Shield, AlertTriangle, Building, ScrollText } from 'lucide-react';
+import { ArrowLeft, Shield, AlertTriangle, Building, Network } from 'lucide-react';
+import { NetworkGraph } from './NetworkGraph';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,20 +57,49 @@ interface Alert {
   detected_at: string;
 }
 
-async function loadDeveloper(id: string): Promise<{ developer: Developer | null; projects: Project[]; alerts: Alert[] }> {
-  if (!supabase) return { developer: null, projects: [], alerts: [] };
+interface NetworkEdge {
+  from_entity_id: string;
+  from_entity_type: string;
+  to_entity_id: string;
+  to_entity_type: string;
+  relationship_type: string;
+  strength: number | null;
+  stress_contagion_risk: string | null;
+}
+
+interface NetworkDeveloper {
+  developer_id: string;
+  name: string;
+  counterpart_score: number;
+  score_grade: string;
+}
+
+async function loadDeveloper(id: string): Promise<{ developer: Developer | null; projects: Project[]; alerts: Alert[]; edges: NetworkEdge[]; networkDevelopers: NetworkDeveloper[] }> {
+  if (!supabase) return { developer: null, projects: [], alerts: [], edges: [], networkDevelopers: [] };
   try {
-    const [d, p, a] = await Promise.all([
+    const [d, p, a, e] = await Promise.all([
       supabase.from('counterpart_developers').select('*').eq('developer_id', id).maybeSingle(),
       supabase.from('counterpart_projects').select('*').eq('developer_id', id).order('promised_completion', { ascending: true }),
       supabase.from('counterpart_stress_alerts').select('*').eq('developer_id', id).eq('status', 'active').order('detected_at', { ascending: false }),
+      supabase.from('counterpart_network_edges').select('*').or(`from_entity_id.eq.${id},to_entity_id.eq.${id}`),
     ]);
+
+    const edges = (e.data as NetworkEdge[]) ?? [];
+    const ids = new Set<string>([id]);
+    for (const edge of edges) { ids.add(edge.from_entity_id); ids.add(edge.to_entity_id); }
+    const { data: devs } = await supabase
+      .from('counterpart_developers')
+      .select('developer_id, name, counterpart_score, score_grade')
+      .in('developer_id', [...ids]);
+
     return {
       developer: (d.data as Developer | null) ?? null,
       projects: (p.data as Project[]) ?? [],
       alerts: (a.data as Alert[]) ?? [],
+      edges,
+      networkDevelopers: (devs as NetworkDeveloper[]) ?? [],
     };
-  } catch { return { developer: null, projects: [], alerts: [] }; }
+  } catch { return { developer: null, projects: [], alerts: [], edges: [], networkDevelopers: [] }; }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ developer_id: string }> }): Promise<Metadata> {
@@ -89,7 +119,7 @@ const GRADE_COLORS: Record<string, string> = {
 
 export default async function DeveloperPage({ params }: { params: Promise<{ developer_id: string }> }) {
   const { developer_id } = await params;
-  const { developer: d, projects, alerts } = await loadDeveloper(developer_id);
+  const { developer: d, projects, alerts, edges, networkDevelopers } = await loadDeveloper(developer_id);
   if (!d) notFound();
 
   const gradeColor = GRADE_COLORS[d.score_grade] ?? 'hsl(var(--av-muted-foreground))';
@@ -203,6 +233,24 @@ export default async function DeveloperPage({ params }: { params: Promise<{ deve
             </div>
           </section>
         )}
+
+        {/* Network graph */}
+        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1200px] px-5 sm:px-12 py-10 min-w-0">
+            <h2 className="font-serif text-2xl font-light tracking-tight text-foreground mb-5 flex items-center gap-2">
+              <Network className="h-5 w-5 text-primary" />
+              Counterparty <span className="italic text-gold">network</span>
+            </h2>
+            <NetworkGraph
+              centerId={d.developer_id}
+              edges={edges}
+              developers={networkDevelopers}
+            />
+            <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">
+              Edges thickness = relationship strength · color = stress contagion risk (red high · amber medium · grey low)
+            </p>
+          </div>
+        </section>
 
         {/* Projects */}
         {projects.length > 0 && (
