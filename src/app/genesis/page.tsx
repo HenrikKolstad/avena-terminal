@@ -52,7 +52,6 @@ const CATEGORY_META: Record<string, { color: string; label: string }> = {
 
 export default async function GenesisPage() {
   const prebuilt = await loadPrebuilt();
-  const featured = prebuilt.filter((p) => p.is_featured);
 
   return (
     <div className="avena-v2 min-h-screen overflow-x-clip" style={{ maxWidth: '100vw' }}>
@@ -73,46 +72,7 @@ export default async function GenesisPage() {
           </div>
         </section>
 
-        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
-          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-12 min-w-0">
-            <h2 className="font-serif text-3xl font-light tracking-tight text-foreground mb-2">
-              Featured <span className="italic text-gold">scenarios</span>.
-            </h2>
-            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-6">
-              One-click prebuilt scenarios · click to run instantly
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {featured.map((p) => {
-                const meta = CATEGORY_META[p.category ?? ''] ?? { color: 'hsl(var(--av-primary))', label: p.category };
-                return (
-                  <div key={p.id} className="rounded-sm border p-5 flex flex-col" style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}>
-                    <div className="flex items-baseline justify-between gap-2 mb-3">
-                      <span className="font-mono text-[9px] uppercase tracking-[0.3em]" style={{ color: meta.color }}>{meta.label}</span>
-                      {p.run_count > 0 && <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">{p.run_count} runs</span>}
-                    </div>
-                    <h3 className="font-serif text-lg text-foreground font-light leading-snug mb-2 break-words" style={{ overflowWrap: 'anywhere' }}>
-                      {p.title}
-                    </h3>
-                    {p.description && (
-                      <p className="text-sm text-foreground/75 font-light leading-relaxed mb-4 flex-1">
-                        {p.description}
-                      </p>
-                    )}
-                    <Link
-                      href={`/genesis?scenario=${encodeURIComponent(p.title)}`}
-                      className="mt-auto inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-gold"
-                    >
-                      Use this scenario →
-                    </Link>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* Scenario builder (client component) */}
+        {/* Scenario builder with integrated prebuilt picker */}
         <GenesisRunner prebuilt={prebuilt} />
 
         <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
