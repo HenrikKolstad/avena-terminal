@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Explicit Turbopack workspace root — silences "inferred workspace root"
+  // warning that fires when a lockfile exists up-tree (e.g. in HOME dir).
+  turbopack: {
+    root: __dirname,
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '**.apinmo.com' },
