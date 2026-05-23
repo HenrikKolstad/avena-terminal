@@ -69,6 +69,41 @@ export default function MemoPage() {
           </div>
         </section>
 
+        {/* Sample memos — pre-baked institutional artefacts */}
+        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1100px] px-5 sm:px-12 py-12">
+            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-6">Sample memos · ready now</div>
+            <div className="grid sm:grid-cols-3 gap-3">
+              {[
+                { id: 'SAMPLE-MARBELLA',    title: 'Marbella beachfront villas',   thesis: '€1.5M–€3M with gross yield above 5%, 36-month hold',                  rec: 'BUY' },
+                { id: 'SAMPLE-COSTABLANCA', title: 'Costa Blanca off-plan',         thesis: 'Under €250k, 3+ bedrooms, within 1km of beach',                       rec: 'BUY' },
+                { id: 'SAMPLE-PORTUGAL',    title: 'Algarve waterfront',            thesis: '€600k–€1.5M with Golden Visa eligibility, 60-month hold',             rec: 'CONSIDER' },
+              ].map((s) => {
+                const recColor = s.rec === 'BUY' ? 'hsl(var(--av-success))' : s.rec === 'PASS' ? 'hsl(var(--av-destructive))' : 'hsl(var(--av-warning))';
+                return (
+                  <a
+                    key={s.id}
+                    href={`/memo/${s.id}`}
+                    className="rounded-sm border p-5 hover:border-primary transition-colors group"
+                    style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-surface) / 0.4)' }}
+                  >
+                    <div className="flex items-baseline justify-between gap-3 mb-2">
+                      <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary">{s.id}</div>
+                      <span className="font-mono text-[9px] uppercase tracking-[0.3em]" style={{ color: recColor }}>{s.rec}</span>
+                    </div>
+                    <h3 className="font-serif text-base text-foreground mb-1">{s.title}</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{s.thesis}</p>
+                    <div className="mt-3 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground group-hover:text-primary transition-colors">Open memo →</div>
+                  </a>
+                );
+              })}
+            </div>
+            <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+              Permanent institutional-grade artefacts · forward to your IC · no auth required
+            </p>
+          </div>
+        </section>
+
         {/* What's in the memo */}
         <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
           <div className="mx-auto max-w-[1100px] px-5 sm:px-12 py-16">
