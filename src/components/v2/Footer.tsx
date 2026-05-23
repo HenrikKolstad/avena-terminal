@@ -29,7 +29,6 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
       { label: 'Methodology',     href: '/methodology' },
       { label: 'Track Record',    href: '/track-record' },
       { label: 'Citations',       href: '/citations' },
-      { label: 'API Access',      href: '/api-access' },
       { label: 'MCP Integration', href: '/docs/mcp' },
     ],
   },

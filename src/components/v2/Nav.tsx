@@ -48,7 +48,7 @@ const NAV: TopItem[] = [
   {
     label: 'EU Infra',
     children: [
-      { label: 'API Access',     href: '/api-access',        sub: 'Pricing + key signup' },
+      { label: 'Institutional',  href: '/institutional',     sub: 'Pricing for funds, banks, DFIs' },
       { label: 'APIP Standard',  href: '/standards/apip-v1.json', sub: 'Open data standard' },
       { label: 'Data Partners',  href: '/data-partners',     sub: 'Self-serve federated portal' },
       { divider: true },

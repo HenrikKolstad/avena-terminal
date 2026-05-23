@@ -108,7 +108,7 @@ export default async function EuCoveragePage() {
           <nav className="flex gap-4 text-sm text-muted-foreground">
             <Link href="/data-partners">Partners</Link>
             <Link href="/standards/apip-v1.json" target="_blank">APIP</Link>
-            <Link href="/api-access">API tiers</Link>
+            <Link href="/institutional">Institutional</Link>
           </nav>
         </div>
       </header>
@@ -198,7 +198,7 @@ export default async function EuCoveragePage() {
             <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary mb-2">Query the unified dataset</div>
             <h3 className="font-serif text-xl mb-2">One endpoint. Every country.</h3>
             <code className="block font-mono text-xs text-primary mb-2">GET /api/v1/properties?country=PT&amp;format=apip</code>
-            <p className="text-xs text-muted-foreground">Header <code className="font-mono">X-APIP-Version: 1.0</code>. Pricing at <Link href="/api-access" className="text-primary hover:underline">/api-access</Link>. Procurement at <Link href="/institutional" className="text-primary hover:underline">/institutional</Link>.</p>
+            <p className="text-xs text-muted-foreground">Header <code className="font-mono">X-APIP-Version: 1.0</code>. Procurement and tiered pricing at <Link href="/institutional" className="text-primary hover:underline">/institutional</Link>.</p>
           </div>
         </section>
       </main>

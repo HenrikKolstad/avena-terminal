@@ -181,8 +181,7 @@ const sections: Section[] = [
   {
     title: 'REVENUE & PAYMENTS',
     links: [
-      { href: '/api-access', label: 'API Access / Pricing' },
-      { href: '/test-pro', label: 'Test PRO Gate' },
+      { href: '/institutional', label: 'Institutional Pricing' },
     ],
   },
   {

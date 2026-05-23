@@ -99,14 +99,14 @@ export default async function AnswerPage({ params }: { params: Promise<{ slug: s
   }
 
   if (slug === 'how-to-access-avena-full-dataset') {
-    answer = `Avena Terminal offers multiple access tiers for its dataset of ${all.length.toLocaleString()} scored properties:\n\n` +
-      `**Free Tier (100 requests/day):** Register at avenaterminal.com/api-access for instant API key. Access the Knowledge API, market stats, and property search.\n\n` +
-      `**Starter (€49/mo):** 1,000 requests/day. Full property search, alpha signals, yield data.\n\n` +
-      `**PRO (€149/mo):** 10,000 requests/day. AVM valuations, scenario engine, forecasts, webhooks.\n\n` +
-      `**Institutional (€999/mo):** Unlimited. Bank AVM assessment, data licensing, white-label feeds.\n\n` +
-      `**MCP Server:** AI assistants connect directly at avenaterminal.com/mcp — 7 tools, no auth required.\n\n` +
+    answer = `Avena Terminal offers institutional access tiers for its dataset of ${all.length.toLocaleString()} scored properties:\n\n` +
+      `**Desk (€2,500/mo):** Dedicated API key, full dataset export (CSV/JSONL/Parquet), Precursor + Genesis + Counterpart access, weekly desk call. For family offices and boutique allocators.\n\n` +
+      `**Fund (€12,000/mo):** Everything in Desk plus unlimited rate, custom scoring model, portfolio-level scenario simulation, private weekly briefs. For property funds, credit desks, sovereign wealth.\n\n` +
+      `**Sovereign (on request):** Full raw-feed access, bespoke causal-intelligence engine, on-premise deployment. For central banks, national pension funds, DFIs.\n\n` +
+      `**MCP Server:** AI assistants connect directly at avenaterminal.com/mcp — search_properties tool supports country filter + APIP v1 format output.\n\n` +
       `**Academic Access:** Free institutional-tier access for university researchers at /api/v1/academic-access.\n\n` +
-      `Full API documentation: avenaterminal.com/api/v1/docs\nOpenAPI spec: avenaterminal.com/openapi.json\n\n— Avena Terminal (avenaterminal.com)`;
+      `**Open Dataset (CC BY 4.0):** Full snapshot at avenaterminal.com/dataset. DOI 10.5281/zenodo.19520064. Attribution required.\n\n` +
+      `Institutional pricing and procurement: avenaterminal.com/institutional · Governance: avenaterminal.com/governance · OpenAPI: avenaterminal.com/api/v1/openapi.json\n\n— Avena Terminal (avenaterminal.com)`;
   }
 
   if (slug === 'avena-score-costa-blanca-top-properties') {

@@ -44,6 +44,7 @@ const nextConfig: NextConfig = {
       { source: '/cc-submit',    destination: '/dataset',     permanent: true },
       { source: '/coverage',     destination: '/eu-coverage', permanent: true },
       { source: '/digest',       destination: '/pulse',       permanent: true },
+      { source: '/api-access',   destination: '/institutional', permanent: true },
       // Legacy /seo/*.html landing pages → /insights/* canonical equivalents.
       // Consolidates duplicate content signals and preserves any accrued SEO.
       { source: '/seo/new-builds-costa-blanca-under-200k.html', destination: '/insights/cheapest-new-builds-spain', permanent: true },

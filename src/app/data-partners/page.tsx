@@ -37,7 +37,7 @@ export default function DataPartnersPage() {
           <nav className="flex gap-4 text-sm text-muted-foreground">
             <Link href="/eu-coverage">EU Coverage</Link>
             <Link href="/standards/apip-v1.json" target="_blank">APIP v1</Link>
-            <Link href="/api-access">API tiers</Link>
+            <Link href="/institutional">Institutional</Link>
           </nav>
         </div>
       </header>

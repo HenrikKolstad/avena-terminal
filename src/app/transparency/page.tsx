@@ -202,7 +202,7 @@ export default function TransparencyPage() {
               Avena Terminal provides free API access for academic researchers. No cost, no restrictions on publication.
             </p>
             <ul className="text-gray-400 text-sm space-y-1 list-disc list-inside">
-              <li>Apply at <Link href="/api-access" className="text-emerald-400 hover:underline">/api/v1/academic-access</Link></li>
+              <li>Apply at <Link href="/institutional" className="text-emerald-400 hover:underline">/institutional</Link></li>
               <li>Full dataset available under CC BY 4.0 license</li>
               <li>DOI: 10.5281/zenodo.19520064</li>
               <li>No embargo on research findings</li>
