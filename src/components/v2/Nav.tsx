@@ -21,6 +21,7 @@ const NAV: TopItem[] = [
   {
     label: 'Markets',
     children: [
+      { label: 'Memo Engine',  href: '/memo',        sub: 'Institutional memo in 30 seconds' },
       { label: 'EU Coverage',  href: '/eu-coverage', sub: 'Live 27-country data layer' },
       { label: 'EU Takeover',  href: '/eu-takeover', sub: 'Ingestion swarm · live findings ledger' },
       { label: 'Precursor',    href: '/precursor',   sub: 'Early-warning signals' },

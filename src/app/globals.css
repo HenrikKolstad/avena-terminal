@@ -330,3 +330,29 @@
   transform-box: fill-box;
   transform-origin: center;
 }
+
+/* ─── Memo Engine print styles ────────────────────────────────────────────
+   When a user prints (cmd+P) a /memo/[short_id] page, hide the nav, footer,
+   and CTA cards; reduce hero padding; flatten gradients to white-on-black
+   that survives the print-to-PDF pipeline. Result: a clean institutional
+   research artefact that prints to a 5-8 page PDF. */
+@media print {
+  body, .avena-v2 { background: #ffffff !important; color: #111 !important; }
+  header, footer, nav, .print\\:hidden { display: none !important; }
+  main { padding-top: 0 !important; }
+  #memo-print-root { max-width: none !important; padding: 32px 24px !important; color: #111 !important; }
+  #memo-print-root h1, #memo-print-root h2, #memo-print-root h3 { color: #111 !important; }
+  #memo-print-root .text-foreground { color: #111 !important; }
+  #memo-print-root .text-foreground\\/90 { color: #1a1a1a !important; }
+  #memo-print-root .text-muted-foreground { color: #555 !important; }
+  #memo-print-root .text-primary { color: #b8860b !important; }
+  #memo-print-root .text-gold { color: #b8860b !important; -webkit-text-fill-color: #b8860b !important; background: none !important; }
+  #memo-print-root .text-success { color: #1f7a3a !important; }
+  #memo-print-root .text-destructive { color: #a31212 !important; }
+  #memo-print-root [style*="background"] { background: #fff !important; }
+  #memo-print-root [style*="hsl(var(--av-surface)"] { background: #fafafa !important; border: 1px solid #ddd !important; }
+  #memo-print-root .border, #memo-print-root [class*="border-"] { border-color: #ccc !important; }
+  /* Page breaks before each major section header */
+  #memo-print-root section { page-break-inside: avoid; }
+  @page { margin: 18mm 16mm; size: A4; }
+}
