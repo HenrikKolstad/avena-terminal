@@ -1,53 +1,110 @@
-import { NextRequest } from 'next/server';
+/**
+ * GET /api/v1/transactions — recent property transactions with AVM accuracy.
+ *
+ * Reads from `property_transactions` (preferred) or `sold_properties`
+ * (legacy). Computes AVM accuracy as | avm_estimate - sold_price | / sold_price.
+ * Falls back to an empty array with status='no_transactions' rather than
+ * fabricated data.
+ */
+import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
 
-export const revalidate = 86400;
+export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
-interface Transaction {
-  ref: string;
-  location: string;
-  type: string;
-  listed_price: number;
-  sold_price: number;
-  discount_pct: number;
-  days_on_market: number;
-  date: string;
-  avm_accuracy: number;
+interface RawTxn {
+  property_ref?: string | null;
+  location?: string | null;
+  property_type?: string | null;
+  listed_price?: number | null;
+  sold_price?: number | null;
+  avm_estimate?: number | null;
+  list_date?: string | null;
+  sold_date?: string | null;
+}
+
+function normalise(t: RawTxn) {
+  const listed = t.listed_price ?? null;
+  const sold = t.sold_price ?? null;
+  const avm = t.avm_estimate ?? null;
+  const discount_pct = (listed && sold) ? Number((((listed - sold) / listed) * 100).toFixed(1)) : null;
+  const days_on_market = (t.list_date && t.sold_date)
+    ? Math.round((new Date(t.sold_date).getTime() - new Date(t.list_date).getTime()) / 86_400_000)
+    : null;
+  const avm_accuracy = (sold && avm)
+    ? Number((100 - Math.abs((avm - sold) / sold) * 100).toFixed(1))
+    : null;
+  return {
+    ref: t.property_ref ?? null,
+    location: t.location ?? null,
+    type: t.property_type ?? null,
+    listed_price: listed,
+    sold_price: sold,
+    discount_pct,
+    days_on_market,
+    date: t.sold_date ?? null,
+    avm_accuracy,
+  };
 }
 
 export async function GET(_req: NextRequest) {
-  const transactions: Transaction[] = [
-    { ref: 'AV-TRV-2401', location: 'Torrevieja', type: 'apartment', listed_price: 189000, sold_price: 182500, discount_pct: 3.4, days_on_market: 45, date: '2026-03-28', avm_accuracy: 97.2 },
-    { ref: 'AV-OHC-2402', location: 'Orihuela Costa', type: 'apartment', listed_price: 245000, sold_price: 238000, discount_pct: 2.9, days_on_market: 62, date: '2026-03-22', avm_accuracy: 95.8 },
-    { ref: 'AV-GDM-2403', location: 'Guardamar', type: 'villa', listed_price: 385000, sold_price: 365000, discount_pct: 5.2, days_on_market: 98, date: '2026-03-15', avm_accuracy: 93.1 },
-    { ref: 'AV-SPL-2404', location: 'Santa Pola', type: 'apartment', listed_price: 165000, sold_price: 162000, discount_pct: 1.8, days_on_market: 28, date: '2026-03-10', avm_accuracy: 98.5 },
-    { ref: 'AV-ALT-2405', location: 'Alicante', type: 'apartment', listed_price: 220000, sold_price: 215000, discount_pct: 2.3, days_on_market: 41, date: '2026-03-05', avm_accuracy: 96.4 },
-    { ref: 'AV-TRV-2406', location: 'Torrevieja', type: 'penthouse', listed_price: 275000, sold_price: 260000, discount_pct: 5.5, days_on_market: 85, date: '2026-02-28', avm_accuracy: 92.7 },
-    { ref: 'AV-VLM-2407', location: 'Villamartin', type: 'townhouse', listed_price: 198000, sold_price: 192000, discount_pct: 3.0, days_on_market: 53, date: '2026-02-20', avm_accuracy: 96.1 },
-    { ref: 'AV-PIR-2408', location: 'Pilar de la Horadada', type: 'villa', listed_price: 420000, sold_price: 398000, discount_pct: 5.2, days_on_market: 112, date: '2026-02-14', avm_accuracy: 91.8 },
-    { ref: 'AV-CAM-2409', location: 'Campoamor', type: 'apartment', listed_price: 205000, sold_price: 200000, discount_pct: 2.4, days_on_market: 37, date: '2026-02-08', avm_accuracy: 97.0 },
-    { ref: 'AV-BJR-2410', location: 'Benijofar', type: 'villa', listed_price: 345000, sold_price: 330000, discount_pct: 4.3, days_on_market: 76, date: '2026-01-30', avm_accuracy: 94.5 },
-  ];
+  if (!supabase) {
+    return NextResponse.json({ transactions: [], status: 'unavailable', reason: 'supabase not configured' }, { status: 503 });
+  }
 
-  const totalTransactions = transactions.length;
-  const avgDiscount = Number((transactions.reduce((s, t) => s + t.discount_pct, 0) / totalTransactions).toFixed(1));
-  const avgDaysOnMarket = Math.round(transactions.reduce((s, t) => s + t.days_on_market, 0) / totalTransactions);
-  const avgAvmAccuracy = Number((transactions.reduce((s, t) => s + t.avm_accuracy, 0) / totalTransactions).toFixed(1));
+  // Try property_transactions first
+  let rows: RawTxn[] = [];
+  try {
+    const { data } = await supabase
+      .from('property_transactions')
+      .select('property_ref, location, property_type, listed_price, sold_price, avm_estimate, list_date, sold_date')
+      .order('sold_date', { ascending: false })
+      .limit(50);
+    rows = (data ?? []) as RawTxn[];
+  } catch { /* fall through to sold_properties */ }
 
-  return Response.json({
+  if (rows.length === 0) {
+    try {
+      const { data } = await supabase
+        .from('sold_properties')
+        .select('*')
+        .order('sold_date', { ascending: false })
+        .limit(50);
+      rows = (data ?? []) as RawTxn[];
+    } catch { /* leave empty */ }
+  }
+
+  if (rows.length === 0) {
+    return NextResponse.json({
+      transactions: [],
+      aggregate_stats: { total_transactions: 0 },
+      status: 'no_transactions',
+      note: 'No transactions in the registry yet. Catastro/Registro Mercantil integration pending — pipeline writes to property_transactions when sold_date observed.',
+      source: 'Avena Terminal (avenaterminal.com)',
+    });
+  }
+
+  const transactions = rows.map(normalise);
+  const withDiscount = transactions.filter((t) => t.discount_pct != null) as Array<typeof transactions[number] & { discount_pct: number }>;
+  const withDays = transactions.filter((t) => t.days_on_market != null) as Array<typeof transactions[number] & { days_on_market: number }>;
+  const withAccuracy = transactions.filter((t) => t.avm_accuracy != null) as Array<typeof transactions[number] & { avm_accuracy: number }>;
+
+  const avg = (a: number[]) => a.length ? a.reduce((s, x) => s + x, 0) / a.length : 0;
+
+  return NextResponse.json({
     transactions,
     aggregate_stats: {
-      total_transactions: totalTransactions,
-      avg_discount_pct: avgDiscount,
-      avg_days_on_market: avgDaysOnMarket,
-      total_volume_eur: transactions.reduce((s, t) => s + t.sold_price, 0),
+      total_transactions: transactions.length,
+      avg_discount_pct: withDiscount.length ? Number(avg(withDiscount.map((t) => t.discount_pct)).toFixed(1)) : null,
+      avg_days_on_market: withDays.length ? Math.round(avg(withDays.map((t) => t.days_on_market))) : null,
+      total_volume_eur: transactions.reduce((s, t) => s + (t.sold_price ?? 0), 0),
     },
-    avm_validation: {
-      accuracy_score: avgAvmAccuracy,
-      sample_size: totalTransactions,
+    avm_validation: withAccuracy.length ? {
+      accuracy_score: Number(avg(withAccuracy.map((t) => t.avm_accuracy)).toFixed(1)),
+      sample_size: withAccuracy.length,
       methodology: 'sold_price_vs_avm_estimate_comparison',
-    },
-    status: 'simulated — live Catastro/Registro integration pending',
-    note: 'When live: auto-updates AVM accuracy metrics from registry data',
-    methodology: 'transaction_radar_with_avm_backtesting',
+    } : { accuracy_score: null, sample_size: 0, methodology: 'pending — need observed sold + avm pairs' },
+    status: 'live',
+    source: 'Avena Terminal — property_transactions',
   });
 }

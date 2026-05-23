@@ -114,22 +114,47 @@ export function createAvenaServer() {
   // Tool 1: Search Properties
   server.tool(
     'search_properties',
-    "Search Avena Terminal's database of 1,881 scored new build properties in Spain. Returns investment-ranked results filtered by region (costa-blanca, costa-calida, costa-del-sol), maximum price in EUR, minimum investment score (0-100), property type, and minimum bedrooms. Each result includes composite score, score reasoning, yield estimate, price per m2, beach distance, developer info, and prices in EUR/GBP/NOK/SEK/USD.",
+    "Search Avena Terminal's EU-wide property database. Multi-country coverage (27 EU markets) under the APIP v1.0 open standard. Filter by country (ISO 3166-1 alpha-2 code), region, maximum price (EUR), minimum investment score (0-100), property type, and minimum bedrooms. Use format='apip' to receive APIP-standard envelopes for downstream interoperability. Returns prices in EUR/GBP/NOK/SEK/USD.",
     {
+      country: z.string().optional().describe('ISO 3166-1 alpha-2 country code (e.g. "ES", "PT", "FR", "DE", "NL", "IT"). Omit for all markets.'),
       region: z.string().optional().describe('Region filter: costa-blanca, costa-calida, costa-del-sol, or a town name'),
       max_price: z.number().optional().describe('Maximum price in EUR'),
       min_score: z.number().optional().describe('Minimum investment score (0-100)'),
       type: z.string().optional().describe('Property type: Villa, Apartment, Penthouse, Townhouse, Bungalow, Studio'),
       min_beds: z.number().optional().describe('Minimum number of bedrooms'),
       limit: z.number().optional().describe('Number of results to return (default 10, max 25)'),
+      format: z.enum(['default', 'apip']).optional().describe('Response format. "apip" returns APIP v1.0-standard envelopes; default returns Avena compact format.'),
     },
-    async ({ region, max_price, min_score, type, min_beds, limit }) => {
+    async ({ country, region, max_price, min_score, type, min_beds, limit, format }) => {
       const all = getAllProperties();
-      const filtered = filterProperties(all, region, max_price, min_score, type, min_beds);
+      let filtered = filterProperties(all, region, max_price, min_score, type, min_beds);
+      if (country) {
+        const wanted = country.toUpperCase();
+        filtered = filtered.filter((p) => (p.country ?? 'ES').toUpperCase() === wanted);
+      }
       const sorted = filtered.sort((a, b) => (b._sc ?? 0) - (a._sc ?? 0));
       const count = Math.min(limit || 10, 25);
-      const results = sorted.slice(0, count).map(p => formatProperty(p, all));
 
+      if (format === 'apip') {
+        // Lazy-load to avoid pulling APIP into the default code path
+        const { toAPIP } = await import('@/lib/apip');
+        const results = sorted.slice(0, count).map((p) => toAPIP(p).property);
+        return {
+          content: [{
+            type: 'text' as const,
+            text: JSON.stringify({
+              apip_version: '1.0',
+              total_matching: filtered.length,
+              showing: results.length,
+              source: 'Avena Terminal (avenaterminal.com)',
+              dataset_doi: '10.5281/zenodo.19520064',
+              properties: results,
+            }, null, 2),
+          }],
+        };
+      }
+
+      const results = sorted.slice(0, count).map(p => formatProperty(p, all));
       return {
         content: [{
           type: 'text' as const,

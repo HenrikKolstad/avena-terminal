@@ -219,7 +219,17 @@ export async function POST(req: NextRequest) {
   if (!supabase) return NextResponse.json({ ok: false, error: 'unavailable' }, { status: 503 });
   try {
     const body: ScenarioInput = await req.json();
-    const markets = (body.target_markets ?? ['Costa Blanca']).slice(0, 10);
+    // `??` only triggers on null/undefined — explicitly handle the empty-array
+    // case so callers passing `target_markets: []` get a clean validation error
+    // instead of a successful run with zero outputs.
+    const rawMarkets = body.target_markets;
+    const markets = (Array.isArray(rawMarkets) && rawMarkets.length > 0 ? rawMarkets : ['Costa Blanca']).slice(0, 10);
+    if (Array.isArray(rawMarkets) && rawMarkets.length === 0) {
+      return NextResponse.json(
+        { ok: false, error: 'target_markets must contain at least one market (or omit to default to Costa Blanca)' },
+        { status: 400 }
+      );
+    }
     const horizon = body.horizon_months ?? 24;
     const scenario_id = `SCEN-${Date.now()}-${randomUUID().slice(0, 8)}`;
 

@@ -3,6 +3,21 @@
   "$id": "https://avenaterminal.com/standards/apip-v1.json",
   "title": "APIP — Avena Property Intelligence Protocol v1.0",
   "description": "The open standard for European property intelligence data exchange. Defines the canonical schema for property records including deal scores, yields, developer ratings, market regime classification, and location intelligence.",
+  "version_date": "2026-05-23",
+  "implemented_by": [
+    {
+      "name": "Avena Terminal",
+      "url": "https://avenaterminal.com",
+      "live_endpoint": "https://avenaterminal.com/api/v1/properties?format=apip",
+      "response_header": "X-APIP-Version: 1.0",
+      "doi": "10.5281/zenodo.19520064"
+    }
+  ],
+  "extensions": {
+    "pricing.currency": "ISO 4217 currency code (default EUR). Added for multi-country support.",
+    "pricing.raw_price_local": "Original-currency asking price before FX conversion to EUR.",
+    "source": "Provenance block (portal, source_ref, last_synced, url) — required for federated/aggregated ingestion."
+  },
   "type": "object",
   "required": ["apip_version", "property"],
   "properties": {
@@ -117,7 +132,28 @@
               "type": "number",
               "minimum": 0,
               "description": "Hyperlocal market reference price per m2 at postal code granularity"
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$",
+              "default": "EUR",
+              "description": "ISO 4217 currency code of asking_price (EXTENSION v1)"
+            },
+            "raw_price_local": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Original-currency asking price before FX conversion (EXTENSION v1)"
             }
+          }
+        },
+        "source": {
+          "type": "object",
+          "description": "Provenance — required for federated/aggregated ingestion (EXTENSION v1)",
+          "properties": {
+            "portal":      { "type": "string", "description": "Originating portal identifier (e.g. funda-nl, idealista-pt)" },
+            "source_ref":  { "type": "string", "description": "Original ID from source portal" },
+            "last_synced": { "type": "string", "format": "date-time", "description": "ISO timestamp of last feed sync" },
+            "url":         { "type": "string", "format": "uri", "description": "Canonical listing URL on source portal" }
           }
         },
         "specifications": {

@@ -4,10 +4,10 @@ export interface Property {
   l: string;      // location
   r: string;      // region code
   t: string;      // type
-  pf: number;     // price from
-  pt: number;     // price to
-  pm2?: number;   // price per m2
-  mm2: number;    // market price per m2
+  pf: number;     // price from (EUR)
+  pt: number;     // price to (EUR)
+  pm2?: number;   // price per m2 (EUR)
+  mm2: number;    // market price per m2 (EUR)
   bm: number;     // built area m2
   pl: number | null; // plot m2
   bd: number;     // bedrooms
@@ -34,6 +34,15 @@ export interface Property {
   solarium?: number;    // solarium m2
   dev_ref?: string | null; // development reference
   bm_original?: number;
+  // ─── EU-wide multi-country additions (APIP v1) ─────────────────────────
+  country?: string;          // ISO 3166-1 alpha-2 (ES, PT, FR, DE, NL, IT, GR, …)
+  country_name?: string;     // English country name
+  source_portal?: string;    // which feed/portal the listing came from
+  source_ref?: string;       // original ID from source portal
+  last_synced?: string;      // ISO timestamp of last feed sync
+  currency?: string;         // ISO 4217 currency code (EUR for most, GBP for UK, etc.)
+  raw_price_local?: number;  // price in local currency before EUR conversion
+  fx_rate_used?: number;     // FX rate applied (local→EUR) when raw_price_local ≠ pf
   // Computed
   _sc?: number;
   _yield?: YieldResult;

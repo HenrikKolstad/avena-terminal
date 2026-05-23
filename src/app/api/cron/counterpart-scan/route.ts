@@ -81,17 +81,29 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Supabase not configured' }, { status: 503 });
   }
 
-  const { data, error } = await supabase
-    .from('counterpart_developers')
-    .select('developer_id, name, counterpart_score, score_trend, payment_delay_signals, legal_disputes_active, court_judgements_against, delayed_projects, cancelled_projects, financial_stress_score, total_projects')
-    .limit(500);
-
-  if (error) {
-    await finishCronLog(log, 'error', null, error);
-    return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
+  // Paginate — counterpart_developers may hold thousands of rows once the
+  // discovery cron has mined the full Spanish corpus. Supabase caps at 1000
+  // per query so we loop until exhaustion.
+  const pageSize = 1000;
+  let from = 0;
+  const developersAll: Developer[] = [];
+  for (;;) {
+    const { data, error } = await supabase
+      .from('counterpart_developers')
+      .select('developer_id, name, counterpart_score, score_trend, payment_delay_signals, legal_disputes_active, court_judgements_against, delayed_projects, cancelled_projects, financial_stress_score, total_projects')
+      .order('counterpart_score', { ascending: true })   // process distressed first
+      .range(from, from + pageSize - 1);
+    if (error) {
+      await finishCronLog(log, 'error', null, error);
+      return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
+    }
+    if (!data || data.length === 0) break;
+    developersAll.push(...(data as Developer[]));
+    if (data.length < pageSize) break;
+    from += pageSize;
+    if (from > 50_000) break;
   }
-
-  const developers = (data ?? []) as Developer[];
+  const developers = developersAll;
   let updated = 0;
   let alertsCreated = 0;
 

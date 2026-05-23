@@ -12,9 +12,10 @@ export const metadata: Metadata = {
 const TOOLS = [
   {
     name: 'search_properties',
-    description: 'Search and filter properties by region, price range, property type, minimum score, bedroom count, and beach distance.',
+    description: 'Search and filter properties across the 27 EU markets by country, region, price range, property type, minimum score, bedroom count, and beach distance. Returns APIP v1 format when format="apip".',
     params: [
-      { name: 'region', type: 'string', desc: 'Costa slug (e.g. "costa-blanca", "costa-del-sol")' },
+      { name: 'country', type: 'string', desc: 'ISO 3166-1 alpha-2 country code (e.g. "ES", "PT", "FR", "DE", "NL", "IT")' },
+      { name: 'region', type: 'string', desc: 'Costa/region slug (e.g. "costa-blanca", "costa-del-sol")' },
       { name: 'town', type: 'string', desc: 'Town name or slug' },
       { name: 'type', type: 'string', desc: 'Property type: villa, apartment, penthouse, townhouse, bungalow' },
       { name: 'min_price', type: 'number', desc: 'Minimum price in EUR' },

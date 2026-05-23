@@ -14,7 +14,10 @@
     "src/app/api/cron/pricing-history/route.ts": { "maxDuration": 120 },
     "src/app/api/cron/dvf-ingest/route.ts": { "maxDuration": 300 },
     "src/app/api/cron/precursor-scan/route.ts": { "maxDuration": 300 },
-    "src/app/api/cron/counterpart-scan/route.ts": { "maxDuration": 300 }
+    "src/app/api/cron/counterpart-scan/route.ts": { "maxDuration": 300 },
+    "src/app/api/cron/counterpart-discover/route.ts": { "maxDuration": 300 },
+    "src/app/api/cron/sync-feeds/route.ts": { "maxDuration": 300 },
+    "src/app/api/cron/sync-macro/route.ts": { "maxDuration": 120 }
   },
   "crons": [
     { "path": "/api/cron/pulse", "schedule": "0 7 * * *" },
@@ -90,7 +93,10 @@
     { "path": "/api/cron/dvf-ingest", "schedule": "30 4 * * *" },
 
     { "path": "/api/cron/precursor-scan", "schedule": "0 5 * * *" },
-    { "path": "/api/cron/counterpart-scan", "schedule": "0 4 * * *" }
+    { "path": "/api/cron/counterpart-discover", "schedule": "30 3 * * *" },
+    { "path": "/api/cron/counterpart-scan", "schedule": "0 4 * * *" },
+    { "path": "/api/cron/sync-feeds", "schedule": "0 3 * * *" },
+    { "path": "/api/cron/sync-macro", "schedule": "0 6 * * *" }
   ],
   "$schema": "https://openapi.vercel.sh/vercel.json"
 }

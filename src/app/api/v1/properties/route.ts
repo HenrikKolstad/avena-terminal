@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import { getAllProperties, avg, slugify } from '@/lib/properties';
 import { supabase } from '@/lib/supabase';
+import { toAPIP } from '@/lib/apip';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,6 +53,8 @@ export async function GET(req: NextRequest) {
 
   const region = params.get('region');
   const type = params.get('type');
+  const country = params.get('country');                       // ISO 3166-1 alpha-2 e.g. ES, PT, FR
+  const format = params.get('format');                          // 'apip' for APIP-standard response
   const maxPrice = params.get('maxPrice') ? Number(params.get('maxPrice')) : null;
   const minScore = params.get('minScore') ? Number(params.get('minScore')) : null;
   const minYield = params.get('minYield') ? Number(params.get('minYield')) : null;
@@ -60,6 +63,12 @@ export async function GET(req: NextRequest) {
 
   let properties = getAllProperties();
 
+  if (country) {
+    // Legacy data.json properties default to country='ES' if absent — preserve
+    // backwards compatibility when filtering.
+    const wanted = country.toUpperCase();
+    properties = properties.filter((p) => (p.country ?? 'ES').toUpperCase() === wanted);
+  }
   if (region) {
     properties = properties.filter(p => p.costa && slugify(p.costa) === slugify(region));
   }
@@ -81,6 +90,26 @@ export async function GET(req: NextRequest) {
 
   const total = properties.length;
   const paged = properties.slice(offset, offset + limit);
+
+  // APIP-standard envelope when ?format=apip
+  if (format === 'apip') {
+    const apipResp = NextResponse.json({
+      apip_version: '1.0',
+      generated_at: new Date().toISOString(),
+      total,
+      limit,
+      offset,
+      count: paged.length,
+      filters: { country, region, type, maxPrice, minScore, minYield },
+      properties: paged.map((p) => toAPIP(p).property),
+      source: { name: 'Avena Terminal', url: 'https://avenaterminal.com', doi: '10.5281/zenodo.19520064' },
+    });
+    apipResp.headers.set('X-APIP-Version', '1.0');
+    apipResp.headers.set('X-Avena-Version', '1.0');
+    apipResp.headers.set('X-Request-ID', randomUUID());
+    apipResp.headers.set('X-Rate-Limit-Remaining', String(auth.remaining));
+    return apipResp;
+  }
 
   const response = NextResponse.json({
     total,
@@ -113,12 +142,18 @@ export async function GET(req: NextRequest) {
       image: p.imgs?.[0] || p.img,
       lat: p.lat,
       lng: p.lng,
+      country: p.country ?? 'ES',
+      country_name: p.country_name ?? 'Spain',
+      currency: p.currency ?? 'EUR',
+      source_portal: p.source_portal ?? null,
+      last_synced: p.last_synced ?? null,
     })),
     avg_price: Math.round(avg(paged.map(p => p.pf))),
     avg_score: Math.round(avg(paged.filter(p => p._sc).map(p => p._sc!))),
   });
 
   response.headers.set('X-Avena-Version', '1.0');
+  response.headers.set('X-APIP-Version', '1.0');
   response.headers.set('X-Request-ID', randomUUID());
   response.headers.set('X-Rate-Limit-Remaining', String(auth.remaining));
 

@@ -12,6 +12,7 @@ const links = [
   { label: 'Precursor', href: '/precursor' },
   { label: 'Genesis', href: '/genesis' },
   { label: 'Counterpart', href: '/counterpart' },
+  { label: 'EU Coverage', href: '/eu-coverage' },
   { label: 'Agent', href: '/agent' },
   { label: 'Takeover', href: '/eu-takeover' },
   { label: 'Oracle', href: '/chat' },
