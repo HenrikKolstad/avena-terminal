@@ -12,7 +12,7 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { startCronLog, finishCronLog } from '@/lib/cron-log';
-import { ingestEurostat, ingestECB, ingestINESpain, type IngestResult } from '@/lib/eu-stats-feeds';
+import { ingestEurostat, ingestECB, ingestINESpain, ingestISTAT, ingestCBS, ingestBIS, type IngestResult } from '@/lib/eu-stats-feeds';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
@@ -92,6 +92,48 @@ export async function GET() {
     } catch (e) {
       const empty: IngestResult = { source: 'ine_es', indicators_attempted: 0, rows_upserted: 0, countries: new Set(), errors: [(e as Error).message] };
       summary.ine_es = empty;
+      await finishRun(runId, empty, 'error', (e as Error).message);
+    }
+  }
+
+  // ISTAT Italy
+  {
+    const runId = await logRun('istat');
+    try {
+      const r = await ingestISTAT();
+      summary.istat = r;
+      await finishRun(runId, r, r.errors.length === 0 ? 'success' : 'partial');
+    } catch (e) {
+      const empty: IngestResult = { source: 'istat', indicators_attempted: 0, rows_upserted: 0, countries: new Set(), errors: [(e as Error).message] };
+      summary.istat = empty;
+      await finishRun(runId, empty, 'error', (e as Error).message);
+    }
+  }
+
+  // CBS Netherlands
+  {
+    const runId = await logRun('cbs');
+    try {
+      const r = await ingestCBS();
+      summary.cbs = r;
+      await finishRun(runId, r, r.errors.length === 0 ? 'success' : 'partial');
+    } catch (e) {
+      const empty: IngestResult = { source: 'cbs', indicators_attempted: 0, rows_upserted: 0, countries: new Set(), errors: [(e as Error).message] };
+      summary.cbs = empty;
+      await finishRun(runId, empty, 'error', (e as Error).message);
+    }
+  }
+
+  // BIS — cross-country residential property prices
+  {
+    const runId = await logRun('bis');
+    try {
+      const r = await ingestBIS();
+      summary.bis = r;
+      await finishRun(runId, r, r.errors.length === 0 ? 'success' : 'partial');
+    } catch (e) {
+      const empty: IngestResult = { source: 'bis', indicators_attempted: 0, rows_upserted: 0, countries: new Set(), errors: [(e as Error).message] };
+      summary.bis = empty;
       await finishRun(runId, empty, 'error', (e as Error).message);
     }
   }

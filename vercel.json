@@ -18,7 +18,9 @@
     "src/app/api/cron/counterpart-discover/route.ts": { "maxDuration": 300 },
     "src/app/api/cron/sync-feeds/route.ts": { "maxDuration": 300 },
     "src/app/api/cron/sync-macro/route.ts": { "maxDuration": 120 },
-    "src/app/api/cron/eu-stats-ingest/route.ts": { "maxDuration": 300 }
+    "src/app/api/cron/eu-stats-ingest/route.ts": { "maxDuration": 300 },
+    "src/app/api/cron/eu-validation/route.ts": { "maxDuration": 120 },
+    "src/app/api/v1/sovereign/dispatch/[volume]/route.ts": { "maxDuration": 300 }
   },
   "crons": [
     { "path": "/api/cron/pulse", "schedule": "0 7 * * *" },
@@ -99,7 +101,8 @@
     { "path": "/api/cron/sync-feeds", "schedule": "0 3 * * *" },
     { "path": "/api/cron/sync-macro", "schedule": "0 6 * * *" },
 
-    { "path": "/api/cron/eu-stats-ingest", "schedule": "15 4 * * *" }
+    { "path": "/api/cron/eu-stats-ingest", "schedule": "15 4 * * *" },
+    { "path": "/api/cron/eu-validation",   "schedule": "30 5 * * *" }
   ],
   "$schema": "https://openapi.vercel.sh/vercel.json"
 }

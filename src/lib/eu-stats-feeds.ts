@@ -447,6 +447,208 @@ export async function ingestINESpain(): Promise<IngestResult> {
   return result;
 }
 
+// ─── CBS Netherlands adapter (OData v4) ───────────────────────────────────
+// Bestaande koopwoningen prijsindex (existing dwellings price index).
+// CBS table 83906NED — quarterly HPI for the Netherlands.
+// API: https://opendata.cbs.nl/ODataApi/odata/83906NED/TypedDataSet?$top=80&$orderby=Perioden desc
+
+interface CBSTable {
+  table: string;
+  name: string;
+  unit: string;
+  freq: 'Q' | 'M' | 'A';
+  valueField: string;
+}
+
+const CBS_TABLES: CBSTable[] = [
+  { table: '83913NED', name: 'Netherlands — Existing dwellings price index (2020=100)', unit: 'index_2020=100', freq: 'Q', valueField: 'PrijsindexBestaandeKoopwoningen_1' },
+];
+
+async function fetchCBSTable(t: CBSTable): Promise<OfficialStatRow[]> {
+  const url = `https://opendata.cbs.nl/ODataApi/odata/${t.table}/TypedDataSet?$top=80&$orderby=Perioden desc&$format=json`;
+  const res = await fetch(url, { headers: { Accept: 'application/json' } });
+  if (!res.ok) throw new Error(`CBS ${t.table} HTTP ${res.status}`);
+  const data = await res.json() as { value: Array<Record<string, string | number | null>> };
+
+  const out: OfficialStatRow[] = [];
+  for (const row of data.value ?? []) {
+    const periodRaw = row['Perioden'] as string | undefined;
+    if (!periodRaw) continue;
+    // CBS period format: '2026KW01' = 2026 Q1, '2026MM03' = March 2026, '2026JJ00' = annual
+    let period: string | null = null;
+    let freq: 'Q' | 'M' | 'A' = t.freq;
+    const qMatch = periodRaw.match(/^(\d{4})KW(\d{2})$/);
+    const mMatch = periodRaw.match(/^(\d{4})MM(\d{2})$/);
+    const aMatch = periodRaw.match(/^(\d{4})JJ00$/);
+    if (qMatch) { period = `${qMatch[1]}-Q${parseInt(qMatch[2], 10)}`; freq = 'Q'; }
+    else if (mMatch) { period = `${mMatch[1]}-${mMatch[2]}`; freq = 'M'; }
+    else if (aMatch) { period = aMatch[1]; freq = 'A'; }
+    if (!period) continue;
+    const v = row[t.valueField];
+    if (v == null) continue;
+    out.push({
+      source: 'cbs',
+      indicator_code: `cbs_${t.table}_${t.valueField}`,
+      indicator_name: t.name,
+      country_code: 'NL',
+      period,
+      period_freq: freq,
+      value: Number(v),
+      unit: t.unit,
+      source_url: url,
+    });
+  }
+  return out;
+}
+
+export async function ingestCBS(): Promise<IngestResult> {
+  const result: IngestResult = { source: 'cbs', indicators_attempted: 0, rows_upserted: 0, countries: new Set(['NL']), errors: [] };
+  for (const t of CBS_TABLES) {
+    result.indicators_attempted++;
+    try {
+      const rows = await fetchCBSTable(t);
+      const written = await upsertRows(rows);
+      result.rows_upserted += written;
+    } catch (e) {
+      result.errors.push(`CBS ${t.table}: ${(e as Error).message}`);
+    }
+    await sleep(400);
+  }
+  return result;
+}
+
+// ─── ISTAT Italy adapter (SDMX-JSON) ──────────────────────────────────────
+// ISTAT's SDMX REST returns the same SDMX-JSON shape as Eurostat, so we
+// can reuse the parsing scaffold. Dataflow 729_1050 = HPI quarterly (IPAB).
+// API: https://esploradati.istat.it/SDMXWS/rest/data/{dataflow}/{key}
+
+interface ISTATSeries {
+  dataflow: string;
+  key: string;        // dot-separated dimension key, '.' = all
+  name: string;
+  unit: string;
+  freq: 'Q' | 'M' | 'A';
+}
+
+const ISTAT_SERIES: ISTATSeries[] = [
+  // House Price Index, quarterly, total (existing + new)
+  { dataflow: '729_1050', key: 'Q.IT.IPAB._T._T._T.N.B.', name: 'Italy — House Price Index, total (Q1 2010=100)', unit: 'index_2010=100', freq: 'Q' },
+];
+
+async function fetchISTATSeries(s: ISTATSeries): Promise<OfficialStatRow[]> {
+  const startYear = new Date().getUTCFullYear() - 5;
+  const url = `https://esploradati.istat.it/SDMXWS/rest/data/${s.dataflow}/${s.key}?format=jsondata&startPeriod=${startYear}`;
+  const res = await fetch(url, { headers: { Accept: 'application/vnd.sdmx.data+json;version=1.0.0-wd' } });
+  if (!res.ok) {
+    if (res.status === 404) return [];
+    throw new Error(`ISTAT ${s.dataflow}/${s.key} HTTP ${res.status}`);
+  }
+  const data = await res.json() as {
+    dataSets: Array<{ series: Record<string, { observations: Record<string, [number]> }> }>;
+    structure: { dimensions: { observation: Array<{ id: string; values: Array<{ id: string }> }> } };
+  };
+  const obsDim = data.structure?.dimensions?.observation?.find((d) => d.id === 'TIME_PERIOD');
+  if (!obsDim) return [];
+  const periods = obsDim.values.map((v) => v.id);
+
+  const out: OfficialStatRow[] = [];
+  const series = data.dataSets?.[0]?.series ?? {};
+  for (const obs of Object.values(series)) {
+    for (const [idx, arr] of Object.entries(obs.observations)) {
+      const period = periods[Number(idx)];
+      const value = arr[0];
+      if (value == null || period == null) continue;
+      out.push({
+        source: 'istat',
+        indicator_code: `${s.dataflow}::${s.key}`,
+        indicator_name: s.name,
+        country_code: 'IT',
+        period,
+        period_freq: s.freq,
+        value,
+        unit: s.unit,
+        source_url: url,
+      });
+    }
+  }
+  return out;
+}
+
+export async function ingestISTAT(): Promise<IngestResult> {
+  const result: IngestResult = { source: 'istat', indicators_attempted: 0, rows_upserted: 0, countries: new Set(['IT']), errors: [] };
+  for (const s of ISTAT_SERIES) {
+    result.indicators_attempted++;
+    try {
+      const rows = await fetchISTATSeries(s);
+      const written = await upsertRows(rows);
+      result.rows_upserted += written;
+    } catch (e) {
+      result.errors.push(`ISTAT ${s.dataflow}/${s.key}: ${(e as Error).message}`);
+    }
+    await sleep(400);
+  }
+  return result;
+}
+
+// ─── BIS — Bank for International Settlements (CSV) ───────────────────────
+// Residential property prices, selected series across countries.
+// BIS publishes a single CSV at https://www.bis.org/statistics/pp_selected.csv
+// We parse a subset relevant to our coverage.
+
+export async function ingestBIS(): Promise<IngestResult> {
+  const result: IngestResult = { source: 'bis', indicators_attempted: 1, rows_upserted: 0, countries: new Set(), errors: [] };
+  const url = 'https://www.bis.org/statistics/pp_selected.csv';
+  try {
+    const res = await fetch(url, { headers: { Accept: 'text/csv' } });
+    if (!res.ok) throw new Error(`BIS HTTP ${res.status}`);
+    const csv = await res.text();
+    const lines = csv.split(/\r?\n/).filter((l) => l.trim().length > 0);
+    if (lines.length < 4) throw new Error('BIS CSV too short');
+
+    // BIS CSV layout: first ~3 rows are headers, first column is period (e.g. 2026-Q1),
+    // remaining columns are country codes.
+    const headerRow = lines.find((l) => l.toLowerCase().includes('period')) ?? lines[0];
+    const headers = headerRow.split(',').map((h) => h.trim().replace(/"/g, ''));
+    const countryCols: Array<{ idx: number; cc: string }> = [];
+    for (let i = 1; i < headers.length; i++) {
+      const h = headers[i];
+      // Try to map column headers to ISO codes — BIS uses country names or codes
+      const cc = h.length === 2 ? h.toUpperCase() : null;
+      if (cc) countryCols.push({ idx: i, cc });
+    }
+
+    const rows: OfficialStatRow[] = [];
+    for (const line of lines) {
+      if (line === headerRow || !/^\d{4}/.test(line.trim())) continue;
+      const fields = line.split(',').map((f) => f.trim().replace(/"/g, ''));
+      const period = fields[0];
+      for (const { idx, cc } of countryCols) {
+        const raw = fields[idx];
+        if (!raw || raw === '..' || raw === 'NaN') continue;
+        const value = Number(raw);
+        if (!Number.isFinite(value)) continue;
+        rows.push({
+          source: 'bis',
+          indicator_code: 'bis_pp_selected',
+          indicator_name: 'BIS Residential Property Prices, nominal index',
+          country_code: cc,
+          period,
+          period_freq: 'Q',
+          value,
+          unit: 'index',
+          source_url: url,
+        });
+        result.countries.add(cc);
+      }
+    }
+    const written = await upsertRows(rows);
+    result.rows_upserted = written;
+  } catch (e) {
+    result.errors.push(`BIS: ${(e as Error).message}`);
+  }
+  return result;
+}
+
 // ─── Shared upsert ────────────────────────────────────────────────────────
 
 async function upsertRows(rows: OfficialStatRow[]): Promise<number> {

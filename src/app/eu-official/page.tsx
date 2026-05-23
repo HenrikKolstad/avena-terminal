@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { statsCoverage, recentStatRows } from '@/lib/eu-stats-feeds';
+import { latestValidations } from '@/lib/eu-validation';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 600;
@@ -41,7 +42,11 @@ function fmt(n: number): string {
 }
 
 export default async function EUOfficialPage() {
-  const [coverage, recent] = await Promise.all([statsCoverage(), recentStatRows(60)]);
+  const [coverage, recent, validations] = await Promise.all([
+    statsCoverage(),
+    recentStatRows(60),
+    latestValidations(20),
+  ]);
   const sourceEntries = Object.entries(coverage.by_source).sort((a, b) => b[1] - a[1]);
   const countryEntries = Object.entries(coverage.by_country)
     .filter(([c]) => c !== 'EU27_2020' && c !== 'EA20')
@@ -124,6 +129,58 @@ export default async function EUOfficialPage() {
                     <div className="font-mono text-sm text-foreground/85 tabular">{fmt(n)}</div>
                   </div>
                 ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Cross-validation panel */}
+        {validations.length > 0 && (
+          <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+            <div className="mx-auto max-w-[1200px] px-5 sm:px-12 py-16">
+              <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-3">Avena × Official · Cross-Validation</div>
+              <h2 className="font-serif text-3xl sm:text-4xl font-light text-foreground mb-4">Where the official series and our ground-truth diverge.</h2>
+              <p className="text-sm text-muted-foreground mb-10 max-w-3xl leading-relaxed">
+                Methodology specified in <Link href="/sovereign-briefing/cross-validating-official-statistics-2026" className="text-foreground hover:text-primary">Sovereign Briefing Vol. 3</Link>. The signed delta is the headline — positive means Avena cohort growing faster than the national series, negative means lagging. Refreshed daily 05:30 UTC.
+              </p>
+
+              <div className="rounded-sm border overflow-hidden" style={{ borderColor: 'hsl(var(--av-border))' }}>
+                <table className="w-full">
+                  <thead style={{ background: 'hsl(var(--av-surface) / 0.4)' }}>
+                    <tr>
+                      <Th>Country</Th>
+                      <Th>Cohort</Th>
+                      <Th>Period</Th>
+                      <Th>Official source</Th>
+                      <Th align="right">Official %</Th>
+                      <Th align="right">Avena %</Th>
+                      <Th align="right">Δ bps</Th>
+                      <Th align="right">n props</Th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {validations.map((v, i) => {
+                      const sign = v.delta_bps > 0 ? '+' : '';
+                      const colour = v.delta_bps === 0
+                        ? 'hsl(var(--av-muted-foreground))'
+                        : v.delta_bps > 0
+                          ? 'hsl(var(--av-success))'
+                          : 'hsl(var(--av-destructive))';
+                      return (
+                        <tr key={i} className="border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.3)' }}>
+                          <Td><span className="font-mono text-xs">{v.country_code}</span></Td>
+                          <Td><span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">{v.region}</span></Td>
+                          <Td><span className="font-mono text-xs tabular text-muted-foreground">{v.period}</span></Td>
+                          <Td><span className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">{SOURCE_META[v.official_source]?.label ?? v.official_source}</span></Td>
+                          <Td align="right"><span className="font-mono text-sm tabular text-foreground">{Number(v.official_value).toFixed(2)}</span></Td>
+                          <Td align="right"><span className="font-mono text-sm tabular text-foreground">{Number(v.avena_value).toFixed(2)}</span></Td>
+                          <Td align="right"><span className="font-mono text-sm tabular" style={{ color: colour }}>{sign}{Number(v.delta_bps).toFixed(0)}</span></Td>
+                          <Td align="right"><span className="font-mono text-xs tabular text-muted-foreground">{v.avena_n_properties || '—'}</span></Td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             </div>
           </section>
