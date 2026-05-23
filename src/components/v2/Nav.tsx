@@ -35,10 +35,13 @@ const NAV: TopItem[] = [
   {
     label: 'EU Infra',
     children: [
-      { label: 'Institutional', href: '/institutional',  sub: 'Pricing · funds, banks, DFIs' },
-      { label: 'Governance',    href: '/governance',     sub: 'Sources, SLA, security, license' },
-      { label: 'The Stack',     href: '/stack',          sub: 'Everything that runs under the surface' },
-      { label: 'Data Partners', href: '/data-partners',  sub: 'Federated network application' },
+      { label: 'Institutional',      href: '/institutional',            sub: 'Pricing · funds, banks, DFIs' },
+      { label: 'Sovereign Briefing', href: '/sovereign-briefing',       sub: 'Research · central banks · ESMA · EIB · OECD' },
+      { label: 'APON Oracle',        href: '/oracle',                   sub: 'Signed price feeds · DeFi RWA · smart contracts' },
+      { label: 'Health Index',       href: '/counterpart/health-index', sub: 'Public Developer Health Index' },
+      { label: 'Governance',         href: '/governance',               sub: 'Sources, SLA, security, license' },
+      { label: 'The Stack',          href: '/stack',                    sub: 'Everything that runs under the surface' },
+      { label: 'Data Partners',      href: '/data-partners',            sub: 'Federated network application' },
     ],
   },
   { label: 'Oracle', href: '/chat' },
