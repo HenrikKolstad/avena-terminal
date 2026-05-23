@@ -173,7 +173,7 @@ export function Hero() {
               <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </Link>
             <Link
-              href="/apci"
+              href="/avena-index"
               className="group inline-flex items-center gap-3 rounded-sm border px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-foreground backdrop-blur-sm transition-colors hover:text-primary"
               style={{
                 borderColor: 'hsl(var(--av-border-strong))',

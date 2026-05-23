@@ -18,7 +18,7 @@ import { NextResponse } from 'next/server';
 import { startCronLog, finishCronLog } from '@/lib/cron-log';
 import { logFindings, type Finding } from '@/lib/findings';
 import { getAllProperties } from '@/lib/properties';
-import { INGESTION_SWARM } from '@/app/eu-takeover/_agents';
+import { INGESTION_SWARM } from '@/lib/ingestion-swarm';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 120;
