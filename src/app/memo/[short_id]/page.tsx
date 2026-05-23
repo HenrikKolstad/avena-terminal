@@ -39,13 +39,16 @@ function RecommendationPill({ rec, confidence }: { rec: string; confidence: numb
 }
 
 function CandidateCard({ c, i }: { c: MemoCandidate; i: number }) {
+  // Only render the image column when there's actually an image, otherwise the
+  // body collapses into a sliver against an empty 180px gap.
+  const hasImage = !!c.image;
   return (
     <div
       className="rounded-sm border overflow-hidden"
       style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-surface) / 0.3)' }}
     >
-      <div className="grid sm:grid-cols-[180px_1fr] gap-0">
-        {c.image && (
+      <div className={hasImage ? 'grid sm:grid-cols-[180px_1fr] gap-0' : ''}>
+        {hasImage && (
           <div
             className="relative h-full min-h-[140px] bg-cover bg-center"
             style={{ backgroundImage: `url(${c.image})` }}
@@ -56,10 +59,15 @@ function CandidateCard({ c, i }: { c: MemoCandidate; i: number }) {
           </div>
         )}
         <div className="p-5">
-          <div className="flex items-start justify-between gap-4 mb-2">
-            <div>
-              <h3 className="font-serif text-lg text-foreground leading-tight">{c.name}</h3>
-              <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mt-1">
+          <div className="flex items-start justify-between gap-4 mb-3 flex-wrap">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-baseline gap-2 mb-1">
+                {!hasImage && (
+                  <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary">#{i + 1}</span>
+                )}
+                <h3 className="font-serif text-lg text-foreground leading-tight">{c.name}</h3>
+              </div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
                 {c.location} · {c.type} · {c.bedrooms} bd · {c.built_m2}m²
               </div>
             </div>
@@ -69,23 +77,23 @@ function CandidateCard({ c, i }: { c: MemoCandidate; i: number }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-3 my-3">
-            <div>
-              <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">Price</div>
-              <div className="font-mono text-sm text-foreground tabular">€{Math.round(c.price_eur / 1000)}k</div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-px overflow-hidden rounded-sm mb-3" style={{ background: 'hsl(var(--av-border) / 0.5)' }}>
+            <div className="p-3" style={{ background: 'hsl(var(--av-background))' }}>
+              <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-1">Price</div>
+              <div className="font-mono text-sm text-foreground tabular">€{Math.round(c.price_eur / 1000).toLocaleString()}k</div>
             </div>
-            <div>
-              <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">€/m²</div>
+            <div className="p-3" style={{ background: 'hsl(var(--av-background))' }}>
+              <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-1">€/m²</div>
               <div className="font-mono text-sm text-foreground tabular">{c.pm2 ?? '—'}</div>
             </div>
-            <div>
-              <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">Underprice</div>
+            <div className="p-3" style={{ background: 'hsl(var(--av-background))' }}>
+              <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-1">Underprice</div>
               <div className={`font-mono text-sm tabular ${c.underprice_pct != null && c.underprice_pct > 0 ? 'text-success' : 'text-muted-foreground'}`}>
                 {c.underprice_pct != null ? `${c.underprice_pct > 0 ? '−' : '+'}${Math.abs(c.underprice_pct)}%` : '—'}
               </div>
             </div>
-            <div>
-              <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">Yield</div>
+            <div className="p-3" style={{ background: 'hsl(var(--av-background))' }}>
+              <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-1">Yield</div>
               <div className="font-mono text-sm text-foreground tabular">{c.yield_gross != null ? `${c.yield_gross}%` : '—'}</div>
             </div>
           </div>
@@ -97,11 +105,11 @@ function CandidateCard({ c, i }: { c: MemoCandidate; i: number }) {
             </div>
           )}
 
-          <div className="mt-3 flex items-center justify-between gap-3 pt-3 border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
+          <div className="mt-4 flex items-center justify-between gap-3 pt-3 border-t flex-wrap" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
             <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">
               {c.developer}{c.developer_grade ? ` · Counterpart ${c.developer_grade}` : ''}{c.energy ? ` · Energy ${c.energy}` : ''}
             </div>
-            {c.url && (
+            {c.url && c.url !== '#' && (
               <a href={c.url} target="_blank" rel="noopener" className="font-mono text-[9px] uppercase tracking-[0.22em] text-primary hover:underline">
                 Source →
               </a>
