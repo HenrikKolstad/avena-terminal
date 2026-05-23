@@ -36,6 +36,7 @@ const NAV: TopItem[] = [
     label: 'EU Infra',
     children: [
       { label: 'Institutional',      href: '/institutional',            sub: 'Pricing · funds, banks, DFIs' },
+      { label: 'EU Official Stats',  href: '/eu-official',              sub: 'Eurostat · ECB SDW · national NSOs · daily refresh' },
       { label: 'Sovereign Briefing', href: '/sovereign-briefing',       sub: 'Research · central banks · ESMA · EIB · OECD' },
       { label: 'APON Oracle',        href: '/oracle',                   sub: 'Signed price feeds · DeFi RWA · smart contracts' },
       { label: 'Health Index',       href: '/counterpart/health-index', sub: 'Public Developer Health Index' },

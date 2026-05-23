@@ -24,6 +24,7 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
     heading: 'Data & Standards',
     links: [
       { label: 'EU Coverage',         href: '/eu-coverage' },
+      { label: 'EU Official Stats',   href: '/eu-official' },
       { label: 'Live Ops',            href: '/live' },
       { label: 'Proof of Moat',       href: '/proof' },
       { label: 'The Stack',           href: '/stack' },

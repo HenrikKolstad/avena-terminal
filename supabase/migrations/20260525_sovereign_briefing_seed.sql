@@ -12,7 +12,7 @@ insert into sovereign_briefings (volume, slug, title, subtitle, publication_date
   'Cross-country dispersion in the Avena Coastal Composite has narrowed for the third consecutive quarter — implications for the ECB''s residential property monitoring framework',
   '2026-05-25',
   'Cross-country price dispersion across European residential coastal markets has narrowed by 14% since 2024-Q3 as ECB easing translates into synchronous regional re-rating. The Avena Coastal Composite — a daily-close benchmark covering Spanish, Portuguese, and Italian coastal residential markets — moved from 100.0 in Q1 2024 to 107.6 in May 2026. Spain and Portugal converged most rapidly; Italian coastal pricing lagged by an estimated 240 basis points. This note frames the dispersion compression as a leading indicator for the ECB''s next residential-property risk assessment.',
-$$
+$body$
 ## 1 · Framing
 
 The European Systemic Risk Board (ESRB) flagged residential property as a moderate-risk area in its November 2025 assessment, citing cross-country price-formation divergence as a complicating factor for the supervisory framework. Six months later, the picture has changed materially: cross-country dispersion in coastal residential prices has narrowed to its lowest level since 2023-Q2.
@@ -79,13 +79,13 @@ The Avena Coastal Composite is published at a permanent URL with daily closes, f
 We make the index family freely available for institutional monitoring. Direct enquiries about access tiers, methodology, or custom country-specific cuts can be addressed to institutional@avenaterminal.com.
 
 — Avena Research Desk · 25 May 2026
-$$,
-$$[
+$body$,
+$kf$[
   {"finding":"AVENA-CC at 107.60, +7.6% from 2024-Q1 base","detail":"Annualised growth has stayed in 2.7-3.4% band for 6 consecutive quarters"},
   {"finding":"Cross-country dispersion fell 54% from 2024-Q3 peak","detail":"σ of monthly returns at 0.84 ppt, lowest since 2023-Q2"},
   {"finding":"Foreign-buyer dependency at 47% of institutional inventory","detail":"Up from <30% three years ago — material risk amplification factor"},
   {"finding":"Top-12 developer concentration at 56%","detail":"Counterpart Network shows two stressed-developer clusters with shared bank exposure"}
-]$$::jsonb,
+]$kf$::jsonb,
   'AVENA-CC computed from 1,881 scored Spanish properties + 230 Portugal/Italy beta corpus. Daily close at 23:50 UTC. Dispersion computed as cross-sectional standard deviation of monthly returns across regional sub-indices. Foreign-buyer share from notarial registry (Spain), AT Kearney market reports (PT/IT). Full methodology at avenaterminal.com/methodology. Methodology version v2026.05 — changes announced 30 days in advance at avenaterminal.com/changelog.',
   'Avena Research Desk (2026). European Residential Price Dispersion in the Post-Tightening Cycle. Avena Terminal Sovereign Briefing Vol. 1, 25 May 2026. avenaterminal.com/sovereign-briefing/eu-residential-price-dispersion-q1-2026. DOI 10.5281/zenodo.19520064.',
   'published',
@@ -100,7 +100,7 @@ $$[
   'Empirical evidence from 1,881 Spanish coastal properties on the elasticity of foreign demand to Euribor changes — implications for residential macroprudential policy',
   '2026-05-25',
   'Foreign-buyer share in Spanish coastal residential is 19.3% and rising. Using Avena''s daily price snapshots and notarial transaction sample (n=47 in the latest 12 months for Marbella + Puerto Banús + Nueva Andalucía villas), we estimate the elasticity of foreign-buyer demand to a 100 bps Euribor change at -0.72 in the 24-month band. The non-linearity around the 3.0% Euribor threshold suggests a regime shift in transmission below the current 2.85% Euribor 3M reading. Implications for ESRB and national macroprudential authorities discussed.',
-$$
+$body$
 ## 1 · The empirical question
 
 The Spanish coastal residential market exhibits an unusual structural feature: foreign buyers account for 19.3% of all transactions and 28.4% in the premium frontline cohort. This share has risen 90 basis points YoY. The policy question is whether this foreign-buyer wedge amplifies or dampens monetary transmission.
@@ -151,13 +151,13 @@ The current Euribor 3M reading is 2.85% — we are now below the threshold. This
 The full dataset and the OLS regression code are open under CC BY 4.0 at avenaterminal.com/dataset. Researchers can reproduce the analysis using the daily price-snapshot API at avenaterminal.com/api/v1/indices and the notarial comp set at avenaterminal.com/api/v1/transactions.
 
 — Avena Research Desk · 25 May 2026
-$$,
-$$[
+$body$,
+$kf$[
   {"finding":"Foreign-buyer channel amplifies monetary transmission ~4.7×","detail":"100 bps cut produces 1.96% monthly price uplift in 25% FB-share cohorts vs 0.42% in 5% FB-share"},
   {"finding":"Non-linearity around Euribor 3.0% threshold","detail":"Transmission strengthens below 3.0%; current reading 2.85% is below the threshold"},
   {"finding":"Statistically significant interaction term","detail":"β₃ = -0.0061 (t = -3.21), n = 720, adjusted R² = 0.43"},
   {"finding":"Implications for ESRB + national macroprudential","detail":"Uniform LTV caps treat materially different risk cohorts as equivalent — recommend FB share as state variable"}
-]$$::jsonb,
+]$kf$::jsonb,
   'OLS regression on monthly Avena Score-weighted median €/m² changes against lagged Euribor 3M change, foreign-buyer share, and their interaction. Panel of 720 monthly observations across 30 cohorts (5 costas × 6 categories). Robust standard errors. Full code + dataset at avenaterminal.com/dataset. Methodology version v2026.05.',
   'Avena Research Desk (2026). Foreign-Buyer Flows and the Mortgage Transmission Channel. Avena Terminal Sovereign Briefing Vol. 2, 25 May 2026. avenaterminal.com/sovereign-briefing/foreign-buyer-flows-mortgage-transmission-2026. DOI 10.5281/zenodo.19520064.',
   'published',
