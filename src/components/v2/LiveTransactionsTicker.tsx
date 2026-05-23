@@ -42,6 +42,9 @@ export function LiveTransactionsTicker() {
   useEffect(() => {
     let cancelled = false;
     async function fetchTxns() {
+      // Skip when the tab is hidden — major perf + battery saver, and the
+      // user can't see the ticker scroll anyway.
+      if (typeof document !== 'undefined' && document.hidden) return;
       try {
         const res = await fetch('/api/v1/transactions/live?limit=30');
         const json = await res.json();
@@ -51,7 +54,14 @@ export function LiveTransactionsTicker() {
     }
     fetchTxns();
     const interval = setInterval(fetchTxns, 60_000);
-    return () => { cancelled = true; clearInterval(interval); };
+    // Refetch immediately when the tab becomes visible again
+    const onVisible = () => { if (!document.hidden) fetchTxns(); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, []);
 
   if (!loaded || txns.length === 0) return null;

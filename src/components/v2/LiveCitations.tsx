@@ -70,11 +70,16 @@ export function LiveCitations({
       }
     }
 
+    // Skip the poll when the tab is hidden — saves a network round-trip per
+    // 30s of background time per visitor.
+    function loadIfVisible() { if (!document.hidden) load(); }
     load();
-    const interval = setInterval(load, 30_000); // 30s poll
+    const interval = setInterval(loadIfVisible, 30_000);
+    document.addEventListener('visibilitychange', loadIfVisible);
     return () => {
       mounted = false;
       clearInterval(interval);
+      document.removeEventListener('visibilitychange', loadIfVisible);
     };
   }, []);
 

@@ -44,14 +44,17 @@ export default function HomePage() {
       <main className="pt-16">
         <Hero />
         <IntelligenceTriadTeasers />
-        <AlphaOfTheWeek />
-        <FeaturedDeals />
-        <CredentialBar />
-        <CoverageStrip />
-        <LaFincaProof />
-        <RecentlyViewedRail />
+        {/* Everything below the fold gets section-defer (content-visibility: auto)
+            so the browser skips render/layout/paint cost until each section
+            scrolls into view. Major perf win on long pages without changing UX. */}
+        <div className="section-defer"><AlphaOfTheWeek /></div>
+        <div className="section-defer"><FeaturedDeals /></div>
+        <div className="section-defer"><CredentialBar /></div>
+        <div className="section-defer"><CoverageStrip /></div>
+        <div className="section-defer"><LaFincaProof /></div>
+        <div className="section-defer"><RecentlyViewedRail /></div>
         <section
-          className="border-y"
+          className="section-defer border-y"
           style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-surface) / 0.3)' }}
         >
           <div className="mx-auto max-w-[900px] px-5 sm:px-12 py-16">
@@ -66,12 +69,12 @@ export default function HomePage() {
             <DealAlertsForm />
           </div>
         </section>
-        <NewsletterForm source="homepage" />
-        <LiveCitations variant="banner" />
-        <Indices />
-        <Regions />
-        <TikTokStrip />
-        <CTA />
+        <div className="section-defer"><NewsletterForm source="homepage" /></div>
+        <div className="section-defer"><LiveCitations variant="banner" /></div>
+        <div className="section-defer"><Indices /></div>
+        <div className="section-defer"><Regions /></div>
+        <div className="section-defer"><TikTokStrip /></div>
+        <div className="section-defer"><CTA /></div>
       </main>
       <Footer />
     </div>
