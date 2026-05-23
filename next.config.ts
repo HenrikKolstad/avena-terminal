@@ -53,7 +53,7 @@ const nextConfig: NextConfig = {
       { source: '/verify',              destination: '/track-record',     permanent: true },
       { source: '/scenarios',           destination: '/genesis',          permanent: true },
       { source: '/radar',               destination: '/eu-coverage',      permanent: true },
-      { source: '/live',                destination: '/eu-coverage',      permanent: true },
+      // /live → restored as the live operations dashboard (not the deleted feed)
       { source: '/transparency',        destination: '/governance',       permanent: true },
       { source: '/transparency-index',  destination: '/governance',       permanent: true },
       { source: '/data-quality',        destination: '/governance',       permanent: true },
