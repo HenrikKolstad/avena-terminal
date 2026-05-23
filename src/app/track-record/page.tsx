@@ -101,43 +101,62 @@ export default async function TrackRecordPage() {
         {/* Headline grid */}
         <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
           <div className="mx-auto max-w-[1200px] px-5 sm:px-12 py-12">
-            <div
-              className="grid grid-cols-2 md:grid-cols-5 gap-px overflow-hidden rounded-sm border"
-              style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-border) / 0.6)' }}
-            >
-              {[
-                { label: 'Hit rate', value: hitRate != null ? `${hitRate}%` : '—', accent: hitRate != null && hitRate >= 60 },
-                { label: 'Resolved', value: resolved.length },
-                { label: 'Hits', value: hits },
-                { label: 'Misses', value: misses, warning: true },
-                { label: 'Active', value: active },
-              ].map((s) => (
-                <div key={s.label} className="p-6" style={{ background: 'hsl(var(--av-background))' }}>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-2">{s.label}</div>
-                  <div
-                    className="font-serif text-3xl sm:text-4xl font-light tabular"
-                    style={{
-                      color:
-                        s.accent ? 'hsl(var(--av-primary))' :
-                        s.warning ? 'hsl(var(--av-destructive))' :
-                        'hsl(var(--av-foreground))',
-                    }}
-                  >
-                    {s.value}
-                  </div>
+            {resolved.length === 0 && active === 0 ? (
+              <div
+                className="rounded-sm border p-10 sm:p-12 text-center"
+                style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border))' }}
+              >
+                <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary block mb-4">
+                  Ledger initialising · No published predictions yet
+                </span>
+                <div className="font-serif text-3xl sm:text-4xl font-light leading-tight text-foreground tracking-tight max-w-3xl mx-auto">
+                  The first call lands on the <span className="italic text-gold">next prediction cycle</span>.
                 </div>
-              ))}
-            </div>
-            {resolved.length < 10 && (
-              <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-                Sample size warning — under 10 resolved predictions, hit rate is not statistically meaningful.
-                We publish it anyway. Transparency over optics.
-              </p>
-            )}
-            {avgConf != null && (
-              <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-                Avg confidence at publish: {avgConf}% · {partials} partial outcomes included in the sample
-              </p>
+                <p className="mt-6 max-w-2xl mx-auto text-sm text-muted-foreground leading-relaxed">
+                  Predictions publish at the close of each weekly cycle with a stated horizon (30 / 90 / 180 days). The ledger displays every call, resolved or pending — no cherry-picking, no quiet deletion of misses. Methodology at <Link href="/methodology" className="text-primary hover:underline">/methodology</Link>.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div
+                  className="grid grid-cols-2 md:grid-cols-5 gap-px overflow-hidden rounded-sm border"
+                  style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-border) / 0.6)' }}
+                >
+                  {[
+                    { label: 'Hit rate', value: hitRate != null ? `${hitRate}%` : '—', accent: hitRate != null && hitRate >= 60 },
+                    { label: 'Resolved', value: resolved.length },
+                    { label: 'Hits', value: hits },
+                    { label: 'Misses', value: misses, warning: true },
+                    { label: 'Active', value: active },
+                  ].map((s) => (
+                    <div key={s.label} className="p-6" style={{ background: 'hsl(var(--av-background))' }}>
+                      <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-2">{s.label}</div>
+                      <div
+                        className="font-serif text-3xl sm:text-4xl font-light tabular"
+                        style={{
+                          color:
+                            s.accent ? 'hsl(var(--av-primary))' :
+                            s.warning ? 'hsl(var(--av-destructive))' :
+                            'hsl(var(--av-foreground))',
+                        }}
+                      >
+                        {s.value}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {resolved.length > 0 && resolved.length < 10 && (
+                  <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                    Sample size warning — under 10 resolved predictions, hit rate is not statistically meaningful.
+                    We publish it anyway. Transparency over optics.
+                  </p>
+                )}
+                {avgConf != null && (
+                  <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                    Avg confidence at publish: {avgConf}% · {partials} partial outcomes included in the sample
+                  </p>
+                )}
+              </>
             )}
           </div>
         </section>
@@ -153,15 +172,14 @@ export default async function TrackRecordPage() {
                 className="rounded-sm border p-10 text-center"
                 style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
               >
-                <p className="text-sm text-muted-foreground font-light">
-                  No resolved predictions yet. First horizons expire and first outcomes publish
-                  when the Nostradamus engine completes its first call-window cycle.
+                <p className="text-sm text-muted-foreground font-light max-w-xl mx-auto">
+                  No resolved predictions yet. Each call publishes with a 30-, 90-, or 180-day horizon — outcomes resolve when the horizon expires and verification can be made against observed data.
                 </p>
                 <Link
-                  href="/predictions"
+                  href="/methodology"
                   className="mt-5 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-primary hover:text-gold"
                 >
-                  View active predictions →
+                  Read prediction methodology →
                 </Link>
               </div>
             ) : (
