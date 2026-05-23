@@ -42,6 +42,8 @@ const spec = {
     { name: 'citation', description: 'AI citation attribution tracking' },
     { name: 'semantic', description: 'RDF / SPARQL / Wikidata exports' },
     { name: 'training', description: 'LLM training corpus + benchmark' },
+    { name: 'eu-stats', description: 'Official EU residential statistics (Eurostat, ECB SDW, national NSOs)' },
+    { name: 'validation', description: 'Cross-validation snapshots — Avena ground-truth vs official series' },
   ],
   paths: {
     '/api/v1/properties': {
@@ -172,6 +174,39 @@ const spec = {
         description:
           '7-tool MCP server: search_properties, get_property, get_market_stats, get_top_deals, estimate_roi, compare_alternatives, market_timing.',
         responses: { '200': { description: 'MCP response' } },
+      },
+    },
+    '/api/v1/stats': {
+      get: {
+        tags: ['eu-stats'],
+        summary: 'Query official EU residential statistics',
+        description: 'Long-format time-series query over eu_official_stats (Eurostat, ECB SDW, INE Spain, ISTAT, CBS, BIS). Filter by country, source, indicator, and period range. JSON or CSV.',
+        parameters: [
+          { in: 'query', name: 'country',   schema: { type: 'string', example: 'ES' },           description: 'ISO 3166-1 alpha-2 or EU27_2020 / EA20.' },
+          { in: 'query', name: 'source',    schema: { type: 'string', enum: ['eurostat','ecb_sdw','ine_es','istat','cbs','bis'] } },
+          { in: 'query', name: 'indicator', schema: { type: 'string', example: 'prc_hpi_q' },    description: 'Substring match against indicator_code.' },
+          { in: 'query', name: 'from',      schema: { type: 'string', example: '2024-Q1' } },
+          { in: 'query', name: 'to',        schema: { type: 'string', example: '2026-Q2' } },
+          { in: 'query', name: 'limit',     schema: { type: 'integer', minimum: 1, maximum: 5000, default: 500 } },
+          { in: 'query', name: 'format',    schema: { type: 'string', enum: ['json','csv'], default: 'json' } },
+        ],
+        responses: { '200': { description: 'Matching observations (JSON or CSV)' } },
+      },
+    },
+    '/api/v1/validation': {
+      get: {
+        tags: ['validation'],
+        summary: 'Cross-validation snapshots — Avena vs official series',
+        description: 'Returns the signed delta between Avena ground-truth cohorts and official series. Methodology specified in Sovereign Briefing Vol. 3.',
+        parameters: [
+          { in: 'query', name: 'country', schema: { type: 'string', example: 'ES' } },
+          { in: 'query', name: 'region',  schema: { type: 'string', example: 'coastal' } },
+          { in: 'query', name: 'from',    schema: { type: 'string' } },
+          { in: 'query', name: 'to',      schema: { type: 'string' } },
+          { in: 'query', name: 'limit',   schema: { type: 'integer', minimum: 1, maximum: 2000, default: 200 } },
+          { in: 'query', name: 'format',  schema: { type: 'string', enum: ['json','csv'], default: 'json' } },
+        ],
+        responses: { '200': { description: 'Validation snapshots' } },
       },
     },
   },

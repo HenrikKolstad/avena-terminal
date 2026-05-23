@@ -25,6 +25,8 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
     links: [
       { label: 'EU Coverage',         href: '/eu-coverage' },
       { label: 'EU Official Stats',   href: '/eu-official' },
+      { label: 'Macro Alerts',        href: '/alerts/macro' },
+      { label: 'API Docs',            href: '/docs/api' },
       { label: 'Live Ops',            href: '/live' },
       { label: 'Proof of Moat',       href: '/proof' },
       { label: 'The Stack',           href: '/stack' },
