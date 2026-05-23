@@ -104,17 +104,22 @@ export default function InstitutionalPage() {
           <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-24 sm:py-32">
             <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
               <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
-              Institutional · Funds · Family Offices · Banks
+              Institutional · Funds · Family Offices · Banks · DFIs
             </span>
             <h1 className="font-serif text-5xl sm:text-6xl lg:text-8xl font-light leading-[0.92] tracking-tight text-foreground mb-6 max-w-5xl">
-              The terminal your allocators
+              European property intelligence,
               <br />
-              already <span className="italic text-gold">wish</span> you had.
+              built to <span className="italic text-gold">institutional</span> tolerance.
             </h1>
-            <p className="max-w-2xl text-xl text-muted-foreground font-light leading-relaxed">
-              Dedicated API. Custom coverage. Direct line to the desk. Onboarded in
-              under five minutes.
+            <p className="max-w-2xl text-lg text-muted-foreground font-light leading-relaxed">
+              A dedicated data terminal for funds and banks underwriting European residential real estate. Cited DOI, open APIP standard, SLA-backed delivery, and direct line to the research desk.
             </p>
+            <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+              <span>DOI <span className="text-foreground">10.5281/zenodo.19520064</span></span>
+              <span>Schema <span className="text-foreground">APIP v1.0</span></span>
+              <span>License <span className="text-foreground">CC BY 4.0</span></span>
+              <span>Governance <Link href="/governance" className="text-foreground hover:text-primary">/governance</Link></span>
+            </div>
           </div>
         </section>
 

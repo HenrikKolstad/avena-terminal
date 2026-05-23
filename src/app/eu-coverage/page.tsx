@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { Footer } from '@/components/v2/Footer';
 import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -80,9 +81,9 @@ const FLAGS: Record<string, string> = {
 };
 
 const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
-  live: { bg: 'hsl(var(--av-success) / 0.15)', color: 'hsl(var(--av-success))', label: 'LIVE' },
-  beta: { bg: 'hsl(var(--av-warning) / 0.15)', color: 'hsl(var(--av-warning))', label: 'BETA' },
-  stub: { bg: 'hsl(var(--av-muted) / 0.4)',    color: 'hsl(var(--av-muted-foreground))', label: 'PARTNER NEEDED' },
+  live: { bg: 'hsl(var(--av-success) / 0.15)', color: 'hsl(var(--av-success))',           label: 'LIVE' },
+  beta: { bg: 'hsl(var(--av-warning) / 0.15)', color: 'hsl(var(--av-warning))',           label: 'BETA' },
+  stub: { bg: 'hsl(var(--av-muted) / 0.4)',    color: 'hsl(var(--av-muted-foreground))', label: 'PIPELINE' },
 };
 
 function relativeTime(iso: string | null): string {
@@ -114,21 +115,24 @@ export default async function EuCoveragePage() {
 
       <main className="max-w-6xl mx-auto px-6 py-14">
         <span className="inline-block font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-4">
-          EU coverage · APIP v1.0
+          EU coverage · APIP v1.0 · Updated daily 03:00 UTC
         </span>
         <h1 className="font-serif text-5xl md:text-6xl leading-tight font-light mb-4">
-          27 countries. <span className="italic text-gold">One standard.</span>
+          The unified <span className="italic text-gold">data layer</span> for European property.
         </h1>
-        <p className="max-w-2xl text-lg text-muted-foreground mb-10">
-          Avena Terminal is becoming the unified data infrastructure layer for European property. Every country indexed at the same APIP v1 schema, queryable through one API.
+        <p className="max-w-2xl text-base text-muted-foreground mb-3">
+          Avena Terminal indexes every EU property market at a single open schema (APIP v1.0). Every country, the same fields, the same yield methodology, the same regime classification. Queryable through one API, citable under one DOI.
+        </p>
+        <p className="max-w-2xl text-sm text-muted-foreground mb-10">
+          Countries marked <span className="text-foreground font-medium">LIVE</span> have an active feed under continuous sync. Countries marked <span className="text-foreground font-medium">PIPELINE</span> have a registered config and field map ready — they activate the moment a partner feed credential is provisioned. Apply at <Link href="/data-partners" className="text-primary hover:underline">/data-partners</Link>.
         </p>
 
         {/* Summary stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
-          <Stat label="Countries live" value={liveCount.toString()} />
-          <Stat label="Countries in beta" value={betaCount.toString()} />
-          <Stat label="Total tracked" value={totalProps.toLocaleString()} sub="properties" />
-          <Stat label="Standard" value="APIP v1" sub="open spec" />
+          <Stat label="Live markets" value={liveCount.toString()} sub={`/ ${rows.length}`} />
+          <Stat label="Beta markets" value={betaCount.toString()} sub={`/ ${rows.length}`} />
+          <Stat label="Indexed properties" value={totalProps.toLocaleString()} sub="tracked daily" />
+          <Stat label="Open standard" value="APIP v1.0" sub="CC BY 4.0" />
         </div>
 
         {/* Coverage table */}
@@ -165,19 +169,40 @@ export default async function EuCoveragePage() {
           </table>
         </div>
 
-        <section className="mt-12 grid md:grid-cols-2 gap-4">
+        {/* Methodology note */}
+        <section className="mt-10 rounded border p-6" style={{ borderColor: 'hsl(var(--av-border))', background: 'hsl(var(--av-surface) / 0.3)' }}>
+          <div className="grid md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary mb-2">Schema</div>
+              <p className="text-muted-foreground">Every row, every country, conforms to APIP v1.0. Identical fields for asking_price, price_per_m2, deal_score, yield_gross, regime, location.country (ISO 3166-1).</p>
+            </div>
+            <div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary mb-2">Cadence</div>
+              <p className="text-muted-foreground">All live feeds refresh daily at 03:00 UTC. Sold detection and price snapshots are persisted country-tagged. Per-feed audit log at <Link href="/api/v1/swarm/status" className="text-primary hover:underline">/api/v1/swarm/status</Link>.</p>
+            </div>
+            <div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary mb-2">Citation</div>
+              <p className="text-muted-foreground">DOI 10.5281/zenodo.19520064. License CC BY 4.0. Cite as: Avena Terminal (avenaterminal.com). Permanent deposit at Zenodo.</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-8 grid md:grid-cols-2 gap-4">
           <div className="rounded border p-6" style={{ borderColor: 'hsl(var(--av-border))', background: 'hsl(var(--av-surface) / 0.4)' }}>
-            <h3 className="font-serif text-xl mb-2">Become a federated partner</h3>
-            <p className="text-sm text-muted-foreground mb-3">Help us turn a stub into a live country. Apply with your data scope and receive an API key on approval.</p>
-            <Link href="/data-partners" className="text-sm text-primary hover:underline">Apply →</Link>
+            <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary mb-2">Activate a pipeline country</div>
+            <h3 className="font-serif text-xl mb-2">Become a federated data partner</h3>
+            <p className="text-sm text-muted-foreground mb-4">Property portals, MLS operators, and government data providers receive an avf_v1_* API key in exchange for ingestion grants. 48-hour review SLA.</p>
+            <Link href="/data-partners" className="font-mono text-[11px] uppercase tracking-[0.22em] text-primary hover:underline">Apply →</Link>
           </div>
           <div className="rounded border p-6" style={{ borderColor: 'hsl(var(--av-border))', background: 'hsl(var(--av-surface) / 0.4)' }}>
-            <h3 className="font-serif text-xl mb-2">Query the unified dataset</h3>
-            <p className="text-sm text-muted-foreground mb-3">Filter by ISO country code, get APIP-standard envelopes.</p>
-            <code className="block font-mono text-xs text-primary">GET /api/v1/properties?country=PT&amp;format=apip&amp;key=YOUR_KEY</code>
+            <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary mb-2">Query the unified dataset</div>
+            <h3 className="font-serif text-xl mb-2">One endpoint. Every country.</h3>
+            <code className="block font-mono text-xs text-primary mb-2">GET /api/v1/properties?country=PT&amp;format=apip</code>
+            <p className="text-xs text-muted-foreground">Header <code className="font-mono">X-APIP-Version: 1.0</code>. Pricing at <Link href="/api-access" className="text-primary hover:underline">/api-access</Link>. Procurement at <Link href="/institutional" className="text-primary hover:underline">/institutional</Link>.</p>
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 }

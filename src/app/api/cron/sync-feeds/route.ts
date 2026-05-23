@@ -151,7 +151,7 @@ export async function GET(req: NextRequest) {
               headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.CRON_SECRET ?? ''}` },
               body: JSON.stringify({
                 topic: 'eu_expansion',
-                text: `🇪🇺 ${cfg.country_name ?? cfg.country_code} now live on Avena Terminal. ${r.total} properties indexed from ${cfg.portal_name}. One API. One standard. One moat. https://avenaterminal.com/eu-coverage`,
+                text: `${cfg.country_name ?? cfg.country_code} is now live on Avena Terminal. ${r.total} properties indexed via ${cfg.portal_name}, queryable through one APIP-standard API. https://avenaterminal.com/eu-coverage`,
               }),
             });
           } catch { /* non-fatal */ }
