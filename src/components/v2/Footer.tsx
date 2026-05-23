@@ -25,6 +25,7 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
     links: [
       { label: 'EU Coverage',     href: '/eu-coverage' },
       { label: 'Live Ops',        href: '/live' },
+      { label: 'The Stack',       href: '/stack' },
       { label: 'Avena Index',     href: '/avena-index' },
       { label: 'Forecast',        href: '/forecast' },
       { label: 'Track Record',    href: '/track-record' },

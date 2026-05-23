@@ -36,6 +36,7 @@ const NAV: TopItem[] = [
     children: [
       { label: 'Institutional', href: '/institutional',  sub: 'Pricing · funds, banks, DFIs' },
       { label: 'Governance',    href: '/governance',     sub: 'Sources, SLA, security, license' },
+      { label: 'The Stack',     href: '/stack',          sub: 'Everything that runs under the surface' },
       { label: 'Data Partners', href: '/data-partners',  sub: 'Federated network application' },
     ],
   },
