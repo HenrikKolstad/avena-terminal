@@ -106,11 +106,11 @@ const EUROSTAT_INDICATORS: EurostatIndicator[] = [
     freq: 'Q',
   },
   {
-    dataset: 'prc_hpi_oq',
-    filter: 'purchase=TOTAL&unit=I15_Q',
-    name: 'Owner-occupied housing price index (2015=100)',
-    unit: 'index_2015=100',
-    freq: 'Q',
+    dataset: 'prc_hpi_a',
+    filter: 'purchase=TOTAL&unit=RCH_A_AVG',
+    name: 'House Price Index, annual rate of change, annual average (%)',
+    unit: 'pct',
+    freq: 'A',
   },
 ];
 
@@ -396,20 +396,23 @@ async function fetchINETable(table: string, name: string, unit: string, freq: 'Q
   }>;
 
   const out: OfficialStatRow[] = [];
-  // INE returns multiple sub-series in one table. Take the first one that
-  // looks like the national headline — INE labels in Spanish, so match
-  // permissively on common headline tokens.
-  const headlineKeywords = ['total nacional', 'national total', 'general', 'índice general'];
-  const headline = data.find((s) => s.Nombre && headlineKeywords.some((k) => s.Nombre.toLowerCase().includes(k))) ?? data[0];
-  if (headline) {
-    for (const obs of headline.Data) {
+  // INE returns multiple sub-series. Ingest every series row, prefixing the
+  // indicator_code with the series name so we don't collide on UNIQUE. This
+  // is more honest than guessing which row is the "national total" — every
+  // series in IPV-25171 is a published national-level index by category.
+  for (const series of data ?? []) {
+    if (!series || !series.Nombre || !Array.isArray(series.Data)) continue;
+    const seriesSlug = series.Nombre.toLowerCase().replace(/[^a-z0-9]+/g, '_').slice(0, 60);
+    for (const obs of series.Data) {
       if (obs.Valor == null) continue;
+      // INE quarterly tables use FK_Periodo 1-4 for Q1-Q4; some monthly tables
+      // use 1-12. Default to Q encoding for HPI tables.
       const quarter = obs.FK_Periodo >= 1 && obs.FK_Periodo <= 4 ? obs.FK_Periodo : Math.ceil(obs.FK_Periodo / 3);
       const period = `${obs.Anyo}-Q${quarter}`;
       out.push({
         source: 'ine_es',
-        indicator_code: `ine_table_${table}`,
-        indicator_name: name,
+        indicator_code: `ine_${table}_${seriesSlug}`,
+        indicator_name: `${name} — ${series.Nombre}`,
         country_code: 'ES',
         period,
         period_freq: freq,
