@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { LiveTransactionsTicker } from '@/components/v2/LiveTransactionsTicker';
 import { INGESTION_SWARM, agentStatus, type IngestionAgent } from '@/lib/ingestion-swarm';
 import { TickClient } from './TickClient';
 import { WarRoomClock } from './WarRoomClock';
@@ -163,6 +164,7 @@ export default async function EUTakeoverPage() {
       <Nav />
       <main className="pt-16">
         <MissionControlBar />
+        <LiveTransactionsTicker />
         <DealFlowTicker />
         {/* HERO — operations clock + manifesto */}
         <section
