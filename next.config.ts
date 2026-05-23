@@ -36,6 +36,14 @@ const nextConfig: NextConfig = {
         destination: '/',
         permanent: true,
       },
+      // ─── Consolidation redirects (2026-05-23) ─────────────────────────
+      // Pages deleted or merged into canonical surfaces. 301 preserves SEO
+      // and prevents 404s from bookmarks / external links / older sitemaps.
+      { source: '/test-pro',     destination: '/pro',         permanent: true },
+      { source: '/terminal-v2',  destination: '/terminal',    permanent: true },
+      { source: '/cc-submit',    destination: '/dataset',     permanent: true },
+      { source: '/coverage',     destination: '/eu-coverage', permanent: true },
+      { source: '/digest',       destination: '/pulse',       permanent: true },
       // Legacy /seo/*.html landing pages → /insights/* canonical equivalents.
       // Consolidates duplicate content signals and preserves any accrued SEO.
       { source: '/seo/new-builds-costa-blanca-under-200k.html', destination: '/insights/cheapest-new-builds-spain', permanent: true },

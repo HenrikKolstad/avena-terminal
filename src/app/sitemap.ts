@@ -263,8 +263,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Yield Curve
   // /yield-curve redirects to /indices (no dedicated page)
 
-  // Intelligence Digest
-  entries.push({ url: `${base}/digest`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 });
+  // Intelligence Digest (merged into /pulse)
+  entries.push({ url: `${base}/pulse`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 });
 
   // State of European Property
   entries.push({ url: `${base}/state-of-european-property`, lastModified: now, changeFrequency: 'daily', priority: 1.0 });
@@ -289,10 +289,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Institutional
   entries.push({ url: `${base}/institutional`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
 
-  // Bloomberg-of-PropTech narrative surfaces — breadth, standards, keyboard terminal
-  entries.push({ url: `${base}/coverage`, lastModified: now, changeFrequency: 'weekly', priority: 0.95 });
+  // Bloomberg-of-PropTech narrative surfaces — breadth, standards
+  // /coverage merged into /eu-coverage, /terminal-v2 merged into /terminal
+  entries.push({ url: `${base}/eu-coverage`, lastModified: now, changeFrequency: 'weekly', priority: 0.95 });
   entries.push({ url: `${base}/standards/avn-id`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 });
-  entries.push({ url: `${base}/terminal-v2`, lastModified: now, changeFrequency: 'daily', priority: 0.85 });
+  entries.push({ url: `${base}/terminal`, lastModified: now, changeFrequency: 'daily', priority: 0.85 });
   entries.push({ url: `${base}/press/kit`, lastModified: now, changeFrequency: 'monthly', priority: 0.85 });
   entries.push({ url: `${base}/brand`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 });
   entries.push({ url: `${base}/embed/bubble`, lastModified: now, changeFrequency: 'weekly', priority: 0.5 });
@@ -400,8 +401,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   entries.push({ url: `${base}/intelligence/briefs`, lastModified: now, changeFrequency: 'daily', priority: 0.8 });
   entries.push({ url: `${base}/intelligence/research`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 });
 
-  // Common Crawl Submission
-  entries.push({ url: `${base}/cc-submit`, lastModified: now, changeFrequency: 'daily', priority: 0.7 });
+  // /cc-submit deleted — Common Crawl URL list now lives in /dataset
 
   // Agent Registry
   entries.push({ url: `${base}/agents/registry`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
