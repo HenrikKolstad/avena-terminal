@@ -224,7 +224,7 @@ export default async function ProofPage() {
             <h2 className="font-serif text-3xl sm:text-4xl font-light leading-tight tracking-tight text-foreground mb-3">What the database actually contains, right now.</h2>
             <p className="text-sm text-muted-foreground mb-6 max-w-3xl">Each row below is a SELECT COUNT(*) query executed in the last 5 minutes against the production Supabase. The earliest timestamp shows how far back the moat goes per ledger. The "added 30d" column shows the compounding rate — if it&apos;s positive, the moat is widening daily.</p>
             <div className="rounded-sm border overflow-x-auto" style={{ borderColor: 'hsl(var(--av-border))' }}>
-              <table className="w-full text-sm">
+              <table className="w-full text-sm min-w-[720px]">
                 <thead style={{ background: 'hsl(var(--av-surface))' }}>
                   <tr>
                     <th className="px-4 py-3 text-left font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Ledger</th>
@@ -276,7 +276,7 @@ export default async function ProofPage() {
             <h2 className="font-serif text-3xl sm:text-4xl font-light leading-tight tracking-tight text-foreground mb-3">The engine ran ten times before you opened this page.</h2>
             <p className="text-sm text-muted-foreground mb-6 max-w-3xl">Sampled directly from <code className="font-mono text-foreground">cron_logs</code>. Each row is one scheduled execution — agent, status, exact start timestamp, and wall-clock duration. The duration alone proves the work happened: you can&apos;t fake a 4,231ms Postgres write.</p>
             <div className="rounded-sm border overflow-x-auto" style={{ borderColor: 'hsl(var(--av-border))' }}>
-              <table className="w-full text-sm">
+              <table className="w-full text-sm min-w-[720px]">
                 <thead style={{ background: 'hsl(var(--av-surface))' }}>
                   <tr>
                     <th className="px-4 py-3 text-left font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Agent</th>

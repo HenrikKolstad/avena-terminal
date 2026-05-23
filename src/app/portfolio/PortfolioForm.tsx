@@ -133,7 +133,7 @@ function Report({ report }: { report: PortfolioReport }) {
       <div>
         <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-3">Holdings ({report.holdings.length})</div>
         <div className="overflow-x-auto rounded-sm border" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
-          <table className="w-full text-xs">
+          <table className="w-full text-xs min-w-[720px]">
             <thead style={{ background: 'hsl(var(--av-surface))' }}>
               <tr className="text-left">
                 {['Town', 'Type', 'm²', 'Value', 'Score', 'Yield', 'Bull', 'Base', 'Bear', 'Source'].map((h) => (

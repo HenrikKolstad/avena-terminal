@@ -142,7 +142,7 @@ export default async function MemoViewPage({ params }: PageProps) {
               </div>
               <PrintButton />
             </div>
-            <h1 className="font-serif text-3xl sm:text-4xl font-light leading-tight tracking-tight text-foreground">
+            <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl font-light leading-tight tracking-tight text-foreground break-words">
               {memo.thesis}
             </h1>
             <div className="mt-5 flex flex-wrap items-center gap-3">
@@ -156,7 +156,7 @@ export default async function MemoViewPage({ params }: PageProps) {
           {/* Executive summary */}
           <section className="mb-12">
             <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-3">§00 · Executive Summary</div>
-            <p className="font-serif text-xl sm:text-2xl font-light leading-relaxed text-foreground">
+            <p className="font-serif text-lg sm:text-xl md:text-2xl font-light leading-relaxed text-foreground">
               {memo.executive_summary}
             </p>
           </section>

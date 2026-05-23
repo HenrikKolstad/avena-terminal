@@ -83,8 +83,8 @@ function SectionHeading({ no, title, sub }: { no: string; title: string; sub: st
 
 function DataTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
   return (
-    <div className="rounded-sm border overflow-hidden" style={{ borderColor: 'hsl(var(--av-border))' }}>
-      <table className="w-full text-sm">
+    <div className="rounded-sm border overflow-x-auto" style={{ borderColor: 'hsl(var(--av-border))' }}>
+      <table className="w-full text-sm min-w-[640px]">
         <thead style={{ background: 'hsl(var(--av-surface))' }}>
           <tr>
             {headers.map((h) => (

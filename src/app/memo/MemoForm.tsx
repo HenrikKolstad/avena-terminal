@@ -117,7 +117,7 @@ export function MemoForm({ examples }: { examples: string[] }) {
                 key={ex}
                 type="button"
                 onClick={() => setThesis(ex)}
-                className="rounded-sm border px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:border-primary transition-colors text-left max-w-md"
+                className="rounded-sm border px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:border-primary transition-colors text-left max-w-full sm:max-w-md flex-1 sm:flex-none basis-full sm:basis-auto"
                 style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
               >
                 {ex}

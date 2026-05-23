@@ -159,8 +159,8 @@ export default async function EuCoveragePage() {
         </div>
 
         {/* Coverage table */}
-        <div className="rounded border overflow-hidden" style={{ borderColor: 'hsl(var(--av-border))' }}>
-          <table className="w-full text-sm">
+        <div className="rounded border overflow-x-auto" style={{ borderColor: 'hsl(var(--av-border))' }}>
+          <table className="w-full text-sm min-w-[700px]">
             <thead style={{ background: 'hsl(var(--av-surface))' }}>
               <tr className="text-left">
                 <th className="px-4 py-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Country</th>

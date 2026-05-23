@@ -362,6 +362,37 @@
   .backdrop-blur-md { backdrop-filter: blur(8px) !important; }
 }
 
+/* Mobile-only headline scaling — many institutional hero rows use
+   `font-serif text-5xl sm:text-6xl lg:text-7xl`. On 360-400px viewports
+   that's 48px = wraps to 4+ lines on long titles. Scale down by ~25%
+   at small widths without changing the larger breakpoints. */
+@media (max-width: 640px) {
+  .avena-v2 .font-serif.text-5xl { font-size: 2.5rem; line-height: 1.05; }
+  .avena-v2 .font-serif.text-6xl { font-size: 3rem;   line-height: 1.05; }
+  .avena-v2 .font-serif.text-7xl { font-size: 3.5rem; line-height: 1.05; }
+  /* Tighter section padding on very small screens */
+  .avena-v2 main .py-20 { padding-top: 3rem; padding-bottom: 3rem; }
+  .avena-v2 main .py-24 { padding-top: 3.5rem; padding-bottom: 3.5rem; }
+}
+
+/* PC: prevent ultra-wide displays from stretching content past readability */
+@media (min-width: 1800px) {
+  .avena-v2 main > section > .max-w-\[1100px\],
+  .avena-v2 main > section > .max-w-\[1200px\] {
+    max-width: 1400px !important;
+  }
+}
+
+/* Wider tap targets on mobile — every button + link min 44x44 per Apple HIG.
+   Limited to .avena-v2 chip-style controls + nav-style links to avoid
+   accidentally inflating dense table rows. */
+@media (max-width: 768px) {
+  .avena-v2 button[type="submit"],
+  .avena-v2 .ticker-track a {
+    min-height: 44px;
+  }
+}
+
 /* ─── Memo Engine print styles ────────────────────────────────────────────
    When a user prints (cmd+P) a /memo/[short_id] page, hide the nav, footer,
    and CTA cards; reduce hero padding; flatten gradients to white-on-black
