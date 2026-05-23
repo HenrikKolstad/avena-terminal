@@ -27,14 +27,16 @@ const tiers = [
     price: '€2,500 / mo',
     for: 'Small allocators, family offices, boutique RIAs',
     includes: [
+      'Memo Engine — unlimited institutional memos with your logo',
+      'AVM — bank-grade valuations · 1,000/day',
+      'Portfolio Simulator — saved portfolios + CSV batch',
       'Dedicated API key · 100 req/s burst',
       'Full dataset export · CSV / JSONL / Parquet',
       'Precursor signal API + custom market monitoring',
-      'Genesis simulator — unlimited scenarios + PDF reports',
+      'Genesis simulator — unlimited scenarios',
       'Counterpart intelligence — full network graph + stress alerts',
       'Weekly desk call · Monday 14:00 CET',
       'Custom coverage: up to 2 EU regions',
-      'Prediction Ledger white-labeled access',
       'Direct email line to the desk · 4h response',
     ],
   },
@@ -44,11 +46,13 @@ const tiers = [
     for: 'Property funds, credit desks, sovereign wealth',
     includes: [
       'Everything in Desk',
-      'Unlimited API rate limit',
+      'White-label Memo Engine — your branding on every memo',
+      'AVM unlimited rate · batch valuation API',
+      'Portfolio Simulator — unlimited rows, scheduled re-runs',
       'Custom scoring model · region-tuned',
       'Precursor — custom signal categories for your mandate',
       'Genesis — portfolio-level scenario simulation',
-      'Counterpart — bulk developer scanning + contagion modeling for your portfolio',
+      'Counterpart — bulk developer scanning + contagion modeling',
       'Weekly private brief · delivered to your MDs',
       'Ad-hoc research requests · 24h turnaround',
       'Dedicated Slack channel with the founders',
@@ -119,6 +123,29 @@ export default function InstitutionalPage() {
               <span>Schema <span className="text-foreground">APIP v1.0</span></span>
               <span>License <span className="text-foreground">CC BY 4.0</span></span>
               <span>Governance <Link href="/governance" className="text-foreground hover:text-primary">/governance</Link></span>
+            </div>
+          </div>
+        </section>
+
+        {/* Tools strip — the four institutional surfaces */}
+        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-14">
+            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-6">Live institutional toolkit · click to use</div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {[
+                { href: '/memo',          label: 'Memo Engine',         desc: '10-section institutional memo in 30 seconds. White-label PDF, IC-forwardable.' },
+                { href: '/avm',           label: 'AVM',                 desc: 'Bank-grade automated valuation in under a second. Confidence band, comps, breakdown.' },
+                { href: '/portfolio',     label: 'Portfolio Simulator', desc: 'Upload your book. Aggregated regime, yield, Counterpart exposure, VaR-95.' },
+                { href: '/avena-index',   label: 'Index Family',        desc: 'Four daily-published institutional benchmarks. AVENA-CC / VAL / SCR / DPT.' },
+              ].map((t) => (
+                <Link key={t.href} href={t.href} className="rounded-sm border p-5 hover:border-primary transition-colors group" style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-surface) / 0.4)' }}>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-2">{t.label}</div>
+                  <p className="text-sm text-foreground/85 leading-relaxed">{t.desc}</p>
+                  <div className="mt-3 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground group-hover:text-primary transition-colors">
+                    Open →
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
         </section>
