@@ -78,7 +78,6 @@ const nextConfig: NextConfig = {
       { source: '/corpus',              destination: '/dataset',          permanent: true },
       { source: '/state-of-european-property', destination: '/eu-coverage', permanent: true },
       { source: '/tech',                destination: '/governance',       permanent: true },
-      { source: '/eu-takeover',         destination: '/eu-coverage',      permanent: true },
       { source: '/protocol',            destination: '/standards/apip-v1.json', permanent: true },
       { source: '/context-protocol',    destination: '/docs/mcp',         permanent: true },
       { source: '/langchain-tool',      destination: '/docs/mcp',         permanent: true },
