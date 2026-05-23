@@ -72,7 +72,7 @@ const tiers = [
 ];
 
 const proofPoints = [
-  { label: 'Scored properties (EU)', value: '1,881' },
+  { label: 'Properties indexed (EU)', value: '58,000+' },
   { label: 'Public API endpoints', value: '208' },
   { label: 'Daily autonomous jobs', value: '25' },
   { label: 'Citation sources (AI + academic)', value: 'Perplexity · Zenodo · Wikidata · HF' },

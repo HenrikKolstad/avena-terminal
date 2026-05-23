@@ -60,7 +60,7 @@ export function Hero() {
             <span>Live · Europe</span>
           </div>
           <div className="hidden items-center gap-6 md:flex">
-            <span>1,881 deals tracked</span>
+            <span>58,000+ properties indexed</span>
             <span className="text-primary">scored daily</span>
           </div>
         </div>
@@ -73,7 +73,7 @@ export function Hero() {
             />
             <span>European Property Intelligence · Est. 2026</span>
             <span className="text-muted-foreground/60">·</span>
-            <span className="text-muted-foreground">10 markets · 30 cities · 1 881 scored new-builds</span>
+            <span className="text-muted-foreground">27 EU markets · 58 000+ properties indexed · APIP v1.0 standard</span>
           </span>
 
           <div className="mb-6">

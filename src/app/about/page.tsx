@@ -167,9 +167,9 @@ export default function AboutPage() {
 
             <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl">
               {[
-                { value: '1,881', label: 'Properties Tracked' },
-                { value: '100+', label: 'Towns' },
-                { value: '4', label: 'Coastal Regions' },
+                { value: '58,000+', label: 'Properties Indexed' },
+                { value: '27', label: 'EU Markets' },
+                { value: 'APIP v1', label: 'Open Standard' },
                 { value: 'Daily', label: 'Update Frequency' },
               ].map(stat => (
                 <div key={stat.label}>
