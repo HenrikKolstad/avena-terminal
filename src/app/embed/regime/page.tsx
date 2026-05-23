@@ -42,7 +42,7 @@ export default function RegimeWidget() {
       style={{
         width: 280,
         height: 160,
-        backgroundColor: '#0d1117',
+        backgroundColor: 'hsl(var(--av-background))',
         color: '#e6edf3',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         display: 'flex',

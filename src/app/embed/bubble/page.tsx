@@ -6,7 +6,7 @@ import { CITIES, type City } from '@/lib/bubble-data';
 
 export default function EmbedBubblePage() {
   return (
-    <Suspense fallback={<div style={{ width: 320, height: 200, background: '#0d1117' }} />}>
+    <Suspense fallback={<div style={{ width: 320, height: 200, background: 'hsl(var(--av-background))' }} />}>
       <BubbleCard />
     </Suspense>
   );
@@ -43,10 +43,10 @@ function BubbleCard() {
   const isPositiveYoy = city.yoyChange >= 0;
 
   const isDark = theme === 'dark';
-  const bg = isDark ? '#0d1117' : '#ffffff';
+  const bg = isDark ? 'hsl(var(--av-background))' : '#ffffff';
   const text = isDark ? '#c9d1d9' : '#1f2328';
   const textMuted = isDark ? '#8b949e' : '#656d76';
-  const border = isDark ? '#30363d' : '#d0d7de';
+  const border = isDark ? 'hsl(var(--av-border))' : '#d0d7de';
 
   return (
     <html>

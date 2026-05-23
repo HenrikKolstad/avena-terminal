@@ -70,7 +70,7 @@ export default function DatasetPage() {
   };
 
   return (
-    <div className="min-h-screen text-gray-100" style={{ background: '#0d1117' }}>
+    <div className="min-h-screen text-gray-100" style={{ background: 'hsl(var(--av-background))' }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(datasetJsonLd) }}
@@ -79,12 +79,12 @@ export default function DatasetPage() {
       {/* Header */}
       <header
         className="border-b sticky top-0 z-50 backdrop-blur-sm"
-        style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}
+        style={{ borderColor: 'hsl(var(--av-border))', background: 'rgba(13,17,23,0.85)' }}
       >
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link
             href="/"
-            className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent"
+            className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent"
           >
             AVENA
           </Link>
@@ -114,7 +114,7 @@ export default function DatasetPage() {
             </a>
             <Link
               href="/"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold border border-primary/30 text-primary hover:bg-primary/10 transition-colors"
             >
               Explore Terminal
             </Link>
@@ -132,9 +132,9 @@ export default function DatasetPage() {
             <div
               key={stat.label}
               className="rounded-lg p-6 text-center"
-              style={{ background: '#161b22', border: '1px solid #1c2333' }}
+              style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}
             >
-              <div className="text-2xl md:text-3xl font-bold text-emerald-400 mb-1">{stat.value}</div>
+              <div className="text-2xl md:text-3xl font-bold text-primary mb-1">{stat.value}</div>
               <div className="text-sm text-gray-400">{stat.label}</div>
             </div>
           ))}
@@ -142,8 +142,8 @@ export default function DatasetPage() {
 
         {/* Methodology */}
         <section className="mb-16">
-          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Methodology</h2>
-          <div className="rounded-lg p-6" style={{ background: '#161b22', border: '1px solid #1c2333' }}>
+          <h2 className="text-xl font-semibold text-primary mb-4">Methodology</h2>
+          <div className="rounded-lg p-6" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
             <p className="text-gray-300 leading-relaxed mb-4">
               Every property is scored using a hedonic regression model estimated via Ordinary Least Squares
               (OLS). The dependent variable is the natural logarithm of price per square metre. Independent
@@ -160,7 +160,7 @@ export default function DatasetPage() {
             <p className="text-gray-300 leading-relaxed">
               The model is re-estimated monthly on rolling 12-month resale transaction data from the
               Registradores de Espana. See the{' '}
-              <Link href="/about/methodology" className="text-emerald-400 hover:underline">
+              <Link href="/about/methodology" className="text-primary hover:underline">
                 full methodology
               </Link>{' '}
               for academic references and confidence intervals.
@@ -170,11 +170,11 @@ export default function DatasetPage() {
 
         {/* Sample Data */}
         <section className="mb-16">
-          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Sample Data (10 rows)</h2>
-          <div className="overflow-x-auto rounded-lg" style={{ border: '1px solid #1c2333' }}>
+          <h2 className="text-xl font-semibold text-primary mb-4">Sample Data (10 rows)</h2>
+          <div className="overflow-x-auto rounded-lg" style={{ border: '1px solid hsl(var(--av-border))' }}>
             <table className="w-full text-sm">
               <thead>
-                <tr style={{ background: '#161b22' }}>
+                <tr style={{ background: 'hsl(var(--av-surface))' }}>
                   <th className="text-left px-4 py-3 text-gray-400 font-medium">Town</th>
                   <th className="text-left px-4 py-3 text-gray-400 font-medium">Type</th>
                   <th className="text-right px-4 py-3 text-gray-400 font-medium">Price</th>
@@ -188,14 +188,14 @@ export default function DatasetPage() {
                   <tr
                     key={p.ref ?? i}
                     className="border-t"
-                    style={{ borderColor: '#1c2333', background: i % 2 === 0 ? '#0d1117' : '#161b22' }}
+                    style={{ borderColor: 'hsl(var(--av-border))', background: i % 2 === 0 ? 'hsl(var(--av-background))' : 'hsl(var(--av-surface))' }}
                   >
                     <td className="px-4 py-3 text-gray-200">{p.l}</td>
                     <td className="px-4 py-3 text-gray-400 capitalize">{p.t}</td>
                     <td className="px-4 py-3 text-right text-gray-200">
                       {p.pf.toLocaleString('en', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}
                     </td>
-                    <td className="px-4 py-3 text-right text-emerald-400">
+                    <td className="px-4 py-3 text-right text-primary">
                       {p._yield ? `${p._yield.gross.toFixed(1)}%` : 'N/A'}
                     </td>
                     <td className="px-4 py-3 text-right font-mono text-white">{p._sc ?? 'N/A'}</td>
@@ -211,11 +211,11 @@ export default function DatasetPage() {
 
         {/* Data Dictionary */}
         <section className="mb-16">
-          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Data Dictionary</h2>
-          <div className="overflow-x-auto rounded-lg" style={{ border: '1px solid #1c2333' }}>
+          <h2 className="text-xl font-semibold text-primary mb-4">Data Dictionary</h2>
+          <div className="overflow-x-auto rounded-lg" style={{ border: '1px solid hsl(var(--av-border))' }}>
             <table className="w-full text-sm">
               <thead>
-                <tr style={{ background: '#161b22' }}>
+                <tr style={{ background: 'hsl(var(--av-surface))' }}>
                   <th className="text-left px-4 py-3 text-gray-400 font-medium">Field</th>
                   <th className="text-left px-4 py-3 text-gray-400 font-medium">Type</th>
                   <th className="text-left px-4 py-3 text-gray-400 font-medium">Description</th>
@@ -226,9 +226,9 @@ export default function DatasetPage() {
                   <tr
                     key={row.field}
                     className="border-t"
-                    style={{ borderColor: '#1c2333', background: i % 2 === 0 ? '#0d1117' : '#161b22' }}
+                    style={{ borderColor: 'hsl(var(--av-border))', background: i % 2 === 0 ? 'hsl(var(--av-background))' : 'hsl(var(--av-surface))' }}
                   >
-                    <td className="px-4 py-3 font-mono text-emerald-400">{row.field}</td>
+                    <td className="px-4 py-3 font-mono text-primary">{row.field}</td>
                     <td className="px-4 py-3 text-gray-400">{row.type}</td>
                     <td className="px-4 py-3 text-gray-300">{row.description}</td>
                   </tr>
@@ -240,8 +240,8 @@ export default function DatasetPage() {
 
         {/* Citation */}
         <section className="mb-16">
-          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Citation</h2>
-          <div className="rounded-lg p-6" style={{ background: '#161b22', border: '1px solid #1c2333' }}>
+          <h2 className="text-xl font-semibold text-primary mb-4">Citation</h2>
+          <div className="rounded-lg p-6" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
             <p className="text-gray-400 text-sm mb-3">If you use this dataset in academic or commercial work, please cite:</p>
             <pre className="text-gray-300 text-sm whitespace-pre-wrap leading-relaxed bg-black/30 rounded p-4 select-all">
 {`Kolstad, H. (2026). Spanish New Build Property Dataset.
@@ -252,7 +252,7 @@ Accessed ${new Date().toISOString().split('T')[0]}.`}
         </section>
 
         {/* Footer */}
-        <footer className="text-center text-xs text-gray-600 py-8 border-t" style={{ borderColor: '#1c2333' }}>
+        <footer className="text-center text-xs text-gray-600 py-8 border-t" style={{ borderColor: 'hsl(var(--av-border))' }}>
           <p>Avena Terminal &mdash; Spain&apos;s first PropTech scanner</p>
           <p className="mt-1">
             <Link href="/about" className="text-gray-500 hover:text-gray-300">About</Link>

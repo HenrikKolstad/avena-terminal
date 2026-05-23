@@ -62,7 +62,7 @@ export default function ForecastPage() {
         {/* Forecast Cards */}
         <div className="grid md:grid-cols-2 gap-4 mb-10">
           {forecasts.map(f => (
-            <div key={f.region} className="rounded-lg p-5" style={{ background: '#161b22', border: `1px solid ${COLORS[f.region] || '#30363d'}40` }}>
+            <div key={f.region} className="rounded-lg p-5" style={{ background: 'hsl(var(--av-surface))', border: `1px solid ${COLORS[f.region] || 'hsl(var(--av-border))'}40` }}>
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <h3 className="text-white font-bold">{f.region}</h3>
@@ -71,7 +71,7 @@ export default function ForecastPage() {
                 <span className="text-3xl font-bold" style={{ color: COLORS[f.region] }}>+{f.adjusted_forecast}%</span>
               </div>
               <div className="flex items-center gap-4 text-xs mb-3">
-                <span className="text-emerald-400">Bull: +{f.bull_case}%</span>
+                <span className="text-primary">Bull: +{f.bull_case}%</span>
                 <span className="text-gray-400">Base: +{f.adjusted_forecast}%</span>
                 <span className="text-red-400">Bear: {f.bear_case > 0 ? '+' : ''}{f.bear_case}%</span>
               </div>
@@ -80,7 +80,7 @@ export default function ForecastPage() {
                 <span className="text-[10px] text-gray-600">&euro;{f.price_forecast_12m.current_avg_pm2}/m&sup2; &rarr; &euro;{f.price_forecast_12m.forecast_avg_pm2}/m&sup2;</span>
               </div>
               <div className="text-[10px] text-gray-500 space-y-0.5">
-                {f.key_drivers.slice(0, 2).map(d => <div key={d} className="text-emerald-400/60">+ {d}</div>)}
+                {f.key_drivers.slice(0, 2).map(d => <div key={d} className="text-primary/60">+ {d}</div>)}
                 {f.key_risks.slice(0, 1).map(r => <div key={r} className="text-red-400/60">- {r}</div>)}
               </div>
             </div>
@@ -89,14 +89,14 @@ export default function ForecastPage() {
 
         {/* Chart */}
         {chartData.length > 0 && forecasts.length > 0 && (
-          <div className="rounded-lg p-4 mb-10" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+          <div className="rounded-lg p-4 mb-10" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
             <h2 className="text-sm font-bold text-white mb-4">12-Month Price/m&sup2; Projection</h2>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1c2333" />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--av-border))" />
                 <XAxis dataKey="month" tick={{ fill: '#8b949e', fontSize: 11 }} />
                 <YAxis tick={{ fill: '#8b949e', fontSize: 11 }} />
-                <Tooltip contentStyle={{ background: '#0d1117', border: '1px solid #30363d', borderRadius: 8 }} />
+                <Tooltip contentStyle={{ background: 'hsl(var(--av-background))', border: '1px solid hsl(var(--av-border))', borderRadius: 8 }} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
                 {forecasts.map(f => (
                   <Line key={f.region} type="monotone" dataKey={f.region} stroke={COLORS[f.region]} strokeWidth={2} dot={false} />
@@ -112,14 +112,14 @@ export default function ForecastPage() {
           <p className="text-sm text-gray-400 leading-relaxed mb-3">
             The Avena Regional Forecast Model uses macro-adjusted trend extrapolation. Base growth rates derived from 5-year historical averages are adjusted by 8 macro indicators covering monetary policy, FX, GDP, inflation, demand, tourism, supply, and financing costs.
           </p>
-          <div className="rounded-lg p-4 font-mono text-xs" style={{ background: '#090d12', border: '1px solid #1c2333' }}>
+          <div className="rounded-lg p-4 font-mono text-xs" style={{ background: 'hsl(var(--av-background))', border: '1px solid hsl(var(--av-border))' }}>
             <p className="text-gray-400">Forecast API: GET avenaterminal.com/api/forecast</p>
             <p className="text-gray-400">Updated quarterly. DOI: 10.5281/zenodo.19520064</p>
           </div>
         </section>
 
         <section className="mb-10">
-          <div className="rounded-lg p-4 font-mono text-xs" style={{ background: '#090d12', border: '1px solid #1c2333' }}>
+          <div className="rounded-lg p-4 font-mono text-xs" style={{ background: 'hsl(var(--av-background))', border: '1px solid hsl(var(--av-border))' }}>
             <p className="text-gray-400">Kolstad, H. (2026). Avena Regional Forecast Model Q2 2026.</p>
             <p className="text-gray-400">Avena Terminal. avenaterminal.com/forecast</p>
             <p className="text-gray-400">DOI: 10.5281/zenodo.19520064</p>

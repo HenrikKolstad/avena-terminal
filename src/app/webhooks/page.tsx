@@ -70,10 +70,10 @@ app.run(port=3000)`;
 
 export default function WebhooksPage() {
   return (
-    <div style={{ background: '#0d1117', minHeight: '100vh', color: '#e6edf3' }}>
+    <div style={{ background: 'hsl(var(--av-background))', minHeight: '100vh', color: '#e6edf3' }}>
       {/* Header */}
       <header
-        style={{ borderBottom: '1px solid #30363d', padding: '20px 0' }}
+        style={{ borderBottom: '1px solid hsl(var(--av-border))', padding: '20px 0' }}
       >
         <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', gap: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -105,8 +105,8 @@ export default function WebhooksPage() {
               <div
                 key={evt.name}
                 style={{
-                  background: '#161b22',
-                  border: '1px solid #30363d',
+                  background: 'hsl(var(--av-surface))',
+                  border: '1px solid hsl(var(--av-border))',
                   borderRadius: 8,
                   padding: '16px 20px',
                 }}
@@ -117,8 +117,8 @@ export default function WebhooksPage() {
                 <p style={{ color: '#8b949e', fontSize: 14, margin: '0 0 10px' }}>{evt.description}</p>
                 <pre
                   style={{
-                    background: '#0d1117',
-                    border: '1px solid #30363d',
+                    background: 'hsl(var(--av-background))',
+                    border: '1px solid hsl(var(--av-border))',
                     borderRadius: 6,
                     padding: 12,
                     fontSize: 12,
@@ -139,14 +139,14 @@ export default function WebhooksPage() {
           <h2 style={{ fontSize: 24, fontWeight: 600, color: '#e6edf3', marginBottom: 20, fontFamily: 'serif' }}>
             Subscribe
           </h2>
-          <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 8, padding: 24 }}>
+          <div style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))', borderRadius: 8, padding: 24 }}>
             <p style={{ color: '#8b949e', fontSize: 14, marginTop: 0, marginBottom: 16 }}>
               Send a POST request to create a webhook subscription. You will receive a secret for signature verification.
             </p>
             <pre
               style={{
-                background: '#0d1117',
-                border: '1px solid #30363d',
+                background: 'hsl(var(--av-background))',
+                border: '1px solid hsl(var(--av-border))',
                 borderRadius: 6,
                 padding: 16,
                 fontSize: 13,
@@ -168,8 +168,8 @@ export default function WebhooksPage() {
             </p>
             <pre
               style={{
-                background: '#0d1117',
-                border: '1px solid #30363d',
+                background: 'hsl(var(--av-background))',
+                border: '1px solid hsl(var(--av-border))',
                 borderRadius: 6,
                 padding: 16,
                 fontSize: 13,
@@ -193,11 +193,11 @@ export default function WebhooksPage() {
           <h2 style={{ fontSize: 24, fontWeight: 600, color: '#e6edf3', marginBottom: 20, fontFamily: 'serif' }}>
             Signature Verification
           </h2>
-          <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 8, padding: 24 }}>
+          <div style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))', borderRadius: 8, padding: 24 }}>
             <p style={{ color: '#8b949e', fontSize: 14, marginTop: 0, marginBottom: 12 }}>
               Every webhook delivery includes an <code style={{ color: '#c9a84c' }}>X-Avena-Signature</code> header. Verify it using HMAC-SHA256 with your webhook secret to ensure the payload is authentic.
             </p>
-            <div style={{ background: '#0d1117', border: '1px solid #30363d', borderRadius: 6, padding: 16, fontSize: 13, color: '#e6edf3' }}>
+            <div style={{ background: 'hsl(var(--av-background))', border: '1px solid hsl(var(--av-border))', borderRadius: 6, padding: 16, fontSize: 13, color: '#e6edf3' }}>
               <p style={{ margin: '0 0 8px', color: '#8b949e' }}>Headers sent with each delivery:</p>
               <code style={{ color: '#7ee787' }}>
                 X-Avena-Event: property.price_drop<br />
@@ -215,15 +215,15 @@ export default function WebhooksPage() {
           </h2>
 
           {/* Node.js */}
-          <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 8, padding: 24, marginBottom: 16 }}>
+          <div style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))', borderRadius: 8, padding: 24, marginBottom: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
               <span style={{ color: '#7ee787', fontSize: 14, fontWeight: 600 }}>Node.js</span>
               <span style={{ color: '#484f58', fontSize: 12 }}>Express</span>
             </div>
             <pre
               style={{
-                background: '#0d1117',
-                border: '1px solid #30363d',
+                background: 'hsl(var(--av-background))',
+                border: '1px solid hsl(var(--av-border))',
                 borderRadius: 6,
                 padding: 16,
                 fontSize: 12,
@@ -238,15 +238,15 @@ export default function WebhooksPage() {
           </div>
 
           {/* Python */}
-          <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 8, padding: 24 }}>
+          <div style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))', borderRadius: 8, padding: 24 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
               <span style={{ color: '#3572A5', fontSize: 14, fontWeight: 600 }}>Python</span>
               <span style={{ color: '#484f58', fontSize: 12 }}>Flask</span>
             </div>
             <pre
               style={{
-                background: '#0d1117',
-                border: '1px solid #30363d',
+                background: 'hsl(var(--av-background))',
+                border: '1px solid hsl(var(--av-border))',
                 borderRadius: 6,
                 padding: 16,
                 fontSize: 12,
@@ -262,7 +262,7 @@ export default function WebhooksPage() {
         </section>
 
         {/* Footer */}
-        <footer style={{ borderTop: '1px solid #30363d', paddingTop: 24, marginTop: 48, textAlign: 'center' }}>
+        <footer style={{ borderTop: '1px solid hsl(var(--av-border))', paddingTop: 24, marginTop: 48, textAlign: 'center' }}>
           <p style={{ color: '#484f58', fontSize: 13 }}>
             Avena Terminal — Real-time property intelligence for the Spanish coast
           </p>

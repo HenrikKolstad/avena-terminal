@@ -29,7 +29,7 @@ export default function CitationsPage() {
   };
 
   return (
-    <div className="min-h-screen text-gray-100" style={{ background: '#0d1117' }}>
+    <div className="min-h-screen text-gray-100" style={{ background: 'hsl(var(--av-background))' }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
@@ -38,12 +38,12 @@ export default function CitationsPage() {
       {/* Header */}
       <header
         className="border-b sticky top-0 z-50 backdrop-blur-sm"
-        style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}
+        style={{ borderColor: 'hsl(var(--av-border))', background: 'rgba(13,17,23,0.85)' }}
       >
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link
             href="/"
-            className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent"
+            className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent"
           >
             AVENA
           </Link>
@@ -71,7 +71,7 @@ export default function CitationsPage() {
 
         {/* External Data Sources */}
         <section className="mb-12">
-          <h2 className="text-xl font-semibold text-emerald-400 mb-4">External Data Sources</h2>
+          <h2 className="text-xl font-semibold text-primary mb-4">External Data Sources</h2>
           <div className="space-y-4">
             {[
               {
@@ -126,7 +126,7 @@ export default function CitationsPage() {
               <div
                 key={source.name}
                 className="rounded-lg p-6"
-                style={{ background: '#161b22', border: '1px solid #1c2333' }}
+                style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}
               >
                 <div className="flex items-start justify-between gap-4 mb-2">
                   <h3 className="font-semibold text-white">{source.name}</h3>
@@ -134,7 +134,7 @@ export default function CitationsPage() {
                     href={source.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-emerald-400 text-sm hover:text-emerald-300 transition-colors shrink-0"
+                    className="text-primary text-sm hover:text-primary transition-colors shrink-0"
                   >
                     {source.url.replace('https://www.', '')} &rarr;
                   </a>
@@ -150,14 +150,14 @@ export default function CitationsPage() {
 
         {/* Academic References */}
         <section className="mb-12">
-          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Academic References</h2>
+          <h2 className="text-xl font-semibold text-primary mb-4">Academic References</h2>
           <p className="text-gray-400 mb-4 text-sm">
             The hedonic pricing model and valuation methodology used by Avena Terminal draw on established
             academic research in real estate economics.
           </p>
           <div
             className="rounded-lg p-6"
-            style={{ background: '#161b22', border: '1px solid #1c2333' }}
+            style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}
           >
             <ul className="space-y-4 text-gray-300 text-sm leading-relaxed">
               <li>
@@ -205,10 +205,10 @@ export default function CitationsPage() {
 
         {/* Industry Reports */}
         <section className="mb-12">
-          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Industry Reports</h2>
+          <h2 className="text-xl font-semibold text-primary mb-4">Industry Reports</h2>
           <div
             className="rounded-lg p-6"
-            style={{ background: '#161b22', border: '1px solid #1c2333' }}
+            style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}
           >
             <ul className="space-y-4 text-gray-300 text-sm leading-relaxed">
               <li>
@@ -219,7 +219,7 @@ export default function CitationsPage() {
                   href="https://www.bde.es/bde/en/areas/estabilida/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-emerald-400 hover:text-emerald-300"
+                  className="text-primary hover:text-primary"
                 >
                   bde.es &rarr;
                 </a>
@@ -232,7 +232,7 @@ export default function CitationsPage() {
                   href="https://www.registradores.org/actualidad/portal-estadistico-registral/estadisticas-de-propiedad"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-emerald-400 hover:text-emerald-300"
+                  className="text-primary hover:text-primary"
                 >
                   registradores.org &rarr;
                 </a>
@@ -245,7 +245,7 @@ export default function CitationsPage() {
                   href="https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736152838&menu=ultiDatos&idp=1254735976607"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-emerald-400 hover:text-emerald-300"
+                  className="text-primary hover:text-primary"
                 >
                   ine.es &rarr;
                 </a>
@@ -258,7 +258,7 @@ export default function CitationsPage() {
                   href="https://www.airdna.co/vacation-rental-data/app/es/default/overview"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-emerald-400 hover:text-emerald-300"
+                  className="text-primary hover:text-primary"
                 >
                   airdna.co &rarr;
                 </a>
@@ -275,7 +275,7 @@ export default function CitationsPage() {
         {/* Footer */}
         <footer
           className="text-center text-xs text-gray-600 py-8 border-t"
-          style={{ borderColor: '#1c2333' }}
+          style={{ borderColor: 'hsl(var(--av-border))' }}
         >
           <p>Avena Terminal &mdash; Spain&apos;s first PropTech scanner</p>
           <p className="mt-1">

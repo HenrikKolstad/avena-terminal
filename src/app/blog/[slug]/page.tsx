@@ -69,7 +69,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
   if (!post) {
     return (
-      <div className="min-h-screen text-gray-100 flex items-center justify-center" style={{ background: '#0d1117' }}>
+      <div className="min-h-screen text-gray-100 flex items-center justify-center" style={{ background: 'hsl(var(--av-background))' }}>
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-4">Post Not Found</h1>
           <Link href="/blog" className="font-semibold" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>← Back to Blog</Link>
@@ -104,13 +104,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   };
 
   return (
-    <div className="min-h-screen text-gray-100" style={{ background: 'linear-gradient(180deg, #0a1628 0%, #0d1117 8%, #0d1117 100%)' }}>
+    <div className="min-h-screen text-gray-100" style={{ background: 'linear-gradient(180deg, #0a1628 0%, hsl(var(--av-background)) 8%, hsl(var(--av-background)) 100%)' }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
       {/* Header */}
-      <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}>
+      <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: 'hsl(var(--av-border))', background: 'rgba(13,17,23,0.85)' }}>
         <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <h1 className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">AVENA</h1>
+            <h1 className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent">AVENA</h1>
           </Link>
           <Link href="/blog" className="text-sm text-gray-400 hover:text-white transition-colors">← Back to Blog</Link>
         </div>
@@ -132,7 +132,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
         {/* Cover Image */}
         {post.cover_image && (
-          <div className="aspect-[2/1] rounded-2xl overflow-hidden mb-10 border" style={{ borderColor: '#1c2333' }}>
+          <div className="aspect-[2/1] rounded-2xl overflow-hidden mb-10 border" style={{ borderColor: 'hsl(var(--av-border))' }}>
             <img src={post.cover_image} alt={post.title} className="w-full h-full object-cover" />
           </div>
         )}
@@ -152,7 +152,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           <a
             href="https://avenaterminal.com"
             className="block sm:inline-block px-8 py-3 rounded-xl font-bold text-sm shadow-lg hover:opacity-90 hover:scale-[1.02] transition-all w-full sm:w-auto text-center"
-            style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: '#0d1117' }}
+            style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', color: 'hsl(var(--av-background))' }}
           >
             Explore Avena Terminal →
           </a>

@@ -40,7 +40,6 @@ const nextConfig: NextConfig = {
       // Pages deleted or merged into canonical surfaces. 301 preserves SEO
       // and prevents 404s from bookmarks / external links / older sitemaps.
       { source: '/test-pro',     destination: '/pro',         permanent: true },
-      { source: '/terminal-v2',  destination: '/terminal',    permanent: true },
       { source: '/cc-submit',    destination: '/dataset',     permanent: true },
       { source: '/coverage',     destination: '/eu-coverage', permanent: true },
       { source: '/digest',       destination: '/pulse',       permanent: true },
@@ -96,6 +95,8 @@ const nextConfig: NextConfig = {
       { source: '/sdk',                 destination: '/docs/mcp',         permanent: true },
       { source: '/ontology',            destination: '/methodology',      permanent: true },
       { source: '/embed/apci',          destination: '/embed/regime',     permanent: true },
+      { source: '/terminal',            destination: '/',                 permanent: true },
+      { source: '/terminal-v2',         destination: '/',                 permanent: true },
 
       // Old emerald-theme i18n stubs — collapse to canonical English surfaces
       { source: '/es',                  destination: '/costas',           permanent: true },

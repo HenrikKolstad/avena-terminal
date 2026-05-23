@@ -318,7 +318,7 @@ export default function AdminPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/dev/links"
-            className="text-emerald-400 font-mono text-xs hover:underline tracking-widest border border-emerald-400/30 px-3 py-1.5 rounded hover:border-emerald-400/60 transition-colors"
+            className="text-primary font-mono text-xs hover:underline tracking-widest border border-primary/30 px-3 py-1.5 rounded hover:border-primary/60 transition-colors"
           >
             ALL LINKS
           </Link>

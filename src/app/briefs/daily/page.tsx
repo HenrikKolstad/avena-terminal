@@ -148,7 +148,7 @@ export default function DailyBriefPage() {
                 Deal alerts →
               </Link>
               <Link
-                href="/terminal"
+                href="/"
                 className="inline-flex items-center rounded-sm border px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-foreground hover:text-primary hover:border-primary transition-colors"
                 style={{ borderColor: 'hsl(var(--av-border-strong))' }}
               >

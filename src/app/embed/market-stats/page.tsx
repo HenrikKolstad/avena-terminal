@@ -57,12 +57,12 @@ export default function MarketStatsWidget({
 
   const updated = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
-  const bg = isDark ? '#0d1117' : '#ffffff';
+  const bg = isDark ? 'hsl(var(--av-background))' : '#ffffff';
   const cardBg = isDark ? '#0f1419' : '#f3f4f6';
   const text = isDark ? '#ffffff' : '#111827';
   const muted = isDark ? '#6b7280' : '#9ca3af';
   const accent = '#10B981';
-  const border = isDark ? '#1c2333' : '#e5e7eb';
+  const border = isDark ? 'hsl(var(--av-border))' : '#e5e7eb';
 
   return (
     <div style={{

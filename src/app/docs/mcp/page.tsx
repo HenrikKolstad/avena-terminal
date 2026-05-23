@@ -174,13 +174,13 @@ export default function McpGuidePage() {
   };
 
   return (
-    <main className="min-h-screen" style={{ background: '#0d1117', color: '#c9d1d9' }}>
+    <main className="min-h-screen" style={{ background: 'hsl(var(--av-background))', color: '#c9d1d9' }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}>
+      <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: 'hsl(var(--av-border))', background: 'rgba(13,17,23,0.85)' }}>
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">AVENA</Link>
-          <span className="text-xs font-mono px-3 py-1 rounded-full" style={{ background: '#10b981', color: '#0d1117' }}>MCP GUIDE</span>
+          <Link href="/" className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent">AVENA</Link>
+          <span className="text-xs font-mono px-3 py-1 rounded-full" style={{ background: '#10b981', color: 'hsl(var(--av-background))' }}>MCP GUIDE</span>
         </div>
       </header>
 
@@ -192,7 +192,7 @@ export default function McpGuidePage() {
         </p>
 
         {/* Table of contents */}
-        <nav className="rounded-lg p-4 mb-10" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+        <nav className="rounded-lg p-4 mb-10" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
           <h2 className="text-sm font-bold text-white mb-2">Contents</h2>
           <div className="grid md:grid-cols-2 gap-1 text-xs">
             {[
@@ -209,19 +209,19 @@ export default function McpGuidePage() {
               { label: 'Troubleshooting', href: '#troubleshooting' },
               { label: 'Smithery Listing', href: '#smithery' },
             ].map(item => (
-              <a key={item.href} href={item.href} className="text-emerald-400 hover:text-emerald-300 py-0.5">{item.label}</a>
+              <a key={item.href} href={item.href} className="text-primary hover:text-primary py-0.5">{item.label}</a>
             ))}
           </div>
         </nav>
 
-        <div className="h-px w-full mb-10" style={{ background: '#1c2333' }} />
+        <div className="h-px w-full mb-10" style={{ background: 'hsl(var(--av-border))' }} />
 
         {/* What is MCP */}
         <section id="what-is-mcp" className="mb-12">
           <h2 className="text-2xl font-bold text-white mb-4">What is MCP?</h2>
-          <div className="rounded-lg p-5" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+          <div className="rounded-lg p-5" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
             <p className="text-sm text-gray-300 leading-relaxed">
-              The Model Context Protocol (MCP) is an open standard created by Anthropic that allows AI assistants to connect to external data sources and tools. It works like a USB-C port for AI: a universal interface that lets any compatible AI tool access any compatible data source. Avena Terminal implements MCP via Streamable HTTP transport at <span className="text-emerald-400 font-mono">avenaterminal.com/mcp</span>, providing 7 property intelligence tools with no authentication required. Any MCP-compatible client can connect and immediately access live scored data for new build properties across Spain.
+              The Model Context Protocol (MCP) is an open standard created by Anthropic that allows AI assistants to connect to external data sources and tools. It works like a USB-C port for AI: a universal interface that lets any compatible AI tool access any compatible data source. Avena Terminal implements MCP via Streamable HTTP transport at <span className="text-primary font-mono">avenaterminal.com/mcp</span>, providing 7 property intelligence tools with no authentication required. Any MCP-compatible client can connect and immediately access live scored data for new build properties across Spain.
             </p>
           </div>
         </section>
@@ -231,11 +231,11 @@ export default function McpGuidePage() {
           <h2 className="text-2xl font-bold text-white mb-4">Available Tools ({TOOLS.length})</h2>
           <div className="space-y-4">
             {TOOLS.map(tool => (
-              <div key={tool.name} className="rounded-lg p-5" style={{ background: '#161b22', border: '1px solid #30363d' }}>
-                <h3 className="text-emerald-400 font-mono font-bold text-sm mb-1">{tool.name}</h3>
+              <div key={tool.name} className="rounded-lg p-5" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
+                <h3 className="text-primary font-mono font-bold text-sm mb-1">{tool.name}</h3>
                 <p className="text-sm text-gray-400 mb-3">{tool.description}</p>
                 {tool.params.length > 0 && (
-                  <div className="rounded p-3" style={{ background: '#0d1117' }}>
+                  <div className="rounded p-3" style={{ background: 'hsl(var(--av-background))' }}>
                     <table className="w-full text-xs">
                       <thead>
                         <tr className="text-gray-500 text-left">
@@ -247,7 +247,7 @@ export default function McpGuidePage() {
                       <tbody className="text-gray-400">
                         {tool.params.map(p => (
                           <tr key={p.name}>
-                            <td className="py-0.5 pr-4 font-mono text-emerald-400/70">{p.name}</td>
+                            <td className="py-0.5 pr-4 font-mono text-primary/70">{p.name}</td>
                             <td className="py-0.5 pr-4 text-gray-500">{p.type}</td>
                             <td className="py-0.5">{p.desc}</td>
                           </tr>
@@ -266,7 +266,7 @@ export default function McpGuidePage() {
           <h2 className="text-2xl font-bold text-white mb-4">Step-by-Step Setup</h2>
           <div className="space-y-6">
             {SETUP_GUIDES.map(guide => (
-              <div key={guide.name} id={guide.name.toLowerCase().replace(/[\s()]/g, '-')} className="rounded-lg p-5" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+              <div key={guide.name} id={guide.name.toLowerCase().replace(/[\s()]/g, '-')} className="rounded-lg p-5" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
                 <h3 className="text-lg text-white font-bold mb-1">{guide.name}</h3>
                 <p className="text-[10px] text-gray-500 font-mono mb-4">File: {guide.file} &middot; Path: {guide.path}</p>
 
@@ -275,7 +275,7 @@ export default function McpGuidePage() {
                   <ol className="space-y-1">
                     {guide.steps.map((step, i) => (
                       <li key={i} className="text-sm text-gray-300 flex gap-2">
-                        <span className="text-emerald-400 font-mono text-xs mt-0.5">{i + 1}.</span>
+                        <span className="text-primary font-mono text-xs mt-0.5">{i + 1}.</span>
                         {step}
                       </li>
                     ))}
@@ -283,7 +283,7 @@ export default function McpGuidePage() {
                 </div>
 
                 <h4 className="text-xs text-gray-400 font-bold mb-2 uppercase tracking-wider">Config</h4>
-                <div className="rounded p-4 font-mono text-xs overflow-x-auto" style={{ background: '#090d12', border: '1px solid #1c2333' }}>
+                <div className="rounded p-4 font-mono text-xs overflow-x-auto" style={{ background: 'hsl(var(--av-background))', border: '1px solid hsl(var(--av-border))' }}>
                   <pre className="text-gray-300 whitespace-pre-wrap">{guide.config}</pre>
                 </div>
               </div>
@@ -296,10 +296,10 @@ export default function McpGuidePage() {
           <h2 className="text-2xl font-bold text-white mb-4">Code Examples</h2>
 
           {/* Python */}
-          <div id="python" className="rounded-lg p-5 mb-4" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+          <div id="python" className="rounded-lg p-5 mb-4" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
             <h3 className="text-lg text-white font-bold mb-1">Python</h3>
             <p className="text-xs text-gray-500 mb-3">pip install langchain-mcp-adapters langchain-anthropic</p>
-            <div className="rounded p-4 font-mono text-xs overflow-x-auto" style={{ background: '#090d12', border: '1px solid #1c2333' }}>
+            <div className="rounded p-4 font-mono text-xs overflow-x-auto" style={{ background: 'hsl(var(--av-background))', border: '1px solid hsl(var(--av-border))' }}>
               <pre className="text-gray-300 whitespace-pre-wrap">{`import asyncio
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langgraph.prebuilt import create_react_agent
@@ -333,10 +333,10 @@ asyncio.run(main())`}</pre>
           </div>
 
           {/* JavaScript */}
-          <div id="javascript" className="rounded-lg p-5 mb-4" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+          <div id="javascript" className="rounded-lg p-5 mb-4" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
             <h3 className="text-lg text-white font-bold mb-1">JavaScript / TypeScript</h3>
             <p className="text-xs text-gray-500 mb-3">npm install @modelcontextprotocol/sdk</p>
-            <div className="rounded p-4 font-mono text-xs overflow-x-auto" style={{ background: '#090d12', border: '1px solid #1c2333' }}>
+            <div className="rounded p-4 font-mono text-xs overflow-x-auto" style={{ background: 'hsl(var(--av-background))', border: '1px solid hsl(var(--av-border))' }}>
               <pre className="text-gray-300 whitespace-pre-wrap">{`import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 
@@ -381,10 +381,10 @@ console.log(roi.content);`}</pre>
           </div>
 
           {/* curl */}
-          <div id="curl" className="rounded-lg p-5" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+          <div id="curl" className="rounded-lg p-5" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
             <h3 className="text-lg text-white font-bold mb-1">curl</h3>
             <p className="text-xs text-gray-500 mb-3">No dependencies required</p>
-            <div className="rounded p-4 font-mono text-xs overflow-x-auto" style={{ background: '#090d12', border: '1px solid #1c2333' }}>
+            <div className="rounded p-4 font-mono text-xs overflow-x-auto" style={{ background: 'hsl(var(--av-background))', border: '1px solid hsl(var(--av-border))' }}>
               <pre className="text-gray-300 whitespace-pre-wrap">{`# List available tools
 curl -X POST https://avenaterminal.com/mcp \\
   -H "Content-Type: application/json" \\
@@ -454,12 +454,12 @@ curl -X POST https://avenaterminal.com/mcp \\
           <h2 className="text-2xl font-bold text-white mb-4">Example Tool Calls &amp; Responses</h2>
 
           <div className="space-y-4">
-            <div className="rounded-lg p-5" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+            <div className="rounded-lg p-5" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
               <h3 className="text-sm text-white font-bold mb-2">search_properties</h3>
               <div className="grid md:grid-cols-2 gap-3">
                 <div>
                   <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wider">Request</p>
-                  <div className="rounded p-3 font-mono text-xs" style={{ background: '#090d12' }}>
+                  <div className="rounded p-3 font-mono text-xs" style={{ background: 'hsl(var(--av-background))' }}>
                     <pre className="text-gray-300 whitespace-pre-wrap">{`{
   "name": "search_properties",
   "arguments": {
@@ -473,7 +473,7 @@ curl -X POST https://avenaterminal.com/mcp \\
                 </div>
                 <div>
                   <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wider">Response (abbreviated)</p>
-                  <div className="rounded p-3 font-mono text-xs" style={{ background: '#090d12' }}>
+                  <div className="rounded p-3 font-mono text-xs" style={{ background: 'hsl(var(--av-background))' }}>
                     <pre className="text-gray-300 whitespace-pre-wrap">{`{
   "total": 42,
   "results": [
@@ -496,12 +496,12 @@ curl -X POST https://avenaterminal.com/mcp \\
               </div>
             </div>
 
-            <div className="rounded-lg p-5" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+            <div className="rounded-lg p-5" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
               <h3 className="text-sm text-white font-bold mb-2">estimate_roi</h3>
               <div className="grid md:grid-cols-2 gap-3">
                 <div>
                   <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wider">Request</p>
-                  <div className="rounded p-3 font-mono text-xs" style={{ background: '#090d12' }}>
+                  <div className="rounded p-3 font-mono text-xs" style={{ background: 'hsl(var(--av-background))' }}>
                     <pre className="text-gray-300 whitespace-pre-wrap">{`{
   "name": "estimate_roi",
   "arguments": {
@@ -514,7 +514,7 @@ curl -X POST https://avenaterminal.com/mcp \\
                 </div>
                 <div>
                   <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wider">Response (abbreviated)</p>
-                  <div className="rounded p-3 font-mono text-xs" style={{ background: '#090d12' }}>
+                  <div className="rounded p-3 font-mono text-xs" style={{ background: 'hsl(var(--av-background))' }}>
                     <pre className="text-gray-300 whitespace-pre-wrap">{`{
   "property": "CB-APT-1234",
   "purchase_price": 189000,
@@ -530,12 +530,12 @@ curl -X POST https://avenaterminal.com/mcp \\
               </div>
             </div>
 
-            <div className="rounded-lg p-5" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+            <div className="rounded-lg p-5" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
               <h3 className="text-sm text-white font-bold mb-2">market_timing</h3>
               <div className="grid md:grid-cols-2 gap-3">
                 <div>
                   <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wider">Request</p>
-                  <div className="rounded p-3 font-mono text-xs" style={{ background: '#090d12' }}>
+                  <div className="rounded p-3 font-mono text-xs" style={{ background: 'hsl(var(--av-background))' }}>
                     <pre className="text-gray-300 whitespace-pre-wrap">{`{
   "name": "market_timing",
   "arguments": {
@@ -546,7 +546,7 @@ curl -X POST https://avenaterminal.com/mcp \\
                 </div>
                 <div>
                   <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wider">Response (abbreviated)</p>
-                  <div className="rounded p-3 font-mono text-xs" style={{ background: '#090d12' }}>
+                  <div className="rounded p-3 font-mono text-xs" style={{ background: 'hsl(var(--av-background))' }}>
                     <pre className="text-gray-300 whitespace-pre-wrap">{`{
   "region": "Costa Blanca",
   "assessment": "balanced",
@@ -568,7 +568,7 @@ curl -X POST https://avenaterminal.com/mcp \\
           <h2 className="text-2xl font-bold text-white mb-4">Troubleshooting</h2>
           <div className="space-y-2">
             {TROUBLESHOOTING.map((item, i) => (
-              <div key={i} className="rounded-lg p-4" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+              <div key={i} className="rounded-lg p-4" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
                 <h3 className="text-sm text-white font-semibold mb-1">{item.issue}</h3>
                 <p className="text-xs text-gray-400">{item.solution}</p>
               </div>
@@ -579,49 +579,49 @@ curl -X POST https://avenaterminal.com/mcp \\
         {/* Smithery */}
         <section id="smithery" className="mb-12">
           <h2 className="text-2xl font-bold text-white mb-4">Smithery Listing</h2>
-          <div className="rounded-lg p-5" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+          <div className="rounded-lg p-5" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
             <p className="text-sm text-gray-300 mb-3">
               Avena Terminal is listed on Smithery, the MCP server registry. Install with one command:
             </p>
-            <div className="rounded p-4 font-mono text-xs mb-3" style={{ background: '#090d12', border: '1px solid #1c2333' }}>
+            <div className="rounded p-4 font-mono text-xs mb-3" style={{ background: 'hsl(var(--av-background))', border: '1px solid hsl(var(--av-border))' }}>
               <pre className="text-gray-300">smithery mcp add henrik-kmvv/avena-terminal</pre>
             </div>
             <p className="text-xs text-gray-500">
               View the listing at{' '}
-              <a href="https://smithery.ai/server/@henrik-kmvv/avena-terminal" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 underline">
+              <a href="https://smithery.ai/server/@henrik-kmvv/avena-terminal" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary underline">
                 smithery.ai/server/@henrik-kmvv/avena-terminal
               </a>
             </p>
           </div>
         </section>
 
-        <div className="h-px w-full my-10" style={{ background: '#1c2333' }} />
+        <div className="h-px w-full my-10" style={{ background: 'hsl(var(--av-border))' }} />
 
         {/* Related pages */}
         <section className="mb-10">
           <h2 className="text-xl font-bold text-white mb-4">Related Resources</h2>
           <div className="grid md:grid-cols-3 gap-3">
-            <Link href="/integrate" className="rounded-lg p-4 hover:border-emerald-500/50 transition-colors" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+            <Link href="/integrate" className="rounded-lg p-4 hover:border-primary/50 transition-colors" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
               <h3 className="text-white font-semibold text-sm mb-1">Quick Setup</h3>
               <p className="text-[10px] text-gray-500">One-click configs for all AI tools</p>
             </Link>
-            <Link href="/docs/integrations" className="rounded-lg p-4 hover:border-emerald-500/50 transition-colors" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+            <Link href="/docs/integrations" className="rounded-lg p-4 hover:border-primary/50 transition-colors" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
               <h3 className="text-white font-semibold text-sm mb-1">All Integrations</h3>
               <p className="text-[10px] text-gray-500">LlamaIndex, LangChain, AutoGPT, CrewAI, ChatGPT</p>
             </Link>
-            <Link href="/langchain-tool" className="rounded-lg p-4 hover:border-emerald-500/50 transition-colors" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+            <Link href="/langchain-tool" className="rounded-lg p-4 hover:border-primary/50 transition-colors" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
               <h3 className="text-white font-semibold text-sm mb-1">LangChain Guide</h3>
               <p className="text-[10px] text-gray-500">Detailed Python agent integration</p>
             </Link>
-            <Link href="/mcp-server" className="rounded-lg p-4 hover:border-emerald-500/50 transition-colors" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+            <Link href="/mcp-server" className="rounded-lg p-4 hover:border-primary/50 transition-colors" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
               <h3 className="text-white font-semibold text-sm mb-1">MCP Server Docs</h3>
               <p className="text-[10px] text-gray-500">Full tool documentation</p>
             </Link>
-            <Link href="/training-data" className="rounded-lg p-4 hover:border-emerald-500/50 transition-colors" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+            <Link href="/training-data" className="rounded-lg p-4 hover:border-primary/50 transition-colors" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
               <h3 className="text-white font-semibold text-sm mb-1">Training Data</h3>
               <p className="text-[10px] text-gray-500">JSONL datasets for LLM fine-tuning</p>
             </Link>
-            <Link href="/protocol" className="rounded-lg p-4 hover:border-emerald-500/50 transition-colors" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+            <Link href="/protocol" className="rounded-lg p-4 hover:border-primary/50 transition-colors" style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}>
               <h3 className="text-white font-semibold text-sm mb-1">PDP Protocol</h3>
               <p className="text-[10px] text-gray-500">Property data exchange standard</p>
             </Link>

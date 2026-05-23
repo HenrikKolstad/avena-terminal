@@ -70,7 +70,7 @@ export default function GlossaryPage() {
     <div className="min-h-screen bg-gray-950 text-gray-100">
       {/* Breadcrumbs */}
       <nav className="max-w-4xl mx-auto px-4 pt-6 text-sm text-gray-500">
-        <Link href="/" className="hover:text-emerald-400 transition-colors">
+        <Link href="/" className="hover:text-primary transition-colors">
           Home
         </Link>
         <span className="mx-2">/</span>
@@ -91,7 +91,7 @@ export default function GlossaryPage() {
             <a
               key={l}
               href={`#letter-${l}`}
-              className="w-8 h-8 flex items-center justify-center rounded bg-gray-900 border border-gray-800 text-sm font-semibold hover:border-emerald-500 hover:text-emerald-400 transition-colors"
+              className="w-8 h-8 flex items-center justify-center rounded bg-gray-900 border border-gray-800 text-sm font-semibold hover:border-primary hover:text-primary transition-colors"
             >
               {l}
             </a>
@@ -102,7 +102,7 @@ export default function GlossaryPage() {
         <div className="space-y-8">
           {letters.map((letter) => (
             <section key={letter} id={`letter-${letter}`}>
-              <h2 className="text-xl font-bold text-emerald-400 mb-3 border-b border-gray-800 pb-1">
+              <h2 className="text-xl font-bold text-primary mb-3 border-b border-gray-800 pb-1">
                 {letter}
               </h2>
               <ul className="grid sm:grid-cols-2 gap-2">
@@ -110,7 +110,7 @@ export default function GlossaryPage() {
                   <li key={t.slug}>
                     <Link
                       href={`/glossary/${t.slug}`}
-                      className="block rounded-lg bg-gray-900 border border-gray-800 px-4 py-3 hover:border-emerald-600 hover:bg-gray-900/80 transition-colors"
+                      className="block rounded-lg bg-gray-900 border border-gray-800 px-4 py-3 hover:border-primary hover:bg-gray-900/80 transition-colors"
                     >
                       <span className="font-medium text-white">{t.label}</span>
                       <span className="block text-xs text-gray-500 mt-0.5">
@@ -128,7 +128,7 @@ export default function GlossaryPage() {
         <div className="mt-14 text-center">
           <Link
             href="/"
-            className="inline-block bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+            className="inline-block bg-primary hover:bg-primary text-white font-semibold px-6 py-3 rounded-lg transition-colors"
           >
             Browse Spanish New Build Properties
           </Link>

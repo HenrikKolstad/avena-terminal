@@ -6,13 +6,13 @@ export const metadata: Metadata = {
 };
 
 export default function EmbedPage() {
-  const embedCode = `<iframe src="https://avenaterminal.com/embed/market-stats" width="320" height="180" frameborder="0" style="border-radius:8px;border:1px solid #1c2333"></iframe>`;
+  const embedCode = `<iframe src="https://avenaterminal.com/embed/market-stats" width="320" height="180" frameborder="0" style="border-radius:8px;border:1px solid hsl(var(--av-border))"></iframe>`;
 
   return (
     <div
       style={{
         minHeight: '100vh',
-        backgroundColor: '#0d1117',
+        backgroundColor: 'hsl(var(--av-background))',
         color: '#e6edf3',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       }}
@@ -36,7 +36,7 @@ export default function EmbedPage() {
           <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12 }}>Live Preview</h2>
           <div
             style={{
-              background: '#161b22',
+              background: 'hsl(var(--av-surface))',
               border: '1px solid #21262d',
               borderRadius: 12,
               padding: 24,
@@ -49,7 +49,7 @@ export default function EmbedPage() {
               width="320"
               height="180"
               frameBorder="0"
-              style={{ borderRadius: 8, border: '1px solid #1c2333' }}
+              style={{ borderRadius: 8, border: '1px solid hsl(var(--av-border))' }}
             />
           </div>
         </div>
@@ -61,7 +61,7 @@ export default function EmbedPage() {
           </p>
           <pre
             style={{
-              background: '#161b22',
+              background: 'hsl(var(--av-surface))',
               border: '1px solid #21262d',
               borderRadius: 8,
               padding: 16,
@@ -84,7 +84,7 @@ export default function EmbedPage() {
           </p>
           <pre
             style={{
-              background: '#161b22',
+              background: 'hsl(var(--av-surface))',
               border: '1px solid #21262d',
               borderRadius: 8,
               padding: 16,
@@ -96,7 +96,7 @@ export default function EmbedPage() {
               wordBreak: 'break-all',
             }}
           >
-            <code>{embedCode.replace('/market-stats"', '/market-stats?theme=light"').replace('#1c2333', '#e5e7eb')}</code>
+            <code>{embedCode.replace('/market-stats"', '/market-stats?theme=light"').replace('hsl(var(--av-border))', '#e5e7eb')}</code>
           </pre>
         </div>
 

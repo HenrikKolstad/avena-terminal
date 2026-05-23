@@ -40,12 +40,12 @@ export default async function BlogPage() {
   const posts = await getPosts();
 
   return (
-    <div className="min-h-screen text-gray-100" style={{ background: 'linear-gradient(180deg, #0a1628 0%, #0d1117 8%, #0d1117 100%)' }}>
+    <div className="min-h-screen text-gray-100" style={{ background: 'linear-gradient(180deg, #0a1628 0%, hsl(var(--av-background)) 8%, hsl(var(--av-background)) 100%)' }}>
       {/* Header */}
-      <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}>
+      <header className="border-b sticky top-0 z-50 backdrop-blur-sm" style={{ borderColor: 'hsl(var(--av-border))', background: 'rgba(13,17,23,0.85)' }}>
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <h1 className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent">AVENA</h1>
+            <h1 className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent">AVENA</h1>
           </Link>
           <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">← Back to Terminal</Link>
         </div>
@@ -53,7 +53,7 @@ export default async function BlogPage() {
 
       <main className="max-w-4xl mx-auto px-4">
         {/* Hero */}
-        <div className="py-12 md:py-16 text-center border-b" style={{ borderColor: '#1c2333' }}>
+        <div className="py-12 md:py-16 text-center border-b" style={{ borderColor: 'hsl(var(--av-border))' }}>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Spain Property Investment Insights</h1>
           <p className="text-gray-400 text-sm md:text-base max-w-xl mx-auto">Data-driven analysis from 1,867 scored new builds across Costa Blanca, Costa del Sol, and Costa Calida.</p>
         </div>
@@ -72,7 +72,7 @@ export default async function BlogPage() {
           <div className="grid gap-8">
             {posts.map((post) => (
               <Link key={post.id} href={`/blog/${post.slug}`} className="group block">
-                <article className="rounded-2xl overflow-hidden border transition-all duration-300 hover:border-[#00b9ff30]" style={{ background: 'linear-gradient(145deg, #0f1922 0%, #0d1117 100%)', borderColor: '#1c2333' }}>
+                <article className="rounded-2xl overflow-hidden border transition-all duration-300 hover:border-[#00b9ff30]" style={{ background: 'linear-gradient(145deg, #0f1922 0%, hsl(var(--av-background)) 100%)', borderColor: 'hsl(var(--av-border))' }}>
                   {post.cover_image && (
                     <div className="aspect-[3/1] overflow-hidden">
                       <img src={post.cover_image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />

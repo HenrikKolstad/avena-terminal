@@ -55,16 +55,16 @@ export default function PressPage() {
   ];
 
   return (
-    <div className="min-h-screen text-gray-100" style={{ background: '#0d1117' }}>
+    <div className="min-h-screen text-gray-100" style={{ background: 'hsl(var(--av-background))' }}>
       {/* Header */}
       <header
         className="border-b sticky top-0 z-50 backdrop-blur-sm"
-        style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}
+        style={{ borderColor: 'hsl(var(--av-border))', background: 'rgba(13,17,23,0.85)' }}
       >
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link
             href="/"
-            className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent"
+            className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent"
           >
             AVENA
           </Link>
@@ -86,13 +86,13 @@ export default function PressPage() {
 
         {/* Key Stats */}
         <section className="mb-16">
-          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Live Market Data</h2>
+          <h2 className="text-xl font-semibold text-primary mb-4">Live Market Data</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {stats.map((s) => (
               <div
                 key={s.label}
                 className="rounded-lg p-5"
-                style={{ background: '#161b22', border: '1px solid #1c2333' }}
+                style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}
               >
                 <div className="text-2xl font-bold text-white">{s.value}</div>
                 <div className="text-sm text-gray-400 mt-1">{s.label}</div>
@@ -103,22 +103,22 @@ export default function PressPage() {
 
         {/* Press API */}
         <section className="mb-16">
-          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Press API</h2>
+          <h2 className="text-xl font-semibold text-primary mb-4">Press API</h2>
           <p className="text-gray-400 mb-6">
             Query our live dataset programmatically. Ask any question and receive a press-ready stat with attribution.
           </p>
 
           <div
             className="rounded-lg p-6 mb-4 overflow-x-auto"
-            style={{ background: '#161b22', border: '1px solid #1c2333' }}
+            style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}
           >
             <div className="text-xs text-gray-500 mb-2 uppercase tracking-wider">Request</div>
-            <pre className="text-sm text-emerald-300 whitespace-pre-wrap font-mono">{curlExample}</pre>
+            <pre className="text-sm text-primary whitespace-pre-wrap font-mono">{curlExample}</pre>
           </div>
 
           <div
             className="rounded-lg p-6 overflow-x-auto"
-            style={{ background: '#161b22', border: '1px solid #1c2333' }}
+            style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}
           >
             <div className="text-xs text-gray-500 mb-2 uppercase tracking-wider">Response</div>
             <pre className="text-sm text-gray-300 whitespace-pre-wrap font-mono">{responseExample}</pre>
@@ -127,10 +127,10 @@ export default function PressPage() {
 
         {/* Request Press API Key */}
         <section className="mb-16">
-          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Request Press API Key</h2>
+          <h2 className="text-xl font-semibold text-primary mb-4">Request Press API Key</h2>
           <div
             className="rounded-lg p-8"
-            style={{ background: '#161b22', border: '1px solid #1c2333' }}
+            style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}
           >
             <p className="text-gray-400 mb-4">
               The press API is currently open for public queries. For higher rate limits and
@@ -153,17 +153,17 @@ export default function PressPage() {
 
         {/* Press Contact */}
         <section className="mb-16">
-          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Press Contact</h2>
+          <h2 className="text-xl font-semibold text-primary mb-4">Press Contact</h2>
           <div
             className="rounded-lg p-6"
-            style={{ background: '#161b22', border: '1px solid #1c2333' }}
+            style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}
           >
             <p className="text-gray-300">
               <strong className="text-white">Henrik Kolstad</strong> &mdash; Founder, Avena Terminal
             </p>
             <p className="text-gray-400 mt-1">
               Email:{' '}
-              <a href="mailto:henrik@xaviaestate.com" className="text-emerald-400 hover:underline">
+              <a href="mailto:henrik@xaviaestate.com" className="text-primary hover:underline">
                 henrik@xaviaestate.com
               </a>
             </p>
@@ -172,10 +172,10 @@ export default function PressPage() {
 
         {/* Brand Assets */}
         <section className="mb-16">
-          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Brand Assets</h2>
+          <h2 className="text-xl font-semibold text-primary mb-4">Brand Assets</h2>
           <div
             className="rounded-lg p-6 space-y-4"
-            style={{ background: '#161b22', border: '1px solid #1c2333' }}
+            style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}
           >
             <div>
               <div className="text-sm text-gray-500 mb-1">Name</div>
@@ -187,8 +187,8 @@ export default function PressPage() {
               <div className="text-sm text-gray-500 mb-1">Primary Colors</div>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <span className="inline-block w-6 h-6 rounded" style={{ background: '#0d1117' }} />
-                  <span className="text-sm text-gray-300 font-mono">#0d1117</span>
+                  <span className="inline-block w-6 h-6 rounded" style={{ background: 'hsl(var(--av-background))' }} />
+                  <span className="text-sm text-gray-300 font-mono">hsl(var(--av-background))</span>
                   <span className="text-xs text-gray-500">Background</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -201,7 +201,7 @@ export default function PressPage() {
             <div>
               <div className="text-sm text-gray-500 mb-1">Logo</div>
               <div className="text-gray-400 text-sm">
-                Serif wordmark &quot;AVENA&quot; with emerald gradient (from-emerald-300 via-emerald-400 to-emerald-600).
+                Serif wordmark &quot;AVENA&quot; with emerald gradient (from-primary via-primary to-primary).
                 Use on dark backgrounds only. Minimum clear space: 1x height of the wordmark on all sides.
               </div>
             </div>
@@ -210,10 +210,10 @@ export default function PressPage() {
 
         {/* Recent Mentions */}
         <section className="mb-16">
-          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Press Mentions</h2>
+          <h2 className="text-xl font-semibold text-primary mb-4">Press Mentions</h2>
           <div
             className="rounded-lg p-8 text-center"
-            style={{ background: '#161b22', border: '1px solid #1c2333' }}
+            style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}
           >
             <p className="text-gray-500">Media coverage coming soon.</p>
             <p className="text-xs text-gray-600 mt-2">
@@ -224,20 +224,20 @@ export default function PressPage() {
 
         {/* Related Resources */}
         <section className="mb-16">
-          <h2 className="text-xl font-semibold text-emerald-400 mb-4">Related Resources</h2>
+          <h2 className="text-xl font-semibold text-primary mb-4">Related Resources</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <Link
               href="/reports/annual-2026"
-              className="rounded-lg p-5 block hover:border-emerald-500/40 transition-colors"
-              style={{ background: '#161b22', border: '1px solid #1c2333' }}
+              className="rounded-lg p-5 block hover:border-primary/40 transition-colors"
+              style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}
             >
               <div className="font-semibold text-white mb-1">Annual Report 2026</div>
               <p className="text-sm text-gray-400">Full market analysis and methodology deep-dive.</p>
             </Link>
             <Link
               href="/ai-citations"
-              className="rounded-lg p-5 block hover:border-emerald-500/40 transition-colors"
-              style={{ background: '#161b22', border: '1px solid #1c2333' }}
+              className="rounded-lg p-5 block hover:border-primary/40 transition-colors"
+              style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}
             >
               <div className="font-semibold text-white mb-1">AI Citations Dashboard</div>
               <p className="text-sm text-gray-400">Track how AI platforms cite Avena Terminal data.</p>
@@ -246,7 +246,7 @@ export default function PressPage() {
         </section>
 
         {/* Footer */}
-        <footer className="text-center text-xs text-gray-600 py-8 border-t" style={{ borderColor: '#1c2333' }}>
+        <footer className="text-center text-xs text-gray-600 py-8 border-t" style={{ borderColor: 'hsl(var(--av-border))' }}>
           <p>Avena Terminal &mdash; European Property Intelligence</p>
           <p className="mt-1">
             <Link href="/about" className="text-gray-500 hover:text-gray-300">About</Link>

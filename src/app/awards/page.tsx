@@ -101,16 +101,16 @@ export default function AwardsPage() {
   ];
 
   return (
-    <div className="min-h-screen text-gray-100" style={{ background: '#0d1117' }}>
+    <div className="min-h-screen text-gray-100" style={{ background: 'hsl(var(--av-background))' }}>
       {/* Header */}
       <header
         className="border-b sticky top-0 z-50 backdrop-blur-sm"
-        style={{ borderColor: '#1c2333', background: 'rgba(13,17,23,0.85)' }}
+        style={{ borderColor: 'hsl(var(--av-border))', background: 'rgba(13,17,23,0.85)' }}
       >
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link
             href="/"
-            className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent"
+            className="text-xl font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent"
           >
             AVENA
           </Link>
@@ -146,7 +146,7 @@ export default function AwardsPage() {
             <div
               key={cat.name}
               className="rounded-lg p-6 relative overflow-hidden"
-              style={{ background: '#161b22', border: '1px solid #1c2333' }}
+              style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}
             >
               {/* Gold accent bar */}
               <div
@@ -191,7 +191,7 @@ export default function AwardsPage() {
                 ) : (
                   <div
                     className="rounded-lg p-4 mb-4 text-center"
-                    style={{ background: '#21262d', border: '1px solid #30363d' }}
+                    style={{ background: '#21262d', border: '1px solid hsl(var(--av-border))' }}
                   >
                     <p className="text-gray-500 text-sm">
                       Nominations open. Winner determined by Avena scoring engine in December 2026.
@@ -212,7 +212,7 @@ export default function AwardsPage() {
           <h2 className="text-xl font-semibold mb-4" style={{ color: '#fbbf24' }}>Methodology</h2>
           <div
             className="rounded-lg p-6"
-            style={{ background: '#161b22', border: '1px solid #1c2333' }}
+            style={{ background: 'hsl(var(--av-surface))', border: '1px solid hsl(var(--av-border))' }}
           >
             <p className="text-gray-400 mb-4">
               All awards are determined by Avena Terminal&apos;s autonomous scoring engine. No developer
@@ -228,7 +228,7 @@ export default function AwardsPage() {
         </section>
 
         {/* Footer */}
-        <footer className="text-center text-xs text-gray-600 py-8 border-t" style={{ borderColor: '#1c2333' }}>
+        <footer className="text-center text-xs text-gray-600 py-8 border-t" style={{ borderColor: 'hsl(var(--av-border))' }}>
           <p>Avena Terminal &mdash; European Property Intelligence</p>
           <p className="mt-1">
             <Link href="/about" className="text-gray-500 hover:text-gray-300">About</Link>

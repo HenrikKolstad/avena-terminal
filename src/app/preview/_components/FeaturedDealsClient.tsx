@@ -123,7 +123,7 @@ export function FeaturedDealsClient({ items: rawItems, total }: { items: DealIte
             </div>
             {isPaid ? (
               <Link
-                href="/terminal"
+                href="/"
                 className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-primary"
               >
                 View all

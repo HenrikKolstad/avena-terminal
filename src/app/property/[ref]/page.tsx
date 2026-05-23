@@ -80,7 +80,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
             </h1>
             <p className="text-muted-foreground mb-8">This reference does not exist in our dataset.</p>
             <Link
-              href="/terminal"
+              href="/"
               className="inline-flex items-center gap-2 rounded-sm px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold"
               style={{ background: 'var(--av-gradient-gold)' }}
             >

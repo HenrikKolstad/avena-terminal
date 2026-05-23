@@ -73,17 +73,17 @@ export default function SemanticSearchPage() {
       : `€${(n / 1000).toFixed(0)}k`;
 
   return (
-    <div className="min-h-screen" style={{ background: '#0d1117' }}>
+    <div className="min-h-screen" style={{ background: 'hsl(var(--av-background))' }}>
       {/* Header */}
       <header
         className="border-b sticky top-0 z-50 backdrop-blur-sm"
-        style={{ borderColor: '#30363d', background: 'rgba(13,17,23,0.92)' }}
+        style={{ borderColor: 'hsl(var(--av-border))', background: 'rgba(13,17,23,0.92)' }}
       >
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link
               href="/"
-              className="text-lg font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-600 bg-clip-text text-transparent"
+              className="text-lg font-bold font-serif tracking-[0.15em] bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent"
             >
               AVENA
             </Link>
@@ -118,7 +118,7 @@ export default function SemanticSearchPage() {
         {/* Search Bar */}
         <div
           className="flex items-center gap-2 rounded-xl px-4 py-3 border"
-          style={{ background: '#161b22', borderColor: '#30363d' }}
+          style={{ background: 'hsl(var(--av-surface))', borderColor: 'hsl(var(--av-border))' }}
         >
           <Search size={18} className="text-gray-500 shrink-0" />
           <input
@@ -152,8 +152,8 @@ export default function SemanticSearchPage() {
               <button
                 key={s}
                 onClick={() => { setQuery(s); }}
-                className="text-xs px-3 py-1.5 rounded-full border transition-colors hover:border-emerald-600 hover:text-emerald-400"
-                style={{ borderColor: '#30363d', color: '#8b949e' }}
+                className="text-xs px-3 py-1.5 rounded-full border transition-colors hover:border-primary hover:text-primary"
+                style={{ borderColor: 'hsl(var(--av-border))', color: '#8b949e' }}
               >
                 {s}
               </button>
@@ -165,7 +165,7 @@ export default function SemanticSearchPage() {
       {/* Loading State */}
       {loading && (
         <div className="flex flex-col items-center justify-center py-20 gap-3">
-          <Loader2 size={32} className="animate-spin text-emerald-500" />
+          <Loader2 size={32} className="animate-spin text-primary" />
           <p className="text-gray-500 text-sm">Analyzing your query with AI...</p>
         </div>
       )}
@@ -223,8 +223,8 @@ export default function SemanticSearchPage() {
               <Link
                 key={r.ref}
                 href={`/property/${r.ref}`}
-                className="block rounded-xl border overflow-hidden transition-all hover:border-emerald-700 group"
-                style={{ background: '#161b22', borderColor: '#30363d' }}
+                className="block rounded-xl border overflow-hidden transition-all hover:border-primary group"
+                style={{ background: 'hsl(var(--av-surface))', borderColor: 'hsl(var(--av-border))' }}
               >
                 {/* Image */}
                 {r.image ? (
@@ -253,7 +253,7 @@ export default function SemanticSearchPage() {
 
                   {/* Price Row */}
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-emerald-400 font-semibold text-sm">{fmt(r.price)}</span>
+                    <span className="text-primary font-semibold text-sm">{fmt(r.price)}</span>
                     <div className="flex items-center gap-2">
                       {r.discount !== null && r.discount > 0 && (
                         <span
@@ -292,7 +292,7 @@ export default function SemanticSearchPage() {
                     {r.yield && (
                       <span>
                         Yield{' '}
-                        <span className="text-emerald-500 font-medium">
+                        <span className="text-primary font-medium">
                           {r.yield.gross.toFixed(1)}%
                         </span>
                       </span>
