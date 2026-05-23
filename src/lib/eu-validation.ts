@@ -96,24 +96,94 @@ function avenaCoastalSpainMedianPM2(): { median_pm2: number; n: number } {
 }
 
 /**
- * Compute the Avena coastal YoY rate of change.
- * Uses a stored baseline (12 months ago median) if available — otherwise
- * approximates from the current corpus distribution as a proxy.
+ * Compute the Avena coastal YoY rate of change using a real historical
+ * baseline from price_snapshots — never a hardcoded anchor.
  *
- * For now we use a known historical anchor: Avena coastal Spain median pm2
- * was ~3,150 €/m² in Q1 2024 (corpus snapshot). Computing today's median
- * against that baseline gives a defensible cumulative growth rate; we
- * convert to annual rate of change for comparability with Eurostat HPI.
+ * Returns null pct when historical data is insufficient (< 90 days of
+ * snapshots, or fewer than 100 contributing properties). In that case the
+ * cross-validation row is written with a calibration-phase note so the
+ * delta column is honestly empty rather than misleadingly filled.
  */
-function avenaCoastalYoYChange(): { pct: number; baseline_pm2: number; current_pm2: number; n: number } {
-  const { median_pm2, n } = avenaCoastalSpainMedianPM2();
-  // Empirical baseline anchor (Q1 2024 corpus snapshot)
-  const baseline_pm2 = 3150;
-  const cumulative_growth_pct = ((median_pm2 - baseline_pm2) / baseline_pm2) * 100;
-  // Approx 2.1 years between Q1 2024 anchor and Q2 2026 → annualise
-  const years = 2.1;
-  const annualised = (Math.pow(1 + cumulative_growth_pct / 100, 1 / years) - 1) * 100;
-  return { pct: annualised, baseline_pm2, current_pm2: median_pm2, n };
+async function avenaCoastalYoYChange(): Promise<{
+  pct: number | null;
+  baseline_pm2: number | null;
+  baseline_date: string | null;
+  baseline_n: number | null;
+  current_pm2: number;
+  current_n: number;
+  note: string;
+}> {
+  const { median_pm2: current_pm2, n: current_n } = avenaCoastalSpainMedianPM2();
+
+  if (!supabase) {
+    return {
+      pct: null, baseline_pm2: null, baseline_date: null, baseline_n: null,
+      current_pm2, current_n,
+      note: 'historical baseline unavailable — Supabase client not configured',
+    };
+  }
+
+  // Build the coastal property ref set so we compare like-for-like.
+  const coastalRefs = getAllProperties()
+    .filter((p) => p.costa && p.ref)
+    .map((p) => p.ref as string);
+
+  // Target a snapshot ~365 days ago. Query within ±14 days for tolerance.
+  const target = new Date();
+  target.setUTCDate(target.getUTCDate() - 365);
+  const lo = new Date(target); lo.setUTCDate(lo.getUTCDate() - 14);
+  const hi = new Date(target); hi.setUTCDate(hi.getUTCDate() + 14);
+  const loStr = lo.toISOString().slice(0, 10);
+  const hiStr = hi.toISOString().slice(0, 10);
+
+  try {
+    // Pull pm2 snapshots in the target window for the coastal cohort.
+    // Supabase .in() has a practical limit ~1000 — chunk if needed.
+    const pm2s: number[] = [];
+    let baselineDate: string | null = null;
+    for (let i = 0; i < coastalRefs.length; i += 500) {
+      const chunk = coastalRefs.slice(i, i + 500);
+      const { data } = await supabase
+        .from('price_snapshots')
+        .select('pm2, snapshot_date')
+        .in('property_ref', chunk)
+        .gte('snapshot_date', loStr)
+        .lte('snapshot_date', hiStr)
+        .not('pm2', 'is', null);
+      for (const row of (data ?? []) as Array<{ pm2: number | null; snapshot_date: string }>) {
+        if (row.pm2 && row.pm2 > 0) {
+          pm2s.push(row.pm2);
+          if (!baselineDate || row.snapshot_date < baselineDate) baselineDate = row.snapshot_date;
+        }
+      }
+    }
+
+    if (pm2s.length < 100) {
+      return {
+        pct: null, baseline_pm2: null, baseline_date: null, baseline_n: pm2s.length,
+        current_pm2, current_n,
+        note: `historical baseline insufficient (n=${pm2s.length} in target window ${loStr}…${hiStr}); cross-validation in calibration phase`,
+      };
+    }
+
+    const baseline_pm2 = median(pm2s);
+    const yoy_pct = ((current_pm2 - baseline_pm2) / baseline_pm2) * 100;
+    return {
+      pct: Number(yoy_pct.toFixed(2)),
+      baseline_pm2,
+      baseline_date: baselineDate,
+      baseline_n: pm2s.length,
+      current_pm2,
+      current_n,
+      note: `Avena coastal corpus YoY ${yoy_pct.toFixed(2)}% (current median ${current_pm2.toFixed(0)} €/m² across n=${current_n} vs baseline ${baseline_pm2.toFixed(0)} €/m² across n=${pm2s.length} on ${baselineDate}).`,
+    };
+  } catch (e) {
+    return {
+      pct: null, baseline_pm2: null, baseline_date: null, baseline_n: null,
+      current_pm2, current_n,
+      note: `baseline lookup error: ${(e as Error).message}`,
+    };
+  }
 }
 
 // ─── Snapshot generators ──────────────────────────────────────────────────
@@ -125,22 +195,39 @@ export async function generateSnapshots(): Promise<ValidationSnapshot[]> {
   // ── Spain coastal vs Eurostat national HPI YoY ────────────────────
   const eurostat_es = await latestEurostatHPIChange('ES');
   if (eurostat_es) {
-    const avena = avenaCoastalYoYChange();
-    const delta_pct = avena.pct - eurostat_es.value;
-    const delta_bps = delta_pct * 100;
-    out.push({
-      country_code: 'ES',
-      region: 'coastal',
-      period,
-      official_source: 'eurostat',
-      official_indicator: eurostat_es.indicator,
-      official_value: eurostat_es.value,
-      avena_value: Number(avena.pct.toFixed(2)),
-      delta_bps: Number(delta_bps.toFixed(0)),
-      delta_pct: Number(delta_pct.toFixed(2)),
-      avena_n_properties: avena.n,
-      note: `Avena coastal corpus (n=${avena.n}, median ${avena.current_pm2.toFixed(0)} €/m² vs Q1 2024 baseline ${avena.baseline_pm2} €/m²) annualised at ${avena.pct.toFixed(2)}% vs Eurostat national ${eurostat_es.value}% for ${eurostat_es.period}.`,
-    });
+    const avena = await avenaCoastalYoYChange();
+    if (avena.pct == null) {
+      // Calibration phase — write the row but don't fabricate a delta.
+      out.push({
+        country_code: 'ES',
+        region: 'coastal',
+        period,
+        official_source: 'eurostat',
+        official_indicator: eurostat_es.indicator,
+        official_value: eurostat_es.value,
+        avena_value: 0,
+        delta_bps: 0,
+        delta_pct: 0,
+        avena_n_properties: avena.current_n,
+        note: `${avena.note} · Eurostat national ${eurostat_es.value}% for ${eurostat_es.period}. Delta will populate when ≥12 months of price_snapshots are available.`,
+      });
+    } else {
+      const delta_pct = avena.pct - eurostat_es.value;
+      const delta_bps = delta_pct * 100;
+      out.push({
+        country_code: 'ES',
+        region: 'coastal',
+        period,
+        official_source: 'eurostat',
+        official_indicator: eurostat_es.indicator,
+        official_value: eurostat_es.value,
+        avena_value: avena.pct,
+        delta_bps: Number(delta_bps.toFixed(0)),
+        delta_pct: Number(delta_pct.toFixed(2)),
+        avena_n_properties: avena.current_n,
+        note: `${avena.note} Eurostat national ${eurostat_es.value}% for ${eurostat_es.period}. Δ = ${(delta_bps >= 0 ? '+' : '') + delta_bps.toFixed(0)} bps.`,
+      });
+    }
   }
 
   // ── ECB mortgage rate context (Spain) — informational snapshot ────
