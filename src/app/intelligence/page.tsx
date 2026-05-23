@@ -214,52 +214,35 @@ export default async function IntelligencePage() {
               </span>
             </div>
 
-            {indicators.length === 0 ? (
-              <div
-                className="rounded-sm border p-10 sm:p-16 text-center"
-                style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border))' }}
-              >
-                <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary block mb-4">
-                  Engine initialising · First indicator batch · 06:00 UTC daily
-                </span>
-                <div className="font-serif text-4xl sm:text-5xl font-light leading-[0.95] text-foreground tracking-tight max-w-3xl mx-auto">
-                  The causal engine reads from <span className="italic text-gold">live ECB and Eurostat feeds</span>. First snapshot lands at the next 06:00 UTC cron tick.
-                </div>
-                <p className="mt-6 max-w-2xl mx-auto text-sm text-muted-foreground leading-relaxed">
-                  Until then, this surface is intentionally empty. Avena does not interpolate or backfill — every indicator displayed here is sourced live, timestamped, and audit-logged in <code className="font-mono text-foreground">cron_logs</code>. Read the methodology at <Link href="/methodology" className="text-primary hover:underline">/methodology</Link>.
-                </p>
+            <div
+              className="rounded-sm border p-10 sm:p-16 text-center relative overflow-hidden"
+              style={{
+                background: 'linear-gradient(180deg, hsl(var(--av-primary) / 0.06) 0%, hsl(var(--av-surface) / 0.3) 100%)',
+                borderColor: 'hsl(var(--av-primary) / 0.3)',
+                boxShadow: 'var(--av-shadow-gold)',
+              }}
+            >
+              <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-muted-foreground block mb-4">
+                Net signal · confidence {rollup.confidence}%
+              </span>
+              <div className={`font-serif text-6xl sm:text-8xl lg:text-9xl font-light leading-[0.9] ${signalColor} tracking-tight`}>
+                {SIGNAL_LABEL[rollup.net]}
               </div>
-            ) : (
-              <div
-                className="rounded-sm border p-10 sm:p-16 text-center relative overflow-hidden"
-                style={{
-                  background: 'linear-gradient(180deg, hsl(var(--av-primary) / 0.06) 0%, hsl(var(--av-surface) / 0.3) 100%)',
-                  borderColor: 'hsl(var(--av-primary) / 0.3)',
-                  boxShadow: 'var(--av-shadow-gold)',
-                }}
-              >
-                <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-muted-foreground block mb-4">
-                  Net signal · confidence {rollup.confidence}%
-                </span>
-                <div className={`font-serif text-6xl sm:text-8xl lg:text-9xl font-light leading-[0.9] ${signalColor} tracking-tight`}>
-                  {SIGNAL_LABEL[rollup.net]}
+              <div className="mt-10 grid grid-cols-3 gap-6 max-w-2xl mx-auto">
+                <div>
+                  <div className="font-serif text-3xl font-light tabular text-primary">{rollup.bull_count}</div>
+                  <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Bullish signals</div>
                 </div>
-                <div className="mt-10 grid grid-cols-3 gap-6 max-w-2xl mx-auto">
-                  <div>
-                    <div className="font-serif text-3xl font-light tabular text-primary">{rollup.bull_count}</div>
-                    <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Bullish signals</div>
-                  </div>
-                  <div>
-                    <div className="font-serif text-3xl font-light tabular text-destructive">{rollup.bear_count}</div>
-                    <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Bearish signals</div>
-                  </div>
-                  <div>
-                    <div className="font-serif text-3xl font-light tabular text-foreground">{rollup.neutral_count}</div>
-                    <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Neutral</div>
-                  </div>
+                <div>
+                  <div className="font-serif text-3xl font-light tabular text-destructive">{rollup.bear_count}</div>
+                  <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Bearish signals</div>
+                </div>
+                <div>
+                  <div className="font-serif text-3xl font-light tabular text-foreground">{rollup.neutral_count}</div>
+                  <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Neutral</div>
                 </div>
               </div>
-            )}
+            </div>
           </div>
         </section>
 

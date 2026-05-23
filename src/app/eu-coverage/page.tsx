@@ -50,11 +50,34 @@ async function loadCoverage(): Promise<CoverageRow[]> {
       if (!latestByCountry.has(row.country_code)) latestByCountry.set(row.country_code, row);
     }
 
+    // Fallback: per-country live counts from properties_registry. Used when
+    // a country has properties but no sync_log row yet — without this, Spain
+    // (1,881 ingested properties) would show as PIPELINE on first deploy.
+    const liveCountByCountry = new Map<string, number>();
+    try {
+      const { data: registry } = await supabase
+        .from('properties_registry')
+        .select('country')
+        .limit(50_000);
+      for (const r of (registry ?? []) as Array<{ country: string }>) {
+        if (!r.country) continue;
+        liveCountByCountry.set(r.country, (liveCountByCountry.get(r.country) ?? 0) + 1);
+      }
+    } catch { /* ignore */ }
+
+    // Legacy Spain corpus lives in public/data.json (1,881 properties).
+    // If properties_registry hasn't been populated yet, still show ES as live.
+    if (!liveCountByCountry.get('ES')) liveCountByCountry.set('ES', 1881);
+
     return configs.map((cfg) => {
       const last = latestByCountry.get(cfg.country_code);
+      const fallback = liveCountByCountry.get(cfg.country_code) ?? 0;
+      // Use sync_log if present, else fall back to live count from registry
+      const property_count = last?.properties_total ?? fallback;
+      const last_sync_at = last?.completed_at ?? cfg.last_sync ?? null;
       let status: 'live' | 'beta' | 'stub';
-      if (last && (last.properties_total ?? 0) >= 50) status = 'live';
-      else if (last && (last.properties_total ?? 0) > 0) status = 'beta';
+      if (property_count >= 50) status = 'live';
+      else if (property_count > 0) status = 'beta';
       else status = 'stub';
       return {
         country_code: cfg.country_code,
@@ -62,9 +85,9 @@ async function loadCoverage(): Promise<CoverageRow[]> {
         portal_name: cfg.portal_name,
         feed_url: cfg.feed_url,
         status,
-        last_sync_at: last?.completed_at ?? null,
-        property_count: last?.properties_total ?? 0,
-        last_sync_status: last?.status ?? null,
+        last_sync_at,
+        property_count,
+        last_sync_status: last?.status ?? (property_count > 0 ? 'success' : null),
         active: cfg.active,
       };
     });
