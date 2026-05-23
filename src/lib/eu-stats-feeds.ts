@@ -92,24 +92,24 @@ const EUROSTAT_INDICATORS: EurostatIndicator[] = [
     freq: 'A',
   },
   {
-    dataset: 'prc_hpi_inq',
-    filter: 'unit=I15_Q&purchase=TOTAL',
-    name: 'House Price Index by dwelling type, indices',
+    dataset: 'prc_hpi_q',
+    filter: 'purchase=DW_NEW&unit=RCH_A',
+    name: 'House Price Index, new dwellings, annual rate of change (%)',
+    unit: 'pct',
+    freq: 'Q',
+  },
+  {
+    dataset: 'prc_hpi_q',
+    filter: 'purchase=DW_EXST&unit=RCH_A',
+    name: 'House Price Index, existing dwellings, annual rate of change (%)',
+    unit: 'pct',
+    freq: 'Q',
+  },
+  {
+    dataset: 'prc_hpi_oq',
+    filter: 'purchase=TOTAL&unit=I15_Q',
+    name: 'Owner-occupied housing price index (2015=100)',
     unit: 'index_2015=100',
-    freq: 'Q',
-  },
-  {
-    dataset: 'tipsho40',
-    filter: '',
-    name: 'House price index, deflated, annual rate of change',
-    unit: 'pct',
-    freq: 'Q',
-  },
-  {
-    dataset: 'tipsho20',
-    filter: '',
-    name: 'House price index, nominal, annual rate of change',
-    unit: 'pct',
     freq: 'Q',
   },
 ];
@@ -238,7 +238,7 @@ const ECB_SERIES: ECBSeries[] = [
   // Mortgage rates — new business, loans for house purchase, total maturity, euro area aggregate
   {
     dataflow: 'MIR',
-    key: 'M.U2.B.A2C.A.R.A.2240.EUR.N',
+    key: 'M.U2.B.A2C.AM.R.A.2250.EUR.N',
     name: 'Mortgage rate — euro area, new business, total maturity (%)',
     unit: 'pct',
     countryFromKey: () => 'EA20',
@@ -247,7 +247,7 @@ const ECB_SERIES: ECBSeries[] = [
   // Mortgage rate — Spain (ES)
   {
     dataflow: 'MIR',
-    key: 'M.ES.B.A2C.A.R.A.2240.EUR.N',
+    key: 'M.ES.B.A2C.AM.R.A.2250.EUR.N',
     name: 'Mortgage rate — Spain, new business, total maturity (%)',
     unit: 'pct',
     countryFromKey: () => 'ES',
@@ -256,7 +256,7 @@ const ECB_SERIES: ECBSeries[] = [
   // Mortgage rate — Germany (DE)
   {
     dataflow: 'MIR',
-    key: 'M.DE.B.A2C.A.R.A.2240.EUR.N',
+    key: 'M.DE.B.A2C.AM.R.A.2250.EUR.N',
     name: 'Mortgage rate — Germany, new business, total maturity (%)',
     unit: 'pct',
     countryFromKey: () => 'DE',
@@ -265,7 +265,7 @@ const ECB_SERIES: ECBSeries[] = [
   // Mortgage rate — France (FR)
   {
     dataflow: 'MIR',
-    key: 'M.FR.B.A2C.A.R.A.2240.EUR.N',
+    key: 'M.FR.B.A2C.AM.R.A.2250.EUR.N',
     name: 'Mortgage rate — France, new business, total maturity (%)',
     unit: 'pct',
     countryFromKey: () => 'FR',
@@ -274,7 +274,7 @@ const ECB_SERIES: ECBSeries[] = [
   // Mortgage rate — Italy (IT)
   {
     dataflow: 'MIR',
-    key: 'M.IT.B.A2C.A.R.A.2240.EUR.N',
+    key: 'M.IT.B.A2C.AM.R.A.2250.EUR.N',
     name: 'Mortgage rate — Italy, new business, total maturity (%)',
     unit: 'pct',
     countryFromKey: () => 'IT',
@@ -283,7 +283,7 @@ const ECB_SERIES: ECBSeries[] = [
   // Mortgage rate — Portugal (PT)
   {
     dataflow: 'MIR',
-    key: 'M.PT.B.A2C.A.R.A.2240.EUR.N',
+    key: 'M.PT.B.A2C.AM.R.A.2250.EUR.N',
     name: 'Mortgage rate — Portugal, new business, total maturity (%)',
     unit: 'pct',
     countryFromKey: () => 'PT',
@@ -292,7 +292,7 @@ const ECB_SERIES: ECBSeries[] = [
   // Mortgage rate — Netherlands (NL)
   {
     dataflow: 'MIR',
-    key: 'M.NL.B.A2C.A.R.A.2240.EUR.N',
+    key: 'M.NL.B.A2C.AM.R.A.2250.EUR.N',
     name: 'Mortgage rate — Netherlands, new business, total maturity (%)',
     unit: 'pct',
     countryFromKey: () => 'NL',
@@ -384,18 +384,6 @@ const INE_SPAIN_SERIES = [
     unit: 'index_2015=100',
     freq: 'Q' as const,
   },
-  {
-    table: '25172',
-    name: 'Spain — House Price Index, new dwellings (2015=100)',
-    unit: 'index_2015=100',
-    freq: 'Q' as const,
-  },
-  {
-    table: '25173',
-    name: 'Spain — House Price Index, existing dwellings (2015=100)',
-    unit: 'index_2015=100',
-    freq: 'Q' as const,
-  },
 ];
 
 async function fetchINETable(table: string, name: string, unit: string, freq: 'Q'): Promise<OfficialStatRow[]> {
@@ -408,10 +396,13 @@ async function fetchINETable(table: string, name: string, unit: string, freq: 'Q
   }>;
 
   const out: OfficialStatRow[] = [];
-  for (const series of data) {
-    // National total only — first series row in INE 25171 is typically the headline
-    if (!series.Nombre || !series.Nombre.toLowerCase().includes('national total')) continue;
-    for (const obs of series.Data) {
+  // INE returns multiple sub-series in one table. Take the first one that
+  // looks like the national headline — INE labels in Spanish, so match
+  // permissively on common headline tokens.
+  const headlineKeywords = ['total nacional', 'national total', 'general', 'índice general'];
+  const headline = data.find((s) => s.Nombre && headlineKeywords.some((k) => s.Nombre.toLowerCase().includes(k))) ?? data[0];
+  if (headline) {
+    for (const obs of headline.Data) {
       if (obs.Valor == null) continue;
       const quarter = obs.FK_Periodo >= 1 && obs.FK_Periodo <= 4 ? obs.FK_Periodo : Math.ceil(obs.FK_Periodo / 3);
       const period = `${obs.Anyo}-Q${quarter}`;
@@ -427,7 +418,6 @@ async function fetchINETable(table: string, name: string, unit: string, freq: 'Q
         source_url: url,
       });
     }
-    break; // first matching national series is enough
   }
   return out;
 }
