@@ -23,6 +23,7 @@ const NAV: TopItem[] = [
     children: [
       { label: 'Memo Engine',  href: '/memo',        sub: 'Institutional memo in 30 seconds' },
       { label: 'AVM',          href: '/avm',         sub: 'Bank-grade valuation in <1s' },
+      { label: 'Portfolio',    href: '/portfolio',   sub: 'Upload your book, get the Avena view' },
       { label: 'EU Coverage',  href: '/eu-coverage', sub: 'Live 27-country data layer' },
       { label: 'EU Takeover',  href: '/eu-takeover', sub: 'Ingestion swarm · live findings ledger' },
       { label: 'Precursor',    href: '/precursor',   sub: 'Early-warning signals' },
