@@ -62,6 +62,13 @@ export interface IndexCard {
 
 function pct(now: number | null | undefined, then: number | null | undefined): number {
   if (now == null || then == null || then === 0) return 0;
+  // Cross-scale safety — the index was re-based at some point during the
+  // history (legacy 100-base → 1000-base methodology), so naively dividing
+  // current value (~1556) by an old base (~107) yields a bogus +1352%
+  // figure. Suppress when the ratio implies a methodology break rather
+  // than a real return.
+  const ratio = now / then;
+  if (ratio > 3 || ratio < 0.33) return 0;
   return Number((((now - then) / then) * 100).toFixed(2));
 }
 

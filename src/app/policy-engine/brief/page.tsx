@@ -2,8 +2,10 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { simulateScenario, type PolicyLever } from '@/lib/policy-engine';
 
+// Cannot use both 'force-dynamic' and `revalidate` — they're mutually
+// exclusive in Next.js App Router. Brief renders per-request so it can
+// reflect the scenario URL params live.
 export const dynamic = 'force-dynamic';
-export const revalidate = 600;
 
 export const metadata: Metadata = {
   title: 'Precision Policy Engine · Institutional Brief — Avena Terminal',
