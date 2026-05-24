@@ -34,7 +34,7 @@ The spread between Portugal and France is 17.9 percentage points — the widest 
 
 In Avena Sovereign Briefing Vol. 2 ("Foreign-Buyer Flows and the Mortgage Transmission Channel"), we documented an empirical relationship between Euribor changes, foreign-buyer share, and price formation in Spanish coastal markets:
 
-$$ \Delta P_{t} = \alpha + \beta_1 \Delta r_{t-1} + \beta_2 (FBshare_{t-1}) + \beta_3 (\Delta r_{t-1} \times FBshare_{t-1}) + \epsilon $$
+    ΔP_t = α + β₁·Δr_(t-1) + β₂·FBshare_(t-1) + β₃·(Δr_(t-1) × FBshare_(t-1)) + ε
 
 The interaction coefficient $\beta_3$ was statistically significant and economically meaningful: a 100 bps Euribor decrease in a cohort with 25% foreign-buyer share produces a 1.96% monthly price uplift, versus 0.42% for a cohort with 5% foreign-buyer share. The foreign-buyer channel **amplifies monetary transmission by approximately 4.7×**.
 
@@ -85,18 +85,17 @@ Avena Terminal currently provides ground-truth daily-close pricing for 1,881 Spa
 
 ## 6 · Reproducibility
 
-Every observation in this brief is available via the public API:
+Every observation in this brief is available via the public API. Eurostat HPI YoY across the cohort:
 
-```bash
-# Eurostat HPI YoY across the cohort
-curl 'https://avenaterminal.com/api/v1/stats?source=eurostat&indicator=RCH_A&from=2025-Q4&to=2025-Q4'
+    GET /api/v1/stats?source=eurostat&indicator=RCH_A&from=2025-Q4&to=2025-Q4
 
-# ECB MIR — euro area mortgage rate
-curl 'https://avenaterminal.com/api/v1/stats?source=ecb_sdw&indicator=MIR&from=2026-01&to=2026-03'
+ECB MIR — euro area mortgage rate:
 
-# Cross-validation snapshots
-curl 'https://avenaterminal.com/api/v1/validation'
-```
+    GET /api/v1/stats?source=ecb_sdw&indicator=MIR&from=2026-01&to=2026-03
+
+Cross-validation snapshots:
+
+    GET /api/v1/validation
 
 Full methodology specification at avenaterminal.com/sovereign-briefing/cross-validating-official-statistics-2026.
 
