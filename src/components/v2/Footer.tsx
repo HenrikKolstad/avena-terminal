@@ -27,6 +27,7 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
       { label: 'EU Official Stats',   href: '/eu-official' },
       { label: 'Macro Alerts',        href: '/alerts/macro' },
       { label: 'API Docs',            href: '/docs/api' },
+      { label: 'Moat Archive',        href: '/archive' },
       { label: 'Live Ops',            href: '/live' },
       { label: 'Proof of Moat',       href: '/proof' },
       { label: 'The Stack',           href: '/stack' },
