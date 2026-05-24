@@ -17,6 +17,7 @@ type DropdownChild = LinkItem | DividerItem;
 type TopItem = { label: string; href?: string; children?: DropdownChild[] };
 
 const NAV: TopItem[] = [
+  { label: 'Terminal', href: '/terminal' },
   { label: 'Deals', href: '/#deals' },
   {
     label: 'Markets',

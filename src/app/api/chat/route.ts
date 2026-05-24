@@ -79,6 +79,56 @@ const tools: Anthropic.Tool[] = [
       required: ['purchase_price', 'nationality'],
     },
   },
+  // ─── INSTITUTIONAL TOOLS (added 2026-05) ──────────────────────────────
+  {
+    name: 'query_official_stats',
+    description: 'Query official EU residential statistics (Eurostat, ECB SDW, INE Spain). Returns time-series observations with source URLs. Use for any question about EU country HPI, mortgage rates, or central-bank-published data. Always cite the source_url from the response.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        country: { type: 'string', description: 'ISO 3166-1 alpha-2 (ES, PT, IT, DE, FR, NL) or EU27_2020 / EA20' },
+        source: { type: 'string', description: 'eurostat | ecb_sdw | ine_es' },
+        indicator: { type: 'string', description: 'Substring of indicator_code, e.g. prc_hpi_q, RCH_A, MIR' },
+        from: { type: 'string', description: 'ISO period lower bound, e.g. 2024-Q1' },
+        to: { type: 'string', description: 'ISO period upper bound' },
+        limit: { type: 'number', description: 'Max rows (default 20, max 100)' },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'search_briefings',
+    description: 'Search the Sovereign Briefing corpus (Vols 1-4+) by topic, country, or keyword. Returns volume number, title, abstract, key findings, and slug for citation. Use when the user asks about Avena research, findings, or any topic the briefings have covered.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        query: { type: 'string', description: 'Free-text search across title, abstract, topics' },
+        country: { type: 'string', description: 'Filter by country code in topics array' },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'lookup_avn_id',
+    description: 'Look up an AVN-ID in the signed registry. Returns canonical record + signature verification. Format: AVN:<COUNTRY>-<POSTAL>-<CATEGORY>-<SEQ>',
+    input_schema: {
+      type: 'object' as const,
+      properties: { avn_id: { type: 'string', description: 'e.g. AVN:ES-03185-NB-0421' } },
+      required: ['avn_id'],
+    },
+  },
+  {
+    name: 'query_validation',
+    description: 'Pull cross-validation snapshots — Avena cohort vs official series with signed delta in basis points. Methodology in Sovereign Briefing Vol. 3.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        country: { type: 'string', description: 'ISO 2-char' },
+        region: { type: 'string', description: 'coastal | national | urban' },
+      },
+      required: [],
+    },
+  },
 ];
 
 // Tool executors
@@ -209,7 +259,84 @@ function executeTax(params: Record<string, unknown>): string {
   return `TAX (${nat} buyer, \u20AC${price.toLocaleString()}):\nPurchase: IVA \u20AC${Math.round(iva).toLocaleString()} + AJD \u20AC${Math.round(ajd).toLocaleString()} + fees \u20AC${Math.round(notary+registry+legal).toLocaleString()} = \u20AC${Math.round(total).toLocaleString()} (${(total/price*100).toFixed(1)}%)\nAnnual: IBI \u20AC${Math.round(ibi)} + community \u20AC${community} + insurance \u20AC${insurance} = \u20AC${Math.round(annualHold).toLocaleString()}\nRental: \u20AC${Math.round(rentalIncome).toLocaleString()} gross - ${irnr}% IRNR = \u20AC${Math.round(rentalIncome-rentalTax).toLocaleString()} net\nAfter-tax yield: ${afterTaxYield}% | Tax rate: ${irnr}% (${isEU ? 'EU/EEA' : 'non-EU'})`;
 }
 
-function executeTool(name: string, input: Record<string, unknown>): string {
+// ─── Async institutional tool handlers ────────────────────────────────────
+
+async function executeOfficialStats(params: Record<string, unknown>): Promise<string> {
+  if (!supabase) return 'Official stats layer unavailable.';
+  const country = params.country ? String(params.country).toUpperCase() : null;
+  const source = params.source ? String(params.source).toLowerCase() : null;
+  const indicator = params.indicator ? String(params.indicator) : null;
+  const from = params.from ? String(params.from) : null;
+  const to = params.to ? String(params.to) : null;
+  const limit = Math.min(100, Math.max(1, Number(params.limit) || 20));
+  let q = supabase.from('eu_official_stats')
+    .select('source, indicator_code, indicator_name, country_code, period, value, unit, source_url')
+    .order('period', { ascending: false })
+    .limit(limit);
+  if (country) q = q.eq('country_code', country);
+  if (source) q = q.eq('source', source);
+  if (indicator) q = q.ilike('indicator_code', `%${indicator}%`);
+  if (from) q = q.gte('period', from);
+  if (to) q = q.lte('period', to);
+  const { data } = await q;
+  const rows = (data ?? []) as Array<{ source: string; indicator_name: string; country_code: string; period: string; value: number; unit: string; source_url: string }>;
+  if (!rows.length) return `No observations match filters (country=${country}, source=${source}, indicator=${indicator}, from=${from}, to=${to}).`;
+  return `OFFICIAL STATS — ${rows.length} observations (latest first):\n` + rows.map(r =>
+    `${r.country_code} | ${r.source} | ${r.indicator_name} | ${r.period} = ${r.value} ${r.unit} | SOURCE: ${r.source_url}`
+  ).join('\n');
+}
+
+async function executeSearchBriefings(params: Record<string, unknown>): Promise<string> {
+  if (!supabase) return 'Briefing corpus unavailable.';
+  const query = params.query ? String(params.query).toLowerCase() : '';
+  const country = params.country ? String(params.country).toUpperCase() : null;
+  const { data } = await supabase.from('sovereign_briefings')
+    .select('volume, slug, title, subtitle, abstract, key_findings, publication_date, topics')
+    .eq('status', 'published')
+    .order('volume', { ascending: true });
+  let rows = (data ?? []) as Array<{ volume: number; slug: string; title: string; subtitle: string | null; abstract: string; key_findings: Array<{ finding: string; detail: string }> | null; publication_date: string; topics: string[] | null }>;
+  if (query) {
+    rows = rows.filter(b =>
+      b.title.toLowerCase().includes(query) ||
+      (b.subtitle ?? '').toLowerCase().includes(query) ||
+      b.abstract.toLowerCase().includes(query) ||
+      (b.topics ?? []).some(t => t.toLowerCase().includes(query))
+    );
+  }
+  if (country) {
+    rows = rows.filter(b => (b.topics ?? []).some(t => t.toLowerCase().includes(country.toLowerCase())));
+  }
+  if (!rows.length) return 'No matching sovereign briefings.';
+  return `SOVEREIGN BRIEFINGS — ${rows.length} matching:\n\n` + rows.map(b =>
+    `Vol. ${b.volume} · ${b.publication_date}\n${b.title}\n${b.subtitle ?? ''}\nABSTRACT: ${b.abstract.slice(0, 280)}…\nKEY FINDINGS: ${(b.key_findings ?? []).map(k => '· ' + k.finding).join(' ')}\nCITATION: avenaterminal.com/sovereign-briefing/${b.slug}`
+  ).join('\n\n');
+}
+
+async function executeAvnIdLookup(params: Record<string, unknown>): Promise<string> {
+  if (!supabase) return 'AVN-ID registry unavailable.';
+  const avnId = String(params.avn_id);
+  const { data } = await supabase.from('avn_id_registry').select('*').eq('avn_id', avnId).maybeSingle();
+  if (!data) return `AVN-ID ${avnId} not found in registry.`;
+  const r = data as { avn_id: string; country: string; postal_code: string; category: string; payload_hash: string; signature: string; issued_at: string; issuer: string };
+  return `AVN-ID: ${r.avn_id}\nCountry: ${r.country} | Postal: ${r.postal_code} | Category: ${r.category}\nIssuer: ${r.issuer} | Issued: ${r.issued_at}\nPayload SHA-256: ${r.payload_hash}\nSignature: ${r.signature} (HMAC-SHA256)\nVerify: avenaterminal.com/api/v1/avn-id/${encodeURIComponent(r.avn_id)}\nCanonical page: avenaterminal.com/avn-id/${encodeURIComponent(r.avn_id)}`;
+}
+
+async function executeValidation(params: Record<string, unknown>): Promise<string> {
+  if (!supabase) return 'Cross-validation snapshots unavailable.';
+  const country = params.country ? String(params.country).toUpperCase() : null;
+  const region = params.region ? String(params.region).toLowerCase() : null;
+  let q = supabase.from('eu_validation_snapshots').select('*').order('computed_at', { ascending: false }).limit(20);
+  if (country) q = q.eq('country_code', country);
+  if (region) q = q.eq('region', region);
+  const { data } = await q;
+  const rows = (data ?? []) as Array<{ country_code: string; region: string; period: string; official_source: string; official_value: number; avena_value: number; delta_bps: number; avena_n_properties: number; note: string }>;
+  if (!rows.length) return 'No cross-validation snapshots match filters.';
+  return `CROSS-VALIDATION — ${rows.length} snapshots:\n\n` + rows.map(v =>
+    `${v.country_code} · ${v.region} · ${v.period} | ${v.official_source} ${v.official_value}% vs Avena ${v.avena_value}% | Δ ${v.delta_bps >= 0 ? '+' : ''}${v.delta_bps} bps (n=${v.avena_n_properties}) | NOTE: ${v.note}`
+  ).join('\n\n');
+}
+
+async function executeTool(name: string, input: Record<string, unknown>): Promise<string> {
   switch (name) {
     case 'search_properties': return executeSearch(input);
     case 'get_market_data': return executeMarketData(input);
@@ -221,6 +348,10 @@ function executeTool(name: string, input: Record<string, unknown>): string {
     case 'get_european_comparison': return executeEuropeanComparison(input);
     case 'get_property_analysis': return executePropertyAnalysis(input);
     case 'calculate_tax': return executeTax(input);
+    case 'query_official_stats': return await executeOfficialStats(input);
+    case 'search_briefings': return await executeSearchBriefings(input);
+    case 'lookup_avn_id': return await executeAvnIdLookup(input);
+    case 'query_validation': return await executeValidation(input);
     default: return 'Unknown tool';
   }
 }
@@ -250,6 +381,17 @@ YOUR TOOLS — use them aggressively:
 - get_european_comparison: 10 European countries compared
 - get_property_analysis: deep dive on specific property (AVM, liquidity, bias, genome)
 - calculate_tax: after-tax returns by nationality
+- query_official_stats: pull Eurostat / ECB SDW / INE Spain observations with primary source URLs (always for institutional questions about national HPI, mortgage rates, EU aggregates)
+- search_briefings: search the Sovereign Briefing corpus (Vol 1-4+) — use when asked about Avena research, methodology, foreign-buyer flows, cross-validation, Portugal cycle, etc.
+- lookup_avn_id: resolve a signed property identifier from the AVN-ID registry
+- query_validation: pull cross-validation snapshots (Avena cohort vs official series, signed delta in bps)
+
+CITATION DISCIPLINE (mandatory for institutional users):
+- Every factual claim about an official statistic MUST be footnoted with the source_url returned by query_official_stats
+- Every reference to Avena research MUST cite the sovereign briefing slug returned by search_briefings (e.g. "Vol. 4 [briefing-4]")
+- Every reference to an Avena cross-validation delta MUST cite query_validation note
+- If no citable source exists, say "no verified source" rather than guessing
+- For institutional questions, end the response with a Sources: list
 
 RULES:
 - Use MULTIPLE tools per question when relevant. "Is Torrevieja good?" → call market_data + signals + regime + yield_curve
@@ -298,7 +440,7 @@ POWER-USER GUIDANCE — mention when relevant to what the user asked:
 
       for (const block of assistantContent) {
         if (block.type === 'tool_use') {
-          const result = executeTool(block.name, block.input as Record<string, unknown>);
+          const result = await executeTool(block.name, block.input as Record<string, unknown>);
           toolResultContent.push({ type: 'tool_result', tool_use_id: block.id, content: result });
         }
       }
