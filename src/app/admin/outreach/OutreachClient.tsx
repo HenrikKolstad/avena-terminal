@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Send, AtSign, Mail, Check, AlertCircle, Loader2, ChevronDown, Lock } from 'lucide-react';
+import { Send, AtSign, Mail, Check, AlertCircle, Loader2, ChevronDown } from 'lucide-react';
 
 interface Target {
   id: string;
@@ -30,7 +30,6 @@ type Status = 'idle' | 'sending' | 'sent' | 'skipped' | 'error';
 export function OutreachClient({ initial }: { initial: Target[] }) {
   const [targets, setTargets] = useState<Target[]>(initial);
   const [selected, setSelected] = useState<Set<string>>(new Set(initial.filter(t => t.channel === 'email').map(t => t.id)));
-  const [adminToken, setAdminToken] = useState('');
   const [staggerMs, setStaggerMs] = useState(25_000);
   const [statuses, setStatuses] = useState<Record<string, Status>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -67,10 +66,8 @@ export function OutreachClient({ initial }: { initial: Target[] }) {
     try {
       const res = await fetch('/api/admin/outreach/send', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(adminToken ? { Authorization: `Bearer ${adminToken}` } : {}),
-        },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',  // sends the avena_admin cookie set by the gated page
         body: JSON.stringify({ items, stagger_ms: staggerMs }),
       });
       const data: { ok: boolean; results?: SendResultRow[]; error?: string } = await res.json();
@@ -118,28 +115,16 @@ export function OutreachClient({ initial }: { initial: Target[] }) {
       {/* Control bar */}
       <div className="rounded-sm border p-4 sm:p-5" style={{ borderColor: 'hsl(var(--av-border))', background: 'hsl(var(--av-surface) / 0.4)' }}>
         <div className="grid sm:grid-cols-[1fr_auto] gap-4 items-end">
-          <div className="grid sm:grid-cols-2 gap-3">
-            <div>
-              <div className="font-mono text-[9px] uppercase tracking-[0.32em] text-muted-foreground mb-1">Admin token</div>
-              <div className="relative">
-                <input
-                  type="password" value={adminToken}
-                  onChange={e => setAdminToken(e.target.value)}
-                  placeholder="ADMIN_TOKEN (from Vercel env)"
-                  className="w-full rounded-sm border bg-transparent pl-8 pr-3 py-2 font-mono text-xs text-foreground placeholder:text-muted-foreground/70 outline-none focus:border-primary"
-                  style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
-                />
-                <Lock className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
-              </div>
-            </div>
-            <div>
-              <div className="font-mono text-[9px] uppercase tracking-[0.32em] text-muted-foreground mb-1">Stagger between sends (ms)</div>
-              <input
-                type="number" min={5000} step={5000}
-                value={staggerMs} onChange={e => setStaggerMs(Math.max(5000, parseInt(e.target.value, 10) || 90_000))}
-                className="w-full rounded-sm border bg-transparent px-3 py-2 font-mono text-xs text-foreground outline-none focus:border-primary"
-                style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
-              />
+          <div>
+            <div className="font-mono text-[9px] uppercase tracking-[0.32em] text-muted-foreground mb-1">Stagger between sends (ms)</div>
+            <input
+              type="number" min={5000} step={5000}
+              value={staggerMs} onChange={e => setStaggerMs(Math.max(5000, parseInt(e.target.value, 10) || 25_000))}
+              className="w-full sm:w-64 rounded-sm border bg-transparent px-3 py-2 font-mono text-xs text-foreground outline-none focus:border-primary"
+              style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
+            />
+            <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">
+              8 recipients × {(staggerMs/1000).toFixed(0)}s = ~{Math.ceil(8 * staggerMs / 1000)}s total wall clock
             </div>
           </div>
           <button

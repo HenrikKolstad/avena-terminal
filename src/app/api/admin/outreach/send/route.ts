@@ -20,9 +20,14 @@ export const maxDuration = 300;
 function ensureAuth(req: NextRequest): boolean {
   const auth = req.headers.get('authorization') ?? '';
   const token = auth.replace(/^Bearer\s+/i, '').trim();
+  // Also accept cookie token (set by the gated /admin/outreach page) so the
+  // UI can call this endpoint without re-pasting the token on every send.
+  const cookieToken = req.cookies.get('avena_admin')?.value;
   const expected = process.env.ADMIN_TOKEN;
-  if (!expected) return true;  // allow if not configured (dev mode)
-  return token === expected;
+  // SAFETY: if ADMIN_TOKEN isn't configured, refuse all calls. Never default
+  // to allow-all on a route that fires real emails to real people.
+  if (!expected) return false;
+  return token === expected || cookieToken === expected;
 }
 
 interface SendItemBody {
@@ -57,8 +62,11 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ ok: errors === 0, attempted: results.length, sent, errors, skipped, results });
 }
 
-export async function GET() {
-  // Public read of the target catalogue (no emails leaked — just the visible metadata)
+export async function GET(req: NextRequest) {
+  // Gated — same auth as POST. The page reads this via fetch with cookies.
+  if (!ensureAuth(req)) {
+    return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
+  }
   return NextResponse.json({
     ok: true,
     targets: OUTREACH_TARGETS.map(t => ({
