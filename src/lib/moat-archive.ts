@@ -64,10 +64,8 @@ async function fetchAllRows(table: string, recentDaysOnly?: number): Promise<Rec
     if (recentDaysOnly) {
       const cutoff = new Date();
       cutoff.setUTCDate(cutoff.getUTCDate() - recentDaysOnly);
-      // price_snapshots uses snapshot_date; counterpart_health_history uses history_date
-      // Fall back gracefully if the column doesn't exist
-      const col = table === 'price_snapshots' ? 'snapshot_date' : 'history_date';
-      q = q.gte(col, cutoff.toISOString().slice(0, 10));
+      // Both price_snapshots and counterpart_health_history use snapshot_date.
+      q = q.gte('snapshot_date', cutoff.toISOString().slice(0, 10));
     }
     const { data, error } = await q;
     if (error) {
