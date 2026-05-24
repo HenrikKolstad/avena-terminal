@@ -4,6 +4,7 @@ import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { statsCoverage, recentStatRows } from '@/lib/eu-stats-feeds';
 import { latestValidations } from '@/lib/eu-validation';
+import { DatasetJsonLd } from '@/components/v2/DatasetJsonLd';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 600;
@@ -54,6 +55,27 @@ export default async function EUOfficialPage() {
 
   return (
     <div className="avena-v2 min-h-screen">
+      <DatasetJsonLd
+        name="EU Official Residential Property Statistics — Avena Layer"
+        description="Daily-refreshed time-series of European residential property statistics ingested directly from Eurostat (SDMX-JSON), the ECB Statistical Data Warehouse (SDMX-JSON), and national statistical offices (INE Spain, ISTAT, CBS, Destatis, INSEE). Cross-referenced with the Avena ground-truth corpus of 1,881 micro-validated coastal properties. CC BY 4.0, fully citable, hash-chained off-site backups."
+        url="https://avenaterminal.com/eu-official"
+        identifier="https://doi.org/10.5281/zenodo.19520064"
+        keywords={['residential property', 'house price index', 'EU statistics', 'Eurostat', 'ECB', 'macroprudential', 'cross-validation', 'monetary transmission']}
+        temporalCoverage="2020-01-01/.."
+        spatialCoverage="EU27 + EA20 aggregates"
+        variableMeasured={['House Price Index', 'Mortgage rates (MIR)', 'Euribor 3M', 'Cross-validation deltas (bps)']}
+        distributions={[
+          { format: 'application/json', url: '/api/v1/stats', description: 'JSON query API' },
+          { format: 'text/csv',         url: '/api/v1/stats?format=csv', description: 'CSV download' },
+          { format: 'application/json', url: '/api/openapi.json', description: 'OpenAPI 3.1 spec' },
+        ]}
+        isBasedOn={[
+          { name: 'Eurostat residential property statistics', url: 'https://ec.europa.eu/eurostat/web/main/data/database' },
+          { name: 'ECB Statistical Data Warehouse',           url: 'https://data.ecb.europa.eu' },
+          { name: 'INE — Instituto Nacional de Estadística (ES)', url: 'https://www.ine.es' },
+        ]}
+        dateModified={coverage.last_run_at ? new Date(coverage.last_run_at).toISOString() : undefined}
+      />
       <Nav />
       <main className="pt-16">
         {/* Hero */}

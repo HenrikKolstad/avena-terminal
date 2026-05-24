@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { listArchiveRuns, archiveSummary } from '@/lib/moat-archive';
+import { DatasetJsonLd } from '@/components/v2/DatasetJsonLd';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 600;
@@ -40,8 +41,37 @@ export default async function ArchivePage() {
   }
   const dates = Object.keys(byDate).sort().reverse();
 
+  // Chain integrity check per table — compares each row's prev_sha256 to the previous row's sha256.
+  const chainStatus: Record<string, { ok: boolean; runs: number; broken_links: number }> = {};
+  const grouped: Record<string, typeof runs> = {};
+  for (const r of runs) {
+    if (!grouped[r.table_name]) grouped[r.table_name] = [];
+    grouped[r.table_name].push(r);
+  }
+  for (const [tableName, list] of Object.entries(grouped)) {
+    const chronological = [...list].sort((a, b) => a.run_date.localeCompare(b.run_date));
+    let broken = 0;
+    for (let i = 1; i < chronological.length; i++) {
+      if (chronological[i].prev_sha256 !== chronological[i - 1].sha256) broken++;
+    }
+    chainStatus[tableName] = { ok: broken === 0, runs: chronological.length, broken_links: broken };
+  }
+
   return (
     <div className="avena-v2 min-h-screen">
+      <DatasetJsonLd
+        name="Avena Moat Archive — Hash-Chained Off-Site Backups"
+        description="Nightly hash-chained snapshots of the Avena institutional data layer (EU official statistics, cross-validation snapshots, AVN-ID registry, sovereign briefings, macro anomalies, counterpart health history, price snapshots). Each snapshot is SHA-256 fingerprinted and chained to its predecessor — tampering with any historical snapshot breaks the chain publicly. Stored in Vercel Blob (Frankfurt) independently of the primary Supabase database."
+        url="https://avenaterminal.com/archive"
+        identifier="https://doi.org/10.5281/zenodo.19520064"
+        keywords={['data archive', 'cryptographic integrity', 'hash chain', 'reproducible research', 'open data']}
+        spatialCoverage="Frankfurt (EU)"
+        distributions={[
+          { format: 'application/gzip', url: '/api/v1/archive/verify', description: 'Chain verifier API' },
+          { format: 'application/json', url: '/api/v1/stats',          description: 'Live query API over the same data' },
+        ]}
+        dateModified={summary.latest_run_date ?? undefined}
+      />
       <Nav />
       <main className="pt-16">
         {/* Hero */}
@@ -96,6 +126,43 @@ export default async function ArchivePage() {
             </div>
           </div>
         </section>
+
+        {/* Chain integrity */}
+        {Object.keys(chainStatus).length > 0 && (
+          <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+            <div className="mx-auto max-w-[1200px] px-5 sm:px-12 py-16">
+              <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-3">Chain integrity</div>
+              <h2 className="font-serif text-3xl sm:text-4xl font-light text-foreground mb-4">Every chain verified.</h2>
+              <p className="text-sm text-muted-foreground mb-10 max-w-3xl leading-relaxed">
+                Per-table chain check: for each table, row N&apos;s <code className="font-mono text-foreground">prev_sha256</code> must equal row N-1&apos;s <code className="font-mono text-foreground">sha256</code>. Any deviation marks the chain as broken and is publicly visible. Verify any chain via <code className="font-mono text-primary">/api/v1/archive/verify?table=…</code>.
+              </p>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {Object.entries(chainStatus).map(([tableName, s]) => (
+                  <div key={tableName} className="rounded-sm border p-4" style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-surface) / 0.3)' }}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-foreground/85 truncate">{tableName}</span>
+                      <span className="font-mono text-[10px] uppercase tracking-[0.22em]" style={{ color: s.ok ? 'hsl(var(--av-success))' : 'hsl(var(--av-destructive))' }}>
+                        {s.ok ? '✓ intact' : `✗ ${s.broken_links} broken`}
+                      </span>
+                    </div>
+                    <div className="font-mono text-[10px] text-muted-foreground">
+                      {s.runs} link{s.runs === 1 ? '' : 's'} {s.runs === 1 ? '(genesis only)' : 'verified'}
+                    </div>
+                    <a
+                      href={`/api/v1/archive/verify?table=${encodeURIComponent(tableName)}`}
+                      target="_blank"
+                      rel="noopener"
+                      className="mt-3 inline-block font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground"
+                    >
+                      Verify chain →
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Methodology */}
         <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
