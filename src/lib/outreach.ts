@@ -92,7 +92,7 @@ https://avenaterminal.com`,
   {
     id: 'jorge-galan',
     name: 'Jorge Galán',
-    email: 'j.galan@bde.es',
+    email: 'jorge.galan@bde.es',
     organisation: 'Banco de España',
     role: 'Senior Economist, Financial Stability and Macroprudential Policy',
     channel: 'email',
@@ -178,14 +178,29 @@ https://avenaterminal.com`,
   {
     id: 'daniela-gabor',
     name: 'Daniela Gabor',
-    email: '',  // No public email — Twitter DM only
+    email: 'Daniela.Gabor@uwe.ac.uk',
     organisation: 'UWE Bristol',
     role: 'Professor of Economics and Macro-Finance',
-    channel: 'twitter-only',
+    channel: 'email',
     twitter: '@DanielaGabor',
     scenarioUrl: `${BASE}/policy-engine?lever=fb_levy&country=ES&r=coastal&m=500&fb=0.25&t=18`,
-    subject: '[Twitter DM] Foreign-buyer levy scenario for the financialisation lens',
-    body: `Daniela — built a macroprudential simulator that operationalises foreign-buyer housing financialisation as a tightenable policy lever. Vol. 2 of our methodology shows foreign-buyer cohorts amplify monetary transmission ~4.7× in Spanish coastal markets. Engine + methodology fully open (CC BY 4.0): ${BASE}/policy-engine?lever=fb_levy&country=ES&r=coastal&m=500&fb=0.25&t=18 — Henrik`,
+    subject: 'Foreign-buyer levy as a tightenable policy lever — macroprudential simulator for EU housing financialisation',
+    body: `Dear Prof. Gabor,
+
+Your work on housing financialisation and macroprudential transmission has shaped how I think about the residential property infrastructure I'm building.
+
+I'm Henrik Kolstad, founder of Avena Terminal. We've operationalised foreign-buyer housing financialisation into a tightenable policy lever — a deterministic, signed macroprudential simulator for European residential property. Vol. 2 of our published methodology documents empirically that foreign-buyer-heavy cohorts amplify monetary transmission ~4.7× in Spanish coastal markets via the financing-cost channel.
+
+The link below pre-loads a Spanish foreign-buyer levy scenario at +500 bps for 18 months forward, showing postcode-level price impact and cross-border capital rotation:
+
+${BASE}/policy-engine?lever=fb_levy&country=ES&r=coastal&m=500&fb=0.25&t=18
+
+The methodology is CC BY 4.0 and reproducible. If 30 minutes works, I'd value your read on whether the framework holds up against the financialisation lens you've published on.
+
+Best regards,
+Henrik Kolstad
+Founder, Avena Terminal
+https://avenaterminal.com`,
   },
   {
     id: 'robin-wigglesworth',
@@ -255,13 +270,13 @@ https://avenaterminal.com`,
   {
     id: 'tracy-alloway',
     name: 'Tracy Alloway',
-    email: 'talloway1@bloomberg.net',
+    email: '',  // No public Bloomberg email — her preferred channel is Twitter DM (verified at tracy-alloway.com)
     organisation: 'Bloomberg / Odd Lots',
     role: 'Senior Editor and Odd Lots Co-host',
-    channel: 'email',
+    channel: 'twitter-only',
     twitter: '@tracyalloway',
     scenarioUrl: `${BASE}/policy-engine?lever=fb_levy&country=ES&r=coastal&m=500&fb=0.25&t=18`,
-    subject: 'Odd Lots-shaped story: solo Norwegian built a macroprudential simulator for EU housing',
+    subject: '[Twitter DM] Odd Lots-shaped story: solo Norwegian built a macroprudential simulator for EU housing',
     body: `Tracy,
 
 This might be an Odd Lots-shaped story.
