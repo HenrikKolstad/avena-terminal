@@ -65,26 +65,6 @@ async function loadCoverage(): Promise<CoverageRow[]> {
       }
     } catch { /* ignore */ }
 
-    // Legacy Spain corpus lives in public/data.json (1,881 properties).
-    // If properties_registry hasn't been populated yet, still show ES as live.
-    if (!liveCountByCountry.get('ES')) liveCountByCountry.set('ES', 1881);
-
-    // If feed_configs doesn't include Spain (older seed migrations omitted ES
-    // because the canonical corpus predates the federation infrastructure),
-    // inject a synthetic config so Spain renders correctly with its 1,881
-    // ground-truth properties.
-    const hasSpain = configs.some(c => c.country_code === 'ES');
-    if (!hasSpain) {
-      configs.unshift({
-        country_code: 'ES',
-        country_name: 'Spain',
-        portal_name: 'xavia-estate (canonical corpus)',
-        feed_url: null,
-        active: true,
-        last_sync: new Date().toISOString(),
-      } as typeof configs[number]);
-    }
-
     return configs.map((cfg) => {
       const last = latestByCountry.get(cfg.country_code);
       const fallback = liveCountByCountry.get(cfg.country_code) ?? 0;
