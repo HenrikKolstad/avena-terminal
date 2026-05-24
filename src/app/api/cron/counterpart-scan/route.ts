@@ -13,6 +13,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { startCronLog, finishCronLog } from '@/lib/cron-log';
 import { supabase } from '@/lib/supabase';
+import { recordEvent } from '@/lib/event-store';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
@@ -128,6 +129,26 @@ export async function GET(req: NextRequest) {
         .eq('developer_id', d.developer_id);
       updated++;
     } catch { continue; }
+
+    // Event sourcing (Architectural Commitment 1): every grade revision
+    // becomes an immutable event. Drift of ≥1 point is observable history.
+    if (Math.abs(newScore - d.counterpart_score) >= 1 || newGrade !== undefined) {
+      await recordEvent({
+        event_type: 'counterpart.grade_revised',
+        aggregate_id: d.developer_id,
+        aggregate_type: 'counterpart',
+        payload: {
+          developer_id: d.developer_id,
+          name: d.name,
+          previous_score: d.counterpart_score,
+          new_score: newScore,
+          new_grade: newGrade,
+          trend: newTrend,
+          drift,
+        },
+        metadata: { source: 'cron/counterpart-scan' },
+      });
+    }
 
     // Emit alert when score crosses thresholds
     let alertSeverity: string | null = null;

@@ -19,6 +19,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { valueByInputs, valueByRef, type AVMInputs } from '@/lib/avm-engine';
 import { supabase } from '@/lib/supabase';
+import { recordEvent } from '@/lib/event-store';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
@@ -63,6 +64,21 @@ export async function POST(req: NextRequest) {
       });
     } catch { /* table may not exist yet — non-fatal */ }
   }
+
+  // Event sourcing (Architectural Commitment 1): record the AVM query as
+  // an immutable event so /timetravel and /verify can replay it later.
+  await recordEvent({
+    event_type: 'avm.queried',
+    aggregate_id: body.ref ?? `inputs:${body.inputs?.town ?? 'unknown'}:${body.inputs?.built_m2 ?? 0}m2`,
+    aggregate_type: 'avm_query',
+    payload: {
+      ref: body.ref ?? null,
+      predicted_value_eur: result.predicted_value_eur,
+      confidence_pct: result.confidence_pct,
+      model_version: result.model_version,
+    },
+    metadata: { api_key_used: body.key ?? null },
+  });
 
   const res = NextResponse.json({
     ok: true,

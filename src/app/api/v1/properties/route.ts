@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto';
 import { getAllProperties, avg, slugify } from '@/lib/properties';
 import { supabase } from '@/lib/supabase';
 import { toAPIP } from '@/lib/apip';
+import { computeConfidence } from '@/lib/score-confidence';
 
 export const dynamic = 'force-dynamic';
 
@@ -91,6 +92,43 @@ export async function GET(req: NextRequest) {
   const total = properties.length;
   const paged = properties.slice(offset, offset + limit);
 
+  // Adversarial confidence (Architectural Commitment 5) — computed inline
+  // from the deterministic v1 heuristic. Every score returns alongside a
+  // confidence float and reason codes so institutional clients can show
+  // their compliance team why a property is more or less certain.
+  const townComps = new Map<string, number>();
+  for (const p of properties) {
+    const t = (p.l || '').toLowerCase();
+    if (!t) continue;
+    townComps.set(t, (townComps.get(t) ?? 0) + 1);
+  }
+  const townMedians = new Map<string, number>();
+  for (const [town] of townComps.entries()) {
+    const inTown = properties.filter(p => (p.l || '').toLowerCase() === town && p.pm2);
+    if (inTown.length === 0) continue;
+    const ppms = inTown.map(p => p.pm2!).sort((a, b) => a - b);
+    townMedians.set(town, ppms[Math.floor(ppms.length / 2)]);
+  }
+  const confidenceFor = (p: typeof paged[number]) => {
+    const town = (p.l || '').toLowerCase();
+    return computeConfidence(
+      {
+        ref: p.ref ?? '',
+        primary_score: p._sc ?? 50,
+        price_eur: p.pf ?? null,
+        built_m2: p.bm ?? null,
+        town: p.l ?? null,
+        energy: null,
+        bedrooms: p.bd ?? null,
+        type: p.t ?? null,
+      },
+      {
+        median_price_per_m2: townMedians.get(town),
+        town_comp_count: townComps.get(town),
+      },
+    );
+  };
+
   // APIP-standard envelope when ?format=apip
   if (format === 'apip') {
     const apipResp = NextResponse.json({
@@ -116,7 +154,9 @@ export async function GET(req: NextRequest) {
     limit,
     offset,
     count: paged.length,
-    properties: paged.map(p => ({
+    properties: paged.map(p => {
+      const c = confidenceFor(p);
+      return {
       ref: p.ref,
       name: p.p,
       developer: p.d,
@@ -135,6 +175,9 @@ export async function GET(req: NextRequest) {
       status: p.s,
       completion: p.c,
       score: p._sc,
+      score_confidence: c.confidence,
+      score_confidence_codes: c.reason_codes,
+      score_flagged_for_review: c.flagged_for_review,
       yield_gross: p._yield?.gross,
       yield_net: p._yield?.net,
       yield_annual: p._yield?.annual,
@@ -147,7 +190,8 @@ export async function GET(req: NextRequest) {
       currency: p.currency ?? 'EUR',
       source_portal: p.source_portal ?? null,
       last_synced: p.last_synced ?? null,
-    })),
+      };
+    }),
     avg_price: Math.round(avg(paged.map(p => p.pf))),
     avg_score: Math.round(avg(paged.filter(p => p._sc).map(p => p._sc!))),
   });

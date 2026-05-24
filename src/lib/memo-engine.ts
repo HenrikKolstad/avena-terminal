@@ -18,6 +18,7 @@ import { createHash } from 'crypto';
 import { getAllProperties } from '@/lib/properties';
 import type { Property } from '@/lib/types';
 import { supabase } from '@/lib/supabase';
+import { recordEvent } from '@/lib/event-store';
 
 const MODEL = 'claude-sonnet-4-5';
 
@@ -486,6 +487,22 @@ export async function generateMemo(thesis: string, organisation?: string): Promi
       });
     } catch { /* non-fatal */ }
   }
+
+  // Event sourcing (Architectural Commitment 1)
+  await recordEvent({
+    event_type: 'memo.generated',
+    aggregate_id: id,
+    aggregate_type: 'memo',
+    payload: {
+      short_id: id,
+      thesis,
+      recommendation: memo.recommendation,
+      confidence: memo.confidence,
+      candidate_count: memo.candidates.length,
+      generated_by: memo.generated_by,
+    },
+    metadata: { organisation: organisation ?? null, generation_ms: ms },
+  });
 
   return memo;
 }

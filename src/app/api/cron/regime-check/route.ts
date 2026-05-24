@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { recordEvent } from '@/lib/event-store';
 
 export const maxDuration = 60;
 
@@ -51,6 +52,22 @@ export async function GET(req: NextRequest) {
     if (insertError) {
       console.error('Failed to insert regime history:', insertError.message);
     }
+
+    // Event sourcing (Architectural Commitment 1): every regime classification
+    // becomes an immutable event regardless of whether the regime changed.
+    await recordEvent({
+      event_type: regimeChanged ? 'regime.changed' : 'regime.classified',
+      aggregate_id: 'spain',
+      aggregate_type: 'regime',
+      payload: {
+        regime: regime.regime,
+        regime_score: regime.regime_score,
+        confidence: regime.confidence,
+        previous_regime: previousRegime,
+        property_count: regime.property_count,
+      },
+      metadata: { source: 'cron/regime-check' },
+    });
 
     // If regime changed, create an alpha signal
     if (regimeChanged) {
