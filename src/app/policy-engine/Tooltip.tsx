@@ -1,90 +1,135 @@
 'use client';
 
 import { Info } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 /**
- * Avena Policy Engine tooltip — a small "i" icon that reveals an
- * explanation on hover (desktop) or tap (mobile). Replaces the need
- * for users to memorise macroprudential vocabulary.
+ * Avena Policy Engine tooltip — Portal-positioned popover so it always
+ * escapes any parent overflow:hidden / clip / border-radius context. Uses
+ * the trigger's getBoundingClientRect to anchor a fixed-positioned tooltip
+ * directly under document.body.
  *
- * Design discipline:
- *   · 12px icon, muted-foreground by default, primary on hover
- *   · Tooltip auto-positions above (or below if at top of viewport)
- *   · Mono caption + serif body for the same typographic rhythm as
- *     the rest of the page
- *   · Width capped at 320px; respects parent overflow
+ * Behaviour:
+ *   · Hover (desktop) or tap (mobile) → open
+ *   · Auto-flips top/bottom based on viewport room
+ *   · Re-anchors on scroll/resize while open
+ *   · Closes on click-outside (mobile)
+ *   · 280px wide, capped at 90vw for small screens
  */
 
 interface Props {
-  /** Short caption shown above the body (e.g. the technical term) */
   caption?: string;
-  /** Plain-language explanation */
   body: string;
-  /** Optional source citation rendered as small italic line */
   source?: string;
-  /** Position: 'top' (default) or 'bottom'. 'top' reverts to 'bottom' if no room. */
   position?: 'top' | 'bottom';
-  /** Optional className for the trigger wrapper */
   className?: string;
 }
 
+interface Pos { top: number; left: number; flipped: boolean; }
+
 export function Tooltip({ caption, body, source, position = 'top', className = '' }: Props) {
   const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState<Pos | null>(null);
+  const [mounted, setMounted] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => setMounted(true), []);
+
+  const recompute = () => {
+    if (!triggerRef.current) return;
+    const r = triggerRef.current.getBoundingClientRect();
+    const tooltipW = Math.min(280, window.innerWidth - 24);
+    const tooltipH = 180;             // approximate; will auto-fit
+    const margin = 8;
+    // Centre horizontally on the trigger, clamp to viewport
+    let left = r.left + r.width / 2 - tooltipW / 2;
+    left = Math.max(12, Math.min(left, window.innerWidth - tooltipW - 12));
+    // Vertical: prefer requested position, flip if no room
+    let flipped = false;
+    let top = position === 'top' ? r.top - tooltipH - margin : r.bottom + margin;
+    if (position === 'top' && top < 12) {
+      top = r.bottom + margin;
+      flipped = true;
+    } else if (position === 'bottom' && top + tooltipH > window.innerHeight - 12) {
+      top = r.top - tooltipH - margin;
+      flipped = true;
+    }
+    setPos({ top, left, flipped });
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    recompute();
+    const handler = () => recompute();
+    window.addEventListener('scroll', handler, true);
+    window.addEventListener('resize', handler);
+    return () => {
+      window.removeEventListener('scroll', handler, true);
+      window.removeEventListener('resize', handler);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  // Close on click outside (mobile)
+  useEffect(() => {
+    if (!open) return;
+    function onDocClick(e: MouseEvent) {
+      if (triggerRef.current?.contains(e.target as Node)) return;
+      setOpen(false);
+    }
+    document.addEventListener('mousedown', onDocClick);
+    return () => document.removeEventListener('mousedown', onDocClick);
+  }, [open]);
 
   return (
-    <span
-      className={`relative inline-flex items-center align-middle ${className}`}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-    >
+    <>
       <button
+        ref={triggerRef}
         type="button"
         aria-label="Info"
-        onClick={(e) => { e.preventDefault(); setOpen(o => !o); }}
-        className="inline-flex items-center justify-center transition-colors"
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen(o => !o); }}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        className={`inline-flex items-center justify-center transition-colors align-middle ${className}`}
         style={{ color: open ? 'hsl(var(--av-primary))' : 'hsl(var(--av-muted-foreground) / 0.6)' }}
       >
         <Info className="h-3 w-3" />
       </button>
 
-      {open && (
-        <span
+      {mounted && open && pos && createPortal(
+        <div
           role="tooltip"
-          className={`absolute z-50 w-[280px] sm:w-[320px] left-1/2 -translate-x-1/2 ${position === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'} rounded-sm border p-3 shadow-elevated pointer-events-none`}
+          className="rounded-sm border p-3 pointer-events-none"
           style={{
+            position: 'fixed',
+            top: pos.top,
+            left: pos.left,
+            width: Math.min(280, window.innerWidth - 24),
+            zIndex: 9999,
             background: 'hsl(var(--av-surface))',
             borderColor: 'hsl(var(--av-primary) / 0.4)',
             boxShadow: '0 12px 32px -8px hsl(0 0% 0% / 0.7), 0 0 24px hsl(var(--av-primary) / 0.1)',
+            color: 'hsl(var(--av-foreground))',
+            fontFamily: 'Inter, system-ui, sans-serif',
           }}
         >
           {caption && (
-            <span className="block font-mono text-[9px] uppercase tracking-[0.32em] text-primary mb-1.5">
+            <div className="font-mono text-[9px] uppercase tracking-[0.32em] mb-1.5" style={{ color: 'hsl(var(--av-primary))' }}>
               {caption}
-            </span>
+            </div>
           )}
-          <span className="block text-[11px] leading-relaxed text-foreground/95">
+          <div className="text-[11px] leading-relaxed" style={{ color: 'hsl(var(--av-foreground) / 0.95)' }}>
             {body}
-          </span>
+          </div>
           {source && (
-            <span className="block mt-2 pt-2 border-t font-mono text-[9px] italic text-muted-foreground" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>
+            <div className="mt-2 pt-2 border-t font-mono text-[9px] italic" style={{ borderColor: 'hsl(var(--av-border) / 0.5)', color: 'hsl(var(--av-muted-foreground))' }}>
               {source}
-            </span>
+            </div>
           )}
-          {/* Arrow */}
-          <span
-            className={`absolute left-1/2 -translate-x-1/2 ${position === 'top' ? 'top-full' : 'bottom-full'} h-2 w-2`}
-            style={{
-              background: 'hsl(var(--av-surface))',
-              borderRight: '1px solid hsl(var(--av-primary) / 0.4)',
-              borderBottom: position === 'top' ? '1px solid hsl(var(--av-primary) / 0.4)' : 'none',
-              borderTop: position === 'bottom' ? '1px solid hsl(var(--av-primary) / 0.4)' : 'none',
-              borderLeft: 'none',
-              transform: position === 'top' ? 'translateX(-50%) translateY(-50%) rotate(45deg)' : 'translateX(-50%) translateY(50%) rotate(45deg)',
-            }}
-          />
-        </span>
+        </div>,
+        document.body
       )}
-    </span>
+    </>
   );
 }

@@ -77,7 +77,7 @@ export function TerminalChat({ contextPreamble }: { contextPreamble: string }) {
   }
 
   return (
-    <div className="relative rounded-sm border flex flex-col min-h-[700px] overflow-hidden" style={{ borderColor: 'hsl(var(--av-border))', background: 'hsl(var(--av-surface) / 0.35)' }}>
+    <div className="relative rounded-sm border flex flex-col min-h-[520px] lg:min-h-[700px] overflow-hidden" style={{ borderColor: 'hsl(var(--av-border))', background: 'hsl(var(--av-surface) / 0.35)' }}>
       {/* Gold accent stripe */}
       <div className="absolute left-0 top-0 bottom-0 w-[2px]" style={{ background: 'var(--av-gradient-gold)', opacity: 0.7 }} />
 

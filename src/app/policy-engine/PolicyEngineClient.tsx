@@ -165,16 +165,18 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
   return (
     <div className="space-y-4">
       {/* ─── INPUT PANEL ─────────────────────────────────────────── */}
-      <div className="rounded-sm border overflow-hidden" style={{ borderColor: 'hsl(var(--av-border))', background: 'hsl(var(--av-background) / 0.6)' }}>
+      {/* Note: NO overflow-hidden on the wrapper — would clip Portal tooltips
+          rendered relative to it. Inner sections handle radius via border. */}
+      <div className="rounded-sm border" style={{ borderColor: 'hsl(var(--av-border))', background: 'hsl(var(--av-background) / 0.6)' }}>
         <div className="grid lg:grid-cols-[2fr_1fr] divide-y lg:divide-y-0 lg:divide-x" style={{ borderColor: 'hsl(var(--av-border))' }}>
 
           {/* Left: Lever + Magnitude + Timeframe */}
-          <div className="p-5 sm:p-7">
+          <div className="p-4 sm:p-6 lg:p-7">
             <div className="flex items-center gap-2 mb-4">
               <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary">01 · Policy lever</span>
               <Tooltip caption="What is a policy lever?" body="A regulatory tool a central bank or supervisor can use to influence residential property risk. Each lever has different transmission speed and cohort sensitivity. Tightening usually cools prices; loosening expands lending capacity." />
             </div>
-            <div className="grid sm:grid-cols-3 gap-2 mb-7">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-7">
               {levers.map(l => {
                 const info = LEVER_INFO[l.id];
                 return (
@@ -198,7 +200,7 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
               })}
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-6">
+            <div className="grid sm:grid-cols-2 gap-5 sm:gap-6">
               <div>
                 <div className="flex items-baseline justify-between mb-3">
                   <div className="flex items-center gap-2">
@@ -242,7 +244,7 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
           </div>
 
           {/* Right: Cohort */}
-          <div className="p-5 sm:p-7" style={{ background: 'hsl(var(--av-surface) / 0.3)' }}>
+          <div className="p-4 sm:p-6 lg:p-7" style={{ background: 'hsl(var(--av-surface) / 0.3)' }}>
             <div className="flex items-center gap-2 mb-4">
               <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary">04 · Cohort filter</span>
               <Tooltip caption="What is a cohort?" body="A sub-segment of the residential market defined by country + region + foreign-buyer share. Macroprudential effects vary dramatically by cohort — Vol. 2 documented foreign-buyer-heavy cohorts amplify monetary transmission ~4.7× vs domestic-buyer cohorts. Filtering lets you test policy effects on the specific cohort that drives systemic risk." />
@@ -299,11 +301,11 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
         </div>
 
         {/* Run bar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t px-5 sm:px-7 py-4" style={{ borderColor: 'hsl(var(--av-border))', background: 'hsl(var(--av-surface) / 0.4)' }}>
-          <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 border-t px-4 sm:px-6 lg:px-7 py-4" style={{ borderColor: 'hsl(var(--av-border))', background: 'hsl(var(--av-surface) / 0.4)' }}>
+          <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground leading-relaxed">
             <span className="text-foreground">{lever.label}</span> <span className="text-primary">{magnitudeLabel}</span> · <span className="text-foreground">{country.code}</span> {region} · FB ≥ {(fbShareMin * 100).toFixed(0)}% · {timeframe} months
           </div>
-          <button onClick={run} disabled={loading} className="inline-flex items-center gap-2 rounded-sm px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:translate-y-0" style={{ background: 'var(--av-gradient-gold)' }}>
+          <button onClick={run} disabled={loading} className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-sm px-5 py-3 sm:py-2.5 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:translate-y-0" style={{ background: 'var(--av-gradient-gold)' }}>
             <Play className="h-3 w-3" /> {loading ? 'Computing…' : 'Run scenario'}
           </button>
         </div>
@@ -369,7 +371,7 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
                 body: 'Per-cluster projected price impact. Each tile is a municipality cluster from the 1,881-property ground-truth corpus. Colour intensity = magnitude of price impact (green = up, red = down). FB share = foreign-buyer share for that cluster — clusters with higher FB share amplify the policy effect ~4.7× per Vol. 2 framework. This is the granularity nobody else publishes.',
               }}
             >
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                 {output.cohort_postcode_grid.map((p, i) => {
                   const intensity = Math.min(1, Math.abs(p.price_delta_pct) / 8);
                   const col = p.price_delta_pct >= 0
@@ -408,8 +410,8 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
               source: 'Banco de España 2020 supervisory data + Avena exposure weighting',
             }}
           >
-            <div className="rounded-sm overflow-hidden border" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>
-              <table className="w-full">
+            <div className="rounded-sm overflow-x-auto border" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>
+              <table className="w-full min-w-[480px]">
                 <thead style={{ background: 'hsl(var(--av-surface) / 0.5)' }}>
                   <tr>
                     {['Bank', 'Exposure', 'NPL today', 'NPL stressed', 'Δ %'].map((h, i) => (

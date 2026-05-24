@@ -83,7 +83,7 @@ export default async function TerminalPage() {
 
       {/* ─── Top ticker: serif numbers, color-coded deltas ───────────── */}
       <div className="mt-16 border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'linear-gradient(180deg, hsl(var(--av-surface) / 0.6), hsl(var(--av-background)))' }}>
-        <div className="mx-auto max-w-[1600px] px-5 py-4 flex flex-wrap items-end gap-x-8 gap-y-3">
+        <div className="mx-auto max-w-[1600px] px-4 sm:px-5 py-3 sm:py-4 flex flex-wrap items-end gap-x-5 sm:gap-x-8 gap-y-3 overflow-x-auto scrollbar-none">
           <div className="flex items-center gap-2">
             <PulseDot />
             <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary">Avena Terminal · live</span>
@@ -102,7 +102,7 @@ export default async function TerminalPage() {
       </div>
 
       {/* ─── Cockpit grid ─────────────────────────────────────────── */}
-      <main className="flex-1 mx-auto w-full max-w-[1600px] px-4 py-5 grid gap-3 lg:grid-cols-[440px_1fr]">
+      <main className="flex-1 mx-auto w-full max-w-[1600px] px-3 sm:px-4 py-4 sm:py-5 grid gap-3 lg:grid-cols-[440px_1fr]">
 
         {/* ─ Left rail: 6 institutional widgets, denser ─ */}
         <div className="flex flex-col gap-3">
@@ -231,7 +231,7 @@ export default async function TerminalPage() {
 
       {/* ─── Status strip ─────────────────────────────────────────── */}
       <div className="border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-surface) / 0.4)' }}>
-        <div className="mx-auto max-w-[1600px] px-5 py-3 flex flex-wrap items-center gap-x-6 gap-y-1.5 font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
+        <div className="mx-auto max-w-[1600px] px-4 sm:px-5 py-3 flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-1.5 font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
           <span className="inline-flex items-center gap-1.5 text-success"><PulseDot small /> online · FRA1</span>
           <Link href="/status" className="hover:text-foreground transition-colors">System status</Link>
           <Link href="/governance" className="hover:text-foreground transition-colors">Governance</Link>

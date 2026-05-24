@@ -60,8 +60,8 @@ export default function PolicyEnginePage() {
         {/* ─── HERO ─────────────────────────────────────────────── */}
         <section className="border-b relative overflow-hidden print:hidden" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
           <div className="absolute inset-0 opacity-[0.08] pointer-events-none" style={{ background: 'radial-gradient(ellipse at top right, hsl(var(--av-primary)), transparent 60%)' }} />
-          <div className="mx-auto max-w-[1280px] px-5 sm:px-12 py-16 sm:py-24 relative">
-            <div className="flex items-center gap-3 mb-6">
+          <div className="mx-auto max-w-[1280px] px-5 sm:px-8 lg:px-12 py-12 sm:py-16 lg:py-24 relative">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-6">
               <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary">Avena · Precision Policy Engine</span>
               <span className="inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.22em] text-success" style={{ borderColor: 'hsl(var(--av-success) / 0.4)' }}>
                 <span className="h-1.5 w-1.5 rounded-full bg-success inline-block" />
@@ -69,11 +69,11 @@ export default function PolicyEnginePage() {
               </span>
             </div>
 
-            <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[1.0] tracking-tight text-foreground mb-6 max-w-5xl">
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light leading-[1.05] tracking-tight text-foreground mb-6 max-w-5xl">
               Macroprudential simulation, <span className="text-gold italic">to the postcode</span>.
             </h1>
 
-            <p className="max-w-3xl text-lg sm:text-xl font-light leading-relaxed text-muted-foreground mb-10">
+            <p className="max-w-3xl text-base sm:text-lg lg:text-xl font-light leading-relaxed text-muted-foreground mb-10">
               Built for the ECB, ESRB, national central banks, and supervisory authorities tasked with monitoring European residential property risk. Six policy levers × 27 EU countries × cohort weighting × forward 12-36 month projections. Calibrated against the Avena ground-truth corpus and the Vol. 2-4 sovereign briefing framework. Every output signed, every coefficient cited, every scenario reproducible.
             </p>
 
@@ -89,7 +89,7 @@ export default function PolicyEnginePage() {
 
         {/* ─── THE ENGINE ─────────────────────────────────────────── */}
         <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-surface) / 0.2)' }}>
-          <div className="mx-auto max-w-[1280px] px-5 sm:px-12 py-12 sm:py-16">
+          <div className="mx-auto max-w-[1280px] px-4 sm:px-8 lg:px-12 py-10 sm:py-14 lg:py-16">
             <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary mb-3">The engine</div>
             <h2 className="font-serif text-3xl sm:text-4xl font-light text-foreground mb-3">Pick a lever. Pick a cohort. Run the scenario.</h2>
             <p className="text-sm text-muted-foreground max-w-3xl mb-10 leading-relaxed">
