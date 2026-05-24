@@ -42,7 +42,7 @@ export function TerminalChat({ contextPreamble }: { contextPreamble: string }) {
         }),
       });
       const data = await res.json();
-      const reply = data.response || data.error || 'No response.';
+      const reply = data.reply || data.response || data.error || 'No response.';
       setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
     } catch (e) {
       setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${(e as Error).message}` }]);
