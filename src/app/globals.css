@@ -405,7 +405,6 @@
   #memo-print-root { max-width: none !important; padding: 32px 24px !important; color: #111 !important; }
   #memo-print-root h1, #memo-print-root h2, #memo-print-root h3 { color: #111 !important; }
   #memo-print-root .text-foreground { color: #111 !important; }
-  #memo-print-root .text-foreground\\/90 { color: #1a1a1a !important; }
   #memo-print-root .text-muted-foreground { color: #555 !important; }
   #memo-print-root .text-primary { color: #b8860b !important; }
   #memo-print-root .text-gold { color: #b8860b !important; -webkit-text-fill-color: #b8860b !important; background: none !important; }
