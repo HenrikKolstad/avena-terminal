@@ -4,6 +4,42 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { Play, FileDown, Copy, ChevronRight, AlertCircle, Mail, Link2, Check } from 'lucide-react';
 import { Sparkline } from '../terminal/Sparkline';
 import { TransmissionChart } from './TransmissionChart';
+import { Tooltip } from './Tooltip';
+
+// ─── Plain-language explainers for every metric — so an analyst doesn't
+// need to read three textbooks before they can operate the engine.
+const LEVER_INFO: Record<string, { caption: string; body: string; source?: string }> = {
+  ltv_cap: {
+    caption: 'Loan-to-value cap',
+    body: 'The maximum share of a property\'s value a bank is allowed to lend. Tightening (e.g. lowering the cap from 80% to 75%) makes mortgages more expensive in equity terms, cooling price growth — especially in cohorts where buyers depend on financing.',
+    source: 'Cerutti/Claessens/Laeven (2017) IMF WP/17/19',
+  },
+  dsti_cap: {
+    caption: 'Debt-service-to-income cap',
+    body: 'The maximum share of monthly income a borrower can spend on debt payments. Limits over-leveraging, dampens speculative demand. Most effective against domestic-buyer cohorts; weaker against foreign cash buyers.',
+    source: 'BCBS macroprudential framework',
+  },
+  capital_req: {
+    caption: 'Bank capital requirement',
+    body: 'How much capital banks must hold against their residential mortgage book. Tighter requirements reduce bank lending capacity (cooling prices); looser requirements expand capacity.',
+    source: 'Basel III + ECB SSM 2023',
+  },
+  ccyb: {
+    caption: 'Counter-cyclical capital buffer',
+    body: 'Extra capital banks must hold when credit growth runs hot, released when stress arrives. Designed to smooth the lending cycle without directly capping individual loans.',
+    source: 'ESRB 2019 framework',
+  },
+  sectoral_rw: {
+    caption: 'Sectoral risk weight',
+    body: 'A capital charge applied specifically to residential mortgage exposures (not the whole loan book). Lets supervisors target one sector without affecting corporate lending.',
+    source: 'ESRB Art. 458 + BdE 2020',
+  },
+  fb_levy: {
+    caption: 'Foreign-buyer levy',
+    body: 'A stamp-duty surcharge applied only to foreign buyers. Directly targets the cohort that amplifies monetary transmission ~4.7× (Vol. 2). Used by New Zealand (2018), British Columbia (2016), Australia.',
+    source: 'Avena Sovereign Briefing Vol. 4',
+  },
+};
 
 interface Lever { id: string; label: string; unit: string; description: string; magnitude_range: [number, number]; default_magnitude: number; citation: string; }
 interface Country { code: string; label: string; calibration: string; note: string; }
@@ -134,28 +170,41 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
 
           {/* Left: Lever + Magnitude + Timeframe */}
           <div className="p-5 sm:p-7">
-            <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary mb-4">01 · Policy lever</div>
+            <div className="flex items-center gap-2 mb-4">
+              <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary">01 · Policy lever</span>
+              <Tooltip caption="What is a policy lever?" body="A regulatory tool a central bank or supervisor can use to influence residential property risk. Each lever has different transmission speed and cohort sensitivity. Tightening usually cools prices; loosening expands lending capacity." />
+            </div>
             <div className="grid sm:grid-cols-3 gap-2 mb-7">
-              {levers.map(l => (
-                <button
-                  key={l.id}
-                  onClick={() => setLever(l)}
-                  className="text-left rounded-sm border px-3 py-2.5 transition-colors"
-                  style={{
-                    borderColor: lever.id === l.id ? 'hsl(var(--av-primary))' : 'hsl(var(--av-border) / 0.5)',
-                    background: lever.id === l.id ? 'hsl(var(--av-primary) / 0.08)' : 'hsl(var(--av-background) / 0.4)',
-                  }}
-                >
-                  <div className="font-mono text-[10px] uppercase tracking-[0.22em]" style={{ color: lever.id === l.id ? 'hsl(var(--av-primary))' : 'hsl(var(--av-foreground))' }}>{l.label}</div>
-                  <div className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{l.description.split(' ').slice(0, 5).join(' ')}…</div>
-                </button>
-              ))}
+              {levers.map(l => {
+                const info = LEVER_INFO[l.id];
+                return (
+                  <div key={l.id} className="relative">
+                    <button
+                      onClick={() => setLever(l)}
+                      className="w-full text-left rounded-sm border px-3 py-2.5 transition-colors"
+                      style={{
+                        borderColor: lever.id === l.id ? 'hsl(var(--av-primary))' : 'hsl(var(--av-border) / 0.5)',
+                        background: lever.id === l.id ? 'hsl(var(--av-primary) / 0.08)' : 'hsl(var(--av-background) / 0.4)',
+                      }}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="font-mono text-[10px] uppercase tracking-[0.22em]" style={{ color: lever.id === l.id ? 'hsl(var(--av-primary))' : 'hsl(var(--av-foreground))' }}>{l.label}</div>
+                        {info && <Tooltip caption={info.caption} body={info.body} source={info.source} />}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{l.description.split(' ').slice(0, 5).join(' ')}…</div>
+                    </button>
+                  </div>
+                );
+              })}
             </div>
 
             <div className="grid sm:grid-cols-2 gap-6">
               <div>
                 <div className="flex items-baseline justify-between mb-3">
-                  <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary">02 · Magnitude</div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary">02 · Magnitude</span>
+                    <Tooltip caption="How much do you change the lever?" body="A signed change to the policy lever. Negative = tightening (more restrictive), positive = loosening. For example, magnitude -5% on LTV cap means lowering the cap by five percentage points (e.g. 80% → 75%)." />
+                  </div>
                   <div className="font-serif text-2xl font-light text-foreground tabular leading-none">{magnitudeLabel}</div>
                 </div>
                 <input
@@ -173,7 +222,10 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
 
               <div>
                 <div className="flex items-baseline justify-between mb-3">
-                  <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary">03 · Timeframe</div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary">03 · Timeframe</span>
+                    <Tooltip caption="Forward projection horizon" body="The number of months over which the policy effect is projected. The engine applies a logistic transmission curve centred at month 6 — most macroprudential effects fully transmit by month 18, beyond which marginal additional impact tapers." />
+                  </div>
                   <div className="font-serif text-2xl font-light text-foreground tabular leading-none">{timeframe} mo</div>
                 </div>
                 <input
@@ -191,9 +243,15 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
 
           {/* Right: Cohort */}
           <div className="p-5 sm:p-7" style={{ background: 'hsl(var(--av-surface) / 0.3)' }}>
-            <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary mb-4">04 · Cohort filter</div>
+            <div className="flex items-center gap-2 mb-4">
+              <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary">04 · Cohort filter</span>
+              <Tooltip caption="What is a cohort?" body="A sub-segment of the residential market defined by country + region + foreign-buyer share. Macroprudential effects vary dramatically by cohort — Vol. 2 documented foreign-buyer-heavy cohorts amplify monetary transmission ~4.7× vs domestic-buyer cohorts. Filtering lets you test policy effects on the specific cohort that drives systemic risk." />
+            </div>
 
-            <Label>Country</Label>
+            <div className="flex items-center gap-2 mb-2">
+              <Label>Country</Label>
+              <Tooltip caption="Calibration scope" body="Spain (ES) has full ground-truth calibration via the 1,881-property corpus + Vol. 2 OLS coefficients. Other countries use directional priors from Vol. 4 framework. PT/IT/NL cohorts activate Q3-Q4 2026." />
+            </div>
             <div className="grid grid-cols-3 gap-1.5 mb-4">
               {countries.map(c => (
                 <button
@@ -214,7 +272,10 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
               ● {country.calibration === 'full' ? 'fully calibrated' : 'directional'}
             </div>
 
-            <Label>Region</Label>
+            <div className="flex items-center gap-2 mb-2">
+              <Label>Region</Label>
+              <Tooltip caption="Coastal vs national vs urban" body="Coastal cohorts are most exposed to foreign-buyer flows (Vol. 2 documented 24-32% foreign-buyer share in Spanish coastal cohorts). National = country-wide aggregate. Urban = inland metro areas where domestic demand dominates." />
+            </div>
             <div className="grid grid-cols-3 gap-1.5 mb-4">
               {(['coastal', 'national', 'urban'] as const).map(r => (
                 <button key={r} onClick={() => setRegion(r)} className="rounded-sm border px-2 py-1.5 font-mono text-[10px] uppercase tracking-[0.18em] transition-colors"
@@ -229,7 +290,10 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
               ))}
             </div>
 
-            <Label>Foreign-buyer share ≥ <span className="text-foreground font-serif text-sm">{(fbShareMin * 100).toFixed(0)}%</span></Label>
+            <div className="flex items-center gap-2 mb-2">
+              <Label>Foreign-buyer share ≥ <span className="text-foreground font-serif text-sm">{(fbShareMin * 100).toFixed(0)}%</span></Label>
+              <Tooltip caption="FB-share threshold" body="Filter the cohort to postcodes/clusters where foreign-buyer share exceeds this threshold. Vol. 2 finding: foreign-buyer-heavy cohorts amplify monetary transmission ~4.7× via the financing-cost channel. Setting threshold at 25% targets the risk-amplifying cluster identified in the Avena framework." source="Avena Sovereign Briefing Vol. 2" />
+            </div>
             <input type="range" min={0} max={0.45} step={0.05} value={fbShareMin} onChange={e => setFbShareMin(parseFloat(e.target.value))} className="w-full accent-primary mb-5" />
           </div>
         </div>
@@ -263,6 +327,11 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
               positive={output.price_impact_pct >= 0}
               chart={<Sparkline values={output.forward_curve_pct} height={36} stroke="hsl(var(--av-primary))" fill="hsl(var(--av-primary))" />}
               caption={`In target cohort, ${output.cohort_size.toLocaleString()} properties across ${output.cohort_postcodes_affected} clusters`}
+              tooltip={{
+                caption: 'Price impact — what does it mean?',
+                body: 'The projected change in median property price in your selected cohort over the chosen timeframe. The 95% confidence interval reflects model uncertainty — tighter for Spain (ground-truth calibrated) than for countries on directional priors. Negative = prices fall; positive = prices rise.',
+                source: 'Vol. 2 OLS coefficients + foreign-buyer interaction term',
+              }}
             />
             <Headline
               label="NPL impact"
@@ -270,6 +339,11 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
               sub="Top-5 Spanish bank residential exposures"
               positive={output.npl_impact_bps <= 0}
               caption={output.npl_impact_bps > 0 ? 'Stress: capital pressure on cycle-vulnerable banks' : 'Relief: capital pressure eases'}
+              tooltip={{
+                caption: 'NPL — non-performing loans',
+                body: 'NPL = loans where the borrower has missed payments for ≥90 days. The NPL ratio is the share of a bank\'s loan book that is non-performing. A rising NPL ratio means more borrower defaults → capital pressure on banks. This metric projects the NPL change for the top-5 Spanish banks\' residential exposures, weighted by their cohort exposure.',
+                source: 'Banco de España 2020 residential stress test methodology',
+              }}
             />
             <Headline
               label="Capital rotation"
@@ -277,12 +351,24 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
               sub={output.capital_rotation_eur >= 0 ? 'Outflow to other EU markets' : 'Inflow from other EU markets'}
               positive={false}
               caption="Estimated 12-month rotation across EU residential markets"
+              tooltip={{
+                caption: 'Cross-border capital rotation',
+                body: 'When one EU market tightens, foreign-buyer and institutional capital often rotates to similar adjacent markets (e.g. tightening Spain pushes flows toward Portugal, Italy, Greece). This metric estimates the EUR amount of capital that exits the targeted cohort within 12 months in response to the policy change.',
+                source: 'Vol. 4 framework + cross-validation between Eurostat HPI series',
+              }}
             />
           </div>
 
           {/* Cohort postcode grid */}
           {output.cohort_postcode_grid.length > 0 && (
-            <div className="policy-fade-up-d1"><Panel title="Cohort breakdown" subtitle={`${output.cohort_postcodes_affected} clusters affected · cohort size ${output.cohort_size.toLocaleString()}`}>
+            <div className="policy-fade-up-d1"><Panel
+              title="Cohort breakdown"
+              subtitle={`${output.cohort_postcodes_affected} clusters affected · cohort size ${output.cohort_size.toLocaleString()}`}
+              tooltip={{
+                caption: 'Postcode heat map',
+                body: 'Per-cluster projected price impact. Each tile is a municipality cluster from the 1,881-property ground-truth corpus. Colour intensity = magnitude of price impact (green = up, red = down). FB share = foreign-buyer share for that cluster — clusters with higher FB share amplify the policy effect ~4.7× per Vol. 2 framework. This is the granularity nobody else publishes.',
+              }}
+            >
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                 {output.cohort_postcode_grid.map((p, i) => {
                   const intensity = Math.min(1, Math.abs(p.price_delta_pct) / 8);
@@ -313,7 +399,15 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
           )}
 
           {/* Bank stress projection */}
-          <div className="policy-fade-up-d2"><Panel title="Bank stress projection" subtitle="Top-5 Spanish bank residential exposures · NPL today → stressed">
+          <div className="policy-fade-up-d2"><Panel
+            title="Bank stress projection"
+            subtitle="Top-5 Spanish bank residential exposures · NPL today → stressed"
+            tooltip={{
+              caption: 'Reading the bank stress table',
+              body: 'For each top-5 Spanish bank: their total residential mortgage exposure (EUR billions), current NPL ratio, projected NPL ratio under your scenario, and the delta. Banks with higher baseline NPL ratios are more cycle-sensitive — their stress response is amplified vs healthier balance sheets.',
+              source: 'Banco de España 2020 supervisory data + Avena exposure weighting',
+            }}
+          >
             <div className="rounded-sm overflow-hidden border" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>
               <table className="w-full">
                 <thead style={{ background: 'hsl(var(--av-surface) / 0.5)' }}>
@@ -341,7 +435,15 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
           </Panel></div>
 
           {/* Forward transmission curve — proper chart with axes */}
-          <div className="policy-fade-up-d3"><Panel title="Forward transmission curve" subtitle={`Cumulative % impact across ${timeframe} months · logistic transmission centred at m6`}>
+          <div className="policy-fade-up-d3"><Panel
+            title="Forward transmission curve"
+            subtitle={`Cumulative % impact across ${timeframe} months · logistic transmission centred at m6`}
+            tooltip={{
+              caption: 'How the effect transmits over time',
+              body: 'Macroprudential policy effects do not transmit instantly — they build up through the lending cycle. The engine uses a logistic S-curve centred at month 6 with half-life 4 months: ~5% of the full effect by month 1, ~50% by month 6, ~95% by month 18. This shape matches empirical observation from past LTV cap interventions (BdE 2020, ESRB recommendation 2019).',
+              source: 'ESRB 2019 framework recommendation',
+            }}
+          >
             <div className="rounded-sm border p-4" style={{ borderColor: 'hsl(var(--av-border) / 0.5)', background: 'hsl(var(--av-background) / 0.4)' }}>
               <TransmissionChart values={output.forward_curve_pct} timeframe={timeframe} height={220} />
             </div>
@@ -402,7 +504,7 @@ function Label({ children }: { children: React.ReactNode }) {
   return <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-2">{children}</div>;
 }
 
-function Headline({ label, value, sub, positive, chart, caption }: { label: string; value: string; sub: string; positive: boolean; chart?: React.ReactNode; caption?: string }) {
+function Headline({ label, value, sub, positive, chart, caption, tooltip }: { label: string; value: string; sub: string; positive: boolean; chart?: React.ReactNode; caption?: string; tooltip?: { caption: string; body: string; source?: string } }) {
   const accentColor = positive ? 'hsl(var(--av-success))' : 'hsl(var(--av-destructive))';
   return (
     <div
@@ -426,7 +528,10 @@ function Headline({ label, value, sub, positive, chart, caption }: { label: stri
         style={{ background: `radial-gradient(circle at top right, ${accentColor.replace(')', ' / 0.08)')}, transparent 70%)` }}
       />
       <div className="relative pl-3">
-        <div className="font-mono text-[10px] uppercase tracking-[0.32em] mb-2.5" style={{ color: accentColor }}>{label}</div>
+        <div className="flex items-center gap-2 mb-2.5">
+          <span className="font-mono text-[10px] uppercase tracking-[0.32em]" style={{ color: accentColor }}>{label}</span>
+          {tooltip && <Tooltip caption={tooltip.caption} body={tooltip.body} source={tooltip.source} position="bottom" />}
+        </div>
         <div className="font-serif text-5xl sm:text-6xl font-light text-foreground tabular leading-none mb-2">{value}</div>
         <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mt-1">{sub}</div>
         {chart && <div className="mt-4 opacity-90">{chart}</div>}
@@ -436,12 +541,15 @@ function Headline({ label, value, sub, positive, chart, caption }: { label: stri
   );
 }
 
-function Panel({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
+function Panel({ title, subtitle, tooltip, children }: { title: string; subtitle?: string; tooltip?: { caption: string; body: string; source?: string }; children: React.ReactNode }) {
   return (
     <div className="rounded-sm border p-5" style={{ borderColor: 'hsl(var(--av-border))', background: 'hsl(var(--av-surface) / 0.25)' }}>
       <div className="flex items-baseline justify-between mb-4">
         <div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary">{title}</div>
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary">{title}</span>
+            {tooltip && <Tooltip caption={tooltip.caption} body={tooltip.body} source={tooltip.source} />}
+          </div>
           {subtitle && <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mt-0.5">{subtitle}</div>}
         </div>
       </div>
