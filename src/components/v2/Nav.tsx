@@ -38,6 +38,7 @@ const NAV: TopItem[] = [
       { label: 'Macro Alerts',       href: '/alerts/macro',        sub: 'Daily ≥2σ anomaly feed across official series' },
       { label: 'API Documentation',  href: '/docs/api',            sub: 'OpenAPI 3.1 · curl-able · CC BY 4.0' },
       { label: 'Moat Archive',       href: '/archive',             sub: 'Hash-chained nightly backups · downloadable · verifiable' },
+      { label: 'Defensibility',      href: '/defensibility',       sub: 'Due-diligence dossier · bus factor · provenance · legal' },
     ],
   },
   { label: 'Swarm',  href: '/swarm' },

@@ -200,10 +200,10 @@ export default function StackPage() {
               The Stack · Engineering · Document v2026.05
             </span>
             <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[1.0] tracking-tight text-foreground mb-6 max-w-4xl">
-              Everything that runs <span className="italic text-gold">under the surface</span>.
+              <span className="italic text-gold">Infrastructure-grade</span> stack.
             </h1>
             <p className="max-w-3xl text-base text-muted-foreground font-light leading-relaxed">
-              The honest engineering rundown. Every data source named at its upstream provider. Every scheduled cron listed with its schedule and purpose. Every mathematical model summarised. Every standard cited with its identifier. The page a CTO, head of risk, or platform-engineering team reads before they let Avena into their stack.
+              Postgres on Supabase (Frankfurt, eu-central-1). Hash-chained Vercel Blob archive (fra1). OpenAPI 3.1 specification. MCP server for AI-assistant distribution. Agent-to-agent (A2A) protocol surface. CC BY 4.0 licensed dataset. DOI-anchored permanence. Every data source named at its upstream provider, every scheduled cron listed with its schedule and purpose, every mathematical model summarised. The page a CTO, head of risk, or platform-engineering team reads before they let Avena into their stack.
             </p>
             <div className="mt-8 inline-flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
               <span>Source-of-truth · this page</span>

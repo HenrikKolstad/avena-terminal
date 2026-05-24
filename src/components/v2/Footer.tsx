@@ -31,6 +31,7 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
       { label: 'Webhooks',            href: '/docs/webhooks' },
       { label: 'Wikidata Graph',      href: '/wikidata' },
       { label: 'Moat Archive',        href: '/archive' },
+      { label: 'Defensibility',       href: '/defensibility' },
       { label: 'Live Ops',            href: '/live' },
       { label: 'Proof of Moat',       href: '/proof' },
       { label: 'The Stack',           href: '/stack' },

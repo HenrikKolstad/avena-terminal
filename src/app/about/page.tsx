@@ -66,14 +66,12 @@ export default function AboutPage() {
                 About
               </span>
               <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground">
-                Spain&apos;s first
+                European residential property
                 <br />
-                <span className="italic text-gold">PropTech scanner</span>.
+                <span className="italic text-gold">data infrastructure</span>.
               </h1>
-              <p className="mt-6 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
-                Institutional-grade scoring for new-build property investment, built from
-                the ground up to democratize data that was once locked behind expensive
-                advisory firms.
+              <p className="mt-6 max-w-3xl font-light text-base text-muted-foreground sm:text-lg">
+                Avena is the missing infrastructure layer for the largest under-instrumented asset class in Europe. Equities have Bloomberg. Fixed income has Refinitiv. Indices have MSCI. Residential property — €30 trillion across 27 EU markets — never got its institutional data backbone. We are building it under an open standard, cited DOI, EU data residency, and signed-output cryptographic provenance.
               </p>
             </div>
           </div>

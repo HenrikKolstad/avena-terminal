@@ -111,12 +111,12 @@ export default function InstitutionalPage() {
               Institutional · Funds · Family Offices · Banks · DFIs
             </span>
             <h1 className="font-serif text-5xl sm:text-6xl lg:text-8xl font-light leading-[0.92] tracking-tight text-foreground mb-6 max-w-5xl">
-              European property intelligence,
+              The missing <span className="italic text-gold">data infrastructure layer</span>
               <br />
-              built to <span className="italic text-gold">institutional</span> tolerance.
+              for European residential property.
             </h1>
-            <p className="max-w-2xl text-lg text-muted-foreground font-light leading-relaxed">
-              A dedicated data terminal for funds and banks underwriting European residential real estate. Cited DOI, open APIP standard, SLA-backed delivery, and direct line to the research desk.
+            <p className="max-w-3xl text-lg text-muted-foreground font-light leading-relaxed">
+              Bloomberg, MSCI, Refinitiv built the data infrastructure for equities, fixed income, and FX. For European residential property — the largest asset class on the continent at roughly €30 trillion — the equivalent layer does not exist. Avena is building it. Cited DOI, open APIP standard, SLA-backed delivery, EU data residency, direct line to the research desk that authored the methodology.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
               <span>DOI <span className="text-foreground">10.5281/zenodo.19520064</span></span>

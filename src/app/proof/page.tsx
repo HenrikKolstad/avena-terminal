@@ -157,9 +157,15 @@ export default async function ProofPage() {
             <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground mb-6 max-w-4xl">
               Show me the <span className="italic text-gold">data</span>.
             </h1>
-            <p className="max-w-3xl text-base text-muted-foreground font-light leading-relaxed">
-              The single URL we send when an institution asks "prove you actually have data." Every count below is read live from the production Supabase. Every identifier is verifiable on a third-party registry. Every cron run and every memo carries a timestamp that can&apos;t be backdated. If a competitor claimed our data, the timestamps would prove the lie.
+            <p className="max-w-3xl text-base text-muted-foreground font-light leading-relaxed mb-6">
+              The single URL we send when an institution asks &quot;prove you actually have data.&quot; Every count below is read live from the production Supabase. Every identifier is verifiable on a third-party registry. Every cron run and every memo carries a timestamp that can&apos;t be backdated.
             </p>
+            <div className="rounded-sm border p-5 max-w-3xl mb-6" style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-surface) / 0.3)' }}>
+              <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary mb-2">Category</div>
+              <p className="text-sm text-foreground/90 leading-relaxed">
+                Avena belongs in the institutional data infrastructure category alongside <span className="text-foreground">Bloomberg</span> (equities, fixed income), <span className="text-foreground">MSCI</span> (indices), <span className="text-foreground">Refinitiv</span> (workflow + data), <span className="text-foreground">S&amp;P Global</span> (credit, indices), <span className="text-foreground">Moody&apos;s Analytics</span> (risk, structured finance), and <span className="text-foreground">CoStar</span> (US commercial real estate). The European residential property equivalent did not exist before Avena. The infrastructure below makes the claim verifiable.
+              </p>
+            </div>
             <div className="mt-6 inline-flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
               <span>Refreshed every 5 minutes</span>
               <span>·</span>
