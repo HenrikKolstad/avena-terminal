@@ -14,7 +14,7 @@ interface InquiryBody {
   full_name: string;
   contact_email: string;
   linkedin_url?: string;
-  current_role?: string;
+  current_title?: string;
   current_org?: string;
   archetype_fit?: string;
   bet_thesis?: string;
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
         full_name: body.full_name.trim(),
         contact_email: body.contact_email.trim().toLowerCase(),
         linkedin_url: body.linkedin_url?.trim() || null,
-        current_role: body.current_role?.trim() || null,
+        current_title: body.current_title?.trim() || null,
         current_org: body.current_org?.trim() || null,
         archetype_fit: body.archetype_fit?.trim() || null,
         bet_thesis: body.bet_thesis?.trim() || null,

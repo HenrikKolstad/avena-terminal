@@ -7,7 +7,7 @@ export function CoFounderForm() {
     full_name: '',
     contact_email: '',
     linkedin_url: '',
-    current_role: '',
+    current_title: '',
     current_org: '',
     archetype_fit: '',
     bet_thesis: '',
@@ -64,7 +64,7 @@ export function CoFounderForm() {
           <input type="text" value={form.current_org} onChange={e => patch('current_org', e.target.value)} placeholder="ECB, BdE, MSCI, Bloomberg, Refinitiv…" className="w-full rounded-sm border bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/70 outline-none focus:border-primary" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }} />
         </Field>
         <Field label="Current role" className="sm:col-span-2">
-          <input type="text" value={form.current_role} onChange={e => patch('current_role', e.target.value)} placeholder="Title or honest description" className="w-full rounded-sm border bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/70 outline-none focus:border-primary" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }} />
+          <input type="text" value={form.current_title} onChange={e => patch('current_title', e.target.value)} placeholder="Title or honest description" className="w-full rounded-sm border bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/70 outline-none focus:border-primary" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }} />
         </Field>
       </div>
 

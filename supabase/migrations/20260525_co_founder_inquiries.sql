@@ -12,7 +12,7 @@ create table if not exists co_founder_inquiries (
   full_name       text not null,
   contact_email   text not null,
   linkedin_url    text,
-  current_role    text,
+  current_title    text,
   current_org     text,
   archetype_fit   text,                 -- free-text: which archetype facets they match
   bet_thesis      text,                 -- their answer to "why bet on this"
