@@ -22,7 +22,8 @@
     "src/app/api/cron/eu-validation/route.ts": { "maxDuration": 120 },
     "src/app/api/cron/eu-anomalies/route.ts": { "maxDuration": 180 },
     "src/app/api/cron/moat-archive/route.ts": { "maxDuration": 300 },
-    "src/app/api/v1/sovereign/dispatch/[volume]/route.ts": { "maxDuration": 300 }
+    "src/app/api/v1/sovereign/dispatch/[volume]/route.ts": { "maxDuration": 300 },
+    "src/app/api/cron/eu-anomalies/route.ts": { "maxDuration": 300 }
   },
   "crons": [
     { "path": "/api/cron/pulse", "schedule": "0 7 * * *" },

@@ -39,6 +39,8 @@ const NAV: TopItem[] = [
       { label: 'EU Official Stats',  href: '/eu-official',              sub: 'Eurostat · ECB SDW · national NSOs · daily refresh' },
       { label: 'Macro Alerts',       href: '/alerts/macro',             sub: 'Daily ≥2σ anomaly feed across official series' },
       { label: 'API Documentation',  href: '/docs/api',                 sub: 'OpenAPI 3.1 · curl-able · CC BY 4.0' },
+      { label: 'Webhooks',           href: '/docs/webhooks',            sub: 'Signed event push · anomalies · briefings · AVN-IDs' },
+      { label: 'Wikidata Q139165733',href: '/wikidata',                 sub: 'Structured claim graph · QuickStatements export' },
       { label: 'Moat Archive',       href: '/archive',                  sub: 'Hash-chained nightly backups · downloadable · verifiable' },
       { label: 'Sovereign Briefing', href: '/sovereign-briefing',       sub: 'Research · central banks · ESMA · EIB · OECD' },
       { label: 'APON Oracle',        href: '/oracle',                   sub: 'Signed price feeds · DeFi RWA · smart contracts' },
