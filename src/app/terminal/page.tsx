@@ -33,7 +33,11 @@ async function loadTerminal() {
       supabase.from('sovereign_briefings').select('volume, slug, title, subtitle, publication_date').eq('status', 'published').order('volume', { ascending: false }).limit(5),
       supabase.from('counterpart_health_history').select('*').order('snapshot_date', { ascending: false }).limit(2),
       supabase.from('avena_history').select('*').order('snapshot_date', { ascending: false }).limit(2),
-      supabase.from('eu_official_stats').select('country_code, source, indicator_code, period, value, unit').or('source.eq.ecb_sdw,indicator_code.ilike.%RCH_A%').order('period', { ascending: false }).limit(40),
+      // Pull MIR + HPI separately — .or() with ilike wildcards is fragile.
+      Promise.all([
+        supabase.from('eu_official_stats').select('country_code, source, indicator_code, period, value, unit').eq('source', 'ecb_sdw').ilike('indicator_code', 'MIR%').order('period', { ascending: false }).limit(20),
+        supabase.from('eu_official_stats').select('country_code, source, indicator_code, period, value, unit').eq('source', 'eurostat').ilike('indicator_code', '%RCH_A%').order('period', { ascending: false }).limit(20),
+      ]).then(([m, h]) => ({ data: [...(m.data ?? []), ...(h.data ?? [])] })),
     ]);
     const healthArr = (h.data ?? []) as HealthRow[];
     const idxArr = (idx.data ?? []) as IndexRow[];

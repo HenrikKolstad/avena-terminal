@@ -94,8 +94,8 @@ const nextConfig: NextConfig = {
       { source: '/sdk',                 destination: '/docs/mcp',         permanent: true },
       { source: '/ontology',            destination: '/methodology',      permanent: true },
       { source: '/embed/apci',          destination: '/embed/regime',     permanent: true },
-      { source: '/terminal',            destination: '/',                 permanent: true },
-      { source: '/terminal-v2',         destination: '/',                 permanent: true },
+      // /terminal is the institutional cockpit (added 2026-05-24)
+      { source: '/terminal-v2',         destination: '/terminal',         permanent: true },
 
       // Old emerald-theme i18n stubs — collapse to canonical English surfaces
       { source: '/es',                  destination: '/costas',           permanent: true },
