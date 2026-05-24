@@ -418,3 +418,90 @@
   #memo-print-root section { page-break-inside: avoid; }
   @page { margin: 18mm 16mm; size: A4; }
 }
+
+/* ─── Policy Engine — slider polish ───────────────────────────────────────
+   The default browser <input type="range"> has chunky chrome that breaks
+   the rest of the Policy Engine's institutional aesthetic. Branded gold
+   track + serif-tabular thumb. Works in Chromium + Firefox + Safari. */
+.avena-v2 input[type="range"].accent-primary {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(to right, hsl(var(--av-primary)) 0%, hsl(var(--av-primary) / 0.4) 100%);
+  outline: none;
+  cursor: pointer;
+}
+.avena-v2 input[type="range"].accent-primary::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: hsl(var(--av-primary));
+  border: 2px solid hsl(var(--av-background));
+  box-shadow: 0 0 0 1px hsl(var(--av-primary) / 0.5), 0 0 12px hsl(var(--av-primary) / 0.4);
+  cursor: grab;
+  transition: transform 0.15s ease;
+}
+.avena-v2 input[type="range"].accent-primary::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.15);
+}
+.avena-v2 input[type="range"].accent-primary::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: hsl(var(--av-primary));
+  border: 2px solid hsl(var(--av-background));
+  box-shadow: 0 0 0 1px hsl(var(--av-primary) / 0.5), 0 0 12px hsl(var(--av-primary) / 0.4);
+  cursor: grab;
+}
+
+/* Subtle fade-up on first paint — applies to Policy Engine widgets */
+@keyframes policy-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.avena-v2 .policy-fade-up { animation: policy-fade-up 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.avena-v2 .policy-fade-up-d1 { animation: policy-fade-up 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) 0.08s both; }
+.avena-v2 .policy-fade-up-d2 { animation: policy-fade-up 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) 0.16s both; }
+.avena-v2 .policy-fade-up-d3 { animation: policy-fade-up 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) 0.24s both; }
+@media (prefers-reduced-motion: reduce) {
+  .avena-v2 .policy-fade-up, .avena-v2 .policy-fade-up-d1,
+  .avena-v2 .policy-fade-up-d2, .avena-v2 .policy-fade-up-d3 { animation: none; }
+}
+
+/* ─── Policy Engine — print stylesheet ────────────────────────────────────
+   When a user clicks "Save as PDF" the page is meant to come out as a
+   clean institutional research memo. Hides controls + nav + footer, keeps
+   the headline outcomes, cohort grid, bank table, methodology, signature. */
+@media print {
+  body, .avena-v2 { background: #ffffff !important; color: #111 !important; }
+  header, footer, nav { display: none !important; }
+  main { padding-top: 0 !important; }
+  /* Hide interactive controls — the print is a snapshot */
+  .policy-print-hide,
+  .avena-v2 input[type="range"],
+  .avena-v2 button { display: none !important; }
+  /* But preserve sliders that have been rendered into static labels above */
+  /* Strip the gold accent stripes — they bleed weirdly on toner printers */
+  .avena-v2 [style*="left: 0"][style*="top: 0"][style*="bottom: 0"] { display: none !important; }
+  /* Section sizing tight for A4 */
+  .avena-v2 main section { padding-top: 24px !important; padding-bottom: 24px !important; }
+  /* Force everything to print-safe colors */
+  .avena-v2 .text-foreground,
+  .avena-v2 .text-foreground\\/90,
+  .avena-v2 .text-foreground\\/85,
+  .avena-v2 .text-foreground\\/95 { color: #111 !important; }
+  .avena-v2 .text-muted-foreground { color: #555 !important; }
+  .avena-v2 .text-primary { color: #b8860b !important; }
+  .avena-v2 .text-gold { color: #b8860b !important; -webkit-text-fill-color: #b8860b !important; background: none !important; }
+  .avena-v2 .text-success { color: #1f7a3a !important; }
+  .avena-v2 .text-destructive { color: #a31212 !important; }
+  .avena-v2 [style*="background"] { background: #fff !important; }
+  .avena-v2 [class*="border"] { border-color: #ccc !important; }
+  /* Page breaks */
+  .avena-v2 section { page-break-inside: avoid; }
+  @page { margin: 16mm 14mm; size: A4; }
+}

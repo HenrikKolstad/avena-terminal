@@ -39,10 +39,26 @@ export default function PolicyEnginePage() {
         ]}
       />
       <Nav />
-      <main className="pt-16">
+
+      {/* Print-only letterhead — shows only in PDF/print, hidden on screen */}
+      <div className="hidden print:block" style={{ borderBottom: '1px solid #b8860b', padding: '12mm 14mm 6mm', marginBottom: '6mm' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+          <div>
+            <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '20pt', fontStyle: 'italic', color: '#b8860b' }}>Avena</div>
+            <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '8pt', letterSpacing: '0.22em', textTransform: 'uppercase', color: '#666', marginTop: 4 }}>Precision Policy Engine · Macroprudential Simulation Report</div>
+          </div>
+          <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '8pt', letterSpacing: '0.22em', textTransform: 'uppercase', color: '#666', textAlign: 'right' }}>
+            <div>{new Date().toISOString().slice(0, 10)}</div>
+            <div>v2026.05 · CC BY 4.0</div>
+            <div>DOI 10.5281/zenodo.19520064</div>
+          </div>
+        </div>
+      </div>
+
+      <main className="pt-16 print:pt-0">
 
         {/* ─── HERO ─────────────────────────────────────────────── */}
-        <section className="border-b relative overflow-hidden" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+        <section className="border-b relative overflow-hidden print:hidden" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
           <div className="absolute inset-0 opacity-[0.08] pointer-events-none" style={{ background: 'radial-gradient(ellipse at top right, hsl(var(--av-primary)), transparent 60%)' }} />
           <div className="mx-auto max-w-[1280px] px-5 sm:px-12 py-16 sm:py-24 relative">
             <div className="flex items-center gap-3 mb-6">
@@ -61,12 +77,12 @@ export default function PolicyEnginePage() {
               Built for the ECB, ESRB, national central banks, and supervisory authorities tasked with monitoring European residential property risk. Six policy levers × 27 EU countries × cohort weighting × forward 12-36 month projections. Calibrated against the Avena ground-truth corpus and the Vol. 2-4 sovereign briefing framework. Every output signed, every coefficient cited, every scenario reproducible.
             </p>
 
-            {/* Capability strip — sized identically, equal weight */}
+            {/* Capability strip — sized identically, equal weight, staggered fade-up */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-12 max-w-4xl">
-              <CapabilityTile value="6" label="Policy levers" sub="LTV · DSTI · Capital · CCyB · RW · FB levy" />
-              <CapabilityTile value="27" label="EU member states" sub="ES calibrated full · 5 directional · 21 pending" />
-              <CapabilityTile value="1,881" label="Ground-truth properties" sub="Spain coastal corpus · daily refresh" />
-              <CapabilityTile value="36 mo" label="Forward projection" sub="Logistic transmission curve" />
+              <div className="policy-fade-up"><CapabilityTile value="6" label="Policy levers" sub="LTV · DSTI · Capital · CCyB · RW · FB levy" /></div>
+              <div className="policy-fade-up-d1"><CapabilityTile value="27" label="EU member states" sub="ES calibrated full · 5 directional · 21 pending" /></div>
+              <div className="policy-fade-up-d2"><CapabilityTile value="1,881" label="Ground-truth properties" sub="Spain coastal corpus · daily refresh" /></div>
+              <div className="policy-fade-up-d3"><CapabilityTile value="36 mo" label="Forward projection" sub="Logistic transmission curve" /></div>
             </div>
           </div>
         </section>
@@ -85,7 +101,7 @@ export default function PolicyEnginePage() {
         </section>
 
         {/* ─── METHODOLOGY ──────────────────────────────────────── */}
-        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+        <section className="border-b print:hidden" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
           <div className="mx-auto max-w-[1280px] px-5 sm:px-12 py-16">
             <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary mb-3">Methodology guardrails</div>
             <h2 className="font-serif text-3xl sm:text-4xl font-light text-foreground mb-10">Designed for regulatory replay.</h2>
@@ -112,7 +128,7 @@ export default function PolicyEnginePage() {
         </section>
 
         {/* ─── INSTITUTIONAL ACCESS ─────────────────────────────── */}
-        <section style={{ background: 'hsl(var(--av-surface) / 0.3)' }}>
+        <section className="print:hidden" style={{ background: 'hsl(var(--av-surface) / 0.3)' }}>
           <div className="mx-auto max-w-[1280px] px-5 sm:px-12 py-16">
             <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary mb-3">Institutional access</div>
             <h2 className="font-serif text-3xl sm:text-4xl font-light text-foreground mb-6 max-w-3xl">

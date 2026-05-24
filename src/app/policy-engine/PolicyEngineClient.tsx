@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Play, FileDown, Copy, ChevronRight, AlertCircle, Mail } from 'lucide-react';
 import { Sparkline } from '../terminal/Sparkline';
+import { TransmissionChart } from './TransmissionChart';
 
 interface Lever { id: string; label: string; unit: string; description: string; magnitude_range: [number, number]; default_magnitude: number; citation: string; }
 interface Country { code: string; label: string; calibration: string; note: string; }
@@ -199,7 +200,7 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
       {output && (
         <>
           {/* Three giant headline numbers */}
-          <div className="grid sm:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-3 gap-4 policy-fade-up">
             <Headline
               label="Price impact"
               value={`${output.price_impact_pct > 0 ? '+' : ''}${output.price_impact_pct.toFixed(2)}%`}
@@ -226,18 +227,26 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
 
           {/* Cohort postcode grid */}
           {output.cohort_postcode_grid.length > 0 && (
-            <Panel title="Cohort breakdown" subtitle={`${output.cohort_postcodes_affected} clusters affected · cohort size ${output.cohort_size.toLocaleString()}`}>
+            <div className="policy-fade-up-d1"><Panel title="Cohort breakdown" subtitle={`${output.cohort_postcodes_affected} clusters affected · cohort size ${output.cohort_size.toLocaleString()}`}>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                 {output.cohort_postcode_grid.map((p, i) => {
                   const intensity = Math.min(1, Math.abs(p.price_delta_pct) / 8);
-                  const col = p.price_delta_pct >= 0 ? `hsl(152 55% 55% / ${0.15 + intensity * 0.35})` : `hsl(0 72% 60% / ${0.15 + intensity * 0.35})`;
+                  const col = p.price_delta_pct >= 0
+                    ? `hsl(152 55% 55% / ${0.12 + intensity * 0.32})`
+                    : `hsl(0 72% 60% / ${0.12 + intensity * 0.32})`;
+                  const textCol = p.price_delta_pct >= 0 ? 'hsl(152 55% 70%)' : 'hsl(0 72% 75%)';
                   return (
-                    <div key={i} className="rounded-sm border p-3" style={{ borderColor: 'hsl(var(--av-border) / 0.5)', background: col }}>
+                    <div
+                      key={i}
+                      className="rounded-sm border p-3 transition-transform hover:-translate-y-0.5"
+                      style={{ borderColor: 'hsl(var(--av-border) / 0.5)', background: col }}
+                      title={`${p.municipality} · ${p.cohort_size} properties · FB share ${(p.fb_share * 100).toFixed(1)}% · projected ${p.price_delta_pct >= 0 ? '+' : ''}${p.price_delta_pct.toFixed(2)}%`}
+                    >
                       <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-foreground/85 truncate">{p.municipality}</div>
-                      <div className="font-serif text-lg tabular text-foreground leading-none mt-1.5">
-                        {p.price_delta_pct >= 0 ? '+' : ''}{p.price_delta_pct.toFixed(1)}%
+                      <div className="font-serif text-xl tabular leading-none mt-1.5" style={{ color: textCol }}>
+                        {p.price_delta_pct >= 0 ? '+' : ''}{p.price_delta_pct.toFixed(2)}%
                       </div>
-                      <div className="flex items-baseline justify-between mt-1">
+                      <div className="flex items-baseline justify-between mt-1.5">
                         <span className="font-mono text-[8px] uppercase tracking-[0.22em] text-muted-foreground">n={p.cohort_size}</span>
                         <span className="font-mono text-[8px] uppercase tracking-[0.22em] text-muted-foreground">FB {(p.fb_share * 100).toFixed(0)}%</span>
                       </div>
@@ -245,11 +254,11 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
                   );
                 })}
               </div>
-            </Panel>
+            </Panel></div>
           )}
 
           {/* Bank stress projection */}
-          <Panel title="Bank stress projection" subtitle="Top-5 Spanish bank residential exposures · NPL today → stressed">
+          <div className="policy-fade-up-d2"><Panel title="Bank stress projection" subtitle="Top-5 Spanish bank residential exposures · NPL today → stressed">
             <div className="rounded-sm overflow-hidden border" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>
               <table className="w-full">
                 <thead style={{ background: 'hsl(var(--av-surface) / 0.5)' }}>
@@ -274,19 +283,14 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
                 </tbody>
               </table>
             </div>
-          </Panel>
+          </Panel></div>
 
-          {/* Forward transmission curve */}
-          <Panel title="Forward transmission curve" subtitle={`Cumulative % impact across ${timeframe} months · logistic transmission`}>
-            <div className="rounded-sm border p-5" style={{ borderColor: 'hsl(var(--av-border) / 0.5)', background: 'hsl(var(--av-background) / 0.4)' }}>
-              <Sparkline values={output.forward_curve_pct} height={120} stroke="hsl(var(--av-primary))" fill="hsl(var(--av-primary))" />
-              <div className="flex justify-between font-mono text-[9px] text-muted-foreground mt-2">
-                <span>Month 1</span>
-                <span>Month {Math.ceil(timeframe / 2)}</span>
-                <span>Month {timeframe}</span>
-              </div>
+          {/* Forward transmission curve — proper chart with axes */}
+          <div className="policy-fade-up-d3"><Panel title="Forward transmission curve" subtitle={`Cumulative % impact across ${timeframe} months · logistic transmission centred at m6`}>
+            <div className="rounded-sm border p-4" style={{ borderColor: 'hsl(var(--av-border) / 0.5)', background: 'hsl(var(--av-background) / 0.4)' }}>
+              <TransmissionChart values={output.forward_curve_pct} timeframe={timeframe} height={220} />
             </div>
-          </Panel>
+          </Panel></div>
 
           {/* Provenance + Export */}
           <div className="grid lg:grid-cols-[2fr_1fr] gap-4">
@@ -333,14 +337,32 @@ function Label({ children }: { children: React.ReactNode }) {
 function Headline({ label, value, sub, positive, chart, caption }: { label: string; value: string; sub: string; positive: boolean; chart?: React.ReactNode; caption?: string }) {
   const accentColor = positive ? 'hsl(var(--av-success))' : 'hsl(var(--av-destructive))';
   return (
-    <div className="relative rounded-sm border overflow-hidden p-5" style={{ borderColor: 'hsl(var(--av-border))', background: 'hsl(var(--av-surface) / 0.35)' }}>
-      <div className="absolute left-0 top-0 bottom-0 w-[2px]" style={{ background: accentColor, opacity: 0.6 }} />
-      <div className="pl-2">
-        <div className="font-mono text-[10px] uppercase tracking-[0.32em]" style={{ color: accentColor }}>{label}</div>
-        <div className="font-serif text-4xl sm:text-5xl font-light text-foreground tabular leading-none mt-2 mb-1">{value}</div>
-        <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">{sub}</div>
-        {chart && <div className="mt-3">{chart}</div>}
-        {caption && <div className="mt-3 text-[10px] text-muted-foreground leading-relaxed">{caption}</div>}
+    <div
+      className="relative rounded-sm border overflow-hidden p-5 transition-transform hover:-translate-y-0.5"
+      style={{
+        borderColor: 'hsl(var(--av-border))',
+        background: `linear-gradient(135deg, hsl(var(--av-surface) / 0.4), hsl(var(--av-surface) / 0.15))`,
+      }}
+    >
+      {/* Gradient accent stripe with glow */}
+      <div
+        className="absolute left-0 top-0 bottom-0 w-[3px]"
+        style={{
+          background: `linear-gradient(180deg, ${accentColor}, ${accentColor.replace(')', ' / 0.3)')})`,
+          boxShadow: `0 0 12px ${accentColor.replace(')', ' / 0.4)')}`,
+        }}
+      />
+      {/* Subtle corner accent */}
+      <div
+        className="absolute top-0 right-0 h-12 w-12 pointer-events-none"
+        style={{ background: `radial-gradient(circle at top right, ${accentColor.replace(')', ' / 0.08)')}, transparent 70%)` }}
+      />
+      <div className="relative pl-3">
+        <div className="font-mono text-[10px] uppercase tracking-[0.32em] mb-2.5" style={{ color: accentColor }}>{label}</div>
+        <div className="font-serif text-5xl sm:text-6xl font-light text-foreground tabular leading-none mb-2">{value}</div>
+        <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mt-1">{sub}</div>
+        {chart && <div className="mt-4 opacity-90">{chart}</div>}
+        {caption && <div className="mt-4 text-[11px] text-muted-foreground/90 leading-relaxed">{caption}</div>}
       </div>
     </div>
   );
