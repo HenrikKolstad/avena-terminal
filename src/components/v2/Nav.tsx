@@ -27,6 +27,7 @@ const NAV: TopItem[] = [
       { label: 'AVM',           href: '/avm',         sub: 'Bank-grade valuation in <1s with SHAP-style attribution' },
       { label: 'Portfolio',     href: '/portfolio',   sub: 'Upload your book, get the Avena view across the cohort' },
       { label: 'Counterpart',   href: '/counterpart', sub: 'Developer risk graph + SIR contagion model' },
+      { label: 'Products',      href: '/products',    sub: 'Four institutional API products built on one methodology' },
     ],
   },
   {
