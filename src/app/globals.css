@@ -400,7 +400,7 @@
    research artefact that prints to a 5-8 page PDF. */
 @media print {
   body, .avena-v2 { background: #ffffff !important; color: #111 !important; }
-  header, footer, nav, .print\\:hidden { display: none !important; }
+  header, footer, nav, .policy-print-hide { display: none !important; }
   main { padding-top: 0 !important; }
   #memo-print-root { max-width: none !important; padding: 32px 24px !important; color: #111 !important; }
   #memo-print-root h1, #memo-print-root h2, #memo-print-root h3 { color: #111 !important; }
@@ -473,35 +473,16 @@
 }
 
 /* ─── Policy Engine — print stylesheet ────────────────────────────────────
-   When a user clicks "Save as PDF" the page is meant to come out as a
-   clean institutional research memo. Hides controls + nav + footer, keeps
-   the headline outcomes, cohort grid, bank table, methodology, signature. */
+   Critical path only: hide nav/footer/buttons, keep section breaks tidy.
+   The brief page (/policy-engine/brief) ships its own inline <style> for
+   richer print formatting — duplicating it here breaks Turbopack's CSS
+   parser when combined with Tailwind v4 print:* utility escapes. */
 @media print {
-  body, .avena-v2 { background: #ffffff !important; color: #111 !important; }
-  header, footer, nav { display: none !important; }
-  main { padding-top: 0 !important; }
-  /* Hide interactive controls — the print is a snapshot */
-  .policy-print-hide,
+  .avena-v2 button,
   .avena-v2 input[type="range"],
-  .avena-v2 button { display: none !important; }
-  /* But preserve sliders that have been rendered into static labels above */
-  /* Strip the gold accent stripes — they bleed weirdly on toner printers */
-  .avena-v2 [style*="left: 0"][style*="top: 0"][style*="bottom: 0"] { display: none !important; }
-  /* Section sizing tight for A4 */
-  .avena-v2 main section { padding-top: 24px !important; padding-bottom: 24px !important; }
-  /* Force everything to print-safe colors */
-  .avena-v2 .text-foreground,
-  .avena-v2 .text-foreground\\/90,
-  .avena-v2 .text-foreground\\/85,
-  .avena-v2 .text-foreground\\/95 { color: #111 !important; }
-  .avena-v2 .text-muted-foreground { color: #555 !important; }
-  .avena-v2 .text-primary { color: #b8860b !important; }
-  .avena-v2 .text-gold { color: #b8860b !important; -webkit-text-fill-color: #b8860b !important; background: none !important; }
-  .avena-v2 .text-success { color: #1f7a3a !important; }
-  .avena-v2 .text-destructive { color: #a31212 !important; }
-  .avena-v2 [style*="background"] { background: #fff !important; }
-  .avena-v2 [class*="border"] { border-color: #ccc !important; }
-  /* Page breaks */
+  .policy-print-hide { display: none !important; }
+  .policy-print-only { display: block !important; }
+  .policy-print-flush { padding-top: 0 !important; }
   .avena-v2 section { page-break-inside: avoid; }
   @page { margin: 16mm 14mm; size: A4; }
 }

@@ -41,7 +41,7 @@ export default function PolicyEnginePage() {
       <Nav />
 
       {/* Print-only letterhead — shows only in PDF/print, hidden on screen */}
-      <div className="hidden print:block" style={{ borderBottom: '1px solid #b8860b', padding: '12mm 14mm 6mm', marginBottom: '6mm' }}>
+      <div className="policy-print-only" style={{ borderBottom: '1px solid #b8860b', padding: '12mm 14mm 6mm', marginBottom: '6mm', display: 'none' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
           <div>
             <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '20pt', fontStyle: 'italic', color: '#b8860b' }}>Avena</div>
@@ -55,10 +55,10 @@ export default function PolicyEnginePage() {
         </div>
       </div>
 
-      <main className="pt-16 print:pt-0">
+      <main className="pt-16 policy-print-flush">
 
         {/* ─── HERO ─────────────────────────────────────────────── */}
-        <section className="border-b relative overflow-hidden print:hidden" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+        <section className="border-b relative overflow-hidden policy-print-hide" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
           <div className="absolute inset-0 opacity-[0.08] pointer-events-none" style={{ background: 'radial-gradient(ellipse at top right, hsl(var(--av-primary)), transparent 60%)' }} />
           <div className="mx-auto max-w-[1280px] px-5 sm:px-8 lg:px-12 py-12 sm:py-16 lg:py-24 relative">
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-6">
@@ -101,7 +101,7 @@ export default function PolicyEnginePage() {
         </section>
 
         {/* ─── METHODOLOGY ──────────────────────────────────────── */}
-        <section className="border-b print:hidden" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+        <section className="border-b policy-print-hide" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
           <div className="mx-auto max-w-[1280px] px-5 sm:px-12 py-16">
             <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary mb-3">Methodology guardrails</div>
             <h2 className="font-serif text-3xl sm:text-4xl font-light text-foreground mb-10">Designed for regulatory replay.</h2>
@@ -128,7 +128,7 @@ export default function PolicyEnginePage() {
         </section>
 
         {/* ─── INSTITUTIONAL ACCESS ─────────────────────────────── */}
-        <section className="print:hidden" style={{ background: 'hsl(var(--av-surface) / 0.3)' }}>
+        <section className="policy-print-hide" style={{ background: 'hsl(var(--av-surface) / 0.3)' }}>
           <div className="mx-auto max-w-[1280px] px-5 sm:px-12 py-16">
             <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary mb-3">Institutional access</div>
             <h2 className="font-serif text-3xl sm:text-4xl font-light text-foreground mb-6 max-w-3xl">
