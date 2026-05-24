@@ -13,6 +13,8 @@ export const metadata: Metadata = {
 export default function OutreachAdminPage() {
   // Strip emails before sending to client — they're embedded back server-side
   // in the actual send call. UI shows org + role + scenario + masked email.
+  // Pass full email through — the page is admin-gated so this is safe, and
+  // the mailto: link needs the real address to work.
   const initial = OUTREACH_TARGETS.map(t => ({
     id: t.id,
     name: t.name,
@@ -24,6 +26,7 @@ export default function OutreachAdminPage() {
     subject: t.subject,
     body: t.body,
     has_email: !!t.email,
+    email: t.email || null,
     email_masked: t.email ? maskEmail(t.email) : null,
   }));
 

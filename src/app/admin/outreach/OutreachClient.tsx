@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Send, AtSign, Mail, Check, AlertCircle, Loader2, ChevronDown } from 'lucide-react';
+import { Mail, AtSign, Copy, Check, ChevronDown, ExternalLink } from 'lucide-react';
 
 interface Target {
   id: string;
@@ -14,134 +14,66 @@ interface Target {
   subject: string;
   body: string;
   has_email: boolean;
+  email: string | null;
   email_masked: string | null;
 }
 
-interface SendResultRow {
-  recipient_id: string;
-  recipient_name: string;
-  status: 'sent' | 'skipped' | 'error';
-  resend_id?: string;
-  error?: string;
+/**
+ * Builds a mailto: URL that opens the user's default mail client with the
+ * recipient, subject, and body pre-filled. Encoding is RFC 6068:
+ *   line breaks → %0A
+ *   spaces → %20
+ *   special chars → percent-encoded via encodeURIComponent.
+ */
+function mailtoLink(to: string, subject: string, body: string): string {
+  const enc = (s: string) => encodeURIComponent(s).replace(/'/g, '%27');
+  return `mailto:${to}?subject=${enc(subject)}&body=${enc(body)}`;
 }
-
-type Status = 'idle' | 'sending' | 'sent' | 'skipped' | 'error';
 
 export function OutreachClient({ initial }: { initial: Target[] }) {
   const [targets, setTargets] = useState<Target[]>(initial);
-  const [selected, setSelected] = useState<Set<string>>(new Set(initial.filter(t => t.channel === 'email').map(t => t.id)));
-  const [staggerMs, setStaggerMs] = useState(25_000);
-  const [statuses, setStatuses] = useState<Record<string, Status>>({});
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [batchSending, setBatchSending] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [openedIds, setOpenedIds] = useState<Set<string>>(new Set());
 
   function patch(id: string, fields: Partial<Target>) {
     setTargets(prev => prev.map(t => t.id === id ? { ...t, ...fields } : t));
   }
-  function toggle(id: string) {
-    setSelected(prev => {
-      const n = new Set(prev);
-      if (n.has(id)) n.delete(id); else n.add(id);
-      return n;
-    });
+
+  function copyBody(t: Target) {
+    const text = `Subject: ${t.subject}\n\n${t.body}`;
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedId(t.id);
+      setTimeout(() => setCopiedId(null), 1800);
+    }).catch(() => null);
   }
-  function selectAllEmail() {
-    setSelected(new Set(targets.filter(t => t.channel === 'email').map(t => t.id)));
-  }
-  function selectNone() { setSelected(new Set()); }
 
-  async function sendBatch() {
-    const items = targets
-      .filter(t => selected.has(t.id) && t.channel === 'email')
-      .map(t => ({ recipient_id: t.id, subject: t.subject, body: t.body }));
-    if (items.length === 0) return;
-
-    setBatchSending(true);
-    // Mark all selected as 'sending'
-    const initStatuses: Record<string, Status> = {};
-    for (const it of items) initStatuses[it.recipient_id] = 'sending';
-    setStatuses(prev => ({ ...prev, ...initStatuses }));
-
-    try {
-      const res = await fetch('/api/admin/outreach/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',  // sends the avena_admin cookie set by the gated page
-        body: JSON.stringify({ items, stagger_ms: staggerMs }),
-      });
-      const data: { ok: boolean; results?: SendResultRow[]; error?: string } = await res.json();
-      if (!data.ok && !data.results) {
-        // Whole batch failed
-        const next: Record<string, Status> = {};
-        const nextErr: Record<string, string> = {};
-        for (const it of items) {
-          next[it.recipient_id] = 'error';
-          nextErr[it.recipient_id] = data.error || 'send failed';
-        }
-        setStatuses(prev => ({ ...prev, ...next }));
-        setErrors(prev => ({ ...prev, ...nextErr }));
-      } else {
-        const next: Record<string, Status> = {};
-        const nextErr: Record<string, string> = {};
-        for (const r of data.results ?? []) {
-          next[r.recipient_id] = r.status;
-          if (r.error) nextErr[r.recipient_id] = r.error;
-        }
-        setStatuses(prev => ({ ...prev, ...next }));
-        setErrors(prev => ({ ...prev, ...nextErr }));
-      }
-    } catch (e) {
-      const next: Record<string, Status> = {};
-      const nextErr: Record<string, string> = {};
-      for (const it of items) {
-        next[it.recipient_id] = 'error';
-        nextErr[it.recipient_id] = (e as Error).message;
-      }
-      setStatuses(prev => ({ ...prev, ...next }));
-      setErrors(prev => ({ ...prev, ...nextErr }));
-    } finally {
-      setBatchSending(false);
-    }
+  function markOpened(id: string) {
+    setOpenedIds(prev => new Set(prev).add(id));
   }
 
   const emailEligible = targets.filter(t => t.channel === 'email').length;
   const twitterOnly = targets.filter(t => t.channel === 'twitter-only').length;
-  const selectedCount = Array.from(selected).filter(id => targets.find(t => t.id === id)?.channel === 'email').length;
-  const sentCount = Object.values(statuses).filter(s => s === 'sent').length;
+  const openedCount = openedIds.size;
 
   return (
     <div className="space-y-4">
-      {/* Control bar */}
+      {/* Control bar — progress + instructions */}
       <div className="rounded-sm border p-4 sm:p-5" style={{ borderColor: 'hsl(var(--av-border))', background: 'hsl(var(--av-surface) / 0.4)' }}>
-        <div className="grid sm:grid-cols-[1fr_auto] gap-4 items-end">
+        <div className="grid sm:grid-cols-[1fr_auto] gap-4 items-center">
           <div>
-            <div className="font-mono text-[9px] uppercase tracking-[0.32em] text-muted-foreground mb-1">Stagger between sends (ms)</div>
-            <input
-              type="number" min={5000} step={5000}
-              value={staggerMs} onChange={e => setStaggerMs(Math.max(5000, parseInt(e.target.value, 10) || 25_000))}
-              className="w-full sm:w-64 rounded-sm border bg-transparent px-3 py-2 font-mono text-xs text-foreground outline-none focus:border-primary"
-              style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
-            />
-            <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">
-              8 recipients × {(staggerMs/1000).toFixed(0)}s = ~{Math.ceil(8 * staggerMs / 1000)}s total wall clock
-            </div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary mb-2">How this works</div>
+            <p className="text-xs sm:text-sm text-foreground/85 leading-relaxed">
+              Each card has an <span className="font-mono text-foreground">Open in mail</span> button. Click it → your default mail client (Gmail / Outlook / Mail.app) opens with the recipient, subject, and body pre-filled. Review, edit if needed, click Send in your mail client. <span className="text-primary">No data leaves Avena.</span>
+            </p>
           </div>
-          <button
-            onClick={sendBatch}
-            disabled={batchSending || selectedCount === 0}
-            className="rounded-sm px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:translate-y-0 inline-flex items-center justify-center gap-2"
-            style={{ background: 'var(--av-gradient-gold)' }}
-          >
-            {batchSending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
-            {batchSending ? `Sending… (${sentCount}/${selectedCount})` : `Send all (${selectedCount})`}
-          </button>
+          <div className="rounded-sm border px-4 py-3 text-center" style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-background) / 0.5)' }}>
+            <div className="font-serif text-2xl font-light text-foreground tabular leading-none">{openedCount} / {emailEligible}</div>
+            <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mt-1">Opened this session</div>
+          </div>
         </div>
         <div className="mt-4 flex flex-wrap items-center gap-3 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">
-          <span><span className="text-foreground tabular">{emailEligible}</span> email · <span className="text-foreground tabular">{twitterOnly}</span> AtSign-only · <span className="text-foreground tabular">{selectedCount}</span> selected</span>
-          <button onClick={selectAllEmail} className="text-primary hover:text-foreground transition-colors">select all email</button>
-          <button onClick={selectNone} className="text-muted-foreground hover:text-foreground transition-colors">none</button>
-          <span className="ml-auto">Reply-to your personal email · sends via Resend · logged to <span className="text-foreground">outreach_emails</span></span>
+          <span><span className="text-foreground tabular">{emailEligible}</span> email · <span className="text-foreground tabular">{twitterOnly}</span> Twitter DM (copy-only)</span>
         </div>
       </div>
 
@@ -149,64 +81,82 @@ export function OutreachClient({ initial }: { initial: Target[] }) {
       <div className="grid lg:grid-cols-2 gap-3">
         {targets.map(t => {
           const isExpanded = expandedId === t.id;
-          const status = statuses[t.id] ?? 'idle';
-          const isSelectable = t.channel === 'email';
-          const isSelected = selected.has(t.id);
-
-          const statusBadge =
-            status === 'sent' ? { label: 'sent', colour: 'hsl(var(--av-success))', icon: <Check className="h-3 w-3" /> } :
-            status === 'sending' ? { label: 'sending…', colour: 'hsl(var(--av-primary))', icon: <Loader2 className="h-3 w-3 animate-spin" /> } :
-            status === 'error' ? { label: 'error', colour: 'hsl(var(--av-destructive))', icon: <AlertCircle className="h-3 w-3" /> } :
-            status === 'skipped' ? { label: 'skipped', colour: 'hsl(var(--av-muted-foreground))', icon: null } :
-            null;
+          const isOpened = openedIds.has(t.id);
+          const isCopied = copiedId === t.id;
+          const mailHref = t.channel === 'email' && t.email ? mailtoLink(t.email, t.subject, t.body) : null;
 
           return (
             <div key={t.id} className="rounded-sm border p-4" style={{
-              borderColor: isSelected && isSelectable ? 'hsl(var(--av-primary) / 0.5)' : 'hsl(var(--av-border))',
-              background: isSelected && isSelectable ? 'hsl(var(--av-primary) / 0.04)' : 'hsl(var(--av-surface) / 0.3)',
+              borderColor: isOpened ? 'hsl(var(--av-success) / 0.5)' : 'hsl(var(--av-border))',
+              background: isOpened ? 'hsl(var(--av-success) / 0.05)' : 'hsl(var(--av-surface) / 0.3)',
             }}>
               <div className="flex items-start justify-between gap-3 mb-2">
-                <label className="flex items-start gap-3 cursor-pointer flex-1 min-w-0">
-                  {isSelectable ? (
-                    <input
-                      type="checkbox" checked={isSelected} onChange={() => toggle(t.id)}
-                      className="mt-1 accent-primary cursor-pointer shrink-0"
-                    />
-                  ) : (
-                    <span className="mt-1 shrink-0"><AtSign className="h-3.5 w-3.5 text-primary" /></span>
-                  )}
+                <div className="flex items-start gap-3 flex-1 min-w-0">
+                  <span className="mt-1 shrink-0">
+                    {t.channel === 'email'
+                      ? <Mail className="h-3.5 w-3.5 text-primary" />
+                      : <AtSign className="h-3.5 w-3.5 text-primary" />}
+                  </span>
                   <div className="min-w-0 flex-1">
                     <div className="font-serif text-base text-foreground truncate">{t.name}</div>
                     <div className="text-[11px] text-muted-foreground truncate">{t.role}</div>
                     <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-primary mt-1 truncate">{t.organisation}</div>
                   </div>
-                </label>
-                <div className="flex items-center gap-2 shrink-0">
-                  {statusBadge && (
-                    <span className="inline-flex items-center gap-1 rounded-sm px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.22em]" style={{ color: statusBadge.colour, border: `1px solid ${statusBadge.colour}66` }}>
-                      {statusBadge.icon} {statusBadge.label}
-                    </span>
-                  )}
                 </div>
+                {isOpened && (
+                  <span className="inline-flex items-center gap-1 rounded-sm px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.22em]" style={{ color: 'hsl(var(--av-success))', border: '1px solid hsl(var(--av-success) / 0.5)' }}>
+                    <Check className="h-2.5 w-2.5" /> opened
+                  </span>
+                )}
               </div>
 
-              <div className="flex items-center gap-2 text-[10px] font-mono mb-3">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-mono mb-3">
                 {t.channel === 'email' ? (
                   <span className="inline-flex items-center gap-1 text-muted-foreground"><Mail className="h-2.5 w-2.5" /> {t.email_masked}</span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 text-muted-foreground"><AtSign className="h-2.5 w-2.5" /> {t.twitter} (DM only)</span>
+                  <span className="inline-flex items-center gap-1 text-muted-foreground"><AtSign className="h-2.5 w-2.5" /> {t.twitter}</span>
                 )}
                 <span className="text-muted-foreground/50">·</span>
-                <a href={t.scenarioUrl} target="_blank" rel="noopener" className="text-primary hover:text-foreground transition-colors truncate">view scenario →</a>
+                <a href={t.scenarioUrl} target="_blank" rel="noopener" className="text-primary hover:text-foreground transition-colors truncate">scenario →</a>
               </div>
 
-              <button
-                onClick={() => setExpandedId(isExpanded ? null : t.id)}
-                className="w-full inline-flex items-center justify-between rounded-sm border px-3 py-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
-                style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}
-              >
-                {isExpanded ? 'Hide draft' : 'Edit draft'} <ChevronDown className={`h-3 w-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-              </button>
+              {/* Primary action — open in mail OR copy text for DM */}
+              {mailHref ? (
+                <a
+                  href={mailHref}
+                  onClick={() => markOpened(t.id)}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-sm px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-primary-foreground transition-transform hover:-translate-y-0.5"
+                  style={{ background: 'var(--av-gradient-gold)' }}
+                >
+                  <ExternalLink className="h-3 w-3" /> Open in mail
+                </a>
+              ) : (
+                <button
+                  onClick={() => copyBody(t)}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-sm px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-primary-foreground transition-transform hover:-translate-y-0.5"
+                  style={{ background: 'var(--av-gradient-gold)' }}
+                >
+                  {isCopied ? <><Check className="h-3 w-3" /> Copied — paste into Twitter DM</> : <><Copy className="h-3 w-3" /> Copy DM text</>}
+                </button>
+              )}
+
+              {/* Secondary actions */}
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => setExpandedId(isExpanded ? null : t.id)}
+                  className="inline-flex items-center justify-center gap-1 rounded-sm border px-2 py-1.5 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
+                  style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}
+                >
+                  {isExpanded ? 'hide' : 'edit'} draft <ChevronDown className={`h-2.5 w-2.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                </button>
+                <button
+                  onClick={() => copyBody(t)}
+                  className="inline-flex items-center justify-center gap-1 rounded-sm border px-2 py-1.5 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
+                  style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}
+                >
+                  {isCopied ? <><Check className="h-2.5 w-2.5" /> copied</> : <><Copy className="h-2.5 w-2.5" /> copy</>}
+                </button>
+              </div>
 
               {isExpanded && (
                 <div className="mt-3 space-y-2">
@@ -228,22 +178,21 @@ export function OutreachClient({ initial }: { initial: Target[] }) {
                       style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
                     />
                   </div>
+                  <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">
+                    Edits live in this session only — Open in mail uses the edited version.
+                  </div>
                 </div>
-              )}
-
-              {errors[t.id] && (
-                <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.22em] text-destructive">{errors[t.id]}</div>
               )}
             </div>
           );
         })}
       </div>
 
-      {/* Footer help */}
-      <div className="rounded-sm border p-4 text-xs text-muted-foreground" style={{ borderColor: 'hsl(var(--av-border) / 0.5)', background: 'hsl(var(--av-surface) / 0.2)' }}>
-        <span className="font-mono text-[9px] uppercase tracking-[0.32em] text-primary block mb-2">Sending discipline</span>
-        Resend fires each selected recipient with the configured stagger between sends (default 90 seconds). At 10 recipients × 90s that&apos;s a 15-minute total wall clock. Replies route to your personal Reply-To. AtSign-only recipients are excluded from the batch — open their scenario URL, copy the body, paste into a AtSign DM manually.
+      <div className="rounded-sm border p-4 text-xs text-muted-foreground leading-relaxed" style={{ borderColor: 'hsl(var(--av-border) / 0.5)', background: 'hsl(var(--av-surface) / 0.2)' }}>
+        <span className="font-mono text-[9px] uppercase tracking-[0.32em] text-primary block mb-2">Workflow</span>
+        Click <span className="font-mono text-foreground">Open in mail</span> on each card. Your default client (Gmail web, Mail.app, Outlook) launches with everything filled. Review, edit if you spot anything, click Send in your client. Send from <span className="font-mono text-foreground">henrik@xaviaestate.com</span> for warm institutional vibe. The two Twitter-only cards get a Copy button instead — paste into the DM yourself. No emails leave Avena&apos;s servers; everything goes through your own inbox.
       </div>
     </div>
   );
 }
+

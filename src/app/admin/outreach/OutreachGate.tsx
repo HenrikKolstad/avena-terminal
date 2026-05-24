@@ -23,6 +23,7 @@ interface ClientTarget {
   subject: string;
   body: string;
   has_email: boolean;
+  email: string | null;
   email_masked: string | null;
 }
 
