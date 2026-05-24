@@ -51,7 +51,6 @@ const NAV: TopItem[] = [
       { label: 'Data Partners',      href: '/data-partners',            sub: 'Federated network application' },
     ],
   },
-  { label: 'Oracle', href: '/chat' },
   { label: 'Swarm',  href: '/swarm' },
   { label: 'Proof',  href: '/proof' },
 ];

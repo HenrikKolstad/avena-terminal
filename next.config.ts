@@ -96,6 +96,9 @@ const nextConfig: NextConfig = {
       { source: '/embed/apci',          destination: '/embed/regime',     permanent: true },
       // /terminal is the institutional cockpit (added 2026-05-24)
       { source: '/terminal-v2',         destination: '/terminal',         permanent: true },
+      // /chat (standalone Oracle) consolidated into /terminal where Oracle
+      // now lives as the right-pane assistant of the cockpit.
+      { source: '/chat',                destination: '/terminal',         permanent: true },
 
       // Old emerald-theme i18n stubs — collapse to canonical English surfaces
       { source: '/es',                  destination: '/costas',           permanent: true },

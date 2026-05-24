@@ -465,7 +465,7 @@ export default function FaqPage() {
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link
-                  href="/chat"
+                  href="/terminal"
                   className="group inline-flex items-center gap-3 rounded-sm px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
                   style={{ background: 'var(--av-gradient-gold)' }}
                 >

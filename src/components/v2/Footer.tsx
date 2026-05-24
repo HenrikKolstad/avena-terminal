@@ -11,12 +11,12 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
   {
     heading: 'Products',
     links: [
+      { label: 'Terminal',      href: '/terminal' },
       { label: 'Deals',         href: '/' },
       { label: 'Avena Index',   href: '/avena-index' },
       { label: 'Precursor',     href: '/precursor' },
       { label: 'Genesis',       href: '/genesis' },
       { label: 'Counterpart',   href: '/counterpart' },
-      { label: 'Oracle',        href: '/chat' },
       { label: 'Swarm',         href: '/swarm' },
     ],
   },

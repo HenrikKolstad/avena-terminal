@@ -321,7 +321,7 @@ export default async function NationalityGuidePage({
                 Find your property
                 <ArrowUpRight className="h-3.5 w-3.5" />
               </Link>
-              <Link href="/chat" className="inline-flex items-center gap-2 rounded-sm border px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground hover:text-primary hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border-strong))' }}>
+              <Link href="/terminal" className="inline-flex items-center gap-2 rounded-sm border px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground hover:text-primary hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border-strong))' }}>
                 Ask the Oracle
               </Link>
             </div>

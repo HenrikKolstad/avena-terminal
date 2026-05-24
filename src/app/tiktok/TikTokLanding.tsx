@@ -271,7 +271,7 @@ export function TikTokLanding({ deals, totalProperties }: { deals: TikTokDeal[];
               Message Avena
             </Link>
             {' · '}
-            <Link href="/chat" className="text-primary hover:text-gold">
+            <Link href="/terminal" className="text-primary hover:text-gold">
               Ask the Oracle free
             </Link>
           </p>
