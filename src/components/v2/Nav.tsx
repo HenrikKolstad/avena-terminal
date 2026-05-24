@@ -18,6 +18,7 @@ type TopItem = { label: string; href?: string; children?: DropdownChild[] };
 
 const NAV: TopItem[] = [
   { label: 'Terminal', href: '/terminal' },
+  { label: 'Policy Engine', href: '/policy-engine' },
   { label: 'Deals', href: '/#deals' },
   {
     label: 'Markets',

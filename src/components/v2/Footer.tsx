@@ -11,7 +11,8 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
   {
     heading: 'Products',
     links: [
-      { label: 'Terminal',      href: '/terminal' },
+      { label: 'Terminal',         href: '/terminal' },
+      { label: 'Policy Engine',    href: '/policy-engine' },
       { label: 'Deals',         href: '/' },
       { label: 'Avena Index',   href: '/avena-index' },
       { label: 'Precursor',     href: '/precursor' },
