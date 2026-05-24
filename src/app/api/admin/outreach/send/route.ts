@@ -13,7 +13,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { OUTREACH_TARGETS, sendBatch, type OutreachTarget } from '@/lib/outreach';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 900;  // up to 15 minutes for a 10-recipient batch at 90s stagger
+// Vercel Hobby plan caps maxDuration at 300s. With 8 email-eligible
+// recipients × 25s stagger = ~200s total — fits comfortably with margin.
+export const maxDuration = 300;
 
 function ensureAuth(req: NextRequest): boolean {
   const auth = req.headers.get('authorization') ?? '';
@@ -46,7 +48,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'no valid recipients in items' }, { status: 400 });
   }
 
-  const results = await sendBatch(items, payload.stagger_ms ?? 90_000);
+  // Default stagger lowered to 25s to fit under the 300s function timeout
+  // on the Hobby plan (8 recipients × 25s = 200s).
+  const results = await sendBatch(items, payload.stagger_ms ?? 25_000);
   const sent = results.filter(r => r.status === 'sent').length;
   const errors = results.filter(r => r.status === 'error').length;
   const skipped = results.filter(r => r.status === 'skipped').length;

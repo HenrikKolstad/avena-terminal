@@ -31,7 +31,7 @@ export function OutreachClient({ initial }: { initial: Target[] }) {
   const [targets, setTargets] = useState<Target[]>(initial);
   const [selected, setSelected] = useState<Set<string>>(new Set(initial.filter(t => t.channel === 'email').map(t => t.id)));
   const [adminToken, setAdminToken] = useState('');
-  const [staggerMs, setStaggerMs] = useState(90_000);
+  const [staggerMs, setStaggerMs] = useState(25_000);
   const [statuses, setStatuses] = useState<Record<string, Status>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [expandedId, setExpandedId] = useState<string | null>(null);
