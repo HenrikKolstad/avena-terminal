@@ -31,7 +31,21 @@ interface RawProperty {
   bd: number; ba: number; bk?: number; c?: string; s?: string; dy?: number;
   f?: string; u?: string; dev_ref?: string; imgs?: string[];
   lat?: number; lng?: number; cats?: string[]; views?: string[];
-  energy?: string; parking?: boolean; pool?: boolean; costa?: string;
+  // data.json is permissive: `parking` can be true|false|"2"|number, `pool` can be true|false|"communal"|"private"
+  energy?: string; parking?: boolean | string | number | null; pool?: boolean | string | number | null;
+  costa?: string;
+}
+
+function toBool(v: unknown): boolean | null {
+  if (v == null) return null;
+  if (typeof v === 'boolean') return v;
+  if (typeof v === 'number') return v > 0;
+  if (typeof v === 'string') {
+    const s = v.trim().toLowerCase();
+    if (s === '' || s === 'no' || s === 'false' || s === '0' || s === 'none') return false;
+    return true;  // 'yes', 'true', 'communal', 'private', '2', etc. all → true
+  }
+  return null;
 }
 
 function ensureAuth(req: NextRequest): boolean {
@@ -75,8 +89,8 @@ function mapProperty(raw: RawProperty): Record<string, unknown> {
     built_m2: raw.bm ?? null,
     plot_m2: raw.pl ?? null,
     terrace_m2: raw.terrace ?? null,
-    pool: raw.pool ?? null,
-    parking: raw.parking ?? null,
+    pool: toBool(raw.pool),
+    parking: toBool(raw.parking),
     completion_year: completion,
     energy_rating: raw.energy ?? null,
     price_eur: raw.pf ?? null,
