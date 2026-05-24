@@ -39,10 +39,19 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
   // When user changes lever, snap magnitude to its default
   useEffect(() => { setMagnitude(lever.default_magnitude); }, [lever]);
 
+  // Display helpers — every number user sees is in %, internally we keep the
+  // lever's native unit (bps for CCyB/RW/FB-levy, ppt for LTV/DSTI/Capital).
+  // bps → % is /100 ; ppt → % is identity.
+  const isBps = lever.unit === 'bps';
+  const toDisplay = (v: number) => isBps ? v / 100 : v;
+  const fromDisplay = (v: number) => isBps ? v * 100 : v;
+  const displayStep = isBps ? 0.25 : 1;
+
   const magnitudeLabel = useMemo(() => {
-    const sign = magnitude > 0 ? '+' : '';
-    return `${sign}${magnitude} ${lever.unit}`;
-  }, [magnitude, lever]);
+    const v = toDisplay(magnitude);
+    const sign = v > 0 ? '+' : '';
+    return `${sign}${v.toFixed(displayStep < 1 ? 2 : 0)}%`;
+  }, [magnitude, lever, isBps, displayStep]);
 
   async function run() {
     setLoading(true); setError(null);
@@ -95,14 +104,14 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
                 </div>
                 <input
                   type="range"
-                  min={lever.magnitude_range[0]} max={lever.magnitude_range[1]} step={lever.unit === 'bps' ? 25 : 1}
-                  value={magnitude} onChange={e => setMagnitude(parseFloat(e.target.value))}
+                  min={toDisplay(lever.magnitude_range[0])} max={toDisplay(lever.magnitude_range[1])} step={displayStep}
+                  value={toDisplay(magnitude)} onChange={e => setMagnitude(fromDisplay(parseFloat(e.target.value)))}
                   className="w-full accent-primary"
                 />
                 <div className="flex justify-between font-mono text-[9px] text-muted-foreground mt-1">
-                  <span>{lever.magnitude_range[0]} {lever.unit}</span>
-                  <span className="text-foreground">0</span>
-                  <span>+{lever.magnitude_range[1]} {lever.unit}</span>
+                  <span>{toDisplay(lever.magnitude_range[0]).toFixed(displayStep < 1 ? 2 : 0)}%</span>
+                  <span className="text-foreground">0%</span>
+                  <span>+{toDisplay(lever.magnitude_range[1]).toFixed(displayStep < 1 ? 2 : 0)}%</span>
                 </div>
               </div>
 
@@ -172,7 +181,7 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
         {/* Run bar */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-t px-5 sm:px-7 py-4" style={{ borderColor: 'hsl(var(--av-border))', background: 'hsl(var(--av-surface) / 0.4)' }}>
           <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-            Scenario: <span className="text-foreground">{lever.label}</span> <span className="text-primary">{magnitudeLabel}</span> · <span className="text-foreground">{country.code}</span> {region} · FB ≥ {(fbShareMin * 100).toFixed(0)}% · {timeframe} mo
+            <span className="text-foreground">{lever.label}</span> <span className="text-primary">{magnitudeLabel}</span> · <span className="text-foreground">{country.code}</span> {region} · FB ≥ {(fbShareMin * 100).toFixed(0)}% · {timeframe} months
           </div>
           <button onClick={run} disabled={loading} className="inline-flex items-center gap-2 rounded-sm px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:translate-y-0" style={{ background: 'var(--av-gradient-gold)' }}>
             <Play className="h-3 w-3" /> {loading ? 'Computing…' : 'Run scenario'}
@@ -201,7 +210,7 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
             />
             <Headline
               label="NPL impact"
-              value={`${output.npl_impact_bps > 0 ? '+' : ''}${output.npl_impact_bps.toFixed(1)} bps`}
+              value={`${output.npl_impact_bps > 0 ? '+' : ''}${(output.npl_impact_bps / 100).toFixed(2)}%`}
               sub="Top-5 Spanish bank residential exposures"
               positive={output.npl_impact_bps <= 0}
               caption={output.npl_impact_bps > 0 ? 'Stress: capital pressure on cycle-vulnerable banks' : 'Relief: capital pressure eases'}
@@ -245,7 +254,7 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
               <table className="w-full">
                 <thead style={{ background: 'hsl(var(--av-surface) / 0.5)' }}>
                   <tr>
-                    {['Bank', 'Exposure', 'NPL today', 'NPL stressed', 'Δ bps'].map((h, i) => (
+                    {['Bank', 'Exposure', 'NPL today', 'NPL stressed', 'Δ %'].map((h, i) => (
                       <th key={h} className={`px-3 py-2.5 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground ${i === 0 ? 'text-left' : 'text-right'}`}>{h}</th>
                     ))}
                   </tr>
@@ -258,7 +267,7 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
                       <td className="px-3 py-2.5 text-right font-mono text-xs tabular text-muted-foreground">{b.npl_today_pct.toFixed(2)}%</td>
                       <td className="px-3 py-2.5 text-right font-mono text-xs tabular text-foreground">{b.npl_stressed_pct.toFixed(2)}%</td>
                       <td className="px-3 py-2.5 text-right font-mono text-xs tabular" style={{ color: b.delta_bps > 0 ? 'hsl(var(--av-destructive))' : b.delta_bps < 0 ? 'hsl(var(--av-success))' : 'hsl(var(--av-muted-foreground))' }}>
-                        {b.delta_bps > 0 ? '+' : ''}{b.delta_bps.toFixed(1)}
+                        {b.delta_bps > 0 ? '+' : ''}{(b.delta_bps / 100).toFixed(2)}%
                       </td>
                     </tr>
                   ))}
