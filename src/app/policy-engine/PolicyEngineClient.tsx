@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { Play, FileDown, Copy, ChevronRight, AlertCircle, Mail } from 'lucide-react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { Play, FileDown, Copy, ChevronRight, AlertCircle, Mail, Link2, Check } from 'lucide-react';
 import { Sparkline } from '../terminal/Sparkline';
 import { TransmissionChart } from './TransmissionChart';
 
@@ -26,19 +26,74 @@ interface ScenarioOutput {
 }
 
 export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; countries: Country[] }) {
-  const [lever, setLever] = useState<Lever>(levers[0]);
-  const [country, setCountry] = useState<Country>(countries[0]);
-  const [region, setRegion] = useState<'coastal' | 'national' | 'urban'>('coastal');
-  const [fbShareMin, setFbShareMin] = useState(0.25);
-  const [magnitude, setMagnitude] = useState(lever.default_magnitude);
-  const [timeframe, setTimeframe] = useState(18);
+  // ─── Hydrate from URL params (?lever=...&country=...&m=...&t=...&fb=...&r=...)
+  // If a recipient lands via a shared link, they see the exact scenario the
+  // sender ran. Parsed once on mount; subsequent state changes update the URL
+  // via history.replaceState so the URL is always shareable.
+  const initial = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    const u = new URLSearchParams(window.location.search);
+    const leverId = u.get('lever');
+    const countryCode = u.get('country')?.toUpperCase();
+    const regionParam = u.get('r') as 'coastal' | 'national' | 'urban' | null;
+    const mag = u.get('m');
+    const tf = u.get('t');
+    const fb = u.get('fb');
+    return {
+      lever: leverId ? levers.find(l => l.id === leverId) ?? null : null,
+      country: countryCode ? countries.find(c => c.code === countryCode) ?? null : null,
+      region: regionParam && ['coastal', 'national', 'urban'].includes(regionParam) ? regionParam : null,
+      magnitude: mag != null && !isNaN(parseFloat(mag)) ? parseFloat(mag) : null,
+      timeframe: tf != null && !isNaN(parseInt(tf, 10)) ? parseInt(tf, 10) : null,
+      fbShareMin: fb != null && !isNaN(parseFloat(fb)) ? parseFloat(fb) : null,
+    };
+  }, [levers, countries]);
+
+  const [lever, setLever] = useState<Lever>(initial?.lever ?? levers[0]);
+  const [country, setCountry] = useState<Country>(initial?.country ?? countries[0]);
+  const [region, setRegion] = useState<'coastal' | 'national' | 'urban'>(initial?.region ?? 'coastal');
+  const [fbShareMin, setFbShareMin] = useState(initial?.fbShareMin ?? 0.25);
+  const [magnitude, setMagnitude] = useState(initial?.magnitude ?? (initial?.lever ?? levers[0]).default_magnitude);
+  const [timeframe, setTimeframe] = useState(initial?.timeframe ?? 18);
   const [output, setOutput] = useState<ScenarioOutput | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showInquire, setShowInquire] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
+  // Whether the initial mount was hydrated from a shared URL — if so, do NOT
+  // override magnitude when lever changes (preserve the shared value).
+  const hydrated = useRef(initial?.lever != null);
 
-  // When user changes lever, snap magnitude to its default
-  useEffect(() => { setMagnitude(lever.default_magnitude); }, [lever]);
+  // When user changes lever, snap magnitude to its default — UNLESS the
+  // initial state was hydrated from a shared URL, in which case the shared
+  // magnitude is the source of truth on first paint.
+  useEffect(() => {
+    if (hydrated.current) { hydrated.current = false; return; }
+    setMagnitude(lever.default_magnitude);
+  }, [lever]);
+
+  // Sync state to URL — every parameter change keeps the URL shareable. Uses
+  // replaceState so we don't pollute browser history.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const u = new URLSearchParams();
+    u.set('lever', lever.id);
+    u.set('country', country.code);
+    u.set('r', region);
+    u.set('m', magnitude.toString());
+    u.set('t', timeframe.toString());
+    u.set('fb', fbShareMin.toFixed(2));
+    const newUrl = `${window.location.pathname}?${u.toString()}`;
+    window.history.replaceState(null, '', newUrl);
+  }, [lever, country, region, magnitude, timeframe, fbShareMin]);
+
+  function copyShareLink() {
+    if (typeof window === 'undefined') return;
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    }).catch(() => null);
+  }
 
   // Display helpers — every number user sees is in %, internally we keep the
   // lever's native unit (bps for CCyB/RW/FB-levy, ppt for LTV/DSTI/Capital).
@@ -308,10 +363,23 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
               </div>
             </Panel>
 
-            <Panel title="Export" subtitle="Print, share, request access">
+            <Panel title="Export & share" subtitle="Print, forward, request access">
               <div className="space-y-2">
-                <ExportButton onClick={() => window.print()} icon={<FileDown className="h-3 w-3" />}>Save as PDF</ExportButton>
-                <ExportButton onClick={() => { navigator.clipboard.writeText(JSON.stringify(output, null, 2)).catch(() => null); }} icon={<Copy className="h-3 w-3" />}>Copy JSON</ExportButton>
+                <ExportButton onClick={copyShareLink} icon={shareCopied ? <Check className="h-3 w-3" /> : <Link2 className="h-3 w-3" />}>
+                  {shareCopied ? 'Link copied · forward to a colleague' : 'Copy share link'}
+                </ExportButton>
+                <a
+                  href={`/policy-engine/brief?lever=${lever.id}&country=${country.code}&r=${region}&m=${magnitude}&fb=${fbShareMin.toFixed(2)}&t=${timeframe}`}
+                  target="_blank"
+                  rel="noopener"
+                  className="w-full inline-flex items-center justify-between rounded-sm border px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-foreground hover:text-primary hover:border-primary transition-colors"
+                  style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
+                >
+                  <span className="inline-flex items-center gap-2"><FileDown className="h-3 w-3" /> Open institutional brief</span>
+                  <ChevronRight className="h-3 w-3 text-muted-foreground" />
+                </a>
+                <ExportButton onClick={() => window.print()} icon={<FileDown className="h-3 w-3" />}>Save engine view as PDF</ExportButton>
+                <ExportButton onClick={() => { navigator.clipboard.writeText(JSON.stringify(output, null, 2)).catch(() => null); }} icon={<Copy className="h-3 w-3" />}>Copy raw JSON</ExportButton>
                 <button onClick={() => setShowInquire(s => !s)} className="w-full inline-flex items-center justify-between rounded-sm px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-primary-foreground transition-transform hover:-translate-y-0.5" style={{ background: 'var(--av-gradient-gold)' }}>
                   <span className="inline-flex items-center gap-2"><Mail className="h-3 w-3" /> Request institutional access</span>
                   <ChevronRight className="h-3 w-3" />
