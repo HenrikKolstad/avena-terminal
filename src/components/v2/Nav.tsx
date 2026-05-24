@@ -126,7 +126,7 @@ export function Nav() {
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="group relative font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:text-foreground"
+                  className="group relative inline-flex items-center font-mono text-[11px] uppercase tracking-[0.22em] leading-none text-muted-foreground transition-colors hover:text-foreground"
                 >
                   {item.label}
                   <span className="absolute -bottom-1 left-0 h-px w-0 transition-all duration-300 group-hover:w-full" style={{ background: 'var(--av-gradient-gold)' }} />
@@ -142,12 +142,12 @@ export function Nav() {
               >
                 <button
                   type="button"
-                  className="group relative inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:text-foreground"
+                  className="group relative inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-[0.22em] leading-none text-muted-foreground transition-colors hover:text-foreground"
                   aria-expanded={isOpen}
                   aria-haspopup="true"
                 >
                   {item.label}
-                  <ChevronDown className={`h-3 w-3 transition-transform ${isOpen ? 'rotate-180 text-primary' : ''}`} />
+                  <ChevronDown className={`h-3 w-3 shrink-0 transition-transform ${isOpen ? 'rotate-180 text-primary' : ''}`} />
                   <span className="absolute -bottom-1 left-0 h-px w-0 transition-all duration-300 group-hover:w-full" style={{ background: 'var(--av-gradient-gold)' }} />
                 </button>
 
