@@ -25,6 +25,22 @@ create table if not exists webhook_subscriptions (
   last_error      text,
   unique (url, events)
 );
+
+-- Defensive: if an older webhook_subscriptions table already exists, CREATE
+-- IF NOT EXISTS above is a no-op and any missing column must be added via
+-- ALTER … ADD COLUMN IF NOT EXISTS so downstream RLS, indexes and code
+-- references resolve cleanly.
+alter table webhook_subscriptions add column if not exists url text;
+alter table webhook_subscriptions add column if not exists secret text;
+alter table webhook_subscriptions add column if not exists events text[] default '{}';
+alter table webhook_subscriptions add column if not exists contact_email text;
+alter table webhook_subscriptions add column if not exists organisation text;
+alter table webhook_subscriptions add column if not exists status text default 'active';
+alter table webhook_subscriptions add column if not exists created_at timestamptz default now();
+alter table webhook_subscriptions add column if not exists last_delivery_at timestamptz;
+alter table webhook_subscriptions add column if not exists failure_count int default 0;
+alter table webhook_subscriptions add column if not exists last_error text;
+
 create index if not exists idx_webhook_subs_status on webhook_subscriptions (status, created_at desc);
 create index if not exists idx_webhook_subs_events on webhook_subscriptions using gin (events);
 
