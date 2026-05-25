@@ -50,7 +50,9 @@ const nextConfig: NextConfig = {
       { source: '/apci',                destination: '/avena-index',      permanent: true },
       { source: '/indices',             destination: '/avena-index',      permanent: true },
       { source: '/predictions',         destination: '/track-record',     permanent: true },
-      { source: '/verify',              destination: '/track-record',     permanent: true },
+      // /verify reclaimed for Architectural Commitment 7 — cryptographic
+      // integrity verification page (SHA-256 + Merkle + Zenodo timestamp).
+      // Previous redirect to /track-record removed 2026-05-25.
       { source: '/scenarios',           destination: '/genesis',          permanent: true },
       { source: '/radar',               destination: '/eu-coverage',      permanent: true },
       // /live → restored as the live operations dashboard (not the deleted feed)
