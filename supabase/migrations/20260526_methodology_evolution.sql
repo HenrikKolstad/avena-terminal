@@ -42,19 +42,25 @@ alter table methodology_versions enable row level security;
 drop policy if exists "public read methodology_versions" on methodology_versions;
 create policy "public read methodology_versions" on methodology_versions for select using (true);
 
+-- prediction_outcomes may already exist from an older draft of the
+-- predictions ledger with a different column set. Create the minimum
+-- shell if absent, then ADD COLUMN IF NOT EXISTS every Commitment-3
+-- column so the same SQL runs cleanly on fresh and existing databases.
 create table if not exists prediction_outcomes (
-  id                                uuid primary key default gen_random_uuid(),
-  prediction_id                     uuid not null,                          -- references predictions(id) once that table lands
-  prediction_methodology_version_id uuid references methodology_versions(version_id),
-  predicted_at                      timestamptz not null,
-  prediction_value                  numeric,
-  prediction_metric                 text,                                    -- 'price_per_m2' | 'yield_gross_pct' | 'regime_score' | ...
-  resolved_at                       timestamptz,
-  actual_value                      numeric,
-  error_magnitude                   numeric,                                 -- |actual - predicted|
-  error_pct                         numeric,                                 -- |actual - predicted| / actual
-  weight_in_recalibration           numeric default 1.0
+  id  uuid primary key default gen_random_uuid()
 );
+
+alter table prediction_outcomes
+  add column if not exists prediction_id                     uuid,
+  add column if not exists predicted_at                      timestamptz,
+  add column if not exists prediction_value                  numeric,
+  add column if not exists resolved_at                       timestamptz,
+  add column if not exists actual_value                      numeric,
+  add column if not exists prediction_methodology_version_id uuid references methodology_versions(version_id),
+  add column if not exists prediction_metric                 text,
+  add column if not exists error_magnitude                   numeric,
+  add column if not exists error_pct                         numeric,
+  add column if not exists weight_in_recalibration           numeric default 1.0;
 create index if not exists idx_pred_outcomes_methodology on prediction_outcomes (prediction_methodology_version_id);
 create index if not exists idx_pred_outcomes_resolved    on prediction_outcomes (resolved_at desc) where resolved_at is not null;
 
