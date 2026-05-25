@@ -49,7 +49,9 @@ const nextConfig: NextConfig = {
       // Hard duplicates → canonical
       { source: '/apci',                destination: '/avena-index',      permanent: true },
       { source: '/indices',             destination: '/avena-index',      permanent: true },
-      { source: '/predictions',         destination: '/track-record',     permanent: true },
+      // /predictions reclaimed as the published-ledger of hand-curated,
+      // falsifiable forecasts. The /track-record page remains the daily
+      // agent-generated accuracy retrospective. Redirect removed 2026-05-25.
       // /verify reclaimed for Architectural Commitment 7 — cryptographic
       // integrity verification page (SHA-256 + Merkle + Zenodo timestamp).
       // Previous redirect to /track-record removed 2026-05-25.
