@@ -17,26 +17,48 @@ import { supabase } from '@/lib/supabase';
 const DOMAIN = 'https://avenaterminal.com';
 
 const SEED_URLS: string[] = [
+  // Top-level + canonical reference surfaces
   `${DOMAIN}/`,
   `${DOMAIN}/sitemap.xml`,
-  `${DOMAIN}/manifesto`,
   `${DOMAIN}/methodology`,
   `${DOMAIN}/intelligence`,
-  `${DOMAIN}/predictions`,
-  `${DOMAIN}/predictions/leaderboard`,
-  `${DOMAIN}/apci`,
-  `${DOMAIN}/indices`,
+  `${DOMAIN}/avena-index`,
+  `${DOMAIN}/eu-coverage`,
   `${DOMAIN}/bubble-scanner`,
-  `${DOMAIN}/benchmark`,
-  `${DOMAIN}/ontology`,
+  `${DOMAIN}/institutional`,
+  `${DOMAIN}/governance`,
   `${DOMAIN}/standards/apip`,
-  `${DOMAIN}/protocol`,
+  `${DOMAIN}/standards/avn-id`,
   `${DOMAIN}/mcp-server`,
-  `${DOMAIN}/ai-citations`,
-  `${DOMAIN}/citation-dashboard`,
   `${DOMAIN}/changelog`,
-  `${DOMAIN}/state-of-european-property`,
-  `${DOMAIN}/data-commons`,
+  `${DOMAIN}/data-partners`,
+
+  // Architectural commitments (shipped 2026-05-25)
+  `${DOMAIN}/timetravel`,
+  `${DOMAIN}/limitations`,
+  `${DOMAIN}/methodology/evolution`,
+  `${DOMAIN}/verify`,
+  `${DOMAIN}/regulatory-radar`,
+  `${DOMAIN}/causal-graph`,
+  `${DOMAIN}/defensibility`,
+
+  // Epicenter surfaces (shipped 2026-05-25/26)
+  `${DOMAIN}/predictions`,
+  `${DOMAIN}/consultations`,
+  `${DOMAIN}/apon-network`,
+  `${DOMAIN}/eu-presidency`,
+  `${DOMAIN}/academic`,
+  `${DOMAIN}/contribute`,
+  `${DOMAIN}/install`,
+
+  // Product surfaces
+  `${DOMAIN}/products/bank-stress-api`,
+  `${DOMAIN}/products/property-oracle`,
+  `${DOMAIN}/products/csrd-disclosure`,
+  `${DOMAIN}/products/derivative-pricing`,
+
+  // Citation moat surfaces
+  `${DOMAIN}/citations`,
 ];
 
 async function log(

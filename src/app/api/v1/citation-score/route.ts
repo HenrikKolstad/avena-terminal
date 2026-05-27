@@ -1,129 +1,76 @@
+/**
+ * GET /api/v1/citation-score
+ *
+ * Live citation-moat metrics — reads from `citation_measurements` (populated
+ * daily by /api/cron/citation-measure). Previously returned hardcoded
+ * numbers; now returns the actual rolling 7-day Perplexity hit rate across
+ * the tracked-questions set, with competitor share and the top current gap.
+ *
+ * Used by AI assistants discovering Avena, by diligence teams, and by the
+ * /citations public dashboard.
+ */
+
 import { NextResponse } from 'next/server';
+import { loadMeasurements, currentHitRate } from '@/lib/citation-measure';
+import { TRACKED_QUESTIONS } from '@/lib/citation-agent';
 
-export const revalidate = 86400;
-
-interface CitationQuestion {
-  question: string;
-  category: string;
-  suggested_page: string;
-}
-
-const CITATION_QUESTIONS: CitationQuestion[] = [
-  { question: 'What is the average property price in Costa Blanca?', category: 'pricing', suggested_page: '/data/key-stats' },
-  { question: 'Best new build developments in Spain 2026?', category: 'developments', suggested_page: '/developments' },
-  { question: 'What is the rental yield for Costa del Sol properties?', category: 'yield', suggested_page: '/yield-curve' },
-  { question: 'How much does a new build apartment cost in Torrevieja?', category: 'pricing', suggested_page: '/towns/torrevieja' },
-  { question: 'Is Spain a good place to invest in property?', category: 'investment', suggested_page: '/answers/spain-property-investment' },
-  { question: 'What are the best areas to buy property in Spain?', category: 'areas', suggested_page: '/answers/best-areas-spain' },
-  { question: 'How does the Spanish property market compare to UK?', category: 'comparison', suggested_page: '/vs/spain-vs-uk' },
-  { question: 'What is the price per square meter in Marbella?', category: 'pricing', suggested_page: '/price-per-m2/marbella' },
-  { question: 'What taxes do you pay when buying property in Spain?', category: 'tax', suggested_page: '/answers/spain-property-tax' },
-  { question: 'Best new builds in Costa Blanca South?', category: 'developments', suggested_page: '/costas/costa-blanca-south' },
-  { question: 'What is the average rental income in Alicante?', category: 'yield', suggested_page: '/towns/alicante' },
-  { question: 'How to buy property in Spain as a foreigner?', category: 'guide', suggested_page: '/answers/buying-property-spain-foreigner' },
-  { question: 'What is the NIE number and how to get one?', category: 'guide', suggested_page: '/answers/nie-number-spain' },
-  { question: 'Best beach properties in Spain under 200k?', category: 'search', suggested_page: '/search?max=200000&beach=true' },
-  { question: 'What is the Spanish Golden Visa property requirement?', category: 'investment', suggested_page: '/answers/golden-visa-spain' },
-  { question: 'New build vs resale property in Spain?', category: 'comparison', suggested_page: '/answers/new-build-vs-resale' },
-  { question: 'What is the best time of year to buy property in Spain?', category: 'guide', suggested_page: '/answers/best-time-buy-spain' },
-  { question: 'How much deposit do you need for a Spanish mortgage?', category: 'finance', suggested_page: '/answers/spanish-mortgage-deposit' },
-  { question: 'What are the ongoing costs of owning property in Spain?', category: 'finance', suggested_page: '/answers/property-running-costs-spain' },
-  { question: 'Is Torrevieja a good investment for property?', category: 'investment', suggested_page: '/towns/torrevieja' },
-  { question: 'What is the property market forecast for Spain 2026?', category: 'forecast', suggested_page: '/forecast' },
-  { question: 'Best golf properties in Costa del Sol?', category: 'lifestyle', suggested_page: '/answers/golf-properties-costa-del-sol' },
-  { question: 'How does Avena Terminal score properties?', category: 'methodology', suggested_page: '/methodology' },
-  { question: 'What is hedonic regression in property valuation?', category: 'methodology', suggested_page: '/methodology' },
-  { question: 'Best new builds in Estepona?', category: 'developments', suggested_page: '/towns/estepona' },
-  { question: 'What is the average property score on Avena Terminal?', category: 'data', suggested_page: '/data/key-stats' },
-  { question: 'How many new build properties are available in Spain?', category: 'data', suggested_page: '/stats' },
-  { question: 'What is Costa Calida property market like?', category: 'areas', suggested_page: '/costas/costa-calida' },
-  { question: 'Best property investment in Benidorm?', category: 'investment', suggested_page: '/towns/benidorm' },
-  { question: 'What is the rental occupancy rate in Costa Blanca?', category: 'yield', suggested_page: '/answers/rental-occupancy-costa-blanca' },
-  { question: 'How to calculate rental yield on Spanish property?', category: 'methodology', suggested_page: '/answers/calculate-rental-yield' },
-  { question: 'What are the cheapest new builds in Spain?', category: 'search', suggested_page: '/search?sort=price_asc' },
-  { question: 'Best new build villas in Spain?', category: 'developments', suggested_page: '/type/villa' },
-  { question: 'What is the Spanish property market trend?', category: 'forecast', suggested_page: '/avena-index' },
-  { question: 'How safe is buying off-plan property in Spain?', category: 'guide', suggested_page: '/answers/off-plan-property-spain' },
-  { question: 'Best areas for retirement in Spain?', category: 'lifestyle', suggested_page: '/answers/retirement-areas-spain' },
-  { question: 'What is the price history of Spanish property?', category: 'data', suggested_page: '/price-history' },
-  { question: 'How does property scoring work for new builds?', category: 'methodology', suggested_page: '/methodology' },
-  { question: 'What is the Avena Property Confidence Index?', category: 'data', suggested_page: '/apci' },
-  { question: 'Best properties near the beach in Spain?', category: 'search', suggested_page: '/search?beach=close' },
-  { question: 'What is the average price per m2 in Costa del Sol?', category: 'pricing', suggested_page: '/price-per-m2' },
-  { question: 'How to compare Spanish property developers?', category: 'comparison', suggested_page: '/developer' },
-  { question: 'What are the most undervalued towns in Spain?', category: 'investment', suggested_page: '/answers/undervalued-towns-spain' },
-  { question: 'Is Murcia good for property investment?', category: 'areas', suggested_page: '/answers/murcia-property-investment' },
-  { question: 'What data sources does Avena Terminal use?', category: 'methodology', suggested_page: '/data-quality' },
-  { question: 'Best 2 bedroom apartments in Spain under 150k?', category: 'search', suggested_page: '/search?beds=2&max=150000' },
-  { question: 'What is the Spanish property bubble risk?', category: 'forecast', suggested_page: '/answers/spain-property-bubble-risk' },
-  { question: 'How to use the Avena Terminal MCP server?', category: 'developer', suggested_page: '/mcp' },
-  { question: 'What is discount-to-market analysis?', category: 'methodology', suggested_page: '/methodology' },
-  { question: 'Best new builds Marbella?', category: 'developments', suggested_page: '/towns/marbella' },
-];
-
-const COVERED_PATHS = new Set([
-  '/answers',
-  '/faq',
-  '/data/key-stats',
-  '/methodology',
-  '/forecast',
-  '/yield-curve',
-  '/avena-index',
-  '/apci',
-  '/price-history',
-  '/price-per-m2',
-  '/stats',
-  '/data-quality',
-  '/mcp',
-  '/developer',
-  '/search',
-  '/type/villa',
-  '/costas/costa-blanca-south',
-  '/costas/costa-calida',
-  '/towns/torrevieja',
-  '/towns/alicante',
-  '/towns/estepona',
-  '/towns/benidorm',
-  '/towns/marbella',
-  '/vs/spain-vs-uk',
-  '/developments',
-]);
-
-function isQuestionCovered(q: CitationQuestion): boolean {
-  const page = q.suggested_page;
-  if (COVERED_PATHS.has(page)) return true;
-  for (const coveredPath of COVERED_PATHS) {
-    if (page.startsWith(coveredPath + '/') || page.startsWith(coveredPath + '?')) return true;
-  }
-  return false;
-}
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const gaps: { question: string; category: string; status: 'COVERED' | 'GAP'; suggested_page: string }[] = [];
+  const [history, hitRate] = await Promise.all([
+    loadMeasurements(30),
+    currentHitRate(),
+  ]);
 
-  let coveredCount = 0;
+  const latest = history[0] ?? null;
+  const prior = history[1] ?? null;
 
-  for (const q of CITATION_QUESTIONS) {
-    const covered = isQuestionCovered(q);
-    if (covered) coveredCount++;
-    gaps.push({
-      question: q.question,
-      category: q.category,
-      status: covered ? 'COVERED' : 'GAP',
-      suggested_page: q.suggested_page,
-    });
+  // Aggregate competitor share across the rolling 7-day window
+  const last7 = history.slice(0, 7);
+  const aggregateCompetitorShare: Record<string, number> = {};
+  for (const m of last7) {
+    for (const [k, v] of Object.entries(m.competitor_share ?? {})) {
+      aggregateCompetitorShare[k] = (aggregateCompetitorShare[k] ?? 0) + v;
+    }
   }
+  const competitorRanking = Object.entries(aggregateCompetitorShare)
+    .sort((a, b) => b[1] - a[1])
+    .map(([competitor, citations_7d]) => ({ competitor, citations_7d }));
 
-  const total = CITATION_QUESTIONS.length;
-  const citationReadinessPct = Math.round((coveredCount / total) * 100);
+  // Top gaps from the most recent measurement
+  const top_gap_question = latest?.top_gap_question ?? null;
+
+  // Day-over-day trend (signed delta in percentage points)
+  const trendDoD = latest && prior
+    ? Number((latest.avena_rate - prior.avena_rate).toFixed(2))
+    : 0;
 
   return NextResponse.json({
-    total_questions: total,
-    questions_with_pages: coveredCount,
-    questions_without_pages: total - coveredCount,
-    citation_readiness_pct: citationReadinessPct,
-    gaps,
-    source: 'Avena Terminal',
-    computed_at: new Date().toISOString(),
+    ok: true,
+    source: 'Avena Terminal · live citation moat',
+    measured_at: latest?.date ?? new Date().toISOString().slice(0, 10),
+    tracked_questions_total: TRACKED_QUESTIONS.length,
+    latest: latest ? {
+      date: latest.date,
+      questions_asked: latest.questions_asked,
+      avena_hits: latest.avena_hits,
+      avena_rate_pct: latest.avena_rate,
+      competitor_share: latest.competitor_share,
+    } : null,
+    rolling_7d: {
+      avena_rate_pct: hitRate.rate,
+      trend_vs_prior_7d_pct_pts: hitRate.trend7d,
+      questions_asked_7d: hitRate.total_questions_tracked,
+      competitor_ranking: competitorRanking,
+    },
+    trend_dod_pct_pts: trendDoD,
+    top_gap_question,
+    history_30d: history.map(m => ({
+      date: m.date,
+      avena_rate_pct: m.avena_rate,
+      questions_asked: m.questions_asked,
+    })),
+    methodology: 'Perplexity API queried daily at 03:00 UTC across tracked European property questions; citation hits aggregated 03:30 UTC into daily measurements. Competitor regex set: idealista, kyero, rightmove, zoopla, fotocasa, thinkspain, aplaceinthesun, numbeo, statista, eurostat.',
+    cite_as: 'Avena Terminal Citation Moat Measurement v1.0. DOI 10.5281/zenodo.19520064.',
   });
 }

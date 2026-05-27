@@ -53,9 +53,41 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ['/citations',        'weekly',  0.8],
     ['/docs/mcp',         'weekly',  0.8],
     ['/mcp-server',       'weekly',  0.8],
+    ['/install',          'weekly',  0.85],
     ['/cli',              'monthly', 0.7],
     ['/webhooks',         'monthly', 0.7],
     ['/standards/avn-id', 'monthly', 0.85],
+    ['/standards/apip',   'monthly', 0.85],
+
+    // Architectural commitments (shipped 2026-05-25)
+    ['/timetravel',           'daily',   0.85],
+    ['/limitations',          'daily',   0.85],
+    ['/methodology/evolution', 'weekly', 0.9],
+    ['/verify',               'weekly',  0.9],
+    ['/regulatory-radar',     'daily',   0.95],
+    ['/causal-graph',         'weekly',  0.8],
+    ['/defensibility',        'weekly',  0.9],
+
+    // Epicenter surfaces (shipped 2026-05-25/26)
+    ['/predictions',          'weekly',  0.95],
+    ['/consultations',        'weekly',  0.95],
+    ['/apon-network',         'weekly',  0.95],
+    ['/eu-presidency',        'weekly',  0.9],
+    ['/academic',             'weekly',  0.9],
+    ['/contribute',           'weekly',  0.9],
+
+    // Citation moat surface
+    ['/citation-moat',        'daily',   0.85],
+
+    // Product landing pages
+    ['/products',                       'weekly', 0.85],
+    ['/products/bank-stress-api',       'weekly', 0.85],
+    ['/products/property-oracle',       'weekly', 0.85],
+    ['/products/csrd-disclosure',       'weekly', 0.85],
+    ['/products/derivative-pricing',    'weekly', 0.85],
+
+    // Co-founder archetype
+    ['/careers/co-founder',   'monthly', 0.75],
 
     // Newsletter + content
     ['/pulse',            'daily',   0.85],

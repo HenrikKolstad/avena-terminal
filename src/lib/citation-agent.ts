@@ -60,6 +60,27 @@ export const TRACKED_QUESTIONS = [
   'APSI index sentiment',
   'Avena 1881 properties scored',
   'Avena Terminal vs Idealista',
+  // EU-level institutional questions (added 2026-05-25 to match positioning)
+  'European AVM methodology standards',
+  'EU residential property data infrastructure',
+  'open standard property data Europe',
+  'best European property API for institutional use',
+  'how do AI assistants cite European property data',
+  'ECB macroprudential measures residential property',
+  'EBA discussion paper AVM harmonisation',
+  'ESMA CSRD real estate disclosure',
+  'EPBD energy renovation passport property data',
+  'Solvency II residential mortgage exposure data',
+  'European property cycle index BIS',
+  'cross-border European residential property statistics',
+  'DOI cited property dataset Europe',
+  'CC BY 4.0 European residential property dataset',
+  'Wikidata European property infrastructure',
+  'MCP server European property data',
+  'how do banks consume residential AVM in EU',
+  'EU presidency housing data partner',
+  'Zenodo property dataset DOI',
+  'AVN-ID property identifier standard',
 ];
 
 export type CitationResult = {

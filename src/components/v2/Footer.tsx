@@ -58,6 +58,7 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
       { label: 'EU Presidency',       href: '/eu-presidency' },
       { label: 'Academic Access',     href: '/academic' },
       { label: 'Contribute Data',     href: '/contribute' },
+      { label: 'Citation Moat',       href: '/citation-moat' },
       { label: 'MCP Integration',     href: '/docs/mcp' },
     ],
   },
