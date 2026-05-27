@@ -33,18 +33,18 @@ const NAV: TopItem[] = [
   {
     label: 'EU Infra',
     children: [
-      // Trimmed to ten highest-leverage entry points — the surfaces a
-      // regulator, bank, academic, journalist, or acquirer should see
-      // first. Everything else accessible from the footer.
-      { label: 'APON Network',       href: '/apon-network',        sub: 'Open EU residential property data network · convened by the Foundation' },
-      { label: 'EU Presidency',      href: '/eu-presidency',       sub: 'Candidate Official Data Partner · next four rotations' },
-      { label: 'EU Consultations',   href: '/consultations',       sub: 'Avena positions on every active ECB / ESMA / EBA / EC consultation' },
+      // Proof-of-data surfaces lead — a sceptical visitor verifies Avena
+      // is real before reading the pitch. Order is: live data → identifier
+      // substrate → research feed → rigour proofs → distribution.
+      { label: 'EU Official Stats',  href: '/eu-official',         sub: 'Eurostat · ECB SDW · INE Spain · daily refresh · 4,145 obs' },
+      { label: 'AVN-ID Registry',    href: '/avn-id',              sub: 'Signed canonical property identifier · ISIN for European property' },
+      { label: 'Sovereign Briefing', href: '/sovereign-briefing',  sub: 'Published research · central banks · ESMA · EIB · OECD' },
       { label: 'Regulatory Radar',   href: '/regulatory-radar',    sub: 'EU regulatory signals classified for property impact · daily' },
-      { label: 'Predictions',        href: '/predictions',         sub: 'Ten time-stamped, falsifiable EU property calls · audit trail' },
+      { label: 'Macro Alerts',       href: '/alerts/macro',        sub: 'Daily ≥2σ anomaly feed across official series' },
       { label: 'Methodology Evolution', href: '/methodology/evolution', sub: 'Every weight, every revision, published audit trail' },
       { label: 'Verify',             href: '/verify',              sub: 'SHA-256 + Merkle root + Zenodo timestamp · cryptographic integrity' },
-      { label: 'AVN-ID Registry',    href: '/avn-id',              sub: 'Signed canonical property identifier · ISIN for European property' },
-      { label: 'Academic Access',    href: '/academic',            sub: 'Free dataset for EU housing economists · citation in return' },
+      { label: 'Moat Archive',       href: '/archive',             sub: 'Hash-chained nightly backups · downloadable · verifiable' },
+      { label: 'Predictions',        href: '/predictions',         sub: 'Ten time-stamped, falsifiable EU property calls · audit trail' },
       { label: 'Install via MCP',    href: '/install',             sub: 'Plug Avena into Claude / Cursor / ChatGPT / Perplexity' },
     ],
   },
