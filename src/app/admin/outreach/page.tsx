@@ -28,6 +28,8 @@ export default function OutreachAdminPage() {
     has_email: !!t.email,
     email: t.email || null,
     email_masked: t.email ? maskEmail(t.email) : null,
+    category: t.category ?? null,
+    lookup_query: t.lookup_query ?? null,
   }));
 
   return (

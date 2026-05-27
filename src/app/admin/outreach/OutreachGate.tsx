@@ -12,6 +12,10 @@ const ADMIN_EMAILS = [
   'jesper.troan@gmail.com',
 ];
 
+type Category =
+  | 'academic' | 'multilateral' | 'regulator' | 'insurer'
+  | 'notarial' | 'bank' | 'sovereign' | 'ai_lab' | 'journalist';
+
 interface ClientTarget {
   id: string;
   name: string;
@@ -25,6 +29,8 @@ interface ClientTarget {
   has_email: boolean;
   email: string | null;
   email_masked: string | null;
+  category: Category | null;
+  lookup_query: string | null;
 }
 
 export function OutreachGate({ initial }: { initial: ClientTarget[] }) {
