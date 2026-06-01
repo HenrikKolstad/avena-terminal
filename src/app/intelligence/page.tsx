@@ -1,465 +1,144 @@
-import { Metadata } from 'next';
+/**
+ * /intelligence — analytics canonical (Great Consolidation 2026-05-29).
+ *
+ * Absorbs: /precursor, /genesis, /counterpart, /counterpart/health-index,
+ * /policy-engine, /policy-engine/brief, /regulatory-radar,
+ * /sovereign-briefing, /predictions, /alerts, /alerts/macro, /swarm,
+ * /timetravel.
+ *
+ * Single hub for every Avena signal / analytics surface. Each section is
+ * a landing for redirects from the corresponding sub-page.
+ */
+
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
-import {
-  loadIndicators,
-  groupByCategory,
-  rollupNetSignal,
-  latestChainForMarket,
-  latestMarketDebate,
-  type CausalIndicator,
-  type CausalChainStep,
-  type ChainNetSignal,
-} from '@/lib/causal-engine';
-import RefreshDebateButton from './_components/RefreshDebateButton';
 
-export const revalidate = 300;
+export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
-  title: 'The Causal Intelligence Engine | Avena Terminal',
-  description: 'Every other platform shows what happened. This shows what is coming — and why. 15+ leading indicators, measured causal chains, adversarial Bull vs Bear debate, actuarial probabilities.',
+  title: 'Intelligence · Precursor · Genesis · Counterpart · Policy Engine · Regulatory Radar · Avena',
+  description: 'Every Avena signal: Precursor regulatory signals, Genesis Monte Carlo scenarios, Counterpart developer stress graph, Health Index, Policy Engine, Sovereign Briefing, time-stamped predictions, daily macro alerts.',
   alternates: { canonical: 'https://avenaterminal.com/intelligence' },
-  openGraph: {
-    title: 'The Causal Intelligence Engine',
-    description: 'Quantified leading indicators. Measured causal chains. Adversarial debate. The war room.',
-    url: 'https://avenaterminal.com/intelligence',
-    siteName: 'Avena Terminal',
-  },
 };
 
-const SIGNAL_COLORS: Record<ChainNetSignal, string> = {
-  strongly_bullish: 'text-primary',
-  bullish: 'text-primary',
-  neutral: 'text-foreground',
-  bearish: 'text-destructive',
-  strongly_bearish: 'text-destructive',
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Dataset',
+  name: 'Avena Intelligence Layer',
+  description: 'Single hub for European residential property analytics — regulatory signals, scenario modelling, developer stress, predictions, sovereign briefings.',
+  url: 'https://avenaterminal.com/intelligence',
 };
 
-const SIGNAL_LABEL: Record<ChainNetSignal, string> = {
-  strongly_bullish: 'Strongly bullish',
-  bullish: 'Bullish',
-  neutral: 'Neutral',
-  bearish: 'Bearish',
-  strongly_bearish: 'Strongly bearish',
-};
+const ANCHORS = [
+  { id: 'precursor',          label: 'Precursor' },
+  { id: 'regulatory',         label: 'Regulatory Radar' },
+  { id: 'genesis',            label: 'Genesis' },
+  { id: 'counterpart',        label: 'Counterpart' },
+  { id: 'health',             label: 'Health Index' },
+  { id: 'policy-engine',      label: 'Policy Engine' },
+  { id: 'sovereign-briefing', label: 'Sovereign Briefing' },
+  { id: 'predictions',        label: 'Predictions' },
+  { id: 'alerts',             label: 'Macro Alerts' },
+  { id: 'swarm',              label: 'Swarm' },
+  { id: 'timetravel',         label: 'Time Travel' },
+];
 
-const DEBATE_SIGNAL_LABEL: Record<string, string> = {
-  strong_buy: 'Strong Buy',
-  buy: 'Buy',
-  hold: 'Hold',
-  avoid: 'Avoid',
-  strong_avoid: 'Strong Avoid',
-};
-
-const DEBATE_SIGNAL_COLOR: Record<string, string> = {
-  strong_buy: 'text-primary',
-  buy: 'text-primary',
-  hold: 'text-foreground',
-  avoid: 'text-destructive',
-  strong_avoid: 'text-destructive',
-};
-
-const CATEGORY_LABEL: Record<string, string> = {
-  macro: 'Macro',
-  demand: 'Demand',
-  supply: 'Supply',
-  sentiment: 'Sentiment',
-  flow: 'Flow',
-};
-
-function fmtIndicatorValue(v: number | null, name: string): string {
-  if (v == null) return '—';
-  if (name.toLowerCase().includes('rate') && v < 20) return `${v.toFixed(2)}%`;
-  if (name.toLowerCase().includes('eur/')) return v.toFixed(4);
-  if (v >= 1000) return v.toLocaleString('en-GB');
-  if (Number.isInteger(v)) return String(v);
-  return v.toFixed(1);
-}
-
-function fmtChange(pct: number | null): string {
-  if (pct == null || !Number.isFinite(pct)) return '—';
-  const sign = pct >= 0 ? '+' : '';
-  return `${sign}${pct.toFixed(1)}%`;
-}
-
-function IndicatorCard({ indicator }: { indicator: CausalIndicator }) {
-  const isBull = indicator.signal === 'bullish';
-  const isBear = indicator.signal === 'bearish';
-  const signalColor = isBull ? 'text-primary' : isBear ? 'text-destructive' : 'text-muted-foreground';
-  const changeColor = indicator.change_pct == null ? 'text-muted-foreground' : indicator.change_pct >= 0 ? 'text-primary' : 'text-destructive';
-
+export default function IntelligencePage() {
   return (
-    <div
-      className="p-5"
-      style={{ background: 'hsl(var(--av-background))' }}
-    >
-      <div className="flex items-start justify-between mb-3">
-        <div>
-          <p className="font-serif text-base text-foreground leading-tight mb-1">{indicator.name}</p>
-          <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground/70">Leads {indicator.lead_time_days}d · Strength {indicator.causal_strength.toFixed(2)}</p>
-        </div>
-        <span className={`font-mono text-[9px] uppercase tracking-[0.22em] ${signalColor}`}>{indicator.signal || 'neutral'}</span>
-      </div>
-      <div className="flex items-baseline gap-3">
-        <span className="font-serif text-3xl font-light tabular text-foreground">{fmtIndicatorValue(indicator.current_value, indicator.name)}</span>
-        <span className={`font-mono text-xs tabular ${changeColor}`}>{fmtChange(indicator.change_pct)}</span>
-      </div>
-      <p className="mt-3 text-xs text-muted-foreground/80 font-light leading-relaxed line-clamp-2">{indicator.description}</p>
-    </div>
-  );
-}
-
-function CausalStep({ step, last }: { step: CausalChainStep; last: boolean }) {
-  const color = step.signal === 'bullish' ? 'text-primary' : step.signal === 'bearish' ? 'text-destructive' : 'text-foreground';
-  const border = step.signal === 'bullish' ? 'hsl(var(--av-primary) / 0.4)' : step.signal === 'bearish' ? 'hsl(var(--av-destructive) / 0.4)' : 'hsl(var(--av-border) / 0.6)';
-  return (
-    <div className="relative flex-1 min-w-[240px]">
-      <div
-        className="rounded-sm border p-5 h-full"
-        style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: border }}
-      >
-        <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-2">
-          Lag {step.lag_days}d · Strength {step.strength.toFixed(2)}
-        </div>
-        <h4 className={`font-serif text-lg ${color} mb-2 leading-tight`}>{step.indicator}</h4>
-        <p className="text-sm text-muted-foreground font-light leading-relaxed">{step.mechanism}</p>
-      </div>
-      {!last && (
-        <div className="hidden lg:flex absolute top-1/2 -right-4 -translate-y-1/2 items-center justify-center">
-          <span className="font-mono text-xl text-primary">→</span>
-        </div>
-      )}
-      {!last && (
-        <div className="lg:hidden flex justify-center my-2">
-          <span className="font-mono text-xl text-primary">↓</span>
-        </div>
-      )}
-    </div>
-  );
-}
-
-export default async function IntelligencePage() {
-  const market = 'costa_blanca';
-  const indicators = await loadIndicators(market);
-  const grouped = groupByCategory(indicators);
-  const rollup = rollupNetSignal(indicators);
-  const chain = await latestChainForMarket(market);
-  const debate = await latestMarketDebate(market);
-
-  const marketLabel = 'Costa Blanca';
-  const signalColor = SIGNAL_COLORS[rollup.net];
-
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'TechArticle',
-    headline: 'Avena Causal Intelligence Engine',
-    description: 'Quantified leading indicators, measured causal chains, adversarial Bull vs Bear market debate, actuarial probability distributions.',
-    url: 'https://avenaterminal.com/intelligence',
-    author: { '@type': 'Organization', name: 'Avena Terminal', url: 'https://avenaterminal.com' },
-    dateModified: new Date().toISOString(),
-  };
-
-  return (
-    <div className="avena-v2 min-h-screen">
+    <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
+      <main className="min-h-screen" style={{ background: 'hsl(var(--av-background))' }}>
+        <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pt-16 pb-10">
+          <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
+            Intelligence layer · live · daily · DOI 10.5281/zenodo.19520064
+          </div>
+          <h1 className="font-serif text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05]">
+            Every signal Avena produces. One surface.
+          </h1>
+          <p className="max-w-3xl text-base text-muted-foreground leading-relaxed">
+            Regulatory signal classification, Monte Carlo scenarios, developer credit stress, health index, policy engine, sovereign research, time-stamped predictions, macro anomalies, multi-agent swarm, event-sourced time travel. Each section below is a working surface, daily-refreshed, methodology-audited, citation-ready.
+          </p>
+        </section>
 
-      <main className="pt-16">
-        {/* HERO */}
-        <section className="relative overflow-hidden py-20 sm:py-28">
-          <div
-            className="pointer-events-none absolute inset-0 opacity-60"
-            style={{ background: 'radial-gradient(ellipse at top, hsl(42 85% 64% / 0.22), transparent 60%)' }}
-          />
-          <div className="relative mx-auto max-w-[1600px] px-5 sm:px-12">
-            <div className="max-w-4xl">
-              <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
-                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: 'hsl(var(--av-primary))' }} />
-                  <span className="relative inline-flex rounded-full h-1.5 w-1.5" style={{ background: 'hsl(var(--av-primary))' }} />
-                </span>
-                Causal Intelligence · The Engine
-              </span>
-              <h1 className="font-serif text-5xl sm:text-7xl lg:text-8xl font-light leading-[0.95] tracking-tight text-foreground">
-                What&apos;s coming.
-                <br />
-                <span className="italic text-gold">And why</span>.
-              </h1>
-              <p className="mt-8 max-w-2xl font-light text-base text-muted-foreground sm:text-lg">
-                Every other platform shows what happened. This shows what&apos;s coming —
-                and why. {indicators.length} leading indicators. Measured causal relationships.
-                Probability distributions, not guesses.
-              </p>
-            </div>
+        <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-10">
+          <div className="flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-[0.22em]">
+            {ANCHORS.map(a => (
+              <a key={a.id} href={`#${a.id}`} className="rounded-sm border px-3 py-1.5 text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>
+                {a.label}
+              </a>
+            ))}
           </div>
         </section>
 
-        {/* THE SIGNAL — the dominant element */}
-        <section className="relative border-t py-16 sm:py-24" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
-          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
-            <div className="mb-8 flex items-end justify-between gap-6 flex-wrap">
-              <div>
-                <span className="mb-3 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
-                  <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
-                  Market signal · {marketLabel}
-                </span>
-                <h2 className="font-serif text-3xl sm:text-4xl font-light leading-[1] tracking-tight text-foreground">
-                  Rollup across all indicators.
-                </h2>
-              </div>
-              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-                Updated {new Date().toISOString().slice(0, 16).replace('T', ' ')} UTC
-              </span>
-            </div>
+        <Section id="precursor" title="Precursor — leading regulatory + dark signals"
+          body="Pre-policy intelligence. Avena ingests every ECB working paper, ESMA consultation, EBA technical standard, national CB speech, and committee transcript — classifies each for property impact, intent direction (tightening, loosening, neutral), and estimated lag to crystallisation. Bloomberg's Government Affairs desk does this manually for €50K/year per client. Avena publishes it daily, automated, signed."
+          link={{ href: '/intelligence#regulatory', label: 'View live signal stream →' }} />
 
-            <div
-              className="rounded-sm border p-10 sm:p-16 text-center relative overflow-hidden"
-              style={{
-                background: 'linear-gradient(180deg, hsl(var(--av-primary) / 0.06) 0%, hsl(var(--av-surface) / 0.3) 100%)',
-                borderColor: 'hsl(var(--av-primary) / 0.3)',
-                boxShadow: 'var(--av-shadow-gold)',
-              }}
-            >
-              <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-muted-foreground block mb-4">
-                Net signal · confidence {rollup.confidence}%
-              </span>
-              <div className={`font-serif text-6xl sm:text-8xl lg:text-9xl font-light leading-[0.9] ${signalColor} tracking-tight`}>
-                {SIGNAL_LABEL[rollup.net]}
-              </div>
-              <div className="mt-10 grid grid-cols-3 gap-6 max-w-2xl mx-auto">
-                <div>
-                  <div className="font-serif text-3xl font-light tabular text-primary">{rollup.bull_count}</div>
-                  <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Bullish signals</div>
-                </div>
-                <div>
-                  <div className="font-serif text-3xl font-light tabular text-destructive">{rollup.bear_count}</div>
-                  <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Bearish signals</div>
-                </div>
-                <div>
-                  <div className="font-serif text-3xl font-light tabular text-foreground">{rollup.neutral_count}</div>
-                  <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Neutral</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        <Section id="regulatory" title="Regulatory Radar — live classifier feed"
+          body="Daily 04:30 UTC ingestion across ECB, ESMA, EBA, EIOPA, ESRB, BdE, BdF, Bundesbank, Banca d'Italia, DNB, BdP. Heuristic pre-filter rejects non-property items; Claude Sonnet 4.5 classifies the remainder into signal_type, intent_direction, topic_tags, and estimated property-market impacts with coefficients in [-1, +1] and lag-day estimates."
+          link={{ href: '/api/v1/events?aggregate_type=regulatory', label: 'JSON feed →' }} />
 
-        {/* CAUSAL CHAIN */}
-        {chain && (
-          <section className="relative border-t py-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
-            <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
-              <div className="mb-8">
-                <span className="mb-3 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
-                  <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
-                  Active causal chain · {chain.market.replace(/_/g, ' ')}
-                </span>
-                <h2 className="font-serif text-3xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
-                  {chain.chain_name}.
-                </h2>
-                <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-                  Net · {SIGNAL_LABEL[chain.net_signal]} · Confidence {chain.confidence}% · Horizon {chain.horizon_days}d
-                </p>
-              </div>
+        <Section id="genesis" title="Genesis — Monte Carlo scenario engine"
+          body="Run thousands of property-cycle simulations under user-defined macro inputs. Euribor path, HICP path, regulatory event probability, foreign-buyer cohort assumptions. Output: distribution of forward 12-36 month outcomes by region, cohort, type. Used for stress-testing institutional residential exposure under macroprudential scenarios."
+          link={{ href: '/api/v1/genesis', label: 'API endpoint →' }} />
 
-              <div className="flex flex-col lg:flex-row gap-4">
-                {chain.steps.map((step, i) => (
-                  <CausalStep key={i} step={step as CausalChainStep} last={i === chain.steps.length - 1} />
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
+        <Section id="counterpart" title="Counterpart — developer credit stress graph"
+          body="Continuous credit grading for every tracked European residential developer. SIR contagion model maps cascade risk across the construction supply chain. Daily 04:00 UTC scan revises grades based on payment delays, legal disputes, court judgements, delivery delays, financial stress signals."
+          link={{ href: '/api/v1/counterpart/developers', label: 'Developer registry →' }} />
 
-        {/* LEADING INDICATORS DASHBOARD */}
-        <section className="relative border-t py-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
-          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
-            <div className="mb-8">
-              <span className="mb-3 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
-                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
-                Leading indicators · grouped by category
-              </span>
-              <h2 className="font-serif text-3xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
-                The <span className="italic text-gold">instrument panel</span>.
-              </h2>
-            </div>
+        <Section id="health" title="Health Index — counterpart aggregate"
+          body="Cohort-aggregated health metric across European residential developers. Tracks distribution of Counterpart Scores, identifies systemic stress before individual defaults. Macroprudential authorities use this as an early-warning signal for construction-sector vulnerability."
+          link={{ href: '/api/v1/counterpart/health', label: 'JSON snapshot →' }} />
 
-            <div className="space-y-10">
-              {(['macro', 'demand', 'supply', 'sentiment', 'flow'] as const).map(cat => {
-                const rows = grouped[cat];
-                if (!rows || rows.length === 0) return null;
-                return (
-                  <div key={cat}>
-                    <h3 className="mb-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
-                      {CATEGORY_LABEL[cat]} · {rows.length}
-                    </h3>
-                    <div
-                      className="grid gap-px overflow-hidden rounded-sm border sm:grid-cols-2 lg:grid-cols-3"
-                      style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-border) / 0.6)' }}
-                    >
-                      {rows.map(r => (
-                        <IndicatorCard key={r.id} indicator={r} />
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
+        <Section id="policy-engine" title="Policy Engine — interactive macroprudential simulator"
+          body="Six policy levers (LTV cap, DSTI cap, capital requirement, CCyB, sectoral risk weight, foreign-buyer levy) × 27 EU member states × foreign-buyer-share cohort weighting × forward 12-36 month projections. Output: forward postcode-level price impact, bank NPL projection, cross-border capital rotation estimate. Calibrated against Cerutti/Claessens/Laeven 2017 IMF macroprudential framework."
+          link={{ href: '/api/v1/policy-engine', label: 'Run a scenario →' }} />
 
-        {/* THE DEBATE */}
-        <section className="relative border-t py-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
-          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
-            <div className="mb-8 flex items-end justify-between gap-6 flex-wrap">
-              <div>
-                <span className="mb-3 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
-                  <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
-                  Adversarial debate · Agent Bull vs Agent Bear vs Agent Socrates
-                </span>
-                <h2 className="font-serif text-3xl sm:text-5xl font-light leading-[1] tracking-tight text-foreground">
-                  Both sides <span className="italic text-gold">fully argued</span>.
-                </h2>
-              </div>
-              <RefreshDebateButton market={market} />
-            </div>
+        <Section id="sovereign-briefing" title="Sovereign Briefing — research notes"
+          body="Published research notes for central bank and ministry consumption. Volumes 1-4 published 2026-Q2. Vol. 2 documents the Spanish coastal foreign-buyer-channel finding (~4.7× monetary transmission amplification). CC BY 4.0, DOI 10.5281/zenodo.19520064, citation-ready."
+          link={{ href: '/api/v1/sovereign/dispatch/2', label: 'Read Vol. 2 →' }} />
 
-            {!debate ? (
-              <div className="rounded-sm border p-8 text-center font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground" style={{ borderStyle: 'dashed', borderColor: 'hsl(var(--av-border) / 0.6)' }}>
-                No debate yet — hit refresh above, or cron fires 06:30 UTC daily
-              </div>
-            ) : (
-              <div className="space-y-6">
-                {/* Verdict strip */}
-                <div
-                  className="rounded-sm border p-6 flex items-center justify-between gap-6 flex-wrap"
-                  style={{ background: 'hsl(var(--av-primary) / 0.06)', borderColor: 'hsl(var(--av-primary) / 0.3)' }}
-                >
-                  <div>
-                    <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground block mb-1">Socrates verdict</span>
-                    <span className={`font-serif text-4xl font-light ${DEBATE_SIGNAL_COLOR[debate.final_signal] || 'text-foreground'}`}>
-                      {DEBATE_SIGNAL_LABEL[debate.final_signal] || debate.final_signal}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-6 font-mono text-[11px] tabular">
-                    <div className="flex flex-col items-center">
-                      <span className="text-primary text-2xl">{debate.bull_score}</span>
-                      <span className="text-[9px] uppercase tracking-[0.22em] text-muted-foreground">Bull</span>
-                    </div>
-                    <div className="h-10 w-px" style={{ background: 'hsl(var(--av-border))' }} />
-                    <div className="flex flex-col items-center">
-                      <span className="text-destructive text-2xl">{debate.bear_score}</span>
-                      <span className="text-[9px] uppercase tracking-[0.22em] text-muted-foreground">Bear</span>
-                    </div>
-                    <div className="h-10 w-px" style={{ background: 'hsl(var(--av-border))' }} />
-                    <div className="flex flex-col items-center">
-                      <span className="text-foreground text-2xl">{debate.confidence}</span>
-                      <span className="text-[9px] uppercase tracking-[0.22em] text-muted-foreground">Confidence</span>
-                    </div>
-                  </div>
-                </div>
+        <Section id="predictions" title="Predictions — time-stamped, falsifiable"
+          body="Ten hand-curated forecasts on EU residential markets, published 2026-05-25 with full reasoning, methodology references, target dates, and resolution sources. Audit trail visible even on misses. Each prediction names a public dataset (Eurostat, ECB SDW, national stat office) that will resolve it on the target date."
+          link={{ href: '/api/v1/events?aggregate_type=prediction', label: 'JSON feed →' }} />
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  {/* Bull */}
-                  <div
-                    className="rounded-sm border p-6"
-                    style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-primary) / 0.3)' }}
-                  >
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary">Agent Bull</span>
-                      <span className="font-mono text-[10px] text-muted-foreground">· the case for</span>
-                    </div>
-                    <p className="font-light leading-relaxed text-foreground/90">{debate.bull_case}</p>
-                  </div>
-                  {/* Bear */}
-                  <div
-                    className="rounded-sm border p-6"
-                    style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-destructive) / 0.3)' }}
-                  >
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-destructive">Agent Bear</span>
-                      <span className="font-mono text-[10px] text-muted-foreground">· the case against</span>
-                    </div>
-                    <p className="font-light leading-relaxed text-foreground/90">{debate.bear_case}</p>
-                  </div>
-                </div>
+        <Section id="alerts" title="Macro Alerts — daily ≥2σ anomaly feed"
+          body="Daily anomaly detection across Eurostat HPI, ECB MIR, INE Spain, Insee France, Destatis Germany, Istat Italy, and other national stats sources. ≥2σ deviations from rolling baselines trigger published alerts."
+          link={{ href: '/api/v1/alerts/macro', label: 'JSON feed →' }} />
 
-                {/* Socrates verdict text */}
-                <div
-                  className="rounded-sm border p-6"
-                  style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
-                >
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary">Agent Socrates</span>
-                    <span className="font-mono text-[10px] text-muted-foreground">· the synthesis</span>
-                  </div>
-                  <p className="font-serif text-lg leading-relaxed text-foreground">{debate.arbiter_verdict}</p>
-                </div>
+        <Section id="swarm" title="Swarm — multi-agent intelligence"
+          body="A dozen named agents run continuously: Atlas (citation monitoring), Demeter (citation rollup), Nostradamus (prediction generation), Arbiter (prediction verification), Causal (causal indicator updates), Mentat (intelligence synthesis), Argus (anomaly detection), Courier (sovereign dispatch), and more. Each agent's output is event-sourced and replayable."
+          link={{ href: '/api/v1/swarm/status', label: 'Swarm status →' }} />
 
-                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-                  Debate ID {debate.id} · recorded {new Date(debate.created_at).toISOString().slice(0, 16).replace('T', ' ')} UTC · immutable
-                </p>
-              </div>
-            )}
-          </div>
-        </section>
+        <Section id="timetravel" title="Time Travel — event-sourced replay"
+          body="Every state change in Avena writes an immutable event before its projection updates. Replay the system as it existed on any historical date. Critical for institutional diligence — when a CoStar analyst asks 'show me the system on 2026-03-14', the literal answer exists."
+          link={{ href: '/api/v1/events', label: 'Event store →' }} />
 
-        {/* Methodology footer */}
-        <section className="relative border-t py-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
-          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
-            <span className="mb-3 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
-              <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
-              What makes this different
-            </span>
-            <div
-              className="grid gap-px overflow-hidden rounded-sm border sm:grid-cols-3"
-              style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-border) / 0.6)' }}
-            >
-              {[
-                {
-                  title: 'Causation, not correlation',
-                  body: 'Every indicator has a measured lead time and causal strength. We track the mechanism chain, not the statistical shadow.',
-                },
-                {
-                  title: 'Adversarial, not promotional',
-                  body: 'Every market call is built by Bull arguing for it, Bear arguing against it, and Socrates synthesising. No side of the argument goes missing.',
-                },
-                {
-                  title: 'Actuarial, not anecdotal',
-                  body: 'Property-level probabilities are returned as distributions. Yield, capital gain, developer delay, liquidity — all quantified.',
-                },
-              ].map(b => (
-                <div key={b.title} className="p-8" style={{ background: 'hsl(var(--av-background))' }}>
-                  <h3 className="font-serif text-xl font-light text-foreground mb-3">{b.title}</h3>
-                  <p className="text-sm text-muted-foreground font-light leading-relaxed">{b.body}</p>
-                </div>
-              ))}
-            </div>
-            <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-              Agents · Bull · Bear · Socrates · Causal · Source · Avena Terminal · DOI 10.5281/zenodo.19520064
+        <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-20">
+          <div className="rounded-sm border p-6" style={{ borderColor: 'hsl(var(--av-border) / 0.4)', background: 'hsl(var(--av-surface) / 0.2)' }}>
+            <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-2">Methodology</div>
+            <p className="text-sm text-foreground/85 leading-relaxed max-w-3xl">
+              Every signal above is methodology-audited at <Link href="/methodology" className="text-primary hover:underline">/methodology</Link>, cryptographically anchored at <Link href="/verify" className="text-primary hover:underline">/verify</Link>, and event-sourced for replay. CC BY 4.0, DOI 10.5281/zenodo.19520064, RICS Tech Partner.
             </p>
-            <div className="mt-6 flex flex-wrap gap-4">
-              <Link
-                href="/swarm"
-                className="inline-flex items-center gap-2 rounded-sm border px-5 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground hover:text-primary"
-                style={{ borderColor: 'hsl(var(--av-border-strong))' }}
-              >
-                See all 19 agents →
-              </Link>
-              <Link
-                href="/predictions"
-                className="inline-flex items-center gap-2 rounded-sm border px-5 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground hover:text-primary"
-                style={{ borderColor: 'hsl(var(--av-border-strong))' }}
-              >
-                Prediction Ledger →
-              </Link>
-            </div>
           </div>
         </section>
       </main>
-
       <Footer />
-    </div>
+    </>
+  );
+}
+
+function Section({ id, title, body, link }: { id: string; title: string; body: string; link: { href: string; label: string } }) {
+  return (
+    <section id={id} className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-12">
+      <h2 className="font-serif text-3xl font-light text-foreground mb-3">{title}</h2>
+      <p className="text-base text-foreground/85 leading-relaxed max-w-3xl mb-4">{body}</p>
+      <Link href={link.href} className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground transition-colors">
+        {link.label}
+      </Link>
+    </section>
   );
 }

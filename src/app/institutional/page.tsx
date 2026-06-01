@@ -1,384 +1,132 @@
+/**
+ * /institutional — B2B canonical (Great Consolidation 2026-05-29).
+ *
+ * Absorbs: /memo, /avm, /portfolio, /avena-index, /pro, /invest.
+ * Four institutional tools displayed as equal pillars + pricing tiers.
+ */
+
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowUpRight, Check, Lock } from 'lucide-react';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { InstitutionalForm } from './InstitutionalForm';
 
-export const revalidate = 86400;
+export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
-  title: 'Institutional — Avena Terminal',
-  description:
-    'Avena Terminal for funds, family offices, and banks. Dedicated API, custom coverage, direct line to the desk. Get onboarded in under 5 minutes.',
+  title: 'Institutional · Memo · AVM · Portfolio · Indices · Avena Terminal',
+  description: 'Four institutional tools built on one methodology: Memo Engine (IC-forwardable in 30s), AVM (bank-grade <1s), Portfolio Risk Simulator, Index Family (AVENA-CC, AVENA-VAL, AVENA-SCR, AVENA-DPT). Desk €2,500/mo · Fund €12,000/mo.',
   alternates: { canonical: 'https://avenaterminal.com/institutional' },
-  openGraph: {
-    title: 'Avena Terminal — Institutional',
-    description:
-      'European property intelligence for funds and banks. Dedicated API, custom coverage, direct line.',
-    url: 'https://avenaterminal.com/institutional',
-    siteName: 'Avena Terminal',
-  },
 };
 
-const tiers = [
-  {
-    name: 'Desk',
-    price: '€2,500 / mo',
-    for: 'Small allocators, family offices, boutique RIAs',
-    includes: [
-      'Memo Engine — unlimited institutional memos with your logo',
-      'AVM — bank-grade valuations · 1,000/day',
-      'Portfolio Simulator — saved portfolios + CSV batch',
-      'Dedicated API key · 100 req/s burst',
-      'Full dataset export · CSV / JSONL / Parquet',
-      'Precursor signal API + custom market monitoring',
-      'Genesis simulator — unlimited scenarios',
-      'Counterpart intelligence — full network graph + stress alerts',
-      'Weekly desk call · Monday 14:00 CET',
-      'Custom coverage: up to 2 EU regions',
-      'Direct email line to the desk · 4h response',
-    ],
-  },
-  {
-    name: 'Fund',
-    price: '€12,000 / mo',
-    for: 'Property funds, credit desks, sovereign wealth',
-    includes: [
-      'Everything in Desk',
-      'White-label Memo Engine — your branding on every memo',
-      'AVM unlimited rate · batch valuation API',
-      'Portfolio Simulator — unlimited rows, scheduled re-runs',
-      'Custom scoring model · region-tuned',
-      'Precursor — custom signal categories for your mandate',
-      'Genesis — portfolio-level scenario simulation',
-      'Counterpart — bulk developer scanning + contagion modeling',
-      'Weekly private brief · delivered to your MDs',
-      'Ad-hoc research requests · 24h turnaround',
-      'Dedicated Slack channel with the founders',
-      'Quarterly on-site review · London / Madrid / Oslo',
-    ],
-    featured: true,
-  },
-  {
-    name: 'Sovereign',
-    price: 'On request',
-    for: 'Central banks, national pension funds, DFIs',
-    includes: [
-      'Everything in Fund',
-      'Full raw-feed access · property + transaction microdata',
-      'Bespoke causal-intelligence engine for your mandate',
-      'Quarterly review with Head of Research',
-      'On-premise deployment option',
-      'White-glove onboarding · first quarter free',
-    ],
-  },
-];
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: 'Avena Institutional',
+  description: 'Institutional tools: Memo Engine, AVM, Portfolio Risk, Index Family. Same methodology, four buyer segments.',
+  url: 'https://avenaterminal.com/institutional',
+  provider: { '@type': 'Organization', name: 'Avena Terminal' },
+};
 
-const proofPoints = [
-  { label: 'Properties indexed (EU)', value: '58,000+' },
-  { label: 'Public API endpoints', value: '208' },
-  { label: 'Daily autonomous jobs', value: '25' },
-  { label: 'Citation sources (AI + academic)', value: 'Perplexity · Zenodo · Wikidata · HF' },
-  { label: 'Published prediction accuracy', value: 'Tracked at /predictions' },
-  { label: 'License', value: 'CC BY 4.0 · DOI 10.5281/zenodo.19520064' },
-];
-
-const timeline = [
-  { step: '00:00', action: 'Request access', detail: 'Leave your email + a sentence about your mandate' },
-  { step: '00:15', action: 'Reply from the desk', detail: 'We confirm fit + send the onboarding doc' },
-  { step: '00:30', action: 'Dedicated API key issued', detail: 'Scoped + rate-limited · live immediately' },
-  { step: '02:00', action: 'First custom brief delivered', detail: 'Tailored to your mandate + regions' },
+const ANCHORS = [
+  { id: 'memo',      label: 'Memo Engine' },
+  { id: 'avm',       label: 'AVM' },
+  { id: 'portfolio', label: 'Portfolio' },
+  { id: 'indices',   label: 'Indices' },
+  { id: 'agent',     label: 'Agent' },
+  { id: 'pricing',   label: 'Pricing' },
+  { id: 'access',    label: 'Request access' },
 ];
 
 export default function InstitutionalPage() {
   return (
-    <div className="avena-v2 min-h-screen">
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
-      <main className="pt-16">
-        {/* Hero */}
-        <section
-          className="relative overflow-hidden border-b"
-          style={{
-            borderColor: 'hsl(var(--av-border) / 0.6)',
-            background:
-              'radial-gradient(ellipse 90% 60% at 50% 0%, hsl(42 85% 64% / 0.12), transparent 70%), hsl(var(--av-background))',
-          }}
-        >
-          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-24 sm:py-32">
-            <span className="mb-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
-              <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
-              Institutional · Funds · Family Offices · Banks · DFIs
-            </span>
-            <h1 className="font-serif text-5xl sm:text-6xl lg:text-8xl font-light leading-[0.92] tracking-tight text-foreground mb-6 max-w-5xl">
-              The missing <span className="italic text-gold">data infrastructure layer</span>
-              <br />
-              for European residential property.
-            </h1>
-            <p className="max-w-3xl text-lg text-muted-foreground font-light leading-relaxed">
-              Bloomberg, MSCI, Refinitiv built the data infrastructure for equities, fixed income, and FX. For European residential property — the largest asset class on the continent at roughly €30 trillion — the equivalent layer does not exist. Avena is building it. Cited DOI, open APIP standard, SLA-backed delivery, EU data residency, direct line to the research desk that authored the methodology.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-              <span>DOI <span className="text-foreground">10.5281/zenodo.19520064</span></span>
-              <span>Schema <span className="text-foreground">APIP v1.0</span></span>
-              <span>License <span className="text-foreground">CC BY 4.0</span></span>
-              <span>Governance <Link href="/governance" className="text-foreground hover:text-primary">/governance</Link></span>
-            </div>
+      <main className="min-h-screen" style={{ background: 'hsl(var(--av-background))' }}>
+        <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pt-16 pb-10">
+          <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
+            Institutional · one methodology · four pillars · CC BY 4.0
+          </div>
+          <h1 className="font-serif text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05]">
+            One methodology. Four institutional pillars.
+          </h1>
+          <p className="max-w-3xl text-base text-muted-foreground leading-relaxed">
+            Memo Engine for investment committees. AVM for credit and underwriting. Portfolio Risk Simulator for asset managers. Index Family for benchmarking. Same substrate, four professional outputs, methodology audit trail public, cryptographic integrity per artefact.
+          </p>
+        </section>
+
+        <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-10">
+          <div className="flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-[0.22em]">
+            {ANCHORS.map(a => (
+              <a key={a.id} href={`#${a.id}`} className="rounded-sm border px-3 py-1.5 text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>
+                {a.label}
+              </a>
+            ))}
           </div>
         </section>
 
-        {/* Tools strip — the four institutional surfaces */}
-        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
-          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-14">
-            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-6">Live institutional toolkit · click to use</div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              {[
-                { href: '/memo',          label: 'Memo Engine',         desc: '10-section institutional memo in 30 seconds. White-label PDF, IC-forwardable.' },
-                { href: '/avm',           label: 'AVM',                 desc: 'Bank-grade automated valuation in under a second. Confidence band, comps, breakdown.' },
-                { href: '/portfolio',     label: 'Portfolio Simulator', desc: 'Upload your book. Aggregated regime, yield, Counterpart exposure, VaR-95.' },
-                { href: '/avena-index',   label: 'Index Family',        desc: 'Four daily-published institutional benchmarks. AVENA-CC / VAL / SCR / DPT.' },
-              ].map((t) => (
-                <Link key={t.href} href={t.href} className="rounded-sm border p-5 hover:border-primary transition-colors group" style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-surface) / 0.4)' }}>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-2">{t.label}</div>
-                  <p className="text-sm text-foreground/85 leading-relaxed">{t.desc}</p>
-                  <div className="mt-3 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground group-hover:text-primary transition-colors">
-                    Open →
-                  </div>
-                </Link>
-              ))}
-            </div>
+        <Section id="memo" title="Memo Engine — IC-forwardable in 30 seconds"
+          body="Natural-language thesis in, institutional-grade 10-section memo out, in under 30 seconds. Claude Sonnet 4.5 + Avena substrate. Candidate selector + Counterpart enrichment + Genesis scenario overlay. Output: PDF + JSON + persistent short URL for IC distribution."
+          link={{ href: '/memo', label: 'Generate a memo →' }} />
+
+        <Section id="avm" title="AVM — bank-grade in under one second"
+          body="Town × type median €/m² base with multiplicative hedonic adjustments. Approximates the full hedonic OLS to ±3% RMSE on Spanish coastal backtest. Returns predicted value, confidence band, SHAP-style attribution, methodology version. EBA AVM consultation-compliant by design."
+          link={{ href: '/api/v1/avm/value', label: 'API endpoint →' }} />
+
+        <Section id="portfolio" title="Portfolio Risk Simulator — upload your book"
+          body="Drop in a portfolio (CSV, parquet, or APIP JSON). Returns Avena-view valuation, cohort risk decomposition, regime classification, Counterpart developer exposure mapping, regulatory regime exposure, stress projections. The institutional view across your residential book."
+          link={{ href: '/api/v1/portfolio', label: 'Run a portfolio →' }} />
+
+        <Section id="indices" title="Index Family — AVENA-CC · AVENA-VAL · AVENA-SCR · AVENA-DPT"
+          body="The Avena Property Cycle Index (CC) composite of five sub-signals from BIS residential cycle literature. AVENA-VAL aggregates AVM medians. AVENA-SCR rolls up Avena Scores. AVENA-DPT tracks regional depth metrics. All daily-refreshed, methodology-audited, citation-stable under DOI."
+          link={{ href: '/avena-index', label: 'View live indices →' }} />
+
+        <Section id="agent" title="Agent — autonomous research workflow"
+          body="Define a research question; Avena's agent runs a multi-step workflow against the substrate — pulls properties, classifies, generates memos, builds scenarios, returns a research dossier. Used by family offices for thematic deal sourcing and institutional research desks for cohort studies."
+          link={{ href: '/agent', label: 'Agent endpoint →' }} />
+
+        <section id="pricing" className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-12">
+          <h2 className="font-serif text-3xl font-light text-foreground mb-3">Pricing</h2>
+          <p className="text-base text-foreground/85 leading-relaxed max-w-3xl mb-6">Institutional pricing is tier-based. Designated authority tier is free for ECB, EBA, ESMA, EIOPA, ESRB, national CBs, IMF, BIS, OECD researchers.</p>
+          <div className="grid md:grid-cols-3 gap-4">
+            <Tier name="Desk" price="€2,500 / mo" features={['One desk seat', 'Full API access', 'Memo Engine unlimited', 'AVM unlimited', 'Methodology audit']} />
+            <Tier name="Fund" price="€12,000 / mo" features={['Multi-seat institutional', 'Portfolio Risk Simulator', 'Custom index licensing', 'Dedicated Slack channel', 'Roadmap input']} highlight />
+            <Tier name="Designated authority" price="€0" features={['ECB / EBA / ESMA / EIOPA / ESRB', 'Free for national CBs', 'Free for IMF / BIS / OECD', 'Free for academic research', 'Citation in return']} />
           </div>
         </section>
 
-        {/* Proof strip */}
-        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
-          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-10">
-            <div
-              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-px overflow-hidden rounded-sm border"
-              style={{
-                background: 'hsl(var(--av-border) / 0.6)',
-                borderColor: 'hsl(var(--av-border) / 0.6)',
-              }}
-            >
-              {proofPoints.map((p) => (
-                <div key={p.label} className="p-5" style={{ background: 'hsl(var(--av-background))' }}>
-                  <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-2">
-                    {p.label}
-                  </div>
-                  <div className="font-serif text-lg tabular text-foreground">{p.value}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Timeline */}
-        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
-          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-20">
-            <div className="flex items-baseline justify-between mb-10">
-              <h2 className="font-serif text-4xl font-light tracking-tight text-foreground">
-                Onboarded in <span className="italic text-gold">two hours</span>.
-              </h2>
-              <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                · 02
-              </span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-              {timeline.map((t, i) => (
-                <div
-                  key={t.step}
-                  className="rounded-sm border p-6"
-                  style={{
-                    background: 'hsl(var(--av-surface) / 0.4)',
-                    borderColor: 'hsl(var(--av-border) / 0.6)',
-                  }}
-                >
-                  <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-3">
-                    Step {String(i + 1).padStart(2, '0')} · {t.step}
-                  </div>
-                  <div className="font-serif text-xl text-foreground mb-2">{t.action}</div>
-                  <div className="text-sm text-muted-foreground font-light leading-relaxed">
-                    {t.detail}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Tiers */}
-        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
-          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-20">
-            <div className="flex items-baseline justify-between mb-10">
-              <h2 className="font-serif text-4xl font-light tracking-tight text-foreground">
-                Three <span className="italic text-gold">mandates</span>.
-              </h2>
-              <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                · 03
-              </span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {tiers.map((t) => (
-                <div
-                  key={t.name}
-                  className="rounded-sm border p-8 flex flex-col"
-                  style={
-                    t.featured
-                      ? {
-                          background:
-                            'linear-gradient(180deg, hsl(var(--av-primary) / 0.08) 0%, hsl(var(--av-surface)) 100%)',
-                          borderColor: 'hsl(var(--av-primary) / 0.4)',
-                          boxShadow: 'var(--av-shadow-gold)',
-                        }
-                      : {
-                          background: 'hsl(var(--av-surface) / 0.4)',
-                          borderColor: 'hsl(var(--av-border) / 0.6)',
-                        }
-                  }
-                >
-                  {t.featured && (
-                    <span className="mb-4 self-start rounded-sm px-3 py-1 font-mono text-[9px] uppercase tracking-[0.3em] text-primary-foreground" style={{ background: 'var(--av-gradient-gold)' }}>
-                      Most common
-                    </span>
-                  )}
-                  <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-3">
-                    {t.name}
-                  </div>
-                  <div className="font-serif text-4xl font-light tabular text-foreground mb-2">
-                    {t.price}
-                  </div>
-                  <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-6">
-                    {t.for}
-                  </div>
-                  <ul className="space-y-3 mb-6 flex-1">
-                    {t.includes.map((line) => (
-                      <li key={line} className="flex items-start gap-2 text-sm text-foreground/90 font-light">
-                        <Check className="h-3.5 w-3.5 mt-1 flex-shrink-0 text-primary" />
-                        <span>{line}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <a
-                    href="#request"
-                    className="group inline-flex items-center justify-center gap-2 rounded-sm px-5 py-3 font-mono text-[11px] uppercase tracking-[0.22em] transition-all"
-                    style={
-                      t.featured
-                        ? {
-                            background: 'var(--av-gradient-gold)',
-                            color: 'hsl(var(--av-primary-foreground))',
-                            boxShadow: 'var(--av-shadow-gold)',
-                          }
-                        : {
-                            border: '1px solid hsl(var(--av-border-strong))',
-                            color: 'hsl(var(--av-foreground))',
-                          }
-                    }
-                  >
-                    Request access
-                    <ArrowUpRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                  </a>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Stack / technical */}
-        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
-          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-20">
-            <div className="flex items-baseline justify-between mb-10">
-              <h2 className="font-serif text-4xl font-light tracking-tight text-foreground">
-                The <span className="italic text-gold">stack</span>.
-              </h2>
-              <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                · 04
-              </span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                {
-                  title: 'Live, not lagged',
-                  body: '25 autonomous crons run every day. Price snapshots, anomaly detection, causal-engine refresh, prediction verification, citation polling. Your API call reflects state of the world at most 24h ago — usually within the hour.',
-                },
-                {
-                  title: 'Machine-readable by default',
-                  body: '208 public endpoints. OpenAPI catalog at /api/index. SPARQL endpoint at /api/v1/sparql. RDF Turtle export, Wikidata mapping, JSON-LD ontology. If your research pipeline can read HTTP, it can read Avena.',
-                },
-                {
-                  title: 'Verified predictions',
-                  body: 'Every forward call published at /predictions gets automatically verified at its horizon (30 / 90 / 365 days). Accuracy leaderboard is public. Nobody else in EU PropTech publishes a dated record like this.',
-                },
-                {
-                  title: 'Cited where it matters',
-                  body: 'Zenodo DOI (10.5281/zenodo.19520064), Wikidata entity (Q139165733), HuggingFace dataset, Smithery MCP registry. Real attribution, traceable in peer review.',
-                },
-                {
-                  title: 'Deployed on Vercel, proxied for EU',
-                  body: 'Functions run on Vercel Edge where possible, Fluid Compute elsewhere. EU-origin traffic stays EU. Supabase PostgreSQL with row-level security. SOC 2 of the underlying infra.',
-                },
-                {
-                  title: 'Customisable scoring',
-                  body: 'The default Avena Score (0.40V + 0.25Y + 0.20L + 0.10Q + 0.05R) is a starting point. Fund tier gets region-tuned weights — we retrain on your universe and ship the model.',
-                },
-              ].map((block) => (
-                <div
-                  key={block.title}
-                  className="rounded-sm border p-6"
-                  style={{
-                    background: 'hsl(var(--av-surface) / 0.4)',
-                    borderColor: 'hsl(var(--av-border) / 0.6)',
-                  }}
-                >
-                  <div className="font-serif text-xl text-foreground mb-3">{block.title}</div>
-                  <p className="text-sm text-muted-foreground font-light leading-relaxed">
-                    {block.body}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Request form */}
-        <section
-          id="request"
-          className="relative border-b scroll-mt-24"
-          style={{
-            borderColor: 'hsl(var(--av-border) / 0.6)',
-            background:
-              'radial-gradient(ellipse 60% 80% at 50% 0%, hsl(42 85% 64% / 0.12), transparent 70%)',
-          }}
-        >
-          <div className="mx-auto max-w-[900px] px-5 sm:px-12 py-24">
-            <div className="text-center mb-10">
-              <span className="inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-6">
-                <Lock className="h-3 w-3" />
-                Private · No forms routed to a team
-              </span>
-              <h2 className="font-serif text-5xl font-light tracking-tight text-foreground mb-4">
-                Request <span className="italic text-gold">access</span>.
-              </h2>
-              <p className="text-muted-foreground font-light max-w-lg mx-auto">
-                Leave your email and a sentence about your mandate. The desk
-                replies within 4 hours, 24h maximum. API key usually issued
-                same day.
-              </p>
-            </div>
-            <InstitutionalForm />
-            <p className="mt-6 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/70">
-              Prefer email?{' '}
-              <Link href="mailto:henrik@xaviaestate.com?subject=Institutional%20enquiry" className="text-primary hover:text-gold">
-                henrik@xaviaestate.com
-              </Link>{' '}
-              · Or{' '}
-              <Link href="/contact" className="text-primary hover:text-gold">
-                WhatsApp
-              </Link>
-            </p>
-          </div>
+        <section id="access" className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-20">
+          <h2 className="font-serif text-3xl font-light text-foreground mb-3">Request access</h2>
+          <p className="text-base text-foreground/85 leading-relaxed max-w-3xl mb-6">Institutional access is gated for desk-tier and above. Tell us about your team and we will configure your tier within two business days.</p>
+          <InstitutionalForm />
         </section>
       </main>
       <Footer />
+    </>
+  );
+}
+
+function Section({ id, title, body, link }: { id: string; title: string; body: string; link: { href: string; label: string } }) {
+  return (
+    <section id={id} className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-12">
+      <h2 className="font-serif text-3xl font-light text-foreground mb-3">{title}</h2>
+      <p className="text-base text-foreground/85 leading-relaxed max-w-3xl mb-4">{body}</p>
+      <Link href={link.href} className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground transition-colors">
+        {link.label}
+      </Link>
+    </section>
+  );
+}
+
+function Tier({ name, price, features, highlight }: { name: string; price: string; features: string[]; highlight?: boolean }) {
+  return (
+    <div className="rounded-sm border p-5" style={{ borderColor: highlight ? 'hsl(var(--av-primary) / 0.5)' : 'hsl(var(--av-border) / 0.6)', background: highlight ? 'hsl(var(--av-primary) / 0.05)' : 'transparent' }}>
+      <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-foreground mb-2">{name}</div>
+      <div className="font-serif text-3xl font-light text-foreground tabular mb-4">{price}</div>
+      <ul className="space-y-1.5 text-sm text-foreground/85">
+        {features.map(f => <li key={f}>· {f}</li>)}
+      </ul>
     </div>
   );
 }
