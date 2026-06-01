@@ -12,6 +12,8 @@ import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { CredentialBar } from '@/components/v2/CredentialBar';
 import { LiveCitations } from '@/components/v2/LiveCitations';
+import { AlphaOfTheWeek } from '@/components/v2/AlphaOfTheWeek';
+import { FeaturedDeals } from './preview/_components/FeaturedDeals';
 
 export const dynamic = 'force-dynamic';
 
@@ -125,6 +127,24 @@ export default function HomePage() {
               link="View intelligence →"
             />
           </div>
+        </section>
+
+        {/* Live deals — niche Spanish coastal investment deals.
+            Anchor target for the /deals 301 redirect. */}
+        <section id="deals" className="border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-16">
+            <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
+              Live deals · scored daily · Avena Score 0-100
+            </div>
+            <h2 className="font-serif text-4xl md:text-5xl font-light text-foreground mb-4 leading-[1.05]">
+              Find the deals the market hasn&apos;t priced in.
+            </h2>
+            <p className="max-w-3xl text-base text-muted-foreground leading-relaxed mb-8">
+              Every new-build property indexed daily across Spanish coastal markets, scored 0-100 on the open Avena Score methodology. Average operator saving: €130,000 vs market reference. Ranked by Avena Score, refreshed every 6 hours.
+            </p>
+          </div>
+          <FeaturedDeals />
+          <div className="section-defer"><AlphaOfTheWeek /></div>
         </section>
 
         {/* Credential strip — methodology DOI, Wikidata, RICS, Zenodo */}
