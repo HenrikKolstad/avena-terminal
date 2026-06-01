@@ -1,0 +1,1543 @@
+const TEMPLATED_TARGETS: OutreachTarget[] = [
+  // ─── ACADEMIC (15) ──────────────────────────────────────────────────────
+  { id: 'oscar-jorda', category: 'academic',
+    name: 'Òscar Jordà', email: 'jorda@ucdavis.edu',
+    organisation: 'UC Davis / San Francisco Fed', role: 'Professor of Economics; Jordà-Schularick-Taylor macrohistory series',
+    channel: 'email', scenarioUrl: `${BASE}/methodology/evolution`,
+    subject: 'JST macrohistory extended into a live EU residential substrate',
+    body: `Dear Prof. Jordà,
+
+The Jordà-Schularick-Taylor macrohistory series is the canonical reference I cite whenever I argue that open historical residential property datasets matter. We've shipped what JST looks like operationalised in 2026.
+
+${PITCH_A}
+
+Free full dataset and API for any paper that extends JST through the 2020s — citation in return is the only ask. The 30-day as-of replay (event store at ${BASE}/timetravel) was built specifically for housing-economics replication work.
+
+Twenty minutes any time if useful — even just to flag where the methodology is most likely to be wrong.${SIGN}`,
+  },
+  { id: 'atif-mian', category: 'academic',
+    name: 'Atif Mian', email: 'atif@princeton.edu',
+    organisation: 'Princeton University', role: 'Professor of Economics; House of Debt co-author',
+    channel: 'email', scenarioUrl: `${BASE}/methodology/evolution`,
+    subject: 'European household leverage substrate — open, daily, methodology-audited',
+    body: `Dear Prof. Mian,
+
+House of Debt reframed how the field reads household leverage. Your work is the reason every serious bank stress-test deck now includes an LTV-cohort slide. We've shipped the live substrate that lets that slide be reproducible.
+
+${PITCH_B}
+
+The substrate sits underneath an explainable AVM, an adversarial confidence layer, and a public predictions ledger. Free full access for European household-leverage research — citation in the resulting paper is the only ask.
+
+Happy to do 30 minutes to walk through the methodology audit and where it likely breaks first.${SIGN}`,
+  },
+  { id: 'tomasz-piskorski', category: 'academic',
+    name: 'Tomasz Piskorski', email: 'tp2252@gsb.columbia.edu',
+    organisation: 'Columbia Business School', role: 'Edward S. Gordon Professor of Real Estate',
+    channel: 'email', scenarioUrl: `${BASE}/methodology/evolution`,
+    subject: 'EU residential AVM substrate — open methodology, audit trail, MCP-distributed',
+    body: `Dear Prof. Piskorski,
+
+Your work on mortgage market microstructure and refi frictions is exactly the kind of research Avena's substrate was built to support — daily-refreshed, cohort-decomposable, methodology-audited.
+
+${PITCH_A}
+
+The European AVM live at ${BASE}/products/bank-stress-api is the institutional reference point we're building toward an EBA-recognised vendor benchmark. For any research extending US mortgage market literature into Europe, the dataset is free with a citation in the paper.
+
+If a 20-minute call would help frame whether the substrate fits a specific research question, reply here.${SIGN}`,
+  },
+  { id: 'andreas-fuster', category: 'academic',
+    name: 'Andreas Fuster', email: 'andreas.fuster@epfl.ch',
+    organisation: 'EPFL / Swiss Finance Institute', role: 'Professor of Finance',
+    channel: 'email', scenarioUrl: `${BASE}/methodology/evolution`,
+    subject: 'Mortgage rate pass-through evidence — live EU residential substrate available',
+    body: `Dear Prof. Fuster,
+
+Your work on rate pass-through, mortgage market frictions, and lender heterogeneity has been a working bibliography for the AVM team. We've put together the live European substrate that operationalises a lot of the empirical questions you've published on.
+
+${PITCH_B}
+
+The AVM has an adversarial-residual confidence layer (every score returns with reason codes for low confidence) — useful for any paper studying valuation uncertainty across European cohorts. Free institutional access; citation in the paper is the only ask.
+
+If 20 minutes works, happy to walk through. We're also actively looking for skeptical reads on the methodology.${SIGN}`,
+  },
+  { id: 'philippe-bracke', category: 'academic',
+    name: 'Philippe Bracke', email: 'philippe.bracke@bankofengland.co.uk',
+    organisation: 'Bank of England', role: 'Senior Economist, Financial Stability',
+    channel: 'email', scenarioUrl: `${BASE}/methodology/evolution`,
+    subject: 'European housing affordability substrate — Bank of England staff access',
+    body: `Dear Dr. Bracke,
+
+Your published work on European housing affordability has been part of the calibration set for Avena's regional cycle index. We've shipped the live data substrate that makes affordability analysis daily-replicable across 27 EU markets.
+
+${PITCH_C}
+
+Free designated-authority tier for Bank of England staff — full dataset, API quotas waived, methodology audit trail at ${BASE}/methodology/evolution. The Regulatory Radar at ${BASE}/regulatory-radar may also be directly useful for the FPC residential workstream.
+
+20 minutes any time if useful.${SIGN}`,
+  },
+  { id: 'lu-han', category: 'academic',
+    name: 'Lu Han', email: 'lhan@wisc.edu',
+    organisation: 'University of Wisconsin-Madison', role: 'Professor of Real Estate and Urban Land Economics',
+    channel: 'email', scenarioUrl: `${BASE}/methodology/evolution`,
+    subject: 'European search-and-matching housing substrate — open data',
+    body: `Dear Prof. Han,
+
+Your work on housing search frictions and matching has been a reference point for our regime-classification design. We've put together a live European residential substrate that makes search-and-matching empirics tractable across member states.
+
+${PITCH_A}
+
+For any paper extending US housing search literature into Europe, the dataset is free with a citation. The event-sourced backend lets you query the system as-of any historical moment — particularly useful for natural-experiment work around regulatory shocks.
+
+20 minutes if useful; otherwise reply with the data scope you'd need and I'll send a tailored brief.${SIGN}`,
+  },
+  { id: 'manuel-arellano', category: 'academic',
+    name: 'Manuel Arellano', email: 'arellano@cemfi.es',
+    organisation: 'CEMFI Madrid', role: 'Professor of Econometrics',
+    channel: 'email', scenarioUrl: `${BASE}/methodology/evolution`,
+    subject: 'Spanish household microdata substrate — daily-refreshed, methodology-audited',
+    body: `Estimado Prof. Arellano,
+
+His foundational work on longitudinal panel microeconometrics is the methodological reference for Avena's regime-classification work on Spanish household survey microdata.
+
+${PITCH_B}
+
+Free full institutional access for any CEMFI faculty paper extending your work into European cross-section / panel housing research. Daily-refreshed substrate, methodology audit trail public, 30-day as-of historical replay via the event store at ${BASE}/timetravel.
+
+If a 20-minute conversation with CEMFI's housing research group would be useful, reply here.${SIGN}`,
+  },
+  { id: 'tito-boeri', category: 'academic',
+    name: 'Tito Boeri', email: 'tito.boeri@unibocconi.it',
+    organisation: 'Bocconi University', role: 'Professor of Economics',
+    channel: 'email', scenarioUrl: `${BASE}/methodology/evolution`,
+    subject: 'Italian housing + labour mobility substrate — open, daily, citable',
+    body: `Caro Prof. Boeri,
+
+Your work on Italian housing markets and labour mobility is a foundational reference. We've shipped the live European residential substrate that makes housing-labour interaction research empirically tractable at scale.
+
+${PITCH_A}
+
+Free institutional access for Bocconi housing research. The integration is one API key — no procurement friction, no proprietary lock-in, citation in the paper is the only ask. Methodology audit at ${BASE}/methodology/evolution.
+
+Happy to do 30 minutes any time over the next two weeks — Milan or virtual.${SIGN}`,
+  },
+  { id: 'helene-rey', category: 'academic',
+    name: 'Hélène Rey', email: 'hrey@london.edu',
+    organisation: 'London Business School', role: 'Professor of Economics',
+    channel: 'email', scenarioUrl: `${BASE}/methodology/evolution`,
+    subject: 'Cross-border capital → European property — open empirical substrate',
+    body: `Dear Prof. Rey,
+
+Your work on cross-border capital flows and the global financial cycle has informed the empirical foreign-buyer-channel work Avena published in Sovereign Briefing Vol. 2.
+
+${PITCH_C}
+
+The substrate connects macro capital flow data to postcode-level European residential outcomes — the kind of integration that's hard to do without a unified open data layer. Free institutional access for LBS faculty; citation in the resulting paper is the only ask.
+
+If a 30-minute conversation would be useful, reply here.${SIGN}`,
+  },
+  { id: 'paolo-surico', category: 'academic',
+    name: 'Paolo Surico', email: 'psurico@london.edu',
+    organisation: 'London Business School', role: 'Professor of Economics',
+    channel: 'email', scenarioUrl: `${BASE}/methodology/evolution`,
+    subject: 'Household-level monetary transmission to EU residential property',
+    body: `Dear Prof. Surico,
+
+Your micro-level monetary-transmission work is the methodology reference we used for Avena's foreign-buyer-channel paper (Sovereign Briefing Vol. 2). We've shipped the live substrate underneath it.
+
+${PITCH_B}
+
+The Policy Engine at ${BASE}/policy-engine operationalises this transmission empirically — cohort-weighted, daily-refreshed, methodology-audited. Free LBS faculty access; the published methodology version chain at ${BASE}/methodology/evolution is reproducible from the event store.
+
+20 minutes whenever — your skepticism on the cohort decomposition would be especially useful.${SIGN}`,
+  },
+  { id: 'lucrezia-reichlin', category: 'academic',
+    name: 'Lucrezia Reichlin', email: 'lreichlin@london.edu',
+    organisation: 'London Business School', role: 'Professor of Economics; former ECB Director General Research',
+    channel: 'email', scenarioUrl: `${BASE}/methodology/evolution`,
+    subject: 'ECB-era housing research operationalised — live methodology audit trail',
+    body: `Dear Prof. Reichlin,
+
+Your ECB-era research on macro-housing interaction shaped the analytical framework Avena's Policy Engine implements. We've shipped what that research looks like as live, daily-refreshed institutional infrastructure.
+
+${PITCH_A}
+
+Free LBS access; the substrate may be directly useful for any work on ECB monetary-housing transmission or financial stability research. The Regulatory Radar at ${BASE}/regulatory-radar daily-classifies every ECB / ESMA / EBA signal for property impact — useful for tracking the policy environment empirically.
+
+If a 30-minute conversation makes sense, reply here.${SIGN}`,
+  },
+  { id: 'christian-hilber', category: 'academic',
+    name: 'Christian Hilber', email: 'c.hilber@lse.ac.uk',
+    organisation: 'LSE Geography & Environment', role: 'Professor of Economic Geography',
+    channel: 'email', scenarioUrl: `${BASE}/methodology/evolution`,
+    subject: 'European housing supply elasticity — live substrate for cross-country work',
+    body: `Dear Prof. Hilber,
+
+Your work on European housing supply elasticity and planning regimes is foundational to the regional cohort design Avena uses. The substrate now exists to do that work daily, cross-country, with methodology audit trail.
+
+${PITCH_B}
+
+Free LSE faculty access. For supply-elasticity work, the dataset is particularly useful — postcode-level coverage across 27 EU markets, cross-validated against Eurostat HPI + national stats, with permanent DOI attribution.
+
+If 20 minutes would help frame a specific research question, reply here.${SIGN}`,
+  },
+  { id: 'jacopo-mazza', category: 'academic',
+    name: 'Jacopo Mazza', email: 'jacopo.mazza@eui.eu',
+    organisation: 'European University Institute', role: 'Researcher, Migration Policy Centre',
+    channel: 'email', scenarioUrl: `${BASE}/methodology/evolution`,
+    subject: 'EU comparative housing affordability — open data substrate',
+    body: `Dear Dr. Mazza,
+
+Your comparative work on EU housing affordability is the kind of research Avena's substrate is built to support — cross-country, daily-refreshed, methodology-audited.
+
+${PITCH_C}
+
+EUI faculty get free institutional access. The substrate is particularly useful for cross-member-state work because it normalises against the same daily-refreshed methodology across all 27 EU markets. Citation in the paper is the only ask.
+
+If 20 minutes would help scope what would be useful, reply here.${SIGN}`,
+  },
+  { id: 'francesco-mongelli', category: 'academic',
+    name: 'Francesco Mongelli', email: 'francesco.mongelli@ecb.europa.eu',
+    organisation: 'European Central Bank', role: 'Senior Adviser, ECB Directorate General Research',
+    channel: 'email', scenarioUrl: `${BASE}/methodology/evolution`,
+    subject: 'ECB financial stability research — live housing risk substrate available',
+    body: `Dear Dr. Mongelli,
+
+Your ECB research on financial stability and housing risk is foundational to the cohort-weighted methodology Avena uses. We've shipped the live substrate underneath it, with the methodology audit trail you'd expect for ECB-grade reproducibility.
+
+${PITCH_B}
+
+Free designated-authority tier for ECB Research; the Regulatory Radar at ${BASE}/regulatory-radar daily-classifies every ECB / ESMA / EBA signal we ingest, which may be useful for working-paper tracking.
+
+If 20 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'paul-de-grauwe', category: 'academic',
+    name: 'Paul De Grauwe', email: 'p.de-grauwe@lse.ac.uk',
+    organisation: 'LSE European Institute', role: 'Professor of European Political Economy',
+    channel: 'email', scenarioUrl: `${BASE}/methodology/evolution`,
+    subject: 'EMU asset-market dynamics — open property data substrate',
+    body: `Dear Prof. De Grauwe,
+
+Your work on European monetary union dynamics and asset-market behaviour is the political-economy reference Avena's substrate is built to support. The infrastructure now exists to do EMU-era housing research daily, cross-country, methodology-audited.
+
+${PITCH_A}
+
+Free LSE faculty access. The Regulatory Radar at ${BASE}/regulatory-radar may also be directly useful for any work tracking how member-state housing policy diverges within EMU constraints.
+
+If 20 minutes would help scope what would be useful, reply here.${SIGN}`,
+  },
+
+  // ─── MULTILATERAL (10) ──────────────────────────────────────────────────
+  { id: 'gita-gopinath', category: 'multilateral',
+    name: 'Gita Gopinath', email: 'ggopinath@imf.org',
+    organisation: 'International Monetary Fund', role: 'First Deputy Managing Director',
+    channel: 'email', scenarioUrl: `${BASE}/policy-engine`,
+    subject: 'IMF surveillance — live EU residential property substrate',
+    body: `Dear Dr. Gopinath,
+
+Your work bridging open-economy macro and financial stability surveillance has been a reference for the empirical framework we've built. Avena is the EU residential infrastructure that operationalises a lot of what the IMF's Article IV missions and FSAP work look at.
+
+${PITCH_C}
+
+We maintain a free designated-authority tier for IMF teams. The Policy Engine at ${BASE}/policy-engine runs cohort-weighted scenarios across 27 EU markets — likely directly useful for FSAP residential modules and Article IV mortgage exposures.
+
+If 20 minutes any time over the next two weeks would be useful, reply here.${SIGN}`,
+  },
+  { id: 'tobias-adrian', category: 'multilateral',
+    name: 'Tobias Adrian', email: 'tadrian@imf.org',
+    organisation: 'International Monetary Fund', role: 'Director, Monetary and Capital Markets Department',
+    channel: 'email', scenarioUrl: `${BASE}/policy-engine`,
+    subject: 'IMF macroprudential surveillance — daily-refreshed EU residential substrate',
+    body: `Dear Dr. Adrian,
+
+Your MCM Department work on macroprudential surveillance has shaped how Avena's Policy Engine cohort-weights scenarios. We've shipped the live EU residential substrate that lets MCM-grade analytical work happen daily without procurement friction.
+
+${PITCH_B}
+
+Free designated-authority tier for IMF MCM. The Regulatory Radar at ${BASE}/regulatory-radar may also be useful for the GFSR housing module — every ECB / ESMA / EBA / national CB signal classified daily for property impact.
+
+20 minutes any time if useful — happy to do this in Washington if you're stateside, or virtual.${SIGN}`,
+  },
+  { id: 'fabio-natalucci', category: 'multilateral',
+    name: 'Fabio Natalucci', email: 'fnatalucci@imf.org',
+    organisation: 'International Monetary Fund', role: 'Deputy Director; GFSR lead',
+    channel: 'email', scenarioUrl: `${BASE}/policy-engine`,
+    subject: 'GFSR housing module — live EU residential substrate',
+    body: `Dear Dr. Natalucci,
+
+The GFSR housing module is exactly the kind of analytical work Avena's substrate is built to support. We've shipped the live EU residential infrastructure that makes the cross-country housing risk picture daily-tractable.
+
+${PITCH_A}
+
+Free institutional access for GFSR contributors. Methodology audit trail public at ${BASE}/methodology/evolution; Regulatory Radar at ${BASE}/regulatory-radar daily-classifies the European policy environment.
+
+If 20 minutes would be useful — particularly to scope what could be useful for the next GFSR cycle — reply here.${SIGN}`,
+  },
+  { id: 'claudio-borio', category: 'multilateral',
+    name: 'Claudio Borio', email: 'claudio.borio@bis.org',
+    organisation: 'Bank for International Settlements', role: 'Head, Monetary and Economic Department',
+    channel: 'email', scenarioUrl: `${BASE}/policy-engine`,
+    subject: 'BIS financial cycle research — live EU residential substrate operationalised',
+    body: `Dear Dr. Borio,
+
+Your work on the financial cycle and property price dynamics is the analytical framework Avena's APCI implements. We've shipped what the BIS financial cycle research looks like as live institutional infrastructure for European residential markets.
+
+${PITCH_B}
+
+Free designated-authority tier for BIS research. The methodology version chain at ${BASE}/methodology/evolution makes the index reproducible across analytical cycles — important for BIS-grade research consumption.
+
+20 minutes if useful — your skepticism on calibration would be particularly valuable.${SIGN}`,
+  },
+  { id: 'hyun-song-shin', category: 'multilateral',
+    name: 'Hyun Song Shin', email: 'hyunsong.shin@bis.org',
+    organisation: 'Bank for International Settlements', role: 'Economic Adviser and Head of Research',
+    channel: 'email', scenarioUrl: `${BASE}/policy-engine`,
+    subject: 'BIS research on housing-finance interaction — live EU substrate',
+    body: `Dear Dr. Shin,
+
+Your BIS research on intermediation, leverage, and financial stability has informed the architecture of Avena's Counterpart Score (the developer credit graph at ${BASE}/counterpart). We've shipped what the BIS housing-finance work looks like as daily live infrastructure.
+
+${PITCH_C}
+
+Free institutional access for BIS Research. Particularly useful: the Counterpart contagion model and the Regulatory Radar's classification of macroprudential signals across member states.
+
+If 20 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'paolo-mauro', category: 'multilateral',
+    name: 'Paolo Mauro', email: 'paolo.mauro@oecd.org',
+    organisation: 'OECD', role: 'Deputy Director, Economics Department',
+    channel: 'email', scenarioUrl: `${BASE}/policy-engine`,
+    subject: 'OECD housing affordability surveillance — live EU substrate',
+    body: `Dear Dr. Mauro,
+
+The OECD Economics Department's cross-country housing affordability work is the kind of analytical surveillance Avena's substrate is built to support — same methodology applied uniformly across 27 EU markets, daily-refreshed.
+
+${PITCH_A}
+
+Free designated-authority tier for OECD Economics. Methodology audit at ${BASE}/methodology/evolution; daily Regulatory Radar may be useful for tracking EU member-state housing policy environments empirically.
+
+20 minutes any time if useful.${SIGN}`,
+  },
+  { id: 'boris-cournede', category: 'multilateral',
+    name: 'Boris Cournède', email: 'boris.cournede@oecd.org',
+    organisation: 'OECD', role: 'Head, Public Finance Division',
+    channel: 'email', scenarioUrl: `${BASE}/policy-engine`,
+    subject: 'OECD housing policy database — open EU residential substrate complement',
+    body: `Dear Dr. Cournède,
+
+The OECD Housing Policy Database is the closest existing cross-country reference for EU residential research. Avena's substrate is the daily-refreshed empirical layer underneath — same harmonised methodology applied uniformly.
+
+${PITCH_B}
+
+Free institutional access for OECD Housing Unit. Methodology audit trail at ${BASE}/methodology/evolution may also be useful as a reference for the database's methodological framework.
+
+If 30 minutes would help scope an integration, reply here.${SIGN}`,
+  },
+  { id: 'olivier-blanchard', category: 'multilateral',
+    name: 'Olivier Blanchard', email: 'oblanchard@piie.com',
+    organisation: 'Peterson Institute for International Economics', role: 'C. Fred Bergsten Senior Fellow',
+    channel: 'email', scenarioUrl: `${BASE}/policy-engine`,
+    subject: 'European fiscal-monetary interaction — live housing wealth substrate',
+    body: `Dear Prof. Blanchard,
+
+Your post-IMF work on European fiscal-monetary interaction has implicitly touched the housing-wealth channel. We've shipped the live data substrate that makes that channel empirically tractable across 27 EU markets.
+
+${PITCH_C}
+
+Free PIIE faculty access. Useful for any work extending the European fiscal-monetary literature into housing wealth empirics.
+
+If 20 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'guntram-wolff', category: 'multilateral',
+    name: 'Guntram Wolff', email: 'guntram.wolff@bruegel.org',
+    organisation: 'Bruegel', role: 'Director',
+    channel: 'email', scenarioUrl: `${BASE}/policy-engine`,
+    subject: 'Bruegel macroprudential work — live EU residential substrate',
+    body: `Dear Dr. Wolff,
+
+Bruegel's macroprudential and European financial stability work has been a frequent reference for Avena's Policy Engine calibration. We've shipped the live EU residential substrate underneath that work.
+
+${PITCH_A}
+
+Free institutional access for Bruegel fellows. The Regulatory Radar at ${BASE}/regulatory-radar may also be directly useful for tracking the EU macroprudential pipeline across member states — every ECB / ESMA / EBA signal classified for property impact.
+
+20 minutes any time over the next two weeks if useful.${SIGN}`,
+  },
+  { id: 'andrea-presbitero', category: 'multilateral',
+    name: 'Andrea Presbitero', email: 'andrea.presbitero@jhu.edu',
+    organisation: 'Johns Hopkins SAIS', role: 'Associate Professor of International Economics',
+    channel: 'email', scenarioUrl: `${BASE}/policy-engine`,
+    subject: 'Cross-border lending → European housing — open substrate',
+    body: `Dear Prof. Presbitero,
+
+Your work on cross-border lending and credit cycles is methodologically relevant to Avena's foreign-buyer-channel and developer-contagion research.
+
+${PITCH_B}
+
+Free SAIS faculty access. The Counterpart developer credit graph at ${BASE}/counterpart with its SIR contagion model is particularly relevant to any cross-border banking-housing research.
+
+If 20 minutes makes sense, reply here.${SIGN}`,
+  },
+
+  // ─── REGULATOR / SUPERVISOR (15) ────────────────────────────────────────
+  { id: 'jose-manuel-campa', category: 'regulator',
+    name: 'José Manuel Campa', email: 'jose.manuel.campa@eba.europa.eu',
+    organisation: 'European Banking Authority', role: 'Chair',
+    channel: 'email', scenarioUrl: `${BASE}/consultations`,
+    subject: 'Re: EBA residential AVM methodology consultation — Avena position',
+    body: `Dear Dr. Campa,
+
+Avena Terminal has published its position on the EBA residential AVM methodology consultation at ${BASE}/consultations. The direction of travel — mandatory model version disclosure, confidence intervals, reproducibility — is exactly what our substrate operationalises today.
+
+${PITCH_B}
+
+Three things we operate that may be directly useful to the EBA technical team owning this file:
+• Methodology audit trail with cryptographic version anchoring at ${BASE}/methodology/evolution
+• Adversarial confidence layer on every AVM call (reason codes for low confidence)
+• Free designated-authority tier — your team gets full API access at zero cost
+
+If a 30-minute call with the technical staff working the consultation would be useful, reply here.${SIGN}`,
+  },
+  { id: 'philippe-tibi', category: 'regulator',
+    name: 'Philippe Tibi', email: 'philippe.tibi@eba.europa.eu',
+    organisation: 'European Banking Authority', role: 'Head of Credit Risk Policy',
+    channel: 'email', scenarioUrl: `${BASE}/consultations`,
+    subject: 'Avena position on EBA AVM methodology consultation',
+    body: `Dear Mr. Tibi,
+
+Avena has published its detailed position on the EBA residential AVM methodology consultation at ${BASE}/consultations. Briefly: we support harmonisation with three additions — mandatory model version + confidence band on every published valuation, reproducible reference dataset for cross-vendor backtesting, recognition of open standards (APIP, AVN-ID) as compliant substrates.
+
+${PITCH_A}
+
+Avena's production AVM at ${BASE}/products/bank-stress-api demonstrates the operational feasibility. Methodology audit trail at ${BASE}/methodology/evolution. Free EBA staff access.
+
+If 30 minutes works for a working-level discussion, reply here.${SIGN}`,
+  },
+  { id: 'francesco-mazzaferro', category: 'regulator',
+    name: 'Francesco Mazzaferro', email: 'francesco.mazzaferro@esrb.europa.eu',
+    organisation: 'European Systemic Risk Board', role: 'Head of Secretariat',
+    channel: 'email', scenarioUrl: `${BASE}/policy-engine`,
+    subject: 'ESRB residential property warnings — live substrate for the Secretariat',
+    body: `Dear Mr. Mazzaferro,
+
+The ESRB's recurring residential property warnings are exactly the analytical work Avena's substrate is built to support — cohort-weighted, daily-refreshed across 27 EU markets, methodology-audited.
+
+${PITCH_C}
+
+Free designated-authority tier for ESRB Secretariat. The Policy Engine at ${BASE}/policy-engine runs cohort-weighted macroprudential scenarios; the Regulatory Radar at ${BASE}/regulatory-radar daily-classifies cross-member-state signals — both directly useful for the residential property assessment cycle.
+
+If 30 minutes works, reply here. Happy to do this in Frankfurt.${SIGN}`,
+  },
+  { id: 'verena-ross', category: 'regulator',
+    name: 'Verena Ross', email: 'verena.ross@esma.europa.eu',
+    organisation: 'European Securities and Markets Authority', role: 'Chair',
+    channel: 'email', scenarioUrl: `${BASE}/consultations`,
+    subject: 'Re: ESMA CSRD real estate disclosure Q&A — Avena position',
+    body: `Dear Ms. Ross,
+
+Avena Terminal has published its position on the ESMA CSRD Article 8 real estate disclosure Q&A at ${BASE}/consultations. Briefly: we urge structured machine-readable disclosure of underlying property identifiers (AVN-ID compatible), methodology version of any valuation cited, and confidence intervals.
+
+${PITCH_B}
+
+Our explainable-AVM at ${BASE}/products/csrd-disclosure operationalises these requirements today. Free designated-authority tier for ESMA staff.
+
+If 30 minutes with the technical staff owning the CSRD file would be useful, reply here.${SIGN}`,
+  },
+  { id: 'petra-hielkema', category: 'regulator',
+    name: 'Petra Hielkema', email: 'petra.hielkema@eiopa.europa.eu',
+    organisation: 'European Insurance and Occupational Pensions Authority', role: 'Chair',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'EIOPA Solvency II — residential property exposure substrate',
+    body: `Dear Ms. Hielkema,
+
+Solvency II equivalence reviews and catastrophe modelling on residential property exposure require an open, audit-traceable European substrate. Avena ships exactly that.
+
+${PITCH_A}
+
+Free designated-authority tier for EIOPA staff. The substrate covers AVM, regime classification, Counterpart developer risk, and the Regulatory Radar at ${BASE}/regulatory-radar daily-classifies every relevant insurance-supervisory signal across member states.
+
+If 30 minutes makes sense, reply here.${SIGN}`,
+  },
+  { id: 'claudia-buch', category: 'regulator',
+    name: 'Claudia Buch', email: 'claudia.buch@ecb.europa.eu',
+    organisation: 'European Central Bank (Single Supervisory Mechanism)', role: 'Chair of the Supervisory Board',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'SSM residential exposure assessment — independent reference substrate',
+    body: `Dear Prof. Buch,
+
+The SSM's residential mortgage exposure assessment across Significant Institutions has no current independent open reference substrate. Avena is exactly that — daily-refreshed across 27 EU markets, with cryptographic integrity and a public methodology audit trail.
+
+${PITCH_C}
+
+Free designated-authority tier for SSM Joint Supervisory Teams. The Bank Stress API at ${BASE}/products/bank-stress-api runs stress projections at the postcode level on submitted portfolios.
+
+If 30 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'mark-branson', category: 'regulator',
+    name: 'Mark Branson', email: 'mark.branson@bafin.de',
+    organisation: 'Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin)', role: 'President',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'German residential mortgage supervision — independent substrate',
+    body: `Dear Mr. Branson,
+
+BaFin's residential mortgage portfolio supervision work and the recent macroprudential measures on German residential exposure benefit from an independent open data substrate. Avena ships exactly that for the entire EU residential market.
+
+${PITCH_B}
+
+Free designated-authority tier for BaFin. The Regulatory Radar at ${BASE}/regulatory-radar daily-classifies cross-member-state signals — useful for tracking the European supervisory perimeter.
+
+If 30 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'pablo-hernandez-de-cos', category: 'regulator',
+    name: 'Pablo Hernández de Cos', email: 'pablo.hernandezdecos@bde.es',
+    organisation: 'Banco de España', role: 'Former Governor; former BCBS Chair',
+    channel: 'email', scenarioUrl: `${BASE}/policy-engine`,
+    subject: 'Basel III residential mortgage framework — live empirical substrate',
+    body: `Estimado Dr. Hernández de Cos,
+
+Your chairmanship of the BCBS shaped the residential mortgage capital framework now embedded in national supervision. Avena is the live European empirical substrate that makes Basel III residential calibration tractable post-implementation.
+
+${PITCH_A}
+
+Free institutional access. The Policy Engine at ${BASE}/policy-engine runs the kind of cohort-weighted scenarios useful for post-implementation review work.
+
+If 30 minutes would be useful, reply here.${SIGN}`,
+  },
+  { id: 'francois-villeroy', category: 'regulator',
+    name: 'François Villeroy de Galhau', email: 'francois.villeroy-de-galhau@banque-france.fr',
+    organisation: 'Banque de France', role: 'Governor',
+    channel: 'email', scenarioUrl: `${BASE}/policy-engine`,
+    subject: 'HCSF housing measures — live empirical substrate',
+    body: `Cher Gouverneur,
+
+Banque de France's role as HCSF secretariat for residential macroprudential measures is exactly the analytical work Avena's substrate is built to support. We've shipped the live EU residential infrastructure that lets HCSF-grade work happen daily across all 27 EU markets, not just France.
+
+${PITCH_C}
+
+Free designated-authority tier for Banque de France staff and HCSF secretariat. The Policy Engine at ${BASE}/policy-engine runs cohort-weighted scenarios on French and EU residential cohorts.
+
+If 30 minutes makes sense, reply here.${SIGN}`,
+  },
+  { id: 'joachim-nagel', category: 'regulator',
+    name: 'Joachim Nagel', email: 'joachim.nagel@bundesbank.de',
+    organisation: 'Deutsche Bundesbank', role: 'President',
+    channel: 'email', scenarioUrl: `${BASE}/policy-engine`,
+    subject: 'Bundesbank residential property vulnerability assessment',
+    body: `Sehr geehrter Präsident Nagel,
+
+The Bundesbank's residential property vulnerability assessment work — including the 2024 Mietspiegel-era analytical attention — is exactly what Avena's substrate is built to support empirically.
+
+${PITCH_B}
+
+Free designated-authority tier for Bundesbank staff. The substrate covers German residential at cross-Land level with the same daily-refreshed methodology applied across 27 EU markets — useful for cross-country resilience benchmarking.
+
+If 30 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'fabio-panetta', category: 'regulator',
+    name: 'Fabio Panetta', email: 'fabio.panetta@bancaditalia.it',
+    organisation: "Banca d'Italia", role: 'Governor',
+    channel: 'email', scenarioUrl: `${BASE}/policy-engine`,
+    subject: 'Italian residential market — live cross-country substrate',
+    body: `Caro Governatore,
+
+Banca d'Italia's residential lending stability assessment work — including your prior ECB Executive Board work on retail credit — informs the calibration of Avena's Italian-market cohort weights.
+
+${PITCH_A}
+
+Free designated-authority tier for Banca d'Italia. The Policy Engine at ${BASE}/policy-engine runs cohort-weighted scenarios on Italian residential markets specifically.
+
+If 30 minutes works, reply here. Happy to do this in Rome.${SIGN}`,
+  },
+  { id: 'klaas-knot', category: 'regulator',
+    name: 'Klaas Knot', email: 'klaas.knot@dnb.nl',
+    organisation: 'De Nederlandsche Bank / FSB Chair', role: 'President; Chair of the Financial Stability Board',
+    channel: 'email', scenarioUrl: `${BASE}/policy-engine`,
+    subject: 'FSB cross-border residential property risk — open substrate',
+    body: `Dear Mr. Knot,
+
+The FSB's cross-border residential property risk monitoring work is exactly the institutional analytical exercise Avena's substrate is built to support — daily-refreshed, cohort-decomposable across 27 EU markets, with cryptographic integrity for citation in FSB publications.
+
+${PITCH_C}
+
+Free designated-authority tier for DNB and FSB Secretariat staff. The Regulatory Radar at ${BASE}/regulatory-radar daily-classifies cross-member-state property signals.
+
+30 minutes if useful, reply here.${SIGN}`,
+  },
+  { id: 'mario-centeno', category: 'regulator',
+    name: 'Mário Centeno', email: 'mario.centeno@bportugal.pt',
+    organisation: 'Banco de Portugal', role: 'Governor',
+    channel: 'email', scenarioUrl: `${BASE}/policy-engine`,
+    subject: 'Portuguese residential + tourism rental dynamics — live substrate',
+    body: `Caro Senhor Governador,
+
+Banco de Portugal's residential lending stability work — particularly the analytical attention on the post-NHR transition and Lisbon-Porto tourism rental dynamics — is exactly what Avena's substrate is built to support.
+
+${PITCH_B}
+
+Free designated-authority tier for Banco de Portugal staff. The Policy Engine at ${BASE}/policy-engine runs Portuguese residential cohort scenarios. The Regulatory Radar tracks every relevant macroprudential signal across the Eurozone.
+
+If 30 minutes works, reply here. Happy to do this in Lisbon.${SIGN}`,
+  },
+  { id: 'gediminas-simkus', category: 'regulator',
+    name: 'Gediminas Šimkus', email: 'gediminas.simkus@lb.lt',
+    organisation: 'Lietuvos Bankas (Bank of Lithuania)', role: 'Chair',
+    channel: 'email', scenarioUrl: `${BASE}/policy-engine`,
+    subject: 'Baltic residential property cycle — open EU substrate',
+    body: `Dear Mr. Šimkus,
+
+Lithuania's incoming Council of the EU presidency (2028 H1) will set the housing-finance agenda. Avena Terminal is offering itself as the designated open data partner for that period and beyond. Our /eu-presidency page details the partnership offer.
+
+${PITCH_A}
+
+Free designated-authority tier for Lietuvos Bankas. The substrate covers Baltic residential markets with the same daily-refreshed methodology applied across the full EU-27 — useful for cross-Baltic comparison and Eurozone integration work.
+
+If 30 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'gabriel-makhlouf', category: 'regulator',
+    name: 'Gabriel Makhlouf', email: 'gabriel.makhlouf@centralbank.ie',
+    organisation: 'Central Bank of Ireland', role: 'Governor',
+    channel: 'email', scenarioUrl: `${BASE}/policy-engine`,
+    subject: 'Irish residential mortgage measures — live substrate',
+    body: `Dear Governor Makhlouf,
+
+The Central Bank of Ireland's mortgage measures framework is the cleanest applied macroprudential framework in the EU. Avena Terminal is the live cross-country substrate that lets CBI-style work be benchmarked against 26 other member states daily.
+
+${PITCH_C}
+
+Free designated-authority tier for CBI staff. The Policy Engine at ${BASE}/policy-engine runs Irish residential cohort scenarios; the Regulatory Radar tracks the European macroprudential pipeline daily.
+
+If 30 minutes works, reply here. Happy to do this in Dublin.${SIGN}`,
+  },
+
+  // ─── INSURER (15) ────────────────────────────────────────────────────────
+  { id: 'allianz-trade-cro', category: 'insurer',
+    name: 'Aylin Somersan-Coqui', email: 'partnerships@allianz-trade.com',
+    organisation: 'Allianz Trade', role: 'CEO',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'European residential mortgage credit insurance — stress-test substrate',
+    body: `Dear Allianz Trade Partnerships team,
+
+Allianz Trade's European residential mortgage credit insurance book is exactly the kind of portfolio Avena's substrate is built for — daily-refreshed AVM, cohort-decomposable, methodology-audited.
+
+${PITCH_A}
+
+The Bank Stress API at ${BASE}/products/bank-stress-api takes a portfolio and returns stress projections at postcode level with adversarial confidence layers. Free pilot on a sample portfolio happy to scope in 30 minutes.
+
+Reply here if useful — would value a brief on Allianz Trade's current EU residential underwriting analytics and where Avena could complement.${SIGN}`,
+  },
+  { id: 'atradius-cro', category: 'insurer',
+    name: 'Atradius Risk team', email: 'risk@atradius.com',
+    organisation: 'Atradius', role: 'Chief Risk Officer',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'Atradius residential exposure — open stress-test substrate',
+    body: `Dear Atradius Risk Team,
+
+Atradius's residential mortgage credit insurance book benefits from an independent open AVM substrate — particularly important under Solvency II equivalence reviews and tightening EBA expectations.
+
+${PITCH_B}
+
+Free pilot on a sample portfolio. The Bank Stress API at ${BASE}/products/bank-stress-api returns AVM-based stress projections; methodology audit trail at ${BASE}/methodology/evolution.
+
+If 30 minutes makes sense, reply here.${SIGN}`,
+  },
+  { id: 'coface-cro', category: 'insurer',
+    name: 'Coface Risk team', email: 'risk@coface.com',
+    organisation: 'Coface', role: 'Chief Risk Officer',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'Cross-border European credit insurance — residential substrate',
+    body: `Dear Coface Risk Team,
+
+Coface's cross-border European credit insurance work has a structural dependency on residential property exposure benchmarks. Avena ships exactly that as a daily-refreshed open substrate.
+
+${PITCH_C}
+
+Free pilot on a sample portfolio. Particularly useful: the Bank Stress API combined with the Counterpart developer credit graph at ${BASE}/counterpart for any exposure to construction-sector counterparties.
+
+If 30 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'credito-caucion-director', category: 'insurer',
+    name: 'Crédito y Caución Risk team', email: 'comunicacion@creditoycaucion.es',
+    organisation: 'Crédito y Caución', role: 'Risk Director',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'Crédito y Caución — sustrato abierto de propiedad residencial',
+    body: `Equipo de Riesgos Crédito y Caución,
+
+Crédito y Caución's Spanish residential credit insurance book is exactly where Avena's coastal-cohort depth matters most. The substrate is daily-refreshed and cross-validated against INE, BdE, and Eurostat sources.
+
+${PITCH_A}
+
+Pilot gratuito en una cartera muestra. La Bank Stress API en ${BASE}/products/bank-stress-api y el Counterpart developer credit graph en ${BASE}/counterpart son particularmente relevantes para riesgo promotor coastero.
+
+Si 30 minutos funcionan, responder aquí.${SIGN}`,
+  },
+  { id: 'cesce-director', category: 'insurer',
+    name: 'CESCE Underwriting team', email: 'cesce@cesce.es',
+    organisation: 'CESCE', role: 'Underwriting Director',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'CESCE — sustrato europeo abierto de propiedad residencial',
+    body: `Equipo CESCE,
+
+CESCE's state-credit-insurance role gives it structural visibility into Spanish residential developer exposure. Avena's open substrate complements that view with cross-border European cohort decomposition.
+
+${PITCH_B}
+
+Sustrato abierto para riesgo soberano y agencias estatales. The Counterpart developer credit graph at ${BASE}/counterpart and the Bank Stress API at ${BASE}/products/bank-stress-api are particularly relevant.
+
+If 30 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'munich-re-property-cat', category: 'insurer',
+    name: 'Munich Re Property Catastrophe team', email: 'property-cat@munichre.com',
+    organisation: 'Munich Re', role: 'Head of Property Catastrophe Underwriting',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'European residential catastrophe modelling — open AVM substrate',
+    body: `Dear Munich Re Property Cat Team,
+
+Property catastrophe modelling for European residential exposure depends on AVM quality. Munich Re's underwriting work would benefit from an independent open AVM substrate with cryptographic integrity for audit replay.
+
+${PITCH_A}
+
+Free pilot. The Bank Stress API at ${BASE}/products/bank-stress-api returns AVM with adversarial confidence on every score; methodology audit trail at ${BASE}/methodology/evolution. Particularly useful for catastrophe-event scenario replay via the event store at ${BASE}/timetravel.
+
+If 30 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'swiss-re-property', category: 'insurer',
+    name: 'Swiss Re European Property team', email: 'european-property@swissre.com',
+    organisation: 'Swiss Re', role: 'Head of European Property Underwriting',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'European property reinsurance — independent AVM reference',
+    body: `Dear Swiss Re European Property Team,
+
+European property reinsurance underwriting has a structural dependency on AVM quality. Avena ships the independent open reference: daily-refreshed across 27 EU markets, methodology-audited, cryptographically anchored.
+
+${PITCH_B}
+
+Free pilot on a sample portfolio. Bank Stress API at ${BASE}/products/bank-stress-api; methodology version chain public at ${BASE}/methodology/evolution.
+
+If 30 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'scor-residential', category: 'insurer',
+    name: 'SCOR Residential team', email: 'press@scor.com',
+    organisation: 'SCOR', role: 'Head of Residential Risk',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'SCOR European residential reinsurance — open AVM substrate',
+    body: `Dear SCOR Residential Team,
+
+SCOR's European residential reinsurance exposure benefits from an independent open AVM substrate — particularly under Solvency II equivalence reviews and the recent EBA AVM consultation.
+
+${PITCH_C}
+
+Free pilot. The Bank Stress API at ${BASE}/products/bank-stress-api and the Counterpart developer credit graph at ${BASE}/counterpart together give a coherent view of residential underwriting risk across member states.
+
+If 30 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'hannover-re-property', category: 'insurer',
+    name: 'Hannover Re European Property team', email: 'info@hannover-re.com',
+    organisation: 'Hannover Re', role: 'Head of European Property',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'European property reinsurance — open AVM reference substrate',
+    body: `Dear Hannover Re European Property Team,
+
+Hannover Re's European property reinsurance work has a structural dependency on AVM quality and provenance. Avena ships the open reference: daily-refreshed, methodology-audited, integrity-anchored.
+
+${PITCH_A}
+
+Free pilot. The Bank Stress API at ${BASE}/products/bank-stress-api integrates AVM, regime classification, and Counterpart developer risk into one underwriting view.
+
+If 30 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'axa-property', category: 'insurer',
+    name: 'AXA European Property Underwriting team', email: 'property.underwriting@axa.com',
+    organisation: 'AXA', role: 'Head of European Property Underwriting',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'AXA European residential — independent open AVM substrate',
+    body: `Dear AXA European Property Team,
+
+AXA's residential property book across France, Germany, Italy, and the Benelux benefits from an independent open AVM substrate that's cross-validated against Eurostat and national stats. Avena ships exactly that.
+
+${PITCH_B}
+
+Free pilot on a sample portfolio. The substrate covers AVM, regime classification, regulatory exposure, and Counterpart developer risk in one integrated view.
+
+If 30 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'allianz-property', category: 'insurer',
+    name: 'Allianz European Property Underwriting team', email: 'european.underwriting@allianz.com',
+    organisation: 'Allianz', role: 'Head of European Property Underwriting',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'Allianz European residential — open AVM substrate + catastrophe complement',
+    body: `Dear Allianz European Property Team,
+
+Allianz's European residential underwriting work benefits from an independent open AVM substrate — particularly under EBA AVM consultation expectations and Solvency II equivalence reviews.
+
+${PITCH_A}
+
+Free pilot. Bank Stress API at ${BASE}/products/bank-stress-api; methodology audit trail at ${BASE}/methodology/evolution.
+
+If 30 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'generali-property', category: 'insurer',
+    name: 'Generali European Real Estate Risk team', email: 'press@generali.com',
+    organisation: 'Generali', role: 'Head of European Real Estate Risk',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'Generali Real Estate — open European residential substrate',
+    body: `Dear Generali European Real Estate Risk Team,
+
+Generali's significant residential property exposure across Italy, Germany, and France benefits from an independent open AVM substrate with methodology audit trail.
+
+${PITCH_C}
+
+Free pilot on a sample portfolio. The Bank Stress API and Counterpart developer credit graph together give a coherent underwriting view across member states.
+
+If 30 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'mapfre-residential', category: 'insurer',
+    name: 'MAPFRE Residencial team', email: 'comunicacion@mapfre.com',
+    organisation: 'MAPFRE', role: 'Director, Residential Insurance Underwriting',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'MAPFRE — sustrato europeo abierto de propiedad residencial',
+    body: `Equipo MAPFRE Residencial,
+
+MAPFRE's Spanish and Portuguese residential property book is exactly where Avena's Iberian coastal-cohort depth matters most. Substrate cross-validated against INE, BdE, and Eurostat.
+
+${PITCH_B}
+
+Pilot gratuito en cartera muestra. Bank Stress API en ${BASE}/products/bank-stress-api; metodología auditada en ${BASE}/methodology/evolution.
+
+Si 30 minutos funcionan, responder aquí.${SIGN}`,
+  },
+  { id: 'aviva-property', category: 'insurer',
+    name: 'Aviva European Property Risk team', email: 'press@aviva.com',
+    organisation: 'Aviva', role: 'Head of European Property Risk',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'Aviva European residential — open AVM substrate',
+    body: `Dear Aviva European Property Risk Team,
+
+Aviva's European residential property exposure benefits from an independent open AVM substrate with methodology audit trail — particularly under the EBA AVM consultation direction.
+
+${PITCH_A}
+
+Free pilot. Bank Stress API at ${BASE}/products/bank-stress-api integrates AVM, regime classification, and Counterpart developer risk in one view.
+
+If 30 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'zurich-property', category: 'insurer',
+    name: 'Zurich European Property Underwriting team', email: 'european.property@zurich.com',
+    organisation: 'Zurich Insurance', role: 'Head of European Property Underwriting',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'Zurich European residential — independent open substrate',
+    body: `Dear Zurich European Property Team,
+
+Zurich's European residential underwriting work benefits from an independent open AVM substrate with cryptographic integrity for audit replay.
+
+${PITCH_B}
+
+Free pilot on a sample portfolio. Methodology audit trail public at ${BASE}/methodology/evolution; integrity verifiable at ${BASE}/verify.
+
+If 30 minutes works, reply here.${SIGN}`,
+  },
+
+  // ─── NOTARIAL / REGISTRY (8) ────────────────────────────────────────────
+  { id: 'cgn-spain', category: 'notarial',
+    name: 'Presidencia — Consejo General del Notariado', email: 'cgn@notariado.org',
+    organisation: 'Consejo General del Notariado (Spain)', role: 'Presidencia / Estadística Notarial',
+    channel: 'email', scenarioUrl: `${BASE}/apon-network`,
+    subject: 'APON — Red abierta europea de datos inmobiliarios · invitación a CGN',
+    body: `Estimada Presidencia,
+
+El Consejo General del Notariado tiene en sus manos los datos transaccionales que sustentan toda la estadística residencial española. Avena Terminal está construyendo APON (Avena Property Open Network) — la red europea abierta de datos inmobiliarios bajo el estándar APIP v1.0.
+
+${PITCH_C}
+
+CGN retiene la propiedad y nombra los términos de licencia. La integración da atribución permanente en el DOI 10.5281/zenodo.19520064, co-cita en cada paper que use los datos, y un asiento en el comité de gobernanza de APON.
+
+Si 30 minutos en Madrid funcionarían, responder aquí.${SIGN}`,
+  },
+  { id: 'cir-registradores', category: 'notarial',
+    name: 'Dirección — Centro de Información Registral', email: 'registradores@registradores.org',
+    organisation: 'Centro de Información Registral (Spain)', role: 'Director',
+    channel: 'email', scenarioUrl: `${BASE}/apon-network`,
+    subject: 'APON — red abierta europea de datos · invitación a CIR',
+    body: `Estimada Dirección,
+
+El Centro de Información Registral tiene una de las bases de datos transaccionales residenciales más completas de Europa. Avena está construyendo APON (Avena Property Open Network) — la red europea abierta de datos inmobiliarios bajo el estándar APIP v1.0.
+
+${PITCH_A}
+
+CIR retiene propiedad y términos de licencia. Atribución permanente en DOI, co-cita en investigación académica, y asiento en gobernanza APON. Ningún extractivismo comercial — los clientes comerciales pagan a Avena, los contribuyentes reciben co-atribución.
+
+Si 30 minutos en Madrid funcionarían, responder aquí.${SIGN}`,
+  },
+  { id: 'csn-france', category: 'notarial',
+    name: 'Présidence — Conseil Supérieur du Notariat', email: 'csn@notaires.fr',
+    organisation: 'Conseil Supérieur du Notariat (France)', role: 'Présidence / Service Statistiques',
+    channel: 'email', scenarioUrl: `${BASE}/apon-network`,
+    subject: 'APON — réseau ouvert européen des données immobilières · invitation au CSN',
+    body: `Chère Présidence,
+
+Le Conseil Supérieur du Notariat publie déjà des statistiques résidentielles trimestrielles parmi les plus fiables d'Europe. Avena Terminal construit APON (Avena Property Open Network) — le réseau ouvert européen des données immobilières sous le standard APIP v1.0.
+
+${PITCH_B}
+
+CSN conserve propriété et conditions de licence. Attribution permanente sur le DOI 10.5281/zenodo.19520064, co-citation dans toute recherche académique utilisant les données, et siège dans la gouvernance APON.
+
+Si 30 minutes à Paris fonctionneraient, répondre ici.${SIGN}`,
+  },
+  { id: 'bnotk-germany', category: 'notarial',
+    name: 'Präsident — Bundesnotarkammer', email: 'info@bnotk.de',
+    organisation: 'Bundesnotarkammer (Germany)', role: 'Präsident',
+    channel: 'email', scenarioUrl: `${BASE}/apon-network`,
+    subject: 'APON — offenes europäisches Immobiliendatennetzwerk · Einladung BNotK',
+    body: `Sehr geehrter Präsident,
+
+Die Bundesnotarkammer verwaltet Transaktionsdaten der höchsten Qualität in Deutschland. Avena Terminal baut APON (Avena Property Open Network) — das offene europäische Immobiliendatennetzwerk unter dem APIP v1.0 Standard.
+
+${PITCH_C}
+
+BNotK behält Eigentum und Lizenzbedingungen. Permanente Attribution auf der DOI 10.5281/zenodo.19520064, Co-Zitation in jeder Veröffentlichung und ein Sitz im APON-Governance-Komitee.
+
+Falls 30 Minuten in Berlin oder virtuell funktionieren, hier antworten.${SIGN}`,
+  },
+  { id: 'cnn-italy', category: 'notarial',
+    name: 'Presidenza — Consiglio Nazionale del Notariato', email: 'cnn@notariato.it',
+    organisation: 'Consiglio Nazionale del Notariato (Italy)', role: 'Presidenza',
+    channel: 'email', scenarioUrl: `${BASE}/apon-network`,
+    subject: 'APON — rete aperta europea dati immobiliari · invito al CNN',
+    body: `Gentile Presidenza,
+
+Il Consiglio Nazionale del Notariato detiene i dati transazionali immobiliari di più alta qualità in Italia. Avena Terminal sta costruendo APON (Avena Property Open Network) — la rete aperta europea sotto lo standard APIP v1.0.
+
+${PITCH_A}
+
+CNN mantiene proprietà e termini di licenza. Attribuzione permanente al DOI 10.5281/zenodo.19520064, co-citazione in ogni pubblicazione di ricerca, e un seggio nella governance APON.
+
+Se 30 minuti a Roma o virtuali funzionano, rispondere qui.${SIGN}`,
+  },
+  { id: 'knb-netherlands', category: 'notarial',
+    name: 'Voorzitter — KNB', email: 'info@knb.nl',
+    organisation: 'Koninklijke Notariële Beroepsorganisatie (Netherlands)', role: 'Voorzitter',
+    channel: 'email', scenarioUrl: `${BASE}/apon-network`,
+    subject: 'APON — open Europees vastgoeddatanetwerk · uitnodiging KNB',
+    body: `Geachte Voorzitter,
+
+De KNB beheert hoogwaardige Nederlandse residentiële transactiedata. Avena Terminal bouwt APON (Avena Property Open Network) — het open Europese vastgoeddatanetwerk onder de APIP v1.0 standaard.
+
+${PITCH_B}
+
+KNB behoudt eigendom en licentievoorwaarden. Permanente attributie op DOI 10.5281/zenodo.19520064, co-citatie in elke onderzoekspublicatie en een zetel in de APON-governance.
+
+Als 30 minuten in Den Haag of virtueel werken, antwoord hier.${SIGN}`,
+  },
+  { id: 'ordem-notarios-pt', category: 'notarial',
+    name: 'Bastonário — Ordem dos Notários', email: 'secretaria@notarios.pt',
+    organisation: 'Ordem dos Notários (Portugal)', role: 'Bastonário',
+    channel: 'email', scenarioUrl: `${BASE}/apon-network`,
+    subject: 'APON — rede europeia aberta de dados imobiliários · convite à Ordem',
+    body: `Estimado Bastonário,
+
+A Ordem dos Notários detém os dados transacionais imobiliários de mais alta qualidade em Portugal. A Avena Terminal está a construir APON (Avena Property Open Network) — a rede europeia aberta sob o standard APIP v1.0.
+
+${PITCH_C}
+
+A Ordem mantém propriedade e termos de licença. Atribuição permanente no DOI 10.5281/zenodo.19520064, co-citação em todas as publicações de investigação, e um assento na governança APON.
+
+Se 30 minutos em Lisboa funcionarem, responder aqui.${SIGN}`,
+  },
+  { id: 'lantmateriet-sweden', category: 'notarial',
+    name: 'Director-General — Lantmäteriet', email: 'lantmateriet@lm.se',
+    organisation: 'Lantmäteriet (Sweden)', role: 'Director-General',
+    channel: 'email', scenarioUrl: `${BASE}/apon-network`,
+    subject: 'APON — open European residential property network · invitation Lantmäteriet',
+    body: `Dear Director-General,
+
+Lantmäteriet's cadastral and land registry data is the foundational substrate for Swedish residential property statistics. Avena Terminal is building APON (Avena Property Open Network) — the open European residential property data network under APIP v1.0.
+
+${PITCH_A}
+
+Lantmäteriet retains ownership and naming terms. Permanent attribution at DOI 10.5281/zenodo.19520064, co-citation in every research publication, and a seat in APON governance.
+
+If 30 minutes in Gävle or virtual works, reply here.${SIGN}`,
+  },
+
+  // ─── TIER-1 BANK (15) ───────────────────────────────────────────────────
+  { id: 'santander-credit-risk', category: 'bank',
+    name: 'Santander Spain Credit Risk Modelling', email: 'investor-relations@santander.com',
+    organisation: 'Banco Santander', role: 'Head of Credit Risk Modelling, Spain',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'EBA AVM consultation — independent reference for Santander\'s Spanish book',
+    body: `Dear Santander Credit Risk Team,
+
+The EBA residential AVM methodology consultation closes 2026-07-31. Avena's published position is at ${BASE}/consultations. The direction — mandatory model version disclosure, confidence intervals, reproducibility — operationalises exactly what our substrate does.
+
+${PITCH_B}
+
+Specifically useful to Santander Spain's coastal mortgage book exposure: independent AVM reference with adversarial confidence, daily-refreshed against INE, BdE, and Eurostat. Free institutional research tier for the model risk team.
+
+If 20 minutes works for a collaborative discussion on the EBA submission, reply here.${SIGN}`,
+  },
+  { id: 'bbva-mortgage-risk', category: 'bank',
+    name: 'BBVA Mortgage Risk team', email: 'investor.relations@bbva.com',
+    organisation: 'BBVA', role: 'Head of Mortgage Credit Risk',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'BBVA residential AVM validation — independent open substrate',
+    body: `Dear BBVA Mortgage Risk Team,
+
+The EBA AVM consultation expectations on residential model validation are tightening. Avena ships an independent open reference AVM with methodology audit trail and cryptographic integrity — exactly what model validation needs.
+
+${PITCH_A}
+
+Free institutional tier for BBVA's model risk team. The Bank Stress API at ${BASE}/products/bank-stress-api returns AVM with adversarial confidence on every score.
+
+If 20 minutes works for the model risk and AVM validation team, reply here.${SIGN}`,
+  },
+  { id: 'caixa-model-risk', category: 'bank',
+    name: 'CaixaBank Model Risk team', email: 'investors@caixabank.com',
+    organisation: 'CaixaBank', role: 'Head of Model Risk Management',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'CaixaBank IRB residential — independent open AVM reference',
+    body: `Dear CaixaBank Model Risk Team,
+
+IRB residential mortgage model validation under the tightening EBA expectations benefits from an independent open AVM reference. Avena ships exactly that, with methodology audit trail and cryptographic integrity.
+
+${PITCH_C}
+
+Free institutional tier for CaixaBank's model risk team. Particularly useful for AVM validation cycles and benchmark backtest. Methodology audit at ${BASE}/methodology/evolution.
+
+If 20 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'sabadell-credit-risk', category: 'bank',
+    name: 'Sabadell Credit Risk team', email: 'investors@bancsabadell.com',
+    organisation: 'Banco Sabadell', role: 'Head of Credit Risk',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'Sabadell Mediterranean residential book — open AVM substrate',
+    body: `Dear Sabadell Credit Risk Team,
+
+Sabadell's Mediterranean coastal mortgage book exposure is exactly where Avena's substrate depth matters — daily-refreshed Iberian coastal data cross-validated against INE and BdE.
+
+${PITCH_B}
+
+Free institutional tier for Sabadell's credit risk team. The Bank Stress API combined with the Counterpart developer credit graph at ${BASE}/counterpart gives a coherent view of residential underwriting risk.
+
+If 20 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'bnpp-model-risk', category: 'bank',
+    name: 'BNP Paribas Model Risk team', email: 'investor.relations@bnpparibas.com',
+    organisation: 'BNP Paribas', role: 'Head of Model Risk Management, Europe',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'BNP Paribas European AVM validation — open reference substrate',
+    body: `Dear BNP Paribas Model Risk Team,
+
+European residential AVM model validation under EBA framework expectations benefits from an independent open reference. Avena's substrate is exactly that — daily-refreshed across 27 EU markets, methodology-audited, cryptographically anchored.
+
+${PITCH_A}
+
+Free institutional tier for BNP Paribas's model risk team across the European footprint. Methodology audit trail public at ${BASE}/methodology/evolution.
+
+If 20 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'ca-credit-risk', category: 'bank',
+    name: 'Crédit Agricole Residential Credit Risk team', email: 'investor.relations@credit-agricole-sa.fr',
+    organisation: 'Crédit Agricole', role: 'Head of Residential Credit Risk',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'Crédit Agricole residential — open AVM substrate under HCSF framework',
+    body: `Dear Crédit Agricole Residential Credit Risk Team,
+
+Crédit Agricole's French residential mortgage book operates under HCSF measures and the tightening EBA AVM consultation. Avena ships an independent open AVM reference with methodology audit and cryptographic integrity.
+
+${PITCH_C}
+
+Free institutional tier for Crédit Agricole. The Policy Engine at ${BASE}/policy-engine runs HCSF-style scenarios cohort-weighted.
+
+If 20 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'socgen-model', category: 'bank',
+    name: 'Société Générale Credit Model Risk team', email: 'investor.relations@socgen.com',
+    organisation: 'Société Générale', role: 'Head of Credit Model Risk',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'SocGen residential AVM validation — open substrate reference',
+    body: `Dear Société Générale Credit Model Risk Team,
+
+SocGen's residential AVM validation framework under EBA consultation expectations benefits from an independent open reference. Avena ships exactly that — methodology-audited, cryptographically anchored, daily-refreshed.
+
+${PITCH_B}
+
+Free institutional tier for SocGen's model risk team. The Bank Stress API at ${BASE}/products/bank-stress-api integrates AVM, regime classification, and Counterpart developer risk into one view.
+
+If 20 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'deutsche-mortgage', category: 'bank',
+    name: 'Deutsche Bank Mortgage Risk team', email: 'db.communication@db.com',
+    organisation: 'Deutsche Bank', role: 'Head of Mortgage Risk, Germany',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'Deutsche Bank German residential — independent AVM substrate',
+    body: `Dear Deutsche Bank Mortgage Risk Team,
+
+Deutsche Bank's German residential exposure under BaFin macroprudential oversight benefits from an independent open AVM reference with methodology audit trail and cryptographic integrity.
+
+${PITCH_A}
+
+Free institutional tier for Deutsche Bank's mortgage risk team. The Regulatory Radar at ${BASE}/regulatory-radar daily-classifies relevant signals across BaFin / Bundesbank / EBA.
+
+If 20 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'commerzbank-mortgage', category: 'bank',
+    name: 'Commerzbank Real Estate Finance Risk team', email: 'pressestelle@commerzbank.com',
+    organisation: 'Commerzbank', role: 'Head of Real Estate Finance Risk',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'Commerzbank residential + mittelstand property — open AVM substrate',
+    body: `Dear Commerzbank Real Estate Finance Risk Team,
+
+Commerzbank's residential and mittelstand property exposure benefits from an independent open AVM substrate cross-validated against Eurostat and German statistical sources.
+
+${PITCH_B}
+
+Free institutional tier for Commerzbank's real estate finance risk team. Methodology audit at ${BASE}/methodology/evolution.
+
+If 20 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'ing-mortgage', category: 'bank',
+    name: 'ING Mortgage Risk team', email: 'investor.relations@ing.com',
+    organisation: 'ING Group', role: 'Head of Mortgage Risk, Netherlands & Europe',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'ING residential mortgage — open AVM substrate under Dutch macroprudential regime',
+    body: `Dear ING Mortgage Risk Team,
+
+ING's residential mortgage book under the Dutch macroprudential regime — and across the European footprint — benefits from an independent open AVM reference with methodology audit trail.
+
+${PITCH_C}
+
+Free institutional tier for ING's mortgage risk team. The Bank Stress API and Counterpart developer credit graph together give a coherent residential underwriting view.
+
+If 20 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'rabobank-mortgage', category: 'bank',
+    name: 'Rabobank Mortgage Risk Modelling team', email: 'pressoffice@rabobank.com',
+    organisation: 'Rabobank', role: 'Head of Mortgage Risk Modelling',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'Rabobank Dutch residential — independent open AVM reference',
+    body: `Dear Rabobank Mortgage Risk Modelling Team,
+
+Rabobank's Dutch residential mortgage portfolio benefits from an independent open AVM substrate with methodology audit trail and cryptographic integrity.
+
+${PITCH_A}
+
+Free institutional tier for Rabobank's model risk team. The substrate covers Dutch residential at municipality level with the same daily-refreshed methodology applied across the full EU-27.
+
+If 20 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'unicredit-model-risk', category: 'bank',
+    name: 'UniCredit Model Risk Management team', email: 'mediarelations@unicredit.eu',
+    organisation: 'UniCredit', role: 'Head of Model Risk Management',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'UniCredit cross-country residential — open AVM substrate',
+    body: `Dear UniCredit Model Risk Management Team,
+
+UniCredit's residential portfolio across Italy, Germany, and CEE benefits from an independent open AVM reference cross-validated against Eurostat and national statistical sources.
+
+${PITCH_B}
+
+Free institutional tier for UniCredit's model risk team. The substrate's daily refresh across 27 EU markets is particularly useful for cross-country residential risk benchmarking.
+
+If 20 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'intesa-residential', category: 'bank',
+    name: 'Intesa Sanpaolo Residential Credit Risk team', email: 'investor.relations@intesasanpaolo.com',
+    organisation: 'Intesa Sanpaolo', role: 'Head of Residential Credit Risk',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'Intesa Sanpaolo Italian residential — independent AVM reference',
+    body: `Dear Intesa Sanpaolo Residential Credit Risk Team,
+
+Intesa Sanpaolo's Italian residential mortgage portfolio benefits from an independent open AVM substrate with methodology audit trail and cryptographic integrity — particularly useful under tightening Banca d'Italia oversight expectations.
+
+${PITCH_C}
+
+Free institutional tier for Intesa's residential credit risk team. Bank Stress API at ${BASE}/products/bank-stress-api integrates AVM, regime, and Counterpart developer risk.
+
+If 20 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'erste-mortgage', category: 'bank',
+    name: 'Erste Group Retail Credit Risk team', email: 'investor.relations@erstegroup.com',
+    organisation: 'Erste Group Bank', role: 'Head of Retail Credit Risk, CEE',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'Erste Group CEE residential — open European substrate',
+    body: `Dear Erste Group Retail Credit Risk Team,
+
+Erste Group's CEE residential mortgage book exposure benefits from an independent open AVM substrate. Avena covers CEE markets with the same daily-refreshed methodology applied across the full EU-27.
+
+${PITCH_A}
+
+Free institutional tier for Erste Group. The Regulatory Radar at ${BASE}/regulatory-radar daily-classifies signals across CEE national central banks.
+
+If 20 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'dnb-mortgage', category: 'bank',
+    name: 'DNB Norway Residential Credit Risk team', email: 'investor.relations@dnb.no',
+    organisation: 'DNB (Norway)', role: 'Head of Residential Credit Risk',
+    channel: 'email', scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: 'DNB Norwegian residential — open Nordic + EU substrate (Norwegian-founded)',
+    body: `Dear DNB Residential Credit Risk Team,
+
+DNB's Norwegian residential mortgage portfolio under Norges Bank macroprudential oversight benefits from an independent open AVM substrate. Worth noting: Avena Terminal is Norwegian-founded — solo founder is Henrik Kolstad — and the substrate includes Norwegian residential alongside the full EU-27.
+
+${PITCH_B}
+
+Free institutional tier for DNB's residential credit risk team. Methodology audit at ${BASE}/methodology/evolution.
+
+If 20 minutes works, reply here — can do this in Oslo.${SIGN}`,
+  },
+
+  // ─── SOVEREIGN WEALTH / PENSION (8) ─────────────────────────────────────
+  { id: 'nbim-real-estate', category: 'sovereign',
+    name: 'NBIM Real Estate team', email: 'nbim@nbim.no',
+    organisation: 'Norges Bank Investment Management', role: 'Head of European Real Estate',
+    channel: 'email', scenarioUrl: `${BASE}/products/property-oracle`,
+    subject: 'NBIM European residential deployment — open infrastructure substrate (Norwegian-to-Norwegian)',
+    body: `Hei NBIM Real Estate team,
+
+I'm Henrik Kolstad, founder of Avena Terminal — Norwegian solo founder, building European residential property data infrastructure. The €30T European residential market has no canonical institutional substrate, which is why NBIM's stated interest in expanded residential exposure has not converted into deployment.
+
+${PITCH_C}
+
+What you could do with this: portfolio aggregation across thematic European residential exposure with daily NAV calculation, verifiable provenance for any reporting, macroprudential stress-test on demand. The Property Oracle at ${BASE}/products/property-oracle is built precisely for institutional allocators.
+
+If 30 minutes in Oslo or virtual works, reply here. Glad to switch to Norwegian if useful.${SIGN}`,
+  },
+  { id: 'gic-europe', category: 'sovereign',
+    name: 'GIC European Real Estate team', email: 'communications@gic.com.sg',
+    organisation: 'GIC Singapore', role: 'Head of European Real Estate',
+    channel: 'email', scenarioUrl: `${BASE}/products/property-oracle`,
+    subject: 'GIC European residential — open allocator substrate',
+    body: `Dear GIC European Real Estate Team,
+
+European residential property is a €30T asset class with no canonical institutional substrate — which is why allocators with multi-year stated interest in European residential have not deployed at scale.
+
+${PITCH_A}
+
+Avena operates the missing layer: AVN-ID identifier registry, daily live data across 27 EU markets, signed credential chain on every property, cryptographic integrity. The Property Oracle at ${BASE}/products/property-oracle is built for institutional allocators.
+
+If 30 minutes makes sense, reply here.${SIGN}`,
+  },
+  { id: 'adia-europe', category: 'sovereign',
+    name: 'ADIA European Real Estate team', email: 'mediarelations@adia.ae',
+    organisation: 'Abu Dhabi Investment Authority', role: 'Director, European Real Estate',
+    channel: 'email', scenarioUrl: `${BASE}/products/property-oracle`,
+    subject: 'ADIA European residential — open allocator infrastructure',
+    body: `Dear ADIA European Real Estate Team,
+
+ADIA's European real estate portfolio direction would benefit from a canonical institutional substrate for European residential — open, daily-refreshed, with permanent DOI attribution for any cited valuation.
+
+${PITCH_B}
+
+The Property Oracle at ${BASE}/products/property-oracle and the APON Network at ${BASE}/apon-network together give an institutional allocator the missing infrastructure: identifier registry, signed credentials, daily NAV calculation, regulatory intent graph.
+
+If 30 minutes makes sense, reply here.${SIGN}`,
+  },
+  { id: 'apg-real-estate', category: 'sovereign',
+    name: 'APG Residential Real Estate team', email: 'investor.relations@apg.nl',
+    organisation: 'APG (Dutch pension)', role: 'Head of Residential Real Estate',
+    channel: 'email', scenarioUrl: `${BASE}/products/property-oracle`,
+    subject: 'APG European residential — open institutional substrate',
+    body: `Dear APG Residential Real Estate Team,
+
+APG's €600B Dutch pension portfolio with European residential exposure benefits from an open canonical substrate for daily valuation, cross-country risk decomposition, and permanent DOI attribution for reporting.
+
+${PITCH_C}
+
+The Property Oracle at ${BASE}/products/property-oracle and the methodology audit trail at ${BASE}/methodology/evolution together give APG the institutional reference layer for residential reporting.
+
+If 30 minutes makes sense, reply here.${SIGN}`,
+  },
+  { id: 'alecta-real-estate', category: 'sovereign',
+    name: 'Alecta Real Estate Investments team', email: 'kommunikation@alecta.se',
+    organisation: 'Alecta (Swedish pension)', role: 'Head of Real Estate Investments',
+    channel: 'email', scenarioUrl: `${BASE}/products/property-oracle`,
+    subject: 'Alecta European residential — open allocator substrate',
+    body: `Dear Alecta Real Estate Investments Team,
+
+Alecta's Swedish pension allocation with European residential exposure benefits from an open canonical substrate for daily valuation and permanent attribution.
+
+${PITCH_A}
+
+The Property Oracle at ${BASE}/products/property-oracle is built for institutional allocators. Methodology audit trail at ${BASE}/methodology/evolution. Free institutional tier for designated investment teams.
+
+If 30 minutes makes sense, reply here.${SIGN}`,
+  },
+  { id: 'pfa-real-estate', category: 'sovereign',
+    name: 'PFA Pension Real Estate team', email: 'pfa@pfa.dk',
+    organisation: 'PFA Pension (Denmark)', role: 'Head of Real Estate Investments',
+    channel: 'email', scenarioUrl: `${BASE}/products/property-oracle`,
+    subject: 'PFA Pension European residential — open allocator substrate',
+    body: `Dear PFA Real Estate Investments Team,
+
+PFA's Danish pension portfolio with European residential allocation benefits from an open canonical substrate — daily-refreshed, cryptographically anchored, methodology-audited.
+
+${PITCH_B}
+
+Property Oracle at ${BASE}/products/property-oracle; APON Network at ${BASE}/apon-network. Free institutional tier for designated investment teams.
+
+If 30 minutes makes sense, reply here.${SIGN}`,
+  },
+  { id: 'caisse-quebec', category: 'sovereign',
+    name: 'CDPQ European Real Estate team', email: 'medias@cdpq.com',
+    organisation: 'Caisse de dépôt et placement du Québec', role: 'Head of European Real Estate',
+    channel: 'email', scenarioUrl: `${BASE}/products/property-oracle`,
+    subject: 'CDPQ Ivanhoé Cambridge European residential — open institutional substrate',
+    body: `Dear CDPQ European Real Estate Team,
+
+CDPQ / Ivanhoé Cambridge's European real estate strategy benefits from an open canonical substrate for daily residential valuation and permanent DOI attribution for reporting.
+
+${PITCH_C}
+
+Property Oracle at ${BASE}/products/property-oracle integrates AVM, regime classification, and Counterpart developer risk across 27 EU markets.
+
+If 30 minutes makes sense, reply here.${SIGN}`,
+  },
+  { id: 'kic-europe', category: 'sovereign',
+    name: 'Korea Investment Corporation European Investment team', email: 'kic@kic.kr',
+    organisation: 'Korea Investment Corporation', role: 'Head of European Investment',
+    channel: 'email', scenarioUrl: `${BASE}/products/property-oracle`,
+    subject: 'KIC European residential — open allocator substrate',
+    body: `Dear KIC European Investment Team,
+
+KIC's European real estate exposure benefits from an open canonical substrate for European residential — daily-refreshed, methodology-audited, with permanent DOI attribution.
+
+${PITCH_A}
+
+Property Oracle at ${BASE}/products/property-oracle. Free institutional tier for designated investment teams.
+
+If 30 minutes makes sense, reply here.${SIGN}`,
+  },
+
+  // ─── AI LAB / DISTRIBUTION (6) ──────────────────────────────────────────
+  { id: 'anthropic-partnerships', category: 'ai_lab',
+    name: 'Anthropic Partnerships', email: 'partnerships@anthropic.com',
+    organisation: 'Anthropic', role: 'Partnerships / Model Evaluation',
+    channel: 'email', scenarioUrl: `${BASE}/install`,
+    subject: 'Avena MCP server — verified European property answers for Claude',
+    body: `Dear Anthropic Partnerships,
+
+When Claude is asked about European property today — "average price per m² in Marbella, 2026 EU mortgage rate transmission, residential AVM consultation status" — the answers are either training-cutoff stale, hallucinated, or from non-authoritative sources. Avena Terminal ships the live, attribution-verifiable substrate that fixes this.
+
+${PITCH_C}
+
+The MCP install is documented at ${BASE}/install — Claude Desktop config is one paste. Free integration tier; we benefit from the citation graph, Claude benefits from verifiable property answers with AVN-ID and signed integrity receipt.
+
+If 30 minutes to scope deeper integration would be useful, reply here.${SIGN}`,
+  },
+  { id: 'openai-data', category: 'ai_lab',
+    name: 'OpenAI Data Partnerships', email: 'partnerships@openai.com',
+    organisation: 'OpenAI', role: 'Data Partnerships',
+    channel: 'email', scenarioUrl: `${BASE}/install`,
+    subject: 'Avena MCP — verified European property data layer for ChatGPT',
+    body: `Dear OpenAI Data Partnerships,
+
+European property answers in ChatGPT today depend on training-cutoff data and non-authoritative sources. Avena Terminal ships the live verifiable substrate — daily-refreshed across 27 EU markets, AVN-ID identifier registry, signed integrity receipts on every answer.
+
+${PITCH_A}
+
+Custom GPT and live-retrieval integration are documented at ${BASE}/install. Free integration tier in exchange for citation attribution.
+
+If 30 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'perplexity-partners', category: 'ai_lab',
+    name: 'Perplexity Partnerships', email: 'press@perplexity.ai',
+    organisation: 'Perplexity', role: 'Data Partnerships',
+    channel: 'email', scenarioUrl: `${BASE}/install`,
+    subject: 'Avena MCP — European property citation network for Perplexity Pro',
+    body: `Dear Perplexity Partnerships,
+
+Perplexity Pro's citation-first approach is the closest cultural fit for Avena Terminal — an open European property data substrate with attribution-by-design. Every Avena answer carries an AVN-ID and signed integrity receipt for verification.
+
+${PITCH_B}
+
+MCP integration at ${BASE}/install. Free integration tier. The Citation Moat dashboard at ${BASE}/citation-moat tracks Perplexity citation rate across European property questions daily.
+
+If 30 minutes makes sense, reply here.${SIGN}`,
+  },
+  { id: 'mistral-partners', category: 'ai_lab',
+    name: 'Mistral Enterprise Partnerships', email: 'partnerships@mistral.ai',
+    organisation: 'Mistral AI', role: 'Enterprise Partnerships',
+    channel: 'email', scenarioUrl: `${BASE}/install`,
+    subject: 'Mistral × Avena — EU-native AI × EU-native property substrate',
+    body: `Dear Mistral Partnerships,
+
+Mistral's European AI sovereignty positioning and Avena's open European property data substrate are natural integration partners. Both EU-native, both committed to open standards, both designed for institutional consumption.
+
+${PITCH_C}
+
+MCP integration at ${BASE}/install. Avena's Regulatory Radar at ${BASE}/regulatory-radar daily-classifies the EU AI Act + property regulatory pipeline — directly relevant to Mistral's enterprise positioning.
+
+If 30 minutes makes sense, reply here. Happy to do this in Paris.${SIGN}`,
+  },
+  { id: 'google-deepmind-data', category: 'ai_lab',
+    name: 'Google DeepMind Data Partnerships', email: 'gemini-partnerships@google.com',
+    organisation: 'Google DeepMind / Gemini', role: 'Data Partnerships',
+    channel: 'email', scenarioUrl: `${BASE}/install`,
+    subject: 'Avena substrate — grounding source for Gemini European property answers',
+    body: `Dear Google DeepMind / Gemini Data Partnerships,
+
+Gemini's grounding capability for European property answers depends on access to authoritative, verifiable, daily-refreshed substrate. Avena Terminal ships exactly that.
+
+${PITCH_A}
+
+MCP integration at ${BASE}/install. Free integration tier in exchange for citation attribution.
+
+If 30 minutes works, reply here.${SIGN}`,
+  },
+  { id: 'meta-ai-data', category: 'ai_lab',
+    name: 'Meta AI Data Partnerships', email: 'aipartnerships@meta.com',
+    organisation: 'Meta AI', role: 'Data Partnerships',
+    channel: 'email', scenarioUrl: `${BASE}/install`,
+    subject: 'Avena — European property substrate for Llama / Meta AI',
+    body: `Dear Meta AI Data Partnerships,
+
+Llama and Meta AI's European deployment benefits from authoritative grounding on European property — daily-refreshed, methodology-audited, MCP-distributed.
+
+${PITCH_B}
+
+Integration at ${BASE}/install. Free integration tier in exchange for citation attribution.
+
+If 30 minutes makes sense, reply here.${SIGN}`,
+  },
+
+  // ─── JOURNALIST (8) ─────────────────────────────────────────────────────
+  { id: 'joshua-oliver-ft', category: 'journalist',
+    name: 'Joshua Oliver', email: 'joshua.oliver@ft.com',
+    organisation: 'Financial Times', role: 'Property Correspondent',
+    channel: 'email', scenarioUrl: `${BASE}/predictions`,
+    subject: 'Live EU property predictions, regulatory radar, methodology audit — FT brief',
+    body: `Joshua,
+
+Henrik here, founder of Avena Terminal. Following your recent FT coverage on Spanish coastal and Lisbon market dynamics — wanted to put three things on your radar:
+
+${PITCH_C}
+
+1. Ten time-stamped, falsifiable EU property predictions at ${BASE}/predictions — Spanish coastal +2-5%, Berlin rents ≤2%, Lisbon prime yield -50-100 bps, ECB no-cut, no national rental caps. Each with reasoning and methodology references.
+
+2. Daily regulatory radar at ${BASE}/regulatory-radar — every ECB/ESMA/EBA signal classified for property impact.
+
+3. Live citation moat at ${BASE}/citation-moat — measuring how often AI assistants cite Avena vs Idealista/Kyero on European property.
+
+If any are useful for upcoming coverage, I'd be glad to provide deeper brief, embargoed numbers, or commentary.${SIGN}`,
+  },
+  { id: 'valentina-romei-ft', category: 'journalist',
+    name: 'Valentina Romei', email: 'valentina.romei@ft.com',
+    organisation: 'Financial Times', role: 'Economics Reporter, Southern Europe',
+    channel: 'email', scenarioUrl: `${BASE}/predictions`,
+    subject: 'Southern European housing — live substrate for FT data work',
+    body: `Valentina,
+
+Henrik here, founder of Avena Terminal. Your Southern Europe housing data coverage at FT has been a reference for some of our framing — wanted to share three things in case useful:
+
+${PITCH_A}
+
+1. Live Southern European residential index at ${BASE}/eu-coverage daily, with methodology audit at ${BASE}/methodology/evolution.
+
+2. Spanish coastal cohort analysis published in Sovereign Briefing Vol. 2 (foreign-buyer cohorts amplify monetary transmission ~4.7×).
+
+3. Ten falsifiable EU predictions at ${BASE}/predictions — including specific Spanish/Italian/Portuguese calls with public data resolution paths.
+
+Glad to provide embargoed numbers or specific cuts for any FT data piece you're working on.${SIGN}`,
+  },
+  { id: 'jana-randow-bloomberg', category: 'journalist',
+    name: 'Jana Randow', email: 'jrandow@bloomberg.net',
+    organisation: 'Bloomberg', role: 'ECB Correspondent',
+    channel: 'email', scenarioUrl: `${BASE}/regulatory-radar`,
+    subject: 'ECB macroprudential pipeline — live classification dashboard',
+    body: `Jana,
+
+Henrik here, founder of Avena Terminal. Your ECB coverage at Bloomberg is the reference for anyone tracking the macroprudential pipeline — wanted to put two relevant things on your radar:
+
+${PITCH_B}
+
+1. Live regulatory radar at ${BASE}/regulatory-radar — every ECB/ESMA/EBA signal classified daily for property impact, intent direction (tightening / loosening), and estimated lag to crystallisation.
+
+2. Policy Engine at ${BASE}/policy-engine — cohort-weighted macroprudential scenarios across 27 EU markets. Useful for any "what does this ECB measure actually do to housing" piece.
+
+If useful for upcoming coverage, happy to provide tailored brief or specific scenario runs.${SIGN}`,
+  },
+  { id: 'reuters-property', category: 'journalist',
+    name: 'Reuters European Property Desk', email: 'pressoffice@thomsonreuters.com',
+    organisation: 'Reuters', role: 'European Property Reporter',
+    channel: 'email', scenarioUrl: `${BASE}/predictions`,
+    subject: 'Reuters European property — embargoed substrate brief',
+    body: `Dear Reuters European Property Desk,
+
+Henrik here, founder of Avena Terminal. Three things that may be useful for Reuters European property coverage:
+
+${PITCH_C}
+
+1. Ten time-stamped, falsifiable EU property predictions at ${BASE}/predictions.
+2. Daily Regulatory Radar at ${BASE}/regulatory-radar.
+3. Live Citation Moat at ${BASE}/citation-moat.
+
+Glad to provide embargoed numbers, specific cuts, or commentary on upcoming pieces.${SIGN}`,
+  },
+  { id: 'handelsblatt-immobilien', category: 'journalist',
+    name: 'Handelsblatt Immobilien-Redaktion', email: 'redaktion@handelsblatt.com',
+    organisation: 'Handelsblatt', role: 'Real Estate Desk',
+    channel: 'email', scenarioUrl: `${BASE}/predictions`,
+    subject: 'Handelsblatt Immobilien — live German + EU property substrate',
+    body: `Sehr geehrte Immobilien-Redaktion,
+
+Henrik Kolstad, Gründer von Avena Terminal. Drei Dinge, die für Handelsblatt-Immobilien-Berichterstattung relevant sein könnten:
+
+${PITCH_A}
+
+1. Berlin-Miet-Prognose und deutsche REIT-Calls auf ${BASE}/predictions (Berlin ≤2%, kein deutscher Wohn-REIT unter 0.6x P/NAV 2026).
+2. Tägliches Regulatory Radar auf ${BASE}/regulatory-radar — alle BaFin/Bundesbank/ESRB Signale klassifiziert.
+3. Live Citation Moat auf ${BASE}/citation-moat.
+
+Gerne Brief, eingebettete Zahlen oder Kommentare für kommende Artikel.${SIGN}`,
+  },
+  { id: 'echos-immobilier', category: 'journalist',
+    name: 'Les Échos Rédaction Immobilier', email: 'redactionimmobilier@lesechos.fr',
+    organisation: 'Les Échos', role: 'Real Estate Desk',
+    channel: 'email', scenarioUrl: `${BASE}/predictions`,
+    subject: 'Les Échos Immobilier — substrat français + UE en direct',
+    body: `Chère Rédaction Immobilier,
+
+Henrik Kolstad, fondateur d'Avena Terminal. Trois éléments pertinents pour la rubrique Immobilier des Échos :
+
+${PITCH_B}
+
+1. Prédictions UE résidentielles falsifiables sur ${BASE}/predictions — y compris des positions sur le marché français.
+2. Radar Réglementaire quotidien sur ${BASE}/regulatory-radar — chaque signal HCSF/BdF/EBA classé pour impact immobilier.
+3. Moteur de Politique sur ${BASE}/policy-engine — scénarios HCSF cohorte-pondérés.
+
+Heureux de fournir brief, chiffres sous embargo ou commentaire.${SIGN}`,
+  },
+  { id: 'el-confidencial-vivienda', category: 'journalist',
+    name: 'El Confidencial Sección Vivienda', email: 'redaccion@elconfidencial.com',
+    organisation: 'El Confidencial', role: 'Real Estate Section',
+    channel: 'email', scenarioUrl: `${BASE}/predictions`,
+    subject: 'El Confidencial Vivienda — sustrato español + UE en directo',
+    body: `Estimada Sección Vivienda,
+
+Henrik Kolstad, fundador de Avena Terminal. Tres elementos relevantes para la cobertura de El Confidencial:
+
+${PITCH_C}
+
+1. Predicciones UE residenciales falsificables en ${BASE}/predictions — incluyendo predicción para precios costeros españoles (+2-5% 2026, materialmente por debajo del consenso) y finalización de obra nueva (-15% YoY).
+2. Radar Regulatorio diario en ${BASE}/regulatory-radar — cada señal del BdE/CNMV/EBA clasificada.
+3. Sovereign Briefing Vol. 2 — análisis del canal del comprador extranjero en mercados costeros españoles.
+
+Encantado de proporcionar brief, cifras embargadas o comentario.${SIGN}`,
+  },
+  { id: 'sole24-immobiliare', category: 'journalist',
+    name: 'Il Sole 24 Ore Redazione Immobiliare', email: 'casa@ilsole24ore.com',
+    organisation: 'Il Sole 24 Ore', role: 'Real Estate Desk',
+    channel: 'email', scenarioUrl: `${BASE}/predictions`,
+    subject: 'Il Sole 24 Ore Immobiliare — substrato italiano + UE in diretta',
+    body: `Cara Redazione Immobiliare,
+
+Henrik Kolstad, fondatore di Avena Terminal. Tre elementi rilevanti per la copertura immobiliare de Il Sole 24 Ore:
+
+${PITCH_A}
+
+1. Previsioni UE residenziali falsificabili su ${BASE}/predictions — incluse posizioni sul mercato italiano e REIT residenziali.
+2. Radar Regolamentare quotidiano su ${BASE}/regulatory-radar — ogni segnale Banca d'Italia/ESRB/EBA classificato.
+3. Motore di Politica su ${BASE}/policy-engine — scenari cohorte-ponderati per i mercati italiani.
+
+Lieto di fornire brief, numeri sotto embargo o commento.${SIGN}`,
+  },
+];
+

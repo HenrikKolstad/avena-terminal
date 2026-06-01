@@ -1,82 +1,197 @@
+/**
+ * Homepage — Great Consolidation 2026-05-29.
+ *
+ * One claim. Four pillars of evidence. Three CTAs. Credential bar.
+ * No marketing language. No "discover," no "unlock," no "revolutionary."
+ * Declarative. Institutional. Audit-traceable.
+ */
+
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
-import { LiveCitations } from '@/components/v2/LiveCitations';
-import { TikTokStrip } from '@/components/v2/TikTokBadge';
 import { CredentialBar } from '@/components/v2/CredentialBar';
-import { CoverageStrip } from '@/components/v2/CoverageStrip';
-import { NewsletterForm } from '@/components/v2/NewsletterForm';
-import { DealAlertsForm } from '@/components/v2/DealAlertsForm';
-import { LaFincaProof } from '@/components/v2/LaFincaProof';
-import { IntelligenceTriadTeasers } from '@/components/v2/IntelligenceTriadTeasers';
-import { AlphaOfTheWeek } from '@/components/v2/AlphaOfTheWeek';
-import { RecentlyViewedRail } from '@/components/v2/RecentlyViewedRail';
-import { Hero } from './preview/_components/Hero';
-import { Indices } from './preview/_components/Indices';
-import { FeaturedDeals } from './preview/_components/FeaturedDeals';
-import { Regions } from './preview/_components/Regions';
-import { CTA } from './preview/_components/CTA';
+import { LiveCitations } from '@/components/v2/LiveCitations';
 
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Avena Terminal — Where capital meets conviction',
-  description: 'A real-time intelligence terminal scoring every new-build property across Europe. Find the deals the market hasn\'t priced in — ranked by the Avena Score, 0–100.',
+  title: "Avena Terminal — Europe's deepest technical data infrastructure for property",
+  description: "Data, indices, identity, intelligence. Live across 27 EU markets. APIP v1.0 open standard. AVN-ID identifier registry. Cryptographically verifiable. DOI 10.5281/zenodo.19520064.",
   alternates: { canonical: 'https://avenaterminal.com' },
   openGraph: {
-    title: 'Avena Terminal — Where capital meets conviction',
-    description: 'Real-time European property intelligence. 1,881 scored new-builds. Avena Score 0–100.',
+    title: "Avena Terminal — Europe's deepest technical data infrastructure for property",
+    description: 'Data · Indices · Identity · Intelligence. 27 EU markets. Open standard. Cryptographically verifiable.',
     url: 'https://avenaterminal.com',
     siteName: 'Avena Terminal',
     images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Avena Terminal — Where capital meets conviction',
-    description: 'Real-time European property intelligence. 1,881 scored new-builds. Avena Score 0–100.',
+    title: "Avena Terminal — Europe's deepest technical data infrastructure for property",
+    description: 'Data · Indices · Identity · Intelligence. 27 EU markets. Open standard. Cryptographically verifiable.',
   },
+};
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Avena Terminal',
+  alternateName: 'Avena',
+  description: "Europe's deepest technical data infrastructure for property — data, indices, identity, intelligence. APIP v1.0 open standard.",
+  url: 'https://avenaterminal.com',
+  logo: 'https://avenaterminal.com/logo.png',
+  sameAs: [
+    'https://www.wikidata.org/wiki/Q139165733',
+    'https://doi.org/10.5281/zenodo.19520064',
+  ],
 };
 
 export default function HomePage() {
   return (
-    <div className="avena-v2 relative min-h-screen w-full">
+    <div className="avena-v2 relative min-h-screen w-full" style={{ background: 'hsl(var(--av-background))' }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
       <main className="pt-16">
-        <Hero />
-        <IntelligenceTriadTeasers />
-        {/* Everything below the fold gets section-defer (content-visibility: auto)
-            so the browser skips render/layout/paint cost until each section
-            scrolls into view. Major perf win on long pages without changing UX. */}
-        <div className="section-defer"><AlphaOfTheWeek /></div>
-        <div className="section-defer"><FeaturedDeals /></div>
-        <div className="section-defer"><CredentialBar /></div>
-        <div className="section-defer"><CoverageStrip /></div>
-        <div className="section-defer"><LaFincaProof /></div>
-        <div className="section-defer"><RecentlyViewedRail /></div>
-        <section
-          className="section-defer border-y"
-          style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-surface) / 0.3)' }}
-        >
-          <div className="mx-auto max-w-[900px] px-5 sm:px-12 py-16">
-            <div className="mb-6">
-              <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
-                Never miss alpha
-              </span>
-              <h2 className="mt-2 font-serif text-3xl sm:text-4xl font-light tracking-tight text-foreground">
-                Get the <span className="italic text-gold">next deal</span> before the market does.
-              </h2>
-            </div>
-            <DealAlertsForm />
+        {/* Hero — single claim, three CTAs */}
+        <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pt-20 pb-16">
+          <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-4">
+            European residential property · live · open · DOI 10.5281/zenodo.19520064
+          </div>
+          <h1 className="font-serif text-5xl md:text-7xl font-light text-foreground mb-6 leading-[1.04] max-w-[1100px]">
+            Europe&apos;s deepest technical data infrastructure for property.
+          </h1>
+          <p className="max-w-3xl text-lg md:text-xl text-muted-foreground leading-relaxed mb-8">
+            We built the data, the indices, the identity layer, and the intelligence. Live across 27 EU markets, open under APIP v1.0, cryptographically verifiable, and cited by the AI assistants every institutional buyer consults.
+          </p>
+
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/terminal"
+              className="inline-flex items-center gap-2 rounded-sm px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground transition-transform hover:-translate-y-0.5"
+              style={{ background: 'var(--av-gradient-gold)' }}
+            >
+              Explore the Terminal →
+            </Link>
+            <Link
+              href="/institutional"
+              className="inline-flex items-center gap-2 rounded-sm border px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground hover:border-primary transition-colors"
+              style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+            >
+              Institutional access →
+            </Link>
+            <Link
+              href="/proof"
+              className="inline-flex items-center gap-2 rounded-sm border px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground hover:border-primary transition-colors"
+              style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+            >
+              View the proof →
+            </Link>
           </div>
         </section>
-        <div className="section-defer"><NewsletterForm source="homepage" /></div>
-        <div className="section-defer"><LiveCitations variant="banner" /></div>
-        <div className="section-defer"><Indices /></div>
-        <div className="section-defer"><Regions /></div>
-        <div className="section-defer"><TikTokStrip /></div>
-        <div className="section-defer"><CTA /></div>
+
+        {/* Four pillars — one screen per pillar */}
+        <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-20">
+          <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-muted-foreground mb-6">
+            Four pillars of evidence
+          </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            <Pillar
+              number="01"
+              title="Data"
+              body="Live across 27 EU markets. Eurostat, ECB SDW, INE Spain, national statistical agencies. Daily refresh. APIP v1.0 open standard. CC BY 4.0."
+              href="/proof"
+              link="View coverage →"
+            />
+            <Pillar
+              number="02"
+              title="Indices"
+              body="AVENA-CC, AVENA-VAL, AVENA-SCR, AVENA-DPT. The Avena Property Cycle Index. Hedonic OLS AVM. Counterpart developer credit graph."
+              href="/institutional"
+              link="View indices →"
+            />
+            <Pillar
+              number="03"
+              title="Identity"
+              body="AVN-ID Registry — the ISIN of European property. Signed credential chain on every property. Ed25519 attestations from notaries, registries, valuers."
+              href="/standards"
+              link="View standards →"
+            />
+            <Pillar
+              number="04"
+              title="Intelligence"
+              body="Precursor regulatory signals. Genesis Monte Carlo scenarios. Counterpart developer stress. Sovereign Briefing. Policy Engine. Every signal sourced and time-stamped."
+              href="/intelligence"
+              link="View intelligence →"
+            />
+          </div>
+        </section>
+
+        {/* Credential strip — methodology DOI, Wikidata, RICS, Zenodo */}
+        <section className="border-y" style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-surface) / 0.3)' }}>
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-10">
+            <CredentialBar />
+          </div>
+        </section>
+
+        {/* AI citations counter */}
+        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-10">
+            <LiveCitations variant="banner" />
+          </div>
+        </section>
+
+        {/* Sub-claim block */}
+        <section className="mx-auto max-w-[1400px] px-5 sm:px-12 py-20">
+          <div className="grid md:grid-cols-3 gap-6">
+            <div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-2">For institutions</div>
+              <p className="text-base text-foreground/85 leading-relaxed">
+                Memo Engine, AVM, Portfolio Risk Simulator, Index Family. Built on one methodology, cryptographically anchored, audit-traceable.
+              </p>
+              <Link href="/institutional" className="mt-3 inline-block font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground transition-colors">
+                /institutional →
+              </Link>
+            </div>
+            <div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-2">For developers</div>
+              <p className="text-base text-foreground/85 leading-relaxed">
+                REST API, MCP server, webhooks, SDKs. One key, four institutional use cases. OpenAPI 3.1, CC BY 4.0.
+              </p>
+              <Link href="/api" className="mt-3 inline-block font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground transition-colors">
+                /api →
+              </Link>
+            </div>
+            <div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-2">For verifiers</div>
+              <p className="text-base text-foreground/85 leading-relaxed">
+                SHA-256 fingerprints, daily Merkle root, Zenodo trusted timestamp. Cryptographic proof for every artefact Avena ships.
+              </p>
+              <Link href="/verify" className="mt-3 inline-block font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground transition-colors">
+                /verify →
+              </Link>
+            </div>
+          </div>
+        </section>
       </main>
       <Footer />
     </div>
+  );
+}
+
+function Pillar({ number, title, body, href, link }: { number: string; title: string; body: string; href: string; link: string }) {
+  return (
+    <Link
+      href={href}
+      className="block rounded-sm border p-8 transition-colors hover:border-primary"
+      style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-surface) / 0.2)' }}
+    >
+      <div className="flex items-baseline gap-3 mb-3">
+        <span className="font-mono text-[10px] text-gold tabular">{number}</span>
+        <span className="font-serif text-3xl font-light text-foreground">{title}</span>
+      </div>
+      <p className="text-base text-foreground/85 leading-relaxed mb-4">{body}</p>
+      <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">{link}</span>
+    </Link>
   );
 }

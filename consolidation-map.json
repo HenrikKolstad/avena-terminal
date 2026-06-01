@@ -1,0 +1,220 @@
+{
+  "_meta": {
+    "one_claim": "Europe's deepest technical data infrastructure for property.",
+    "nav_order": ["/terminal", "/institutional", "/api", "/intelligence", "/standards", "/proof", "/stack"],
+    "tier2_canonicals_outside_nav": ["/methodology", "/verify"],
+    "generated": "2026-05-29",
+    "total_routes_audited": 167
+  },
+
+  "keep_top_nav": {
+    "/terminal":      { "label": "Terminal",      "purpose": "Consumer / research surface — deals, oracle, watchlist, property explorer" },
+    "/institutional": { "label": "Institutional", "purpose": "B2B — Memo, AVM, Portfolio, Index Family + pricing" },
+    "/api":           { "label": "API",           "purpose": "Developer — docs, MCP, webhooks, SDKs, use cases" },
+    "/intelligence":  { "label": "Intelligence",  "purpose": "Signals hub — Precursor, Genesis, Counterpart, Health, APCI/APYI/APLI/APRI/APSI, Sovereign Briefing, Policy Engine, Regulatory Radar" },
+    "/standards":     { "label": "Standards",     "purpose": "APIP v1.0 + AVN-ID + citations of adoption" },
+    "/proof":         { "label": "Proof",         "purpose": "What we have — rows, sources, coverage, operations console, track record" },
+    "/stack":         { "label": "Stack",         "purpose": "How it's built — architecture, defensibility, causal graph" }
+  },
+
+  "tier2_canonicals_keep": {
+    "/methodology": { "purpose": "How we know it's right — formula, evolution, limitations, confidence. Linked from /proof + /stack", "absorbs": ["/methodology/evolution", "/limitations", "/citation-moat"] },
+    "/verify":      { "purpose": "Cryptographic proof — on-chain methodology fingerprints, AVN-ID credentials, signed memo hashes", "absorbs": [] }
+  },
+
+  "fold_into_terminal": {
+    "/deals":     "/terminal#deals",
+    "/oracle":    "/terminal#oracle",
+    "/watchlist": "/terminal#watchlist",
+    "/forecast":  "/terminal#forecast",
+    "/yield":     "/terminal#yield",
+    "/yield-curve": "/terminal#yield",
+    "/search":    "/terminal#search",
+    "/chat":      "/terminal#oracle",
+    "/score":     "/terminal#score",
+    "/calculator": "/terminal#calculator",
+    "/compare":   "/terminal#compare",
+    "/bubble-scanner": "/terminal#bubble",
+    "/property":  "/terminal#property",
+    "/towns":     "/terminal#explore",
+    "/costas":    "/terminal#explore",
+    "/best":      "/terminal#explore"
+  },
+
+  "fold_into_institutional": {
+    "/memo":         "/institutional#memo",
+    "/avm":          "/institutional#avm",
+    "/portfolio":    "/institutional#portfolio",
+    "/avena-index":  "/institutional#indices",
+    "/pro":          "/institutional#pricing",
+    "/invest":       "/institutional#access",
+    "/agent":        "/institutional#agent"
+  },
+
+  "fold_into_api": {
+    "/docs":          "/api#docs",
+    "/docs/api":      "/api#docs",
+    "/docs/mcp":      "/api#mcp",
+    "/docs/webhooks": "/api#webhooks",
+    "/install":       "/api#mcp",
+    "/mcp":           "/api#mcp",
+    "/mcp-server":    "/api#mcp",
+    "/webhooks":      "/api#webhooks",
+    "/cli":           "/api#cli",
+    "/dev":           "/api#dev",
+    "/developer":     "/api#dev",
+    "/embed":         "/api#embed",
+    "/sdk":           "/api#sdk",
+    "/dataset":       "/api#dataset",
+    "/products/bank-stress-api":   "/api#use-cases",
+    "/products/property-oracle":   "/api#use-cases",
+    "/products/csrd-disclosure":   "/api#use-cases",
+    "/products/derivative-pricing": "/api#use-cases",
+    "/products":     "/api#use-cases"
+  },
+
+  "fold_into_intelligence": {
+    "/precursor":          "/intelligence#precursor",
+    "/genesis":            "/intelligence#genesis",
+    "/counterpart":        "/intelligence#counterpart",
+    "/counterpart/health-index": "/intelligence#health",
+    "/policy-engine":      "/intelligence#policy-engine",
+    "/policy-engine/brief": "/intelligence#policy-engine",
+    "/regulatory-radar":   "/intelligence#regulatory",
+    "/sovereign-briefing": "/intelligence#sovereign-briefing",
+    "/predictions":        "/intelligence#predictions",
+    "/forecast":           "/intelligence#forecast",
+    "/alerts":             "/intelligence#alerts",
+    "/alerts/macro":       "/intelligence#alerts",
+    "/causal-graph":       "/stack#causal-graph",
+    "/swarm":              "/intelligence#swarm",
+    "/timetravel":         "/intelligence#timetravel",
+    "/pulse":              "/intelligence#pulse",
+    "/briefs":             "/intelligence#briefs",
+    "/briefs/daily":       "/intelligence#briefs"
+  },
+
+  "fold_into_standards": {
+    "/standards/apip":     "/standards#apip",
+    "/standards/avn-id":   "/standards#avn-id",
+    "/standards/avp":      "/standards#avp",
+    "/avn-id":             "/standards#avn-id",
+    "/registry":           "/standards#registry",
+    "/apon-network":       "/standards#apon",
+    "/citations":          "/standards#citations",
+    "/citation-moat":      "/methodology#citations",
+    "/wikidata":           "/standards#wikidata"
+  },
+
+  "fold_into_proof": {
+    "/live":            "/proof#operations",
+    "/track-record":    "/proof#track-record",
+    "/eu-coverage":     "/proof#coverage",
+    "/eu-official":     "/proof#sources",
+    "/eu-takeover":     "/proof#coverage",
+    "/stats":           "/proof#stats",
+    "/terminal-stats":  "/proof#stats",
+    "/archive":         "/proof#archive",
+    "/status":          "/proof#status",
+    "/portugal":        "/proof#coverage"
+  },
+
+  "fold_into_stack": {
+    "/defensibility":   "/stack#defensibility",
+    "/causal-graph":    "/stack#causal-graph",
+    "/changelog":       "/stack#changelog",
+    "/roadmap":         "/stack#roadmap"
+  },
+
+  "fold_into_methodology": {
+    "/methodology/evolution": "/methodology#evolution",
+    "/limitations":           "/methodology#limitations",
+    "/about/methodology":     "/methodology#about"
+  },
+
+  "footer_only_keep": {
+    "/about":         { "column": "ABOUT" },
+    "/careers":       { "column": "ABOUT" },
+    "/careers/co-founder": { "column": "ABOUT" },
+    "/press":         { "column": "ABOUT" },
+    "/press/kit":     { "column": "ABOUT" },
+    "/press/embargo": { "column": "ABOUT" },
+    "/awards":        { "column": "ABOUT" },
+    "/contact":       { "column": "ABOUT" },
+    "/governance":    { "column": "GOVERNANCE" },
+    "/eu-presidency": { "column": "OUTREACH" },
+    "/academic":      { "column": "OUTREACH" },
+    "/contribute":    { "column": "OUTREACH" },
+    "/data-partners": { "column": "OUTREACH" },
+    "/consultations": { "column": "OUTREACH" },
+    "/terms":         { "column": "LEGAL" },
+    "/license":       { "column": "LEGAL" },
+    "/brand":         { "column": "LEGAL" },
+    "/faq":           { "column": "ABOUT" },
+    "/glossary":      { "column": "ABOUT" },
+    "/blog":          { "column": "ABOUT" }
+  },
+
+  "leave_alone_utility": {
+    "/admin":            "admin gated",
+    "/admin/outreach":   "admin gated",
+    "/admin/backlinks":  "admin gated",
+    "/admin/partners":   "admin gated",
+    "/admin/wiki-citations": "admin gated",
+    "/login":            "auth",
+    "/checkout":         "checkout flow",
+    "/checkout/success": "checkout flow",
+    "/dataset":          "data download (also linked from /api)",
+    "/feed":             "RSS feeds",
+    "/feed/bubble.rss":  "RSS",
+    "/feed/deals.rss":   "RSS",
+    "/feed/intelligence.atom": "RSS",
+    "/feed/intelligence.json": "RSS",
+    "/feed/intelligence.rss":  "RSS",
+    "/feed/rlhf.jsonl":  "RSS / AI",
+    "/llms.txt":         "AI bot canonical",
+    "/llms-full.txt":    "AI bot canonical",
+    "/.well-known/ai.txt": "AI bot canonical",
+    "/.well-known":      "well-known",
+    "/sitemap-ai.xml":   "sitemap",
+    "/sitemap-images.xml": "sitemap",
+    "/sitemap-news.xml": "sitemap"
+  },
+
+  "retire_redirect_to_root": {
+    "/api-index":        "/api",
+    "/preview":          "/",
+    "/benchmark":        "/proof#benchmark",
+    "/challenge":        "/",
+    "/challenge/score-2026": "/",
+    "/answers":          "/terminal#search",
+    "/guides":           "/blog",
+    "/tiktok":           "/",
+    "/agents":           "/intelligence#swarm",
+    "/vs":               "/proof#vs",
+    "/agent/mission":    "/intelligence#missions"
+  },
+
+  "dynamic_routes_keep": {
+    "/property/[ref]":   "deep links — keep, accessed from /terminal",
+    "/towns/[town]":     "deep links",
+    "/costas/[costa]":   "deep links",
+    "/best/[slug]":      "deep links",
+    "/blog/[slug]":      "blog posts",
+    "/memo/[short_id]":  "memo deep links — kept canonical, accessed from /institutional",
+    "/avn-id/[avn_id]":  "AVN-ID deep links — kept canonical, accessed from /standards",
+    "/precursor/[signal_id]": "signal deep links → /intelligence#precursor",
+    "/counterpart/[developer_id]": "developer deep links → /intelligence#counterpart",
+    "/sovereign-briefing/[slug]": "briefing deep links → /intelligence#sovereign-briefing",
+    "/pulse/[date]":     "pulse deep links → /intelligence#pulse",
+    "/answers/[slug]":   "answer deep links",
+    "/bubble-scanner/[city]": "city deep links → /terminal#bubble",
+    "/vs/[competitor]":  "competitor pages",
+    "/compare/[slug]":   "compare deep links → /terminal#compare",
+    "/embed/score/[ref]": "embed deep links",
+    "/agent/mission/[id]": "mission deep links",
+    "/guides/[slug]":    "guide deep links",
+    "/search/[query]":   "search deep links",
+    "/standards/avp/verify": "AVP verify deep link"
+  }
+}

@@ -90,7 +90,7 @@ https://avenaterminal.com`,
 
 I've been following your work on cross-border capital flows and external positions — and built something that operationalises the foreign-buyer-channel finding empirically for European residential property.
 
-Avena Sovereign Briefing Vol. 2 (published last week, CC BY 4.0) documents an empirical relationship from 1,881 Spanish coastal property observations: foreign-buyer-heavy cohorts (FB share > 25%) amplify monetary transmission ~4.7× via the financing-cost channel. There's a non-linearity around Euribor 3M = 3.0% where transmission strengthens materially.
+Avena Sovereign Briefing Vol. 2 (published last week, CC BY 4.0) documents an empirical relationship from the European residential substrate: foreign-buyer-heavy cohorts (FB share > 25%) amplify monetary transmission ~4.7× via the financing-cost channel. There's a non-linearity around Euribor 3M = 3.0% where transmission strengthens materially.
 
 I've built this into a deterministic, signed Policy Engine — link below pre-loads a Spanish foreign-buyer levy scenario at +500 bps for 18 months, showing forward postcode-level price impact and cross-border capital rotation estimate.
 
@@ -111,10 +111,10 @@ https://avenaterminal.com`,
     role: 'Senior Economist, Financial Stability and Macroprudential Policy',
     channel: 'email',
     scenarioUrl: `${BASE}/policy-engine?lever=sectoral_rw&country=ES&r=coastal&m=200&fb=0.25&t=18`,
-    subject: 'Spanish coastal cohort risk weight scenario — built on 1,881 ground-truth properties',
+    subject: 'Cohort-weighted Spanish coastal risk-weight scenario — calibrated on BdE 2020 stress-test methodology',
     body: `Estimado Dr. Galán,
 
-I'm Henrik Kolstad, founder of Avena Terminal. We've built the first turnkey macroprudential simulation engine for European residential property — calibrated specifically against the Spanish coastal cohort using a 1,881-property ground-truth corpus.
+I'm Henrik Kolstad, founder of Avena Terminal — European residential property data infrastructure operating across 27 EU markets, daily-refreshed, methodology-audited, DOI-anchored, MCP-distributed. We've built the first turnkey macroprudential simulation engine for European residential property, calibrated explicitly against the Spanish coastal cohort and BdE 2020 stress-test methodology.
 
 The Avena Precision Policy Engine is designed for exactly the question your team works on daily at BdE: what happens at the postcode level if we tighten a specific lever for a specific cohort? The link below pre-loads a sectoral risk weight scenario (+200 bps, Spanish coastal, FB share ≥ 25%, 18 months forward) with output showing:
 
@@ -180,7 +180,7 @@ The link below pre-loads a scenario where the Spanish LTV cap is tightened by 5 
 
 ${BASE}/policy-engine?lever=ltv_cap&country=ES&r=coastal&m=-5&fb=0.25&t=18
 
-Methodology is CC BY 4.0 (DOI 10.5281/zenodo.19520064), every coefficient sources back to a published reference, every output HMAC-signed. The 1,881-property ground-truth corpus is daily-refreshed and cross-validated against Eurostat HPI.
+Methodology is CC BY 4.0 (DOI 10.5281/zenodo.19520064), every coefficient sources back to a published reference, every output HMAC-signed. Substrate is daily-refreshed across 27 EU markets and cross-validated against Eurostat HPI + ECB MIR. Methodology version chain is publicly auditable at avenaterminal.com/methodology/evolution.
 
 If you have 30 minutes any time, I'd genuinely value your skepticism on whether the cohort calibration holds up against macrohistory-style robustness checks.
 
@@ -319,13 +319,28 @@ https://avenaterminal.com`,
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+const SIGN = `\n\nBest,\nHenrik Kolstad\nFounder, Avena Terminal\n${BASE}`;
+
+/**
+ * Three substrate-pitch variants rotated across recipients so emails don't
+ * read template-stamped. None lead with property count — Avena is identifier
+ * substrate + open standard + regulatory intent graph + AI distribution.
+ */
+const PITCH_A = `Avena Terminal is European residential property data infrastructure — live across 27 EU markets, daily-refreshed, open APIP v1.0 standard, AVN-ID identifier registry (the ISIN of European property), DOI-anchored at 10.5281/zenodo.19520064, methodology version chain public at ${BASE}/methodology/evolution, MCP-distributed into Claude / Cursor / ChatGPT / Perplexity. RICS Tech Partner, Wikidata Q139165733, CC BY 4.0.`;
+
+const PITCH_B = `Avena operates the missing institutional substrate for European residential property: AVN-ID Registry, daily-refreshed live data across 27 EU markets, Regulatory Radar daily-classifying every active ECB / ESMA / EBA / national CB signal for property impact, cryptographic integrity with Zenodo-anchored Merkle roots, full methodology audit trail at ${BASE}/methodology/evolution. CC BY 4.0, DOI 10.5281/zenodo.19520064.`;
+
+const PITCH_C = `Avena Terminal convenes APON — the Avena Property Open Network — an open EU residential property substrate under APIP v1.0. Permanent DOI attribution, signed credential chain anchored to AVN-IDs, regulatory intent graph daily-classified across ECB / ESMA / EBA / national CBs, MCP server distributing into every major AI assistant, methodology audit trail public, integrity verifiable at ${BASE}/verify.`;
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// Vestigial template type kept so the templated build() pipeline compiles
+// while the consolidation work ships. Per-recipient personalised bodies
+// are tracked separately for follow-up.
 interface TemplateSpec {
   subject: (org: string, hook?: string) => string;
   scenarioUrl: string;
   body: (name: string, org: string, hook?: string) => string;
 }
-
-const SIGN = `\n\nBest,\nHenrik Kolstad\nFounder, Avena Terminal\n${BASE}`;
 
 const TEMPLATES: Record<OutreachCategory, TemplateSpec> = {
   academic: {

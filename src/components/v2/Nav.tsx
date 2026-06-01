@@ -7,9 +7,11 @@ import { ProModal } from './ProModal';
 import { WatchlistBadge } from './WatchlistButton';
 import { useAuth } from '@/context/AuthContext';
 
-// ─── Nav structure ─────────────────────────────────────────────────────────
-// 6 top-level items. Three carry hover dropdowns; three are flat links.
-// Dropdown groups use `divider: true` between sub-sections.
+// ─── Nav structure (Great Consolidation 2026-05-29) ───────────────────────
+// 7 top-level items. Flat. No dropdowns. Every item earns its place as
+// evidence for the one claim: "Europe's deepest technical data
+// infrastructure for property." Sub-pages have been folded into their
+// parent and now live as in-page anchors (e.g. /institutional#memo).
 
 type LinkItem = { label: string; href: string; sub?: string };
 type DividerItem = { divider: true };
@@ -17,39 +19,13 @@ type DropdownChild = LinkItem | DividerItem;
 type TopItem = { label: string; href?: string; children?: DropdownChild[] };
 
 const NAV: TopItem[] = [
-  { label: 'Terminal', href: '/terminal' },
-  { label: 'Policy Engine', href: '/policy-engine' },
-  { label: 'Deals', href: '/#deals' },
-  {
-    label: 'Markets',
-    children: [
-      { label: 'Memo Engine',   href: '/memo',        sub: 'Institutional memo in 30 seconds — IC-forwardable PDF' },
-      { label: 'AVM',           href: '/avm',         sub: 'Bank-grade valuation in <1s with SHAP-style attribution' },
-      { label: 'Portfolio',     href: '/portfolio',   sub: 'Upload your book, get the Avena view across the cohort' },
-      { label: 'Counterpart',   href: '/counterpart', sub: 'Developer risk graph + SIR contagion model' },
-      { label: 'Products',      href: '/products',    sub: 'Four institutional API products built on one methodology' },
-    ],
-  },
-  {
-    label: 'EU Infra',
-    children: [
-      // Proof-of-data surfaces lead — a sceptical visitor verifies Avena
-      // is real before reading the pitch. Order is: live data → identifier
-      // substrate → research feed → rigour proofs → distribution.
-      { label: 'EU Official Stats',  href: '/eu-official',         sub: 'Eurostat · ECB SDW · INE Spain · daily refresh · 4,145 obs' },
-      { label: 'AVN-ID Registry',    href: '/avn-id',              sub: 'Signed canonical property identifier · ISIN for European property' },
-      { label: 'Sovereign Briefing', href: '/sovereign-briefing',  sub: 'Published research · central banks · ESMA · EIB · OECD' },
-      { label: 'Regulatory Radar',   href: '/regulatory-radar',    sub: 'EU regulatory signals classified for property impact · daily' },
-      { label: 'Macro Alerts',       href: '/alerts/macro',        sub: 'Daily ≥2σ anomaly feed across official series' },
-      { label: 'Methodology Evolution', href: '/methodology/evolution', sub: 'Every weight, every revision, published audit trail' },
-      { label: 'Verify',             href: '/verify',              sub: 'SHA-256 + Merkle root + Zenodo timestamp · cryptographic integrity' },
-      { label: 'Moat Archive',       href: '/archive',             sub: 'Hash-chained nightly backups · downloadable · verifiable' },
-      { label: 'Predictions',        href: '/predictions',         sub: 'Ten time-stamped, falsifiable EU property calls · audit trail' },
-      { label: 'Install via MCP',    href: '/install',             sub: 'Plug Avena into Claude / Cursor / ChatGPT / Perplexity' },
-    ],
-  },
-  { label: 'Swarm',  href: '/swarm' },
-  { label: 'Proof',  href: '/proof' },
+  { label: 'Terminal',      href: '/terminal' },
+  { label: 'Institutional', href: '/institutional' },
+  { label: 'API',           href: '/api' },
+  { label: 'Intelligence',  href: '/intelligence' },
+  { label: 'Standards',     href: '/standards' },
+  { label: 'Proof',         href: '/proof' },
+  { label: 'Stack',         href: '/stack' },
 ];
 
 export function Nav() {

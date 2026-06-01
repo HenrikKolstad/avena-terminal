@@ -125,8 +125,114 @@ const nextConfig: NextConfig = {
       { source: '/seo/british-buyers-spain-2025.html', destination: '/insights/british-buyers-spain-guide', permanent: true },
       { source: '/seo/norwegian-property-investment-spain.html', destination: '/insights/norwegian-buyers-spain-guide', permanent: true },
       { source: '/seo/off-plan-vs-key-ready-spain.html', destination: '/insights/spain-off-plan-vs-key-ready', permanent: true },
-      // Yield curve has no dedicated page yet — point to closest canonical
-      { source: '/yield-curve', destination: '/indices', permanent: false },
+      // Yield curve folded into /terminal
+      { source: '/yield-curve', destination: '/terminal#yield', permanent: true },
+
+      // ═══════════════════════════════════════════════════════════════════
+      // GREAT CONSOLIDATION 2026-05-29 — fold sub-pages into 7 top-level
+      // canonicals. Every retired URL 301s to its new home so SEO and
+      // bookmarks are preserved. The seven canonicals are:
+      //   /terminal · /institutional · /api · /intelligence ·
+      //   /standards · /proof · /stack
+      // Plus tier-2 canonicals: /methodology · /verify
+      // ═══════════════════════════════════════════════════════════════════
+
+      // Fold into /terminal
+      { source: '/deals',              destination: '/terminal#deals',     permanent: true },
+      { source: '/oracle',             destination: '/terminal#oracle',    permanent: true },
+      { source: '/watchlist',          destination: '/terminal#watchlist', permanent: true },
+      { source: '/forecast',           destination: '/terminal#forecast',  permanent: true },
+      { source: '/yield',              destination: '/terminal#yield',     permanent: true },
+      { source: '/bubble-scanner',     destination: '/terminal#bubble',    permanent: true },
+
+      // Fold into /institutional
+      { source: '/memo',               destination: '/institutional#memo',      permanent: true },
+      { source: '/avm',                destination: '/institutional#avm',       permanent: true },
+      { source: '/portfolio',          destination: '/institutional#portfolio', permanent: true },
+      { source: '/avena-index',        destination: '/institutional#indices',   permanent: true },
+      { source: '/invest',             destination: '/institutional#access',    permanent: true },
+
+      // Fold into /api
+      { source: '/install',                            destination: '/api#mcp',       permanent: true },
+      { source: '/mcp-server',                         destination: '/api#mcp',       permanent: true },
+      { source: '/docs',                               destination: '/api#docs',      permanent: true },
+      { source: '/docs/api',                           destination: '/api#docs',      permanent: true },
+      { source: '/docs/mcp',                           destination: '/api#mcp',       permanent: true },
+      { source: '/docs/webhooks',                      destination: '/api#webhooks',  permanent: true },
+      { source: '/webhooks',                           destination: '/api#webhooks',  permanent: true },
+      { source: '/cli',                                destination: '/api#cli',       permanent: true },
+      { source: '/dev',                                destination: '/api#dev',       permanent: true },
+      { source: '/developer',                          destination: '/api#dev',       permanent: true },
+      { source: '/api-index',                          destination: '/api',           permanent: true },
+      { source: '/products',                           destination: '/api#use-cases', permanent: true },
+      { source: '/products/bank-stress-api',           destination: '/api#use-cases', permanent: true },
+      { source: '/products/property-oracle',           destination: '/api#use-cases', permanent: true },
+      { source: '/products/csrd-disclosure',           destination: '/api#use-cases', permanent: true },
+      { source: '/products/derivative-pricing',        destination: '/api#use-cases', permanent: true },
+
+      // Fold into /intelligence
+      { source: '/precursor',          destination: '/intelligence#precursor',     permanent: true },
+      { source: '/genesis',            destination: '/intelligence#genesis',       permanent: true },
+      { source: '/counterpart',        destination: '/intelligence#counterpart',   permanent: true },
+      { source: '/counterpart/health-index', destination: '/intelligence#health',  permanent: true },
+      { source: '/policy-engine',      destination: '/intelligence#policy-engine', permanent: true },
+      { source: '/policy-engine/brief', destination: '/intelligence#policy-engine', permanent: true },
+      { source: '/regulatory-radar',   destination: '/intelligence#regulatory',    permanent: true },
+      { source: '/sovereign-briefing', destination: '/intelligence#sovereign-briefing', permanent: true },
+      { source: '/predictions',        destination: '/intelligence#predictions',   permanent: true },
+      { source: '/alerts',             destination: '/intelligence#alerts',        permanent: true },
+      { source: '/alerts/macro',       destination: '/intelligence#alerts',        permanent: true },
+      { source: '/swarm',              destination: '/intelligence#swarm',         permanent: true },
+      { source: '/timetravel',         destination: '/intelligence#timetravel',    permanent: true },
+
+      // Fold into /standards
+      { source: '/standards/apip',     destination: '/standards#apip',     permanent: true },
+      { source: '/standards/avn-id',   destination: '/standards#avn-id',   permanent: true },
+      { source: '/standards/avp',      destination: '/standards#avp',      permanent: true },
+      { source: '/avn-id',             destination: '/standards#avn-id',   permanent: true },
+      { source: '/registry',           destination: '/standards#registry', permanent: true },
+      { source: '/apon-network',       destination: '/standards#apon',     permanent: true },
+      { source: '/citations',          destination: '/standards#citations',permanent: true },
+      { source: '/citation-moat',      destination: '/methodology#citations', permanent: true },
+      { source: '/wikidata',           destination: '/standards#wikidata', permanent: true },
+
+      // Fold into /proof
+      { source: '/live',               destination: '/proof#operations',   permanent: true },
+      { source: '/track-record',       destination: '/proof#track-record', permanent: true },
+      { source: '/eu-coverage',        destination: '/proof#coverage',     permanent: true },
+      { source: '/eu-official',        destination: '/proof#sources',      permanent: true },
+      { source: '/eu-takeover',        destination: '/proof#coverage',     permanent: true },
+      { source: '/stats',              destination: '/proof#stats',        permanent: true },
+      { source: '/terminal-stats',     destination: '/proof#stats',        permanent: true },
+      { source: '/archive',            destination: '/proof#archive',      permanent: true },
+      { source: '/status',             destination: '/proof#status',       permanent: true },
+      { source: '/portugal',           destination: '/proof#coverage',     permanent: true },
+      { source: '/benchmark',          destination: '/proof#benchmark',    permanent: true },
+
+      // Fold into /stack
+      { source: '/defensibility',      destination: '/stack#defensibility', permanent: true },
+      { source: '/causal-graph',       destination: '/stack#causal-graph',  permanent: true },
+      { source: '/changelog',          destination: '/stack#changelog',     permanent: true },
+      { source: '/roadmap',            destination: '/stack#roadmap',       permanent: true },
+
+      // Fold into /methodology
+      { source: '/methodology/evolution', destination: '/methodology#evolution',   permanent: true },
+      { source: '/limitations',           destination: '/methodology#limitations', permanent: true },
+      { source: '/about/methodology',     destination: '/methodology#about',       permanent: true },
+
+      // Footer-only — these surfaces survive at their URL but are no longer in nav
+      // (No redirect needed; just removed from nav and added to footer columns)
+
+      // Retire low-value surfaces
+      { source: '/challenge',           destination: '/',                 permanent: true },
+      { source: '/challenge/score-2026', destination: '/',                permanent: true },
+      { source: '/answers',             destination: '/terminal#search', permanent: true },
+      { source: '/guides',              destination: '/blog',            permanent: true },
+      { source: '/tiktok',              destination: '/',                permanent: true },
+      { source: '/agents',              destination: '/intelligence#swarm', permanent: true },
+      { source: '/vs',                  destination: '/proof#benchmark', permanent: true },
+      { source: '/agent',               destination: '/intelligence#swarm', permanent: true },
+      { source: '/agent/mission',       destination: '/intelligence#swarm', permanent: true },
     ];
   },
   async headers() {

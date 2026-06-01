@@ -2,131 +2,71 @@ import { MetadataRoute } from 'next';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, slugify } from '@/lib/properties';
 
 /**
- * Sitemap rebuilt 2026-05-23 after the consolidation pass.
+ * Sitemap rebuilt 2026-05-29 — The Great Consolidation.
  *
- * Includes only canonical, in-nav, or institutionally-relevant surfaces.
- * Deleted pages (manifesto, transparency, apci, indices, predictions,
- * scenarios, radar, live, alternatives, ai-citations, citation-dashboard,
- * cite, propertyeval, eu-takeover, observatory, personas, timeline, zk,
- * corpus, state-of-european-property, tech, protocol, context-protocol,
- * langchain-tool, a2a, tools, integrate, media, data-room, data-commons,
- * playground, extension, widgets, badge, sdk, es, de, nl, agents/registry,
- * agents/directory, agents/leaderboard, terminal-v2, preview, test-pro,
- * cc-submit, coverage, digest, api-access) are NOT listed — they 301 to
- * canonicals via next.config.ts and Google handles the link equity transfer.
+ * Reduced from 800+ URLs to canonical structure. Seven top-level
+ * navigation surfaces plus tier-2 canonicals (/methodology, /verify),
+ * footer-only governance/outreach/about pages, and dynamic deep links
+ * (property / town / costa / blog / memo).
+ *
+ * Retired URLs (predictions, regulatory-radar, policy-engine, memo, avm,
+ * portfolio, deals, oracle, watchlist, forecast, citations, citation-moat,
+ * sovereign-briefing, precursor, genesis, counterpart, live, track-record,
+ * eu-coverage, eu-official, archive, defensibility, causal-graph,
+ * methodology/evolution, limitations, timetravel, swarm, alerts/macro,
+ * install, mcp-server, products/*, etc.) 301-redirect to their new homes
+ * via next.config.ts redirects() and are NOT listed in the sitemap.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = 'https://avenaterminal.com';
   const now = new Date();
 
   const STATIC_HIGH: Array<[string, MetadataRoute.Sitemap[number]['changeFrequency'], number]> = [
-    // Top-level products + key surfaces
+    // ─── Homepage ──────────────────────────────────────────────────────────
     ['',                  'daily',   1.0],
-    ['/eu-coverage',      'daily',   0.95],
-    ['/avena-index',      'daily',   0.95],
-    ['/track-record',     'daily',   0.95],
-    ['/institutional',    'weekly',  0.95],
-    ['/governance',       'weekly',  0.95],
-    ['/data-partners',    'weekly',  0.95],
 
-    ['/precursor',        'daily',   0.9],
-    ['/genesis',          'daily',   0.9],
-    ['/counterpart',      'daily',   0.9],
-    ['/swarm',            'daily',   0.9],
-    ['/chat',             'weekly',  0.9],
-    ['/agent',            'monthly', 0.85],
+    // ─── Seven top-level nav canonicals ───────────────────────────────────
+    ['/terminal',         'daily',   1.0],
+    ['/institutional',    'daily',   1.0],
+    ['/api',              'daily',   1.0],
+    ['/intelligence',     'daily',   1.0],
+    ['/standards',        'daily',   1.0],
+    ['/proof',            'daily',   1.0],
+    ['/stack',            'daily',   1.0],
 
-    ['/yield',            'daily',   0.85],
-    ['/intelligence',     'daily',   0.85],
-    ['/bubble-scanner',   'daily',   0.85],
-    ['/forecast',         'daily',   0.85],
+    // ─── Tier-2 canonicals (linked from /proof + /stack but their own URL) ─
+    ['/methodology',      'weekly',  0.95],
+    ['/verify',           'weekly',  0.95],
 
-    // Country + directory
-    ['/portugal',         'weekly',  0.85],
-    ['/costas',           'daily',   0.8],
-    ['/towns',            'daily',   0.8],
-    ['/best',             'daily',   0.85],
-
-    // Reference / dev
-    ['/dataset',          'weekly',  0.85],
-    ['/methodology',      'weekly',  0.85],
-    ['/citations',        'weekly',  0.8],
-    ['/docs/mcp',         'weekly',  0.8],
-    ['/mcp-server',       'weekly',  0.8],
-    ['/install',          'weekly',  0.85],
-    ['/cli',              'monthly', 0.7],
-    ['/webhooks',         'monthly', 0.7],
-    ['/standards/avn-id', 'monthly', 0.85],
-    ['/standards/apip',   'monthly', 0.85],
-
-    // Architectural commitments (shipped 2026-05-25)
-    ['/timetravel',           'daily',   0.85],
-    ['/limitations',          'daily',   0.85],
-    ['/methodology/evolution', 'weekly', 0.9],
-    ['/verify',               'weekly',  0.9],
-    ['/regulatory-radar',     'daily',   0.95],
-    ['/causal-graph',         'weekly',  0.8],
-    ['/defensibility',        'weekly',  0.9],
-
-    // Epicenter surfaces (shipped 2026-05-25/26)
-    ['/predictions',          'weekly',  0.95],
-    ['/consultations',        'weekly',  0.95],
-    ['/apon-network',         'weekly',  0.95],
-    ['/eu-presidency',        'weekly',  0.9],
-    ['/academic',             'weekly',  0.9],
-    ['/contribute',           'weekly',  0.9],
-
-    // Citation moat surface
-    ['/citation-moat',        'daily',   0.85],
-
-    // Product landing pages
-    ['/products',                       'weekly', 0.85],
-    ['/products/bank-stress-api',       'weekly', 0.85],
-    ['/products/property-oracle',       'weekly', 0.85],
-    ['/products/csrd-disclosure',       'weekly', 0.85],
-    ['/products/derivative-pricing',    'weekly', 0.85],
-
-    // Co-founder archetype
-    ['/careers/co-founder',   'monthly', 0.75],
-
-    // Newsletter + content
-    ['/pulse',            'daily',   0.85],
-    ['/blog',             'daily',   0.8],
-    ['/guides',           'weekly',  0.75],
-    ['/answers',          'daily',   0.75],
-
-    // Company
-    ['/about',            'monthly', 0.7],
+    // ─── Footer-only canonicals (about / governance / outreach / legal) ───
+    ['/about',            'weekly',  0.85],
+    ['/governance',       'weekly',  0.9],
+    ['/eu-presidency',    'weekly',  0.85],
+    ['/academic',         'weekly',  0.85],
+    ['/contribute',       'weekly',  0.85],
+    ['/data-partners',    'weekly',  0.85],
+    ['/consultations',    'weekly',  0.85],
+    ['/careers',          'weekly',  0.75],
+    ['/careers/co-founder', 'weekly', 0.85],
     ['/press',            'monthly', 0.7],
     ['/press/kit',        'monthly', 0.7],
     ['/awards',           'monthly', 0.7],
-    ['/roadmap',          'monthly', 0.6],
-    ['/changelog',        'weekly',  0.7],
-    ['/brand',            'monthly', 0.5],
-    ['/contact',          'monthly', 0.5],
+    ['/contact',          'monthly', 0.7],
     ['/faq',              'monthly', 0.6],
     ['/glossary',         'monthly', 0.6],
-
-    // Legal
+    ['/blog',             'daily',   0.7],
     ['/terms',            'monthly', 0.5],
     ['/license',          'monthly', 0.5],
+    ['/brand',            'monthly', 0.5],
 
-    // Tools
-    ['/calculator',       'monthly', 0.7],
-    ['/compare',          'monthly', 0.7],
-    ['/search',           'daily',   0.7],
-    ['/score',            'monthly', 0.7],
-    ['/watchlist',        'monthly', 0.4],
-
-    // PRO
-    ['/pro',              'weekly',  0.9],
-
-    // Standards JSON
+    // ─── Dataset / open data ──────────────────────────────────────────────
+    ['/dataset',          'weekly',  0.9],
     ['/standards/apip-v1.json', 'monthly', 0.9],
-
-    // Open API spec
     ['/api/openapi.json', 'weekly',  0.85],
     ['/api/v1/openapi.json', 'weekly', 0.85],
+
+    // ─── PRO landing (preserved for institutional pricing) ────────────────
+    ['/pro',              'weekly',  0.85],
   ];
 
   const entries: MetadataRoute.Sitemap = STATIC_HIGH.map(([path, freq, prio]) => ({
@@ -136,7 +76,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: prio,
   }));
 
-  // Property-level pages (dynamic)
+  // ─── Dynamic deep-link pages (property / town / costa) ──────────────────
+  // These remain canonical destinations linked from /terminal, /institutional,
+  // and the AVN-ID registry. Kept in sitemap so search engines index them.
   try {
     const properties = getAllProperties();
     for (const p of properties) {
@@ -150,14 +92,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   } catch { /* ignore */ }
 
-  // Town and costa landing pages (SEO)
   try {
     for (const t of getUniqueTowns()) {
       entries.push({
         url: `${base}/towns/${t.slug}`,
         lastModified: now,
         changeFrequency: 'daily',
-        priority: 0.65,
+        priority: 0.55,
       });
     }
     for (const c of getUniqueCostas()) {
@@ -165,7 +106,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         url: `${base}/costas/${slugify(c.costa)}`,
         lastModified: now,
         changeFrequency: 'daily',
-        priority: 0.7,
+        priority: 0.55,
       });
     }
   } catch { /* ignore */ }

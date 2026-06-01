@@ -7,83 +7,67 @@ import { TikTokBadge } from './TikTokBadge';
 // The credentials band underneath shows what a procurement officer
 // expects to find: DOI, Wikidata, license, schema version, status.
 
+// ─── Footer columns (Great Consolidation 2026-05-29) ──────────────────────
+// Five disciplined columns. Every link earns its place. The 7 top-nav
+// pages are NOT duplicated here — they live in the header. The footer is
+// where operational, governance, outreach, legal, and standards-credential
+// links live.
 const columns: { heading: string; links: { label: string; href: string }[] }[] = [
   {
-    heading: 'Products',
+    heading: 'About',
     links: [
-      { label: 'Terminal',         href: '/terminal' },
-      { label: 'Policy Engine',    href: '/policy-engine' },
-      { label: 'Deals',         href: '/' },
-      { label: 'Avena Index',   href: '/avena-index' },
-      { label: 'Precursor',     href: '/precursor' },
-      { label: 'Genesis',       href: '/genesis' },
-      { label: 'Counterpart',   href: '/counterpart' },
-      { label: 'Swarm',         href: '/swarm' },
+      { label: 'About Avena',     href: '/about' },
+      { label: 'Careers',         href: '/careers' },
+      { label: 'Co-Founder Search', href: '/careers/co-founder' },
+      { label: 'Press',           href: '/press' },
+      { label: 'Press Kit',       href: '/press/kit' },
+      { label: 'Awards',          href: '/awards' },
+      { label: 'Contact',         href: '/contact' },
+      { label: 'FAQ',             href: '/faq' },
+      { label: 'Glossary',        href: '/glossary' },
+      { label: 'Blog',            href: '/blog' },
+    ],
+  },
+  {
+    heading: 'Governance',
+    links: [
+      { label: 'Governance',      href: '/governance' },
+      { label: 'Methodology',     href: '/methodology' },
+      { label: 'Verify',          href: '/verify' },
+      { label: 'Defensibility',   href: '/defensibility' },
+      { label: 'Limitations',     href: '/limitations' },
+      { label: 'Roadmap',         href: '/roadmap' },
+      { label: 'Changelog',       href: '/changelog' },
+    ],
+  },
+  {
+    heading: 'Outreach',
+    links: [
+      { label: 'EU Presidency',   href: '/eu-presidency' },
+      { label: 'APON Network',    href: '/apon-network' },
+      { label: 'Academic Access', href: '/academic' },
+      { label: 'Contribute Data', href: '/contribute' },
+      { label: 'Data Partners',   href: '/data-partners' },
+      { label: 'EU Consultations', href: '/consultations' },
     ],
   },
   {
     heading: 'Data & Standards',
     links: [
-      { label: 'EU Coverage',         href: '/eu-coverage' },
-      { label: 'EU Official Stats',   href: '/eu-official' },
-      { label: 'Macro Alerts',        href: '/alerts/macro' },
-      { label: 'API Docs',            href: '/docs/api' },
-      { label: 'Webhooks',            href: '/docs/webhooks' },
-      { label: 'Wikidata Graph',      href: '/wikidata' },
-      { label: 'Moat Archive',        href: '/archive' },
-      { label: 'Defensibility',       href: '/defensibility' },
-      { label: 'Install via MCP',     href: '/install' },
-      { label: 'Live Ops',            href: '/live' },
-      { label: 'Proof of Moat',       href: '/proof' },
-      { label: 'The Stack',           href: '/stack' },
-      { label: 'Sovereign Briefing',  href: '/sovereign-briefing' },
-      { label: 'APON Oracle',         href: '/oracle' },
-      { label: 'Health Index',        href: '/counterpart/health-index' },
-      { label: 'AVN-ID Registry',     href: '/avn-id' },
-      { label: 'Avena Index',         href: '/avena-index' },
-      { label: 'Forecast',            href: '/forecast' },
-      { label: 'Track Record',        href: '/track-record' },
-      { label: 'APIP Standard',       href: '/standards/apip-v1.json' },
-      { label: 'Open Dataset',        href: '/dataset' },
-      { label: 'Methodology',         href: '/methodology' },
-      { label: 'Methodology Evolution', href: '/methodology/evolution' },
-      { label: 'Time Travel',         href: '/timetravel' },
-      { label: 'Verify',              href: '/verify' },
-      { label: 'Regulatory Radar',    href: '/regulatory-radar' },
-      { label: 'Causal Graph',        href: '/causal-graph' },
-      { label: 'Limitations',         href: '/limitations' },
-      { label: 'Predictions',         href: '/predictions' },
-      { label: 'EU Consultations',    href: '/consultations' },
-      { label: 'APON Network',        href: '/apon-network' },
-      { label: 'EU Presidency',       href: '/eu-presidency' },
-      { label: 'Academic Access',     href: '/academic' },
-      { label: 'Contribute Data',     href: '/contribute' },
-      { label: 'Citation Moat',       href: '/citation-moat' },
-      { label: 'MCP Integration',     href: '/docs/mcp' },
+      { label: 'APIP v1.0 Standard', href: '/standards' },
+      { label: 'AVN-ID Registry',   href: '/standards#avn-id' },
+      { label: 'Citations',         href: '/standards#citations' },
+      { label: 'Open Dataset',      href: '/dataset' },
+      { label: 'Zenodo DOI',        href: 'https://doi.org/10.5281/zenodo.19520064' },
+      { label: 'Wikidata Q139165733', href: 'https://www.wikidata.org/wiki/Q139165733' },
     ],
   },
   {
-    heading: 'Company',
+    heading: 'Legal',
     links: [
-      { label: 'About',          href: '/about' },
-      { label: 'Institutional',  href: '/institutional' },
-      { label: 'Data Partners',  href: '/data-partners' },
-      { label: 'Press',          href: '/press' },
-      { label: 'Co-Founder',     href: '/careers/co-founder' },
-      { label: 'Awards',         href: '/awards' },
-      { label: 'Roadmap',        href: '/roadmap' },
-      { label: 'Changelog',      href: '/changelog' },
-    ],
-  },
-  {
-    heading: 'Legal & Contact',
-    links: [
-      { label: 'Governance',         href: '/governance' },
       { label: 'Terms of Service',   href: '/terms' },
       { label: 'License (CC BY 4.0)',href: '/license' },
-      { label: 'Citations',          href: '/citations' },
-      { label: 'Brand kit',          href: '/brand' },
-      { label: 'Contact',            href: '/contact' },
+      { label: 'Brand Kit',          href: '/brand' },
     ],
   },
 ];
@@ -134,7 +118,7 @@ export function Footer() {
           </div>
 
           {/* Link columns */}
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5">
             {columns.map((col) => (
               <div key={col.heading}>
                 <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/85">
