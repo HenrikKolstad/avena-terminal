@@ -35,30 +35,32 @@ export default function StandardsPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
       <main className="min-h-screen" style={{ background: 'hsl(var(--av-background))' }}>
-        <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pt-16 pb-10">
+        <section className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10">
           <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
             Open standards · convened by Avena Foundation · CC BY 4.0
           </div>
-          <h1 className="font-serif text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05]">
+          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05] tracking-tight">
             The standards layer.
           </h1>
-          <p className="max-w-3xl text-base text-muted-foreground leading-relaxed">
+          <p className="max-w-3xl text-base sm:text-lg text-muted-foreground leading-relaxed">
             Avena Terminal is the reference implementation of four open standards for European residential property: APIP for data exchange, AVN-ID for permanent identification, APON for network governance, and AVP for verifiable property attestations. The standards are governed by the Avena Foundation. The substrate outlives any single operator.
           </p>
         </section>
 
         {/* Anchor jump */}
-        <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-10">
-          <div className="flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-[0.22em]">
-            <a href="#apip" className="rounded-sm border px-3 py-1.5 hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>APIP v1.0</a>
-            <a href="#avn-id" className="rounded-sm border px-3 py-1.5 hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>AVN-ID</a>
-            <a href="#registry" className="rounded-sm border px-3 py-1.5 hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>Registry</a>
-            <a href="#avp" className="rounded-sm border px-3 py-1.5 hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>AVP</a>
-            <a href="#apon" className="rounded-sm border px-3 py-1.5 hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>APON Network</a>
-            <a href="#citations" className="rounded-sm border px-3 py-1.5 hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>Citations</a>
-            <a href="#wikidata" className="rounded-sm border px-3 py-1.5 hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>Wikidata</a>
+        <div className="sticky top-16 z-30 backdrop-blur-md border-b" style={{ background: 'hsl(var(--av-background) / 0.85)', borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 py-3 overflow-x-auto">
+            <div className="flex gap-2 font-mono text-[10px] uppercase tracking-[0.22em] whitespace-nowrap">
+              <a href="#apip" className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>APIP v1.0</a>
+              <a href="#avn-id" className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>AVN-ID</a>
+              <a href="#registry" className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>Registry</a>
+              <a href="#avp" className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>AVP</a>
+              <a href="#apon" className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>APON Network</a>
+              <a href="#citations" className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>Citations</a>
+              <a href="#wikidata" className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>Wikidata</a>
+            </div>
           </div>
-        </section>
+        </div>
 
         <Section id="apip" title="APIP v1.0 — Avena Property Information Protocol">
           <p className="mb-3">Open data-exchange standard for European residential property. JSON-LD, schema.org-compatible. CC BY 4.0. The protocol every Avena endpoint speaks; the protocol any APON Network participant implements.</p>
@@ -121,8 +123,8 @@ export default function StandardsPage() {
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
-    <section id={id} className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-12">
-      <h2 className="font-serif text-3xl font-light text-foreground mb-4">{title}</h2>
+    <section id={id} className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pb-10 sm:pb-12 scroll-mt-32 pt-8 sm:pt-10">
+      <h2 className="font-serif text-2xl sm:text-3xl font-light text-foreground mb-4 tracking-tight">{title}</h2>
       <div className="text-base text-foreground/85 leading-relaxed">{children}</div>
     </section>
   );

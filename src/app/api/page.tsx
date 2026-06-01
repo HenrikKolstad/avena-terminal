@@ -43,32 +43,34 @@ export default function APIPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
       <main className="min-h-screen" style={{ background: 'hsl(var(--av-background))' }}>
-        <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pt-16 pb-10">
+        <section className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10">
           <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
             REST · MCP · webhooks · OpenAPI 3.1 · CC BY 4.0
           </div>
-          <h1 className="font-serif text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05]">
+          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05] tracking-tight">
             One key. Four institutional use cases.
           </h1>
-          <p className="max-w-3xl text-base text-muted-foreground leading-relaxed">
+          <p className="max-w-3xl text-base sm:text-lg text-muted-foreground leading-relaxed">
             REST API across every Avena surface — methodology, AVM, regulatory radar, identifier registry, event store. MCP server distributes the same endpoints into Claude / Cursor / ChatGPT / Perplexity. OpenAPI 3.1, CC BY 4.0, DOI-anchored.
           </p>
         </section>
 
         {/* Quick-jump anchors */}
-        <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-10">
-          <div className="flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-[0.22em]">
-            <a href="#docs" className="rounded-sm border px-3 py-1.5 text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>Docs</a>
-            <a href="#mcp" className="rounded-sm border px-3 py-1.5 text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>MCP</a>
-            <a href="#webhooks" className="rounded-sm border px-3 py-1.5 text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>Webhooks</a>
-            <a href="#cli" className="rounded-sm border px-3 py-1.5 text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>CLI</a>
-            <a href="#sdk" className="rounded-sm border px-3 py-1.5 text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>SDK</a>
-            <a href="#embed" className="rounded-sm border px-3 py-1.5 text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>Embed</a>
-            <a href="#dataset" className="rounded-sm border px-3 py-1.5 text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>Dataset</a>
-            <a href="#use-cases" className="rounded-sm border px-3 py-1.5 text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>Use cases</a>
-            <a href="#pricing" className="rounded-sm border px-3 py-1.5 text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>Pricing</a>
+        <div className="sticky top-16 z-30 backdrop-blur-md border-b" style={{ background: 'hsl(var(--av-background) / 0.85)', borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 py-3 overflow-x-auto">
+            <div className="flex gap-2 font-mono text-[10px] uppercase tracking-[0.22em] whitespace-nowrap">
+              <a href="#use-cases" className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>Use cases</a>
+              <a href="#docs" className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>Docs</a>
+              <a href="#mcp" className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>MCP</a>
+              <a href="#webhooks" className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>Webhooks</a>
+              <a href="#cli" className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>CLI</a>
+              <a href="#sdk" className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>SDK</a>
+              <a href="#embed" className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>Embed</a>
+              <a href="#dataset" className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>Dataset</a>
+              <a href="#pricing" className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>Pricing</a>
+            </div>
           </div>
-        </section>
+        </div>
 
         {/* Use cases (formerly /products/*) */}
         <section id="use-cases" className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-16">
@@ -146,8 +148,8 @@ export default function APIPage() {
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
-    <section id={id} className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-12">
-      <h2 className="font-serif text-2xl font-light text-foreground mb-4">{title}</h2>
+    <section id={id} className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pb-10 sm:pb-12 scroll-mt-32 pt-8 sm:pt-10">
+      <h2 className="font-serif text-2xl sm:text-3xl font-light text-foreground mb-4 tracking-tight">{title}</h2>
       <div className="text-base text-foreground/85 leading-relaxed">{children}</div>
     </section>
   );

@@ -44,27 +44,29 @@ export default function InstitutionalPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
       <main className="min-h-screen" style={{ background: 'hsl(var(--av-background))' }}>
-        <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pt-16 pb-10">
+        <section className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10">
           <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
             Institutional · one methodology · four pillars · CC BY 4.0
           </div>
-          <h1 className="font-serif text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05]">
+          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05] tracking-tight">
             One methodology. Four institutional pillars.
           </h1>
-          <p className="max-w-3xl text-base text-muted-foreground leading-relaxed">
+          <p className="max-w-3xl text-base sm:text-lg text-muted-foreground leading-relaxed">
             Memo Engine for investment committees. AVM for credit and underwriting. Portfolio Risk Simulator for asset managers. Index Family for benchmarking. Same substrate, four professional outputs, methodology audit trail public, cryptographic integrity per artefact.
           </p>
         </section>
 
-        <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-10">
-          <div className="flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-[0.22em]">
-            {ANCHORS.map(a => (
-              <a key={a.id} href={`#${a.id}`} className="rounded-sm border px-3 py-1.5 text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>
-                {a.label}
-              </a>
-            ))}
+        <div className="sticky top-16 z-30 backdrop-blur-md border-b" style={{ background: 'hsl(var(--av-background) / 0.85)', borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 py-3 overflow-x-auto">
+            <div className="flex gap-2 font-mono text-[10px] uppercase tracking-[0.22em] whitespace-nowrap">
+              {ANCHORS.map(a => (
+                <a key={a.id} href={`#${a.id}`} className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>
+                  {a.label}
+                </a>
+              ))}
+            </div>
           </div>
-        </section>
+        </div>
 
         <Section id="memo" title="Memo Engine — IC-forwardable in 30 seconds"
           body="Natural-language thesis in, institutional-grade 10-section memo out, in under 30 seconds. Claude Sonnet 4.5 + Avena substrate. Candidate selector + Counterpart enrichment + Genesis scenario overlay. Output: PDF + JSON + persistent short URL for IC distribution."
@@ -87,7 +89,7 @@ export default function InstitutionalPage() {
           link={{ href: '/agent', label: 'Agent endpoint →' }} />
 
         <section id="pricing" className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-12">
-          <h2 className="font-serif text-3xl font-light text-foreground mb-3">Pricing</h2>
+          <h2 className="font-serif text-2xl sm:text-3xl font-light text-foreground mb-3 tracking-tight">Pricing</h2>
           <p className="text-base text-foreground/85 leading-relaxed max-w-3xl mb-6">Institutional pricing is tier-based. Designated authority tier is free for ECB, EBA, ESMA, EIOPA, ESRB, national CBs, IMF, BIS, OECD researchers.</p>
           <div className="grid md:grid-cols-3 gap-4">
             <Tier name="Desk" price="€2,500 / mo" features={['One desk seat', 'Full API access', 'Memo Engine unlimited', 'AVM unlimited', 'Methodology audit']} />
@@ -97,7 +99,7 @@ export default function InstitutionalPage() {
         </section>
 
         <section id="access" className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-20">
-          <h2 className="font-serif text-3xl font-light text-foreground mb-3">Request access</h2>
+          <h2 className="font-serif text-2xl sm:text-3xl font-light text-foreground mb-3 tracking-tight">Request access</h2>
           <p className="text-base text-foreground/85 leading-relaxed max-w-3xl mb-6">Institutional access is gated for desk-tier and above. Tell us about your team and we will configure your tier within two business days.</p>
           <InstitutionalForm />
         </section>
@@ -109,8 +111,8 @@ export default function InstitutionalPage() {
 
 function Section({ id, title, body, link }: { id: string; title: string; body: string; link: { href: string; label: string } }) {
   return (
-    <section id={id} className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-12">
-      <h2 className="font-serif text-3xl font-light text-foreground mb-3">{title}</h2>
+    <section id={id} className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pb-10 sm:pb-12 scroll-mt-32 pt-8 sm:pt-10">
+      <h2 className="font-serif text-2xl sm:text-3xl font-light text-foreground mb-3 tracking-tight">{title}</h2>
       <p className="text-base text-foreground/85 leading-relaxed max-w-3xl mb-4">{body}</p>
       <Link href={link.href} className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground transition-colors">
         {link.label}

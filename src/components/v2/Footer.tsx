@@ -90,9 +90,9 @@ export function Footer() {
       {/* Top gold accent */}
       <div className="h-px w-full" style={{ background: 'var(--av-gradient-gold)', opacity: 0.6 }} />
 
-      <div className="mx-auto max-w-[1600px] px-5 py-16 sm:px-12">
+      <div className="mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12 py-12 sm:py-14 lg:py-16">
         {/* Masthead */}
-        <div className="grid gap-12 lg:grid-cols-[1.3fr_3fr]">
+        <div className="grid gap-10 lg:gap-12 lg:grid-cols-[1.3fr_3fr]">
           <div>
             <Link href="/" className="inline-flex items-center gap-3">
               <span
@@ -104,21 +104,21 @@ export function Footer() {
               <span className="font-serif text-2xl font-light tracking-wide text-foreground">Avena</span>
             </Link>
 
-            <p className="mt-6 max-w-sm text-sm font-light leading-relaxed text-muted-foreground">
-              European property intelligence infrastructure. Live data across 27 EU markets under the open APIP v1.0 standard. Refreshed daily. Cited as <span className="font-mono text-foreground/85">DOI 10.5281/zenodo.19520064</span>.
+            <p className="mt-5 max-w-sm text-sm font-light leading-relaxed text-muted-foreground">
+              Europe&apos;s deepest technical data infrastructure for property. Live across 27 EU markets under the open APIP v1.0 standard. Refreshed daily. Cite as <span className="font-mono text-foreground/85">DOI 10.5281/zenodo.19520064</span>.
             </p>
 
-            <div className="mt-6">
+            <div className="mt-5">
               <TikTokBadge />
             </div>
 
-            <p className="mt-8 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground/70">
+            <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground/70">
               Frankfurt · Madrid · Oslo · Founded 2026
             </p>
           </div>
 
-          {/* Link columns */}
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5">
+          {/* Link columns — 2 on mobile, 3 on tablet, 5 on desktop */}
+          <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 sm:gap-x-8 lg:grid-cols-5">
             {columns.map((col) => (
               <div key={col.heading}>
                 <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/85">
@@ -134,14 +134,14 @@ export function Footer() {
                             href={l.href}
                             target="_blank"
                             rel="noopener"
-                            className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
+                            className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
                           >
                             {l.label}
                           </a>
                         ) : (
                           <Link
                             href={l.href}
-                            className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
+                            className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
                           >
                             {l.label}
                           </Link>
@@ -157,7 +157,7 @@ export function Footer() {
 
         {/* Credentials band */}
         <div
-          className="mt-14 pt-8 border-t grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6"
+          className="mt-12 sm:mt-14 pt-6 sm:pt-8 border-t grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-6 gap-y-5"
           style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
         >
           {credentials.map((c) => (
@@ -174,11 +174,11 @@ export function Footer() {
 
         {/* Bottom bar */}
         <div
-          className="mt-10 flex flex-col items-start justify-between gap-3 border-t pt-6 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground sm:flex-row sm:items-center"
+          className="mt-8 sm:mt-10 flex flex-col items-start justify-between gap-3 border-t pt-5 sm:pt-6 font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.22em] text-muted-foreground sm:flex-row sm:items-center"
           style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
         >
-          <span>© 2026 Avena Terminal · All rights reserved · Cite as <Link href="/governance" className="text-foreground/85 hover:text-primary">DOI 10.5281/zenodo.19520064</Link></span>
-          <span className="flex items-center gap-2">
+          <span className="break-words">© 2026 Avena Terminal · All rights reserved · Cite as <Link href="/governance" className="text-foreground/85 hover:text-primary">DOI 10.5281/zenodo.19520064</Link></span>
+          <span className="flex items-center gap-2 shrink-0">
             <span className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
             System operational
           </span>

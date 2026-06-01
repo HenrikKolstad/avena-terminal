@@ -47,27 +47,29 @@ export default function MethodologyPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
       <main className="min-h-screen" style={{ background: 'hsl(var(--av-background))' }}>
-        <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pt-16 pb-10">
+        <section className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10">
           <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
             Methodology · open · CC BY 4.0 · DOI 10.5281/zenodo.19520064
           </div>
-          <h1 className="font-serif text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05]">
+          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05] tracking-tight">
             Every weight. Every revision. Published.
           </h1>
-          <p className="max-w-3xl text-base text-muted-foreground leading-relaxed">
+          <p className="max-w-3xl text-base sm:text-lg text-muted-foreground leading-relaxed">
             Avena&apos;s methodology is open, versioned, and cryptographically anchored. Every weight that shapes the Avena Score, every coefficient in the AVM, every dimension of the APCI, every signal feeding the Counterpart graph — all published, all auditable, all citation-stable.
           </p>
         </section>
 
-        <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-10">
-          <div className="flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-[0.22em]">
-            {ANCHORS.map(a => (
-              <a key={a.id} href={`#${a.id}`} className="rounded-sm border px-3 py-1.5 text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>
-                {a.label}
-              </a>
-            ))}
+        <div className="sticky top-16 z-30 backdrop-blur-md border-b" style={{ background: 'hsl(var(--av-background) / 0.85)', borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 py-3 overflow-x-auto">
+            <div className="flex gap-2 font-mono text-[10px] uppercase tracking-[0.22em] whitespace-nowrap">
+              {ANCHORS.map(a => (
+                <a key={a.id} href={`#${a.id}`} className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>
+                  {a.label}
+                </a>
+              ))}
+            </div>
           </div>
-        </section>
+        </div>
 
         <Section id="about" title="Overview"
           body="Four methodologies underpin every Avena output: the Avena Score (property quality + investment composite), the AVM (predicted fair-market value with confidence intervals), the APCI (cycle position index), and the Counterpart Score (developer credit grading). Each has a published version chain, each weight sources back to a primary reference, each output is cryptographically anchored." />
@@ -126,8 +128,8 @@ https://avenaterminal.com/methodology`}
 
 function Section({ id, title, body, link }: { id: string; title: string; body: string; link?: { href: string; label: string } }) {
   return (
-    <section id={id} className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-12">
-      <h2 className="font-serif text-3xl font-light text-foreground mb-3">{title}</h2>
+    <section id={id} className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pb-10 sm:pb-12 scroll-mt-32 pt-8 sm:pt-10">
+      <h2 className="font-serif text-2xl sm:text-3xl font-light text-foreground mb-3 tracking-tight">{title}</h2>
       <p className="text-base text-foreground/85 leading-relaxed max-w-3xl mb-4">{body}</p>
       {link && (
         <Link href={link.href} className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground transition-colors">
