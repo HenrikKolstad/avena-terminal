@@ -51,11 +51,11 @@ export default async function ConsultationsPage() {
           <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
             EU consultations · Avena positions
           </div>
-          <h1 className="font-serif text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05]">
-            Visible at every EU policy entry point.
+          <h1 className="font-serif text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05] tracking-tight">
+            Tracking every EU consultation that touches residential property.
           </h1>
-          <p className="max-w-3xl text-base text-muted-foreground leading-relaxed">
-            Every active European regulatory consultation touching residential property data has an Avena position on this page. ECB, ESMA, EBA, the Commission, EIOPA. The position is one paragraph — what we are urging, why, and which Avena infrastructure operationalises it. When the consultation closes, we publish our formal submission alongside. The register is permanent and public.
+          <p className="max-w-3xl text-base sm:text-lg text-muted-foreground leading-relaxed">
+            Avena maintains a public register of European regulatory consultations across ECB, ESMA, EBA, the Commission, and EIOPA where residential property data, methodology, or disclosure is in scope. For each one Avena publishes its position — what we&apos;d urge, why, and which Avena infrastructure operationalises it. Formal submissions and source links are appended when consultations are formally opened.
           </p>
         </section>
 
@@ -107,7 +107,7 @@ export default async function ConsultationsPage() {
                     </div>
                   )}
                   <div className="mt-4 flex flex-wrap gap-4 font-mono text-[10px] uppercase tracking-[0.22em]">
-                    <a href={c.consultation_url} target="_blank" rel="noopener" className="text-foreground/85 hover:text-primary">Source consultation →</a>
+                    <a href={c.consultation_url} target="_blank" rel="noopener" className="text-foreground/85 hover:text-primary">{c.source_body} consultations →</a>
                     {c.submission_url && (
                       <a href={c.submission_url} target="_blank" rel="noopener" className="text-foreground/85 hover:text-primary">Avena submission (PDF) →</a>
                     )}
