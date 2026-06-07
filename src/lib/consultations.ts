@@ -7,9 +7,9 @@ export interface EUConsultation {
   title: string;
   consultation_url: string;
   opens_at: string | null;
-  closes_at: string;
+  closes_at: string | null;
   topic_tags: string[];
-  status: 'planned' | 'open' | 'closed' | 'responded';
+  status: 'planned' | 'open' | 'closed' | 'responded' | 'monitoring';
   relevance_score: number | null;
   avena_position: string | null;
   avena_submitted: boolean;
