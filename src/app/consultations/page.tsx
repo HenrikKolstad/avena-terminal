@@ -31,16 +31,17 @@ const jsonLd = {
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  open:      'hsl(var(--av-success))',
-  responded: 'hsl(var(--av-primary))',
-  planned:   'hsl(var(--av-warning))',
-  closed:    'hsl(var(--av-muted-foreground))',
+  open:       'hsl(var(--av-success))',
+  responded:  'hsl(var(--av-primary))',
+  monitoring: 'hsl(var(--av-warning))',
+  planned:    'hsl(var(--av-warning))',
+  closed:     'hsl(var(--av-muted-foreground))',
 };
 
 export default async function ConsultationsPage() {
   const rows = await allConsultations();
-  const open = rows.filter(r => r.status === 'open' || r.status === 'responded');
-  const other = rows.filter(r => r.status !== 'open' && r.status !== 'responded');
+  const open = rows.filter(r => r.status === 'open' || r.status === 'responded' || r.status === 'monitoring');
+  const other = rows.filter(r => r.status === 'closed' || r.status === 'planned');
 
   return (
     <>
@@ -87,7 +88,7 @@ export default async function ConsultationsPage() {
                       )}
                     </div>
                     <span className="font-mono text-[10px] text-muted-foreground tabular whitespace-nowrap">
-                      closes {c.closes_at}
+                      {c.closes_at ? `closes ${c.closes_at}` : 'ongoing pipeline'}
                     </span>
                   </div>
                   <h3 className="font-serif text-xl md:text-2xl font-light text-foreground leading-snug mb-3">
