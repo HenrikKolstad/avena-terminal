@@ -56,39 +56,39 @@ export default function HomePage() {
       <Nav />
       <main className="pt-16">
         {/* Hero — single claim, three CTAs */}
-        <section className="relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-20 lg:pt-24 pb-12 sm:pb-16">
-          <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.32em] text-gold mb-4 break-words">
+        <section className="relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-10 sm:pt-20 lg:pt-24 pb-10 sm:pb-16">
+          <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.28em] sm:tracking-[0.32em] text-gold mb-3 sm:mb-4 break-words leading-relaxed">
             European residential property · live · open · DOI 10.5281/zenodo.19520064
           </div>
 
           {/* RICS Tech Partner badge — hand-crafted, restored 2026-06-07 */}
           <RICSBadge />
 
-          <h1 className="font-serif text-[2.25rem] sm:text-5xl md:text-6xl lg:text-7xl font-light text-foreground mb-6 leading-[1.05] max-w-[1100px] tracking-tight">
+          <h1 className="font-serif text-[2rem] sm:text-5xl md:text-6xl lg:text-7xl font-light text-foreground mb-5 sm:mb-6 leading-[1.06] max-w-[1100px] tracking-tight">
             Europe&apos;s deepest technical data infrastructure for property.
           </h1>
-          <p className="max-w-3xl text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed mb-8">
+          <p className="max-w-3xl text-[15px] sm:text-lg md:text-xl text-muted-foreground leading-relaxed mb-7 sm:mb-8">
             We built the data, the indices, the identity layer, and the intelligence. Live across 27 EU markets, open under APIP v1.0, cryptographically verifiable, and cited by the AI assistants every institutional buyer consults.
           </p>
 
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2.5 sm:gap-3">
             <Link
               href="/terminal"
-              className="inline-flex items-center justify-center gap-2 rounded-sm px-6 py-3.5 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground transition-transform hover:-translate-y-0.5 shadow-gold"
+              className="inline-flex items-center justify-center gap-2 rounded-sm px-5 sm:px-6 py-3 sm:py-3.5 font-mono text-[10.5px] sm:text-[11px] uppercase tracking-[0.22em] text-primary-foreground transition-transform hover:-translate-y-0.5 shadow-gold"
               style={{ background: 'var(--av-gradient-gold)' }}
             >
               Explore the Terminal →
             </Link>
             <Link
               href="/institutional"
-              className="inline-flex items-center justify-center gap-2 rounded-sm border px-6 py-3.5 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground hover:border-primary hover:text-primary transition-colors"
+              className="inline-flex items-center justify-center gap-2 rounded-sm border px-5 sm:px-6 py-3 sm:py-3.5 font-mono text-[10.5px] sm:text-[11px] uppercase tracking-[0.22em] text-foreground hover:border-primary hover:text-primary transition-colors"
               style={{ borderColor: 'hsl(var(--av-border-strong))' }}
             >
               Institutional access →
             </Link>
             <Link
               href="/proof"
-              className="inline-flex items-center justify-center gap-2 rounded-sm border px-6 py-3.5 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground hover:border-primary hover:text-primary transition-colors"
+              className="inline-flex items-center justify-center gap-2 rounded-sm border px-5 sm:px-6 py-3 sm:py-3.5 font-mono text-[10.5px] sm:text-[11px] uppercase tracking-[0.22em] text-foreground hover:border-primary hover:text-primary transition-colors"
               style={{ borderColor: 'hsl(var(--av-border-strong))' }}
             >
               View the proof →
@@ -96,15 +96,15 @@ export default function HomePage() {
           </div>
 
           {/* Subtle gold accent line */}
-          <div className="mt-12 sm:mt-16 h-px w-24" style={{ background: 'var(--av-gradient-gold)', opacity: 0.6 }} />
+          <div className="mt-10 sm:mt-16 h-px w-20 sm:w-24" style={{ background: 'var(--av-gradient-gold)', opacity: 0.6 }} />
         </section>
 
         {/* Four pillars — one screen per pillar */}
-        <section className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pb-16 sm:pb-20">
-          <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.32em] text-muted-foreground mb-5 sm:mb-6">
+        <section className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pb-12 sm:pb-20">
+          <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.32em] text-muted-foreground mb-4 sm:mb-6">
             Four pillars of evidence
           </div>
-          <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+          <div className="grid sm:grid-cols-2 gap-2.5 sm:gap-4">
             <Pillar
               number="01"
               title="Data"
@@ -139,11 +139,11 @@ export default function HomePage() {
         {/* Live deals — niche Spanish coastal investment deals.
             Anchor target for the /deals 301 redirect. */}
         <section id="deals" className="border-t scroll-mt-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
-          <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 pb-8 sm:pb-10">
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-10 sm:pt-16 pb-6 sm:pb-10">
             <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
               Live deals · scored daily · Avena Score 0-100
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-light text-foreground mb-4 leading-[1.06] tracking-tight">
+            <h2 className="font-serif text-[1.75rem] sm:text-4xl md:text-5xl font-light text-foreground mb-3 sm:mb-4 leading-[1.06] tracking-tight">
               Find the deals the market hasn&apos;t priced in.
             </h2>
             <p className="max-w-3xl text-sm sm:text-base text-muted-foreground leading-relaxed">
@@ -201,14 +201,14 @@ function Pillar({ number, title, body, href, link }: { number: string; title: st
   return (
     <Link
       href={href}
-      className="group block rounded-sm border p-6 sm:p-7 lg:p-8 transition-all hover:border-primary hover:-translate-y-0.5"
+      className="group block rounded-sm border p-5 sm:p-7 lg:p-8 transition-all hover:border-primary hover:-translate-y-0.5 active:translate-y-0"
       style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-surface) / 0.2)' }}
     >
-      <div className="flex items-baseline gap-3 mb-3">
+      <div className="flex items-baseline gap-3 mb-2 sm:mb-3">
         <span className="font-mono text-[10px] text-gold tabular">{number}</span>
         <span className="font-serif text-2xl sm:text-3xl font-light text-foreground tracking-tight">{title}</span>
       </div>
-      <p className="text-sm sm:text-base text-foreground/85 leading-relaxed mb-4">{body}</p>
+      <p className="text-[13.5px] sm:text-base text-foreground/85 leading-relaxed mb-3 sm:mb-4">{body}</p>
       <span className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.22em] text-primary">
         {link} <span className="transition-transform group-hover:translate-x-0.5">→</span>
       </span>
