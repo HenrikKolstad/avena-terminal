@@ -100,7 +100,8 @@ export default function HomePage() {
         </section>
 
         {/* Four pillars — one screen per pillar */}
-        <section className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pb-12 sm:pb-20">
+        <section className="section-tinted">
+        <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 py-12 sm:py-20">
           <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.32em] text-muted-foreground mb-4 sm:mb-6">
             Four pillars of evidence
           </div>
@@ -134,6 +135,7 @@ export default function HomePage() {
               link="View intelligence"
             />
           </div>
+        </div>
         </section>
 
         {/* Live deals — niche Spanish coastal investment deals.
