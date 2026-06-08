@@ -44,18 +44,22 @@
   --av-shadow-elevated: 0 24px 60px -16px hsl(0 0% 0% / 0.65);
 }
 
-/* Avena V2 root wrapper — apply to pages that use the new design */
-.avena-v2 {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-feature-settings: 'cv11', 'ss01';
+/* Body base — the dark background colour lives here so the body::before
+   grid pattern can show through transparent page wrappers. */
+body {
   background-color: hsl(var(--av-background));
   color: hsl(var(--av-foreground));
   position: relative;
-  /* Flat root colour — any radial gradient on the root wrapper causes iOS
-     Safari split-render artifacts when combined with inner transforms / fixed
-     elements. Texture is layered via the ::before pseudo-element instead,
-     which iOS handles correctly because it doesn't change the wrapper's
-     own paint context. */
+}
+
+/* Avena V2 root wrapper — typographic + colour scope only. NO opaque
+   background, so the body::before global grid pattern shows through. */
+.avena-v2 {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-feature-settings: 'cv11', 'ss01';
+  background: transparent;
+  color: hsl(var(--av-foreground));
+  position: relative;
 }
 
 /* Global structure layer — blueprint-style grid + engineering dots + warm

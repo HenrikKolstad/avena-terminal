@@ -51,7 +51,7 @@ const jsonLd = {
 
 export default function HomePage() {
   return (
-    <div className="avena-v2 relative min-h-screen w-full" style={{ background: 'hsl(var(--av-background))' }}>
+    <div className="avena-v2 relative min-h-screen w-full">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
       <main className="pt-16">

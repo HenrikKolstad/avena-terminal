@@ -34,7 +34,7 @@ export default function StandardsPage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
-      <main className="min-h-screen" style={{ background: 'hsl(var(--av-background))' }}>
+      <main className="min-h-screen">
         <section className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10">
           <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
             Open standards · convened by Avena Foundation · CC BY 4.0

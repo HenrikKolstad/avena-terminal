@@ -31,7 +31,7 @@ export default function ContributePage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
-      <main className="min-h-screen" style={{ background: 'hsl(var(--av-background))' }}>
+      <main className="min-h-screen">
         <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pt-16 pb-10">
           <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
             Data contributor onramp · APIP v1.0 · CC BY 4.0

@@ -70,7 +70,7 @@ export default async function TimeTravelPage({ searchParams }: SearchParams) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
-      <main className="min-h-screen" style={{ background: 'hsl(var(--av-background))' }}>
+      <main className="min-h-screen">
         {/* Hero */}
         <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pt-16 pb-10">
           <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">

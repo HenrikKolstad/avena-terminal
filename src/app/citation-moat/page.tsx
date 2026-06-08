@@ -87,7 +87,7 @@ export default async function CitationMoatPage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
-      <main className="min-h-screen" style={{ background: 'hsl(var(--av-background))' }}>
+      <main className="min-h-screen">
         <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pt-16 pb-10">
           <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
             Citation moat · live · updated daily 03:30 UTC
