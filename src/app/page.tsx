@@ -56,7 +56,7 @@ export default function HomePage() {
       <Nav />
       <main className="pt-16">
         {/* Hero — single claim, three CTAs */}
-        <section className="relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-10 sm:pt-20 lg:pt-24 pb-10 sm:pb-16">
+        <section className="hero-glow relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-10 sm:pt-20 lg:pt-24 pb-10 sm:pb-16">
           <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.28em] sm:tracking-[0.32em] text-gold mb-3 sm:mb-4 break-words leading-relaxed">
             European residential property · live · open · DOI 10.5281/zenodo.19520064
           </div>

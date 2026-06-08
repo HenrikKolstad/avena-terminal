@@ -50,9 +50,51 @@
   font-feature-settings: 'cv11', 'ss01';
   background-color: hsl(var(--av-background));
   color: hsl(var(--av-foreground));
-  /* Flat background — any radial gradient on the root wrapper causes iOS
+  position: relative;
+  /* Flat root colour — any radial gradient on the root wrapper causes iOS
      Safari split-render artifacts when combined with inner transforms / fixed
-     elements. Individual sections add their own gradient accents instead. */
+     elements. Texture is layered via the ::before pseudo-element instead,
+     which iOS handles correctly because it doesn't change the wrapper's
+     own paint context. */
+}
+
+/* Global texture layer — fine dotted grid for engineering precision +
+   ultra-subtle grain for warmth. Sits behind all content via z-index. */
+.avena-v2::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    /* Engineering grid — 1px dots every 28px, very low opacity */
+    radial-gradient(circle at 1px 1px, hsl(40 35% 95% / 0.04) 1px, transparent 0),
+    /* Ultra-subtle warm radial wash for depth, top-left */
+    radial-gradient(ellipse 80% 50% at 20% 0%, hsl(42 85% 64% / 0.025), transparent 60%);
+  background-size: 28px 28px, 100% 100%;
+  background-position: 0 0, 0 0;
+}
+
+.avena-v2 > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Hero gold glow — section-scoped soft radial behind the homepage hero.
+   Section-scoped is iOS-safe because each section paints independently. */
+.hero-glow {
+  position: relative;
+  isolation: isolate;
+}
+.hero-glow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 70% 60% at 30% 30%, hsl(42 85% 64% / 0.10) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 80% 10%, hsl(26 88% 62% / 0.08) 0%, transparent 60%);
 }
 
 /* RICS badge mobile sizing — shrink down so the wordmark + partner line
