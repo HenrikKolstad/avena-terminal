@@ -190,7 +190,9 @@ const nextConfig: NextConfig = {
       { source: '/terminal-stats',     destination: '/proof#stats',        permanent: true },
       { source: '/status',             destination: '/live',               permanent: true },
       { source: '/portugal',           destination: '/eu-coverage',        permanent: true },
-      { source: '/benchmark',          destination: '/proof#benchmark',    permanent: true },
+      // /benchmark reclaimed 2026-06-10 for PLAB — the European Property
+      // AI Benchmark (daily model leaderboard). Redirect removed.
+      { source: '/propertyeval-benchmark', destination: '/benchmark',      permanent: true },
 
       // /stack absorbs nothing destructively — defensibility dossier,
       // causal graph, changelog, roadmap stay live as deep pages.

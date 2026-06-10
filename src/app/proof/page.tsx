@@ -98,9 +98,9 @@ export default function ProofPage() {
           body="Real-time health check of every public-facing endpoint, every cron, every data source. ≥99.5% uptime target. Incident log public. Self-aware limitations published daily at /methodology#limitations."
           link={{ href: '/live', label: 'Live status →' }} />
 
-        <Section id="benchmark" title="Benchmark — methodology RMSE, accuracy, confidence"
-          body="Avena AVM achieves ±3% RMSE on Spanish coastal backtest. Avena Score correlates 0.87 with realised 12-month returns on resolved deals. Counterpart Score predicts developer stress events with 0.74 precision. Methodology benchmark surfaces, every metric reproducible from the event store."
-          link={{ href: '/methodology', label: 'Methodology page →' }} />
+        <Section id="benchmark" title="Benchmark — methodology accuracy + the PLAB AI leaderboard"
+          body="Avena AVM achieves ±3% RMSE on Spanish coastal backtest; every metric is reproducible from the event store. And PLAB — the European Property AI Benchmark — scores Claude, Perplexity, GPT and Gemini daily on a fixed, sourced question bank of European property facts. Avena publishes the scoreboard; it does not play on it."
+          link={{ href: '/benchmark', label: 'Open the PLAB leaderboard →' }} />
 
         <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-20">
           <div className="rounded-sm border p-6" style={{ borderColor: 'hsl(var(--av-border) / 0.4)', background: 'hsl(var(--av-surface) / 0.2)' }}>

@@ -68,6 +68,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ['/alerts/macro',         'daily',  0.7],
     ['/changelog',            'weekly', 0.6],
     ['/roadmap',              'monthly', 0.6],
+    ['/benchmark',            'daily',  0.95],
 
     // ─── Footer-only canonicals (about / governance / outreach / legal) ───
     ['/about',            'weekly',  0.85],
