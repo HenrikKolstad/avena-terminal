@@ -60,7 +60,8 @@ ${items}
     headers: {
       'Content-Type': 'application/rss+xml; charset=utf-8',
       'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=600',
-      'X-Cite-As': 'Avena Terminal — https://avenaterminal.com/delphi — DOI 10.5281/zenodo.19520064',
+      // ASCII only — non-ASCII characters in header values throw ERR_INVALID_CHAR
+      'X-Cite-As': 'Avena Terminal - https://avenaterminal.com/delphi - DOI 10.5281/zenodo.19520064',
     },
   });
 }

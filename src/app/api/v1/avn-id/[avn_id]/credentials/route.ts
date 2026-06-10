@@ -16,8 +16,8 @@ import {
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ avn_id: string }> }) {
+  const { avn_id: id } = await params;
   const rows = await credentialsForAvnId(id);
   return NextResponse.json({
     ok: true,
@@ -46,8 +46,8 @@ interface IssueBody {
   issuer_secret: string;            // shared secret for issuance (per-issuer)
 }
 
-export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export async function POST(req: NextRequest, { params }: { params: Promise<{ avn_id: string }> }) {
+  const { avn_id: id } = await params;
   let body: IssueBody;
   try { body = await req.json(); }
   catch { return NextResponse.json({ ok: false, error: 'invalid_json' }, { status: 400 }); }
