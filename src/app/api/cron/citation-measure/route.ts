@@ -5,19 +5,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { rollupDay, persistMeasurement } from '@/lib/citation-measure';
 import { startCronLog, finishCronLog } from '@/lib/cron-log';
+import { isAuthorizedCron } from '@/lib/cron-auth';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-function authOk(req: NextRequest): boolean {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) return true;
-  const auth = req.headers.get('authorization');
-  return auth === `Bearer ${secret}`;
-}
-
 export async function GET(req: NextRequest) {
-  if (!authOk(req)) {
+  if (!isAuthorizedCron(req)) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 
