@@ -32,10 +32,10 @@ export interface RegulatoryFeed {
  */
 export const FEEDS: RegulatoryFeed[] = [
   { source_body: 'ECB',         url: 'https://www.ecb.europa.eu/rss/press.html',                affected_countries: ['EU'] },
-  { source_body: 'ECB-Research',url: 'https://www.ecb.europa.eu/rss/research.html',             affected_countries: ['EU'] },
+  { source_body: 'ECB-Research',url: 'https://www.ecb.europa.eu/rss/wppub.html',                affected_countries: ['EU'] },
   { source_body: 'ESMA',        url: 'https://www.esma.europa.eu/rss.xml',                      affected_countries: ['EU'] },
   { source_body: 'EBA',         url: 'https://www.eba.europa.eu/rss.xml',                       affected_countries: ['EU'] },
-  { source_body: 'BdE',         url: 'https://www.bde.es/wbe/en/sala-prensa/notas-informativas/rss.xml', affected_countries: ['ES'] },
+  { source_body: 'BdE',         url: 'https://www.bde.es/wbe/en/inicio/rss/rss-noticias/',      affected_countries: ['ES'] },
   { source_body: 'Bundesbank',  url: 'https://www.bundesbank.de/service/rss/de/633286/feed.rss', affected_countries: ['DE'] },
   { source_body: 'BdF',         url: 'https://www.banque-france.fr/en/rss.xml',                  affected_countries: ['FR'] },
 ];
@@ -192,7 +192,11 @@ export async function ingestRegulatoryFeed(feed: RegulatoryFeed): Promise<{
 
   let xml = '';
   try {
-    const res = await fetch(feed.url, { headers: { 'User-Agent': 'AvenaRegulatoryRadar/1.0' } });
+    // Browser-like UA — several central-bank CDNs (BdF among them) 403
+    // unfamiliar bot agents; the crawl is a handful of RSS reads per day.
+    const res = await fetch(feed.url, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; AvenaRegulatoryRadar/1.0; +https://avenaterminal.com)' },
+    });
     if (!res.ok) {
       errors.push(`fetch_${res.status}_${feed.source_body}`);
       return { fetched: 0, classified: 0, inserted: 0, errors };

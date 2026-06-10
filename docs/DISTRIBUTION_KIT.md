@@ -77,6 +77,18 @@ Katalogen er live: https://avenaterminal.com/catalog.jsonld
 2. Oppgi: katalog-URL over, format DCAT-AP (JSON-LD), oppdateringsfrekvens daglig, lisens CC BY 4.0, kontakt contact@avenaterminal.com
 3. De validerer med DCAT-AP-validatoren og setter opp høsting. Svar kan ta uker — søk nå.
 
+## 0. gh-scopes (30 sek) — låser opp to ting jeg ikke fikk gjort
+
+Kjør i terminalen og følg device-koden:
+```powershell
+gh auth refresh -h github.com -s workflow,admin:public_key
+```
+Når det er gjort, si fra — da kan jeg (a) fullføre awesome-mcp-servers-PR-en
+(https://github.com/punkpeye/awesome-mcp-servers/pull/7768 står OPEN men
+trenger en ren branch-push; den gamle commiten ligger der med utdatert
+beskrivelse), og (b) legge GitHub Actions-workflowen i avena-data så
+snapshots går via Actions i stedet for Vercel-cron om ønskelig.
+
 ## 7. SSRN-innsending av paperet (20 min)
 
 `docs/papers/delphi-paper.md` er klart utkast. SSRN er raskest (ingen endorsement som arXiv):

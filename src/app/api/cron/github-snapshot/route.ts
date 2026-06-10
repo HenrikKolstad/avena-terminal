@@ -92,13 +92,13 @@ export async function GET(req: NextRequest) {
 
   if (plab) {
     results['plab/json'] = await putFile(token, `plab/daily/${date}.json`, JSON.stringify(plab, null, 2), `data: PLAB snapshot ${date}`);
-    const scores = (plab as { scores?: Array<{ model_label?: string; accuracy?: number }> }).scores ?? [];
-    if (scores.length) {
+    const board = (plab as { leaderboard?: Array<{ model?: string; accuracy_pct?: number }> }).leaderboard ?? [];
+    if (board.length) {
       results['plab/csv'] = await appendCsv(
         token,
         'plab/index.csv',
         'date,model,accuracy_pct',
-        scores.map(s => `${date},"${s.model_label ?? ''}",${s.accuracy ?? ''}`),
+        board.map(s => `${date},"${s.model ?? ''}",${s.accuracy_pct ?? ''}`),
       );
     }
   }

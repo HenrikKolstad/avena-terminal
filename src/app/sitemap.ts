@@ -99,6 +99,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ['/api/openapi.json', 'weekly',  0.85],
     ['/api/v1/openapi.json', 'weekly', 0.85],
     ['/catalog.jsonld',   'weekly',  0.8],
+    ['/papers/delphi',    'monthly', 0.85],
 
     // ─── PRO landing (preserved for institutional pricing) ────────────────
     ['/pro',              'weekly',  0.85],
