@@ -16,7 +16,15 @@ export async function GET(req: NextRequest) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const result = await runBenchmark();
-  return Response.json({ agent: 'PLAB Runner', ran_at: new Date().toISOString(), ...result });
+  return Response.json({
+    agent: 'PLAB Runner',
+    ran_at: new Date().toISOString(),
+    keys: {
+      anthropic: !!process.env.ANTHROPIC_API_KEY,
+      perplexity: !!process.env.PERPLEXITY_API_KEY,
+    },
+    ...result,
+  });
 }
 
 export const POST = GET;
