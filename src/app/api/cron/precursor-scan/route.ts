@@ -10,6 +10,7 @@
  * signals continue to serve the UI.
  */
 
+import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { startCronLog, finishCronLog } from '@/lib/cron-log';
@@ -61,8 +62,7 @@ function pickTheme(): string {
 }
 
 export async function GET(req: NextRequest) {
-  const auth = req.headers.get('authorization');
-  if (auth && process.env.CRON_SECRET && auth !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!isAuthorizedCron(req)) {
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
   }
   const log = await startCronLog('precursor-scan', '/api/cron/precursor-scan');

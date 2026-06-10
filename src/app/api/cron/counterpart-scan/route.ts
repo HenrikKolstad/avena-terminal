@@ -10,6 +10,7 @@
  * real-time stress signals (filings, judgements, suspensions).
  */
 
+import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { startCronLog, finishCronLog } from '@/lib/cron-log';
 import { supabase } from '@/lib/supabase';
@@ -71,8 +72,7 @@ function scoreToGrade(score: number): string {
 }
 
 export async function GET(req: NextRequest) {
-  const auth = req.headers.get('authorization');
-  if (auth && process.env.CRON_SECRET && auth !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!isAuthorizedCron(req)) {
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
   }
   const log = await startCronLog('counterpart-scan', '/api/cron/counterpart-scan');

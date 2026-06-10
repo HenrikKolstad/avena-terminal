@@ -12,6 +12,7 @@
  *
  * Each fetch has a 6s timeout. Failures are logged but never block the cron.
  */
+import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { startCronLog, finishCronLog } from '@/lib/cron-log';
 import { supabase } from '@/lib/supabase';
@@ -95,8 +96,7 @@ async function eurostat(dataset: string, params: string, label: string): Promise
 }
 
 export async function GET(req: NextRequest) {
-  const auth = req.headers.get('authorization');
-  if (process.env.CRON_SECRET && auth !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (process.env.CRON_SECRET && !isAuthorizedCron(req)) {
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
   }
   const log = await startCronLog('sync-macro', '/api/cron/sync-macro');

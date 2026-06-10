@@ -16,7 +16,7 @@
  * publishes it. The credibility differential is permanent.
  */
 
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { recordEvent } from '@/lib/event-store';
 
 export interface LimitationFinding {

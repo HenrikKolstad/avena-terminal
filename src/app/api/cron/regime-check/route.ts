@@ -1,3 +1,4 @@
+import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextRequest } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { recordEvent } from '@/lib/event-store';
@@ -10,8 +11,7 @@ export const maxDuration = 60;
  * creates alpha signal if regime changed.
  */
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!isAuthorizedCron(req)) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
   if (!supabase) {

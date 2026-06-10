@@ -5,14 +5,14 @@
  * Powers /regulatory-radar.
  */
 
+import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextRequest } from 'next/server';
 import { ingestAllRegulatoryFeeds } from '@/lib/regulatory-intent';
 
 export const maxDuration = 300;
 
 export async function GET(req: NextRequest) {
-  const auth = req.headers.get('authorization');
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!isAuthorizedCron(req)) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const result = await ingestAllRegulatoryFeeds();

@@ -13,7 +13,7 @@
  * can show their compliance team.
  */
 
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
 export interface ConfidenceFeatures {
   ref: string;

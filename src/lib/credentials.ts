@@ -14,7 +14,7 @@
  */
 
 import { createHmac, createPrivateKey, createPublicKey, sign as cryptoSign, verify as cryptoVerify, type KeyObject } from 'crypto';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
 export type CredentialType = 'valuation' | 'insurance' | 'ownership' | 'regulatory_regime' | 'energy_certificate';
 

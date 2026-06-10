@@ -1,3 +1,4 @@
+import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextRequest } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
@@ -8,8 +9,7 @@ export const maxDuration = 60;
  * Weekly cron Monday 4am. Calls stress monitor, stores to developer_stress_history.
  */
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!isAuthorizedCron(req)) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
   if (!supabase) {

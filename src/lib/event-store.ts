@@ -17,7 +17,7 @@
  * crawler heartbeats) MAY skip recording.
  */
 
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
 /* -------------------------------------------------------------------------- */
 /* Event taxonomy                                                              */

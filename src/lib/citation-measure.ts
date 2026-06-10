@@ -12,7 +12,7 @@
  * Everything no-ops if Supabase / PERPLEXITY_API_KEY missing.
  */
 
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
 export interface DailyMeasurement {
   date: string;

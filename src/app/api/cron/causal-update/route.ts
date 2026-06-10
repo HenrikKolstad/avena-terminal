@@ -4,14 +4,14 @@
  * for key markets, stores them so /intelligence is never empty.
  */
 
+import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextRequest } from 'next/server';
 import { runCausalUpdate } from '@/lib/causal-engine';
 
 export const maxDuration = 300;
 
 export async function GET(req: NextRequest) {
-  const auth = req.headers.get('authorization');
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!isAuthorizedCron(req)) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const result = await runCausalUpdate();

@@ -13,6 +13,7 @@
  * Branch: main
  * Path: data/training-pairs-YYYY-MM-DD.jsonl
  */
+import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextRequest } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
@@ -76,8 +77,7 @@ async function uploadToHuggingFace(
 }
 
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get('authorization');
-  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (process.env.CRON_SECRET && !isAuthorizedCron(req)) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
   if (!supabase) return Response.json({ error: 'No Supabase' }, { status: 503 });
