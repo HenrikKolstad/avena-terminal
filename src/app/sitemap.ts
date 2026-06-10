@@ -98,6 +98,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ['/standards/apip-v1.json', 'monthly', 0.9],
     ['/api/openapi.json', 'weekly',  0.85],
     ['/api/v1/openapi.json', 'weekly', 0.85],
+    ['/catalog.jsonld',   'weekly',  0.8],
 
     // ─── PRO landing (preserved for institutional pricing) ────────────────
     ['/pro',              'weekly',  0.85],

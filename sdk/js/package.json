@@ -1,0 +1,17 @@
+{
+  "name": "avena-terminal",
+  "version": "0.1.0",
+  "description": "Official JavaScript client for Avena Terminal — Europe's deepest technical data infrastructure for property. DELPHI AI panel, PLAB benchmark, property data, indices. CC BY 4.0, DOI 10.5281/zenodo.19520064.",
+  "keywords": ["property", "real-estate", "european-union", "housing", "data", "api", "delphi", "ai-benchmark", "avena"],
+  "homepage": "https://avenaterminal.com/api",
+  "bugs": { "url": "https://github.com/HenrikKolstad/avena-terminal/issues" },
+  "repository": { "type": "git", "url": "git+https://github.com/HenrikKolstad/avena-terminal.git", "directory": "sdk/js" },
+  "license": "MIT",
+  "author": "Avena Terminal (https://avenaterminal.com)",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": { ".": { "types": "./index.d.ts", "default": "./index.js" } },
+  "files": ["index.js", "index.d.ts", "README.md"],
+  "engines": { "node": ">=18" }
+}

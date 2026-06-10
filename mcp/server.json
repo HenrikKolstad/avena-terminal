@@ -1,0 +1,17 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "name": "com.avenaterminal/avena",
+  "description": "European residential property data: scored properties, indices, AVM valuations, market stats, DELPHI AI panel, PLAB benchmark. CC BY 4.0, DOI-anchored.",
+  "version": "1.0.0",
+  "websiteUrl": "https://avenaterminal.com",
+  "repository": {
+    "url": "https://github.com/HenrikKolstad/avena-terminal",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://avenaterminal.com/mcp"
+    }
+  ]
+}

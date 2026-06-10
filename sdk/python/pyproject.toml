@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "avena-terminal"
+version = "0.1.0"
+description = "Official Python client for Avena Terminal - European residential property data infrastructure. DELPHI AI panel, PLAB benchmark, property data, indices."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.9"
+authors = [{ name = "Avena Terminal", email = "contact@avenaterminal.com" }]
+keywords = ["property", "real-estate", "european-union", "housing", "data", "api", "delphi", "ai-benchmark", "avena"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Financial and Insurance Industry",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3",
+  "Topic :: Office/Business :: Financial",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+]
+
+[project.urls]
+Homepage = "https://avenaterminal.com/api"
+Documentation = "https://avenaterminal.com/api"
+Repository = "https://github.com/HenrikKolstad/avena-terminal"
+"DELPHI Panel" = "https://avenaterminal.com/delphi"
+"PLAB Benchmark" = "https://avenaterminal.com/benchmark"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/avena_terminal"]
