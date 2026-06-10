@@ -13,13 +13,14 @@ import { useAuth } from '@/context/AuthContext';
 // evidence for the one claim: Europe's deepest technical data infrastructure
 // for property.
 
-interface NavItem { label: string; href: string }
+interface NavItem { label: string; href: string; live?: boolean }
 
 const NAV: NavItem[] = [
   { label: 'Terminal',      href: '/terminal' },
   { label: 'Institutional', href: '/institutional' },
   { label: 'API',           href: '/api' },
   { label: 'Intelligence',  href: '/intelligence' },
+  { label: 'Delphi',        href: '/delphi', live: true },
   { label: 'Standards',     href: '/standards' },
   { label: 'Proof',         href: '/proof' },
   { label: 'Stack',         href: '/stack' },
@@ -99,11 +100,18 @@ export function Nav() {
               <Link
                 key={item.label}
                 href={item.href}
-                className={`group relative inline-flex items-center font-mono text-[11px] uppercase tracking-[0.22em] leading-none transition-colors ${
+                className={`group relative inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.22em] leading-none transition-colors ${
                   active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {item.label}
+                {item.live && (
+                  <span
+                    className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full shrink-0"
+                    style={{ background: 'hsl(var(--av-primary))' }}
+                    aria-label="live"
+                  />
+                )}
                 <span
                   className={`absolute -bottom-1 left-0 h-px transition-all duration-300 ${
                     active ? 'w-full' : 'w-0 group-hover:w-full'
@@ -188,7 +196,12 @@ export function Nav() {
                 >
                   <span className="flex items-center gap-4">
                     <span className="font-mono text-[10px] text-gold/70 tabular w-6">0{i + 1}</span>
-                    {item.label}
+                    <span className="inline-flex items-center gap-2">
+                      {item.label}
+                      {item.live && (
+                        <span className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
+                      )}
+                    </span>
                   </span>
                   {active && (
                     <span className="h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
