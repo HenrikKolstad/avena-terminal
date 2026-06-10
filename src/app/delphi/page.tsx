@@ -14,7 +14,7 @@ import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { indexHistory, latestPanel, type DelphiDailyRow } from '@/lib/delphi';
-import { DELPHI_QUESTIONS, DELPHI_VERSION, type DelphiQuestion } from '@/lib/delphi-questions';
+import { DELPHI_QUESTIONS, DELPHI_VERSION, bullishness, type DelphiQuestion } from '@/lib/delphi-questions';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,25 +34,20 @@ const jsonLd = {
   publisher: { '@type': 'Organization', name: 'Avena Terminal' },
 };
 
-/* Marker styles per panelist — shape-differentiated, not colour-chaos. */
-const MARKERS: Array<{ match: string; label: string; style: React.CSSProperties; cls: string }> = [
-  { match: 'Sonnet',     label: 'Claude Sonnet 4.5', cls: 'rounded-full',     style: { background: 'hsl(40 35% 95% / 0.85)' } },
-  { match: 'Haiku',      label: 'Claude Haiku 4.5',  cls: 'rounded-full',     style: { background: 'transparent', border: '1.5px solid hsl(40 35% 95% / 0.8)' } },
-  { match: 'Perplexity', label: 'Perplexity Sonar',  cls: 'rounded-[1px]',    style: { background: 'hsl(190 60% 60% / 0.85)' } },
-];
-
-function markerFor(label: string) {
-  return MARKERS.find(m => label.includes(m.match)) ?? MARKERS[0];
+/** Format the raw consensus value in its natural unit. */
+function fmtRaw(q: DelphiQuestion, v: number): string {
+  if (q.kind === 'pct') return `${v >= 0 ? '+' : ''}${v.toFixed(0)}%`;
+  if (q.kind === 'prob') return `${v.toFixed(0)}%`;
+  return `${v.toFixed(0)}/100`;
 }
 
-function scaleFor(q: DelphiQuestion): { min: number; max: number; left: string; right: string } {
-  if (q.kind === 'pct') return { min: -10, max: 10, left: '−10%', right: '+10%' };
-  return { min: 0, max: 100, left: '0', right: '100' };
-}
-
-function pos(v: number, min: number, max: number): number {
-  const clamped = Math.max(min, Math.min(max, v));
-  return ((clamped - min) / (max - min)) * 100;
+/** Human verdict from a bullishness score (0-100, right = good for property). */
+function verdict(score: number): { word: string; color: string } {
+  if (score >= 65) return { word: 'Bullish',      color: 'hsl(var(--av-success))' };
+  if (score >= 55) return { word: 'Lean bullish', color: 'hsl(var(--av-success) / 0.8)' };
+  if (score > 45)  return { word: 'Split',        color: 'hsl(var(--av-muted-foreground))' };
+  if (score > 35)  return { word: 'Lean bearish', color: 'hsl(var(--av-warning))' };
+  return { word: 'Bearish', color: 'hsl(var(--av-destructive))' };
 }
 
 /** Deepest split of the day — auto-generated, quote-ready. */
@@ -224,22 +219,22 @@ export default async function DelphiPage() {
 
         {/* The panel — belief spectra */}
         <section className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pb-8 sm:pb-10">
-          <div className="flex flex-wrap items-baseline justify-between gap-3 mb-4">
+          <div className="flex flex-wrap items-baseline justify-between gap-3 mb-2">
             <h2 className="font-serif text-2xl sm:text-3xl font-light text-foreground tracking-tight">Today&apos;s panel</h2>
-            {/* Legend */}
-            <div className="flex flex-wrap items-center gap-4">
-              {MARKERS.map(m => (
-                <span key={m.label} className="inline-flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.18em] text-muted-foreground">
-                  <span className={`inline-block h-2 w-2 ${m.cls}`} style={m.style} />
-                  {m.label}
-                </span>
-              ))}
-              <span className="inline-flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.18em] text-gold">
-                <span className="inline-block h-2 w-2 rotate-45" style={{ background: 'hsl(var(--av-primary))' }} />
-                Consensus
+            <div className="flex flex-wrap items-center gap-4 font-mono text-[9px] uppercase tracking-[0.18em] text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="inline-block h-3 w-[3px] rounded-full" style={{ background: 'hsl(var(--av-primary))', boxShadow: '0 0 8px hsl(var(--av-primary) / 0.7)' }} />
+                Panel consensus
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="inline-block h-1.5 w-5 rounded-full" style={{ background: 'hsl(var(--av-primary) / 0.2)' }} />
+                Where the models disagree
               </span>
             </div>
           </div>
+          <p className="max-w-3xl text-sm text-muted-foreground leading-relaxed mb-4">
+            Every row reads like the index above: further right is better for European property. Hover any marker for the per-model numbers.
+          </p>
 
           {panel.length === 0 ? (
             <div className="rounded-sm border p-10 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>
@@ -250,10 +245,22 @@ export default async function DelphiPage() {
               {DELPHI_QUESTIONS.map(q => {
                 const row = panel.find(r => r.question_id === q.id);
                 if (!row) return null;
-                const s = scaleFor(q);
+
+                // Everything normalized to bullishness 0-100 so every row
+                // reads in the same direction as the hero index.
+                const entries = Object.entries(row.per_model ?? {});
+                const bullScores = entries.map(([, v]) => bullishness(q, Number(v)));
+                const consensusBull = bullishness(q, Number(row.consensus));
+                const lo = bullScores.length ? Math.min(...bullScores) : consensusBull;
+                const hi = bullScores.length ? Math.max(...bullScores) : consensusBull;
+                const tooltip = entries
+                  .map(([label, v]) => `${label.replace('Claude ', '')}: ${fmtRaw(q, Number(v))}`)
+                  .join(' · ');
+                const v = verdict(consensusBull);
                 const spreadHot = Number(row.dispersion) >= 30;
+
                 return (
-                  <div key={q.id} className="px-4 sm:px-6 py-4 grid sm:grid-cols-[230px_1fr_120px] gap-x-6 gap-y-2 items-center" style={{ borderColor: 'hsl(var(--av-border) / 0.3)' }}>
+                  <div key={q.id} className="px-4 sm:px-6 py-4 sm:py-5 grid sm:grid-cols-[220px_1fr_150px] gap-x-8 gap-y-3 items-center" style={{ borderColor: 'hsl(var(--av-border) / 0.3)' }}>
                     {/* Label */}
                     <div title={q.question}>
                       <div className="flex items-baseline gap-2">
@@ -262,49 +269,41 @@ export default async function DelphiPage() {
                       </div>
                       <div className="text-sm text-foreground/90 leading-snug mt-0.5">{q.short_label}</div>
                     </div>
-                    {/* Belief spectrum */}
-                    <div>
-                      <div className="relative h-6">
-                        <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 h-px" style={{ background: 'hsl(var(--av-border) / 0.7)' }} />
-                        {/* range band */}
-                        {(() => {
-                          const vals = Object.values(row.per_model ?? {});
-                          if (vals.length < 2) return null;
-                          const lo = pos(Math.min(...vals), s.min, s.max);
-                          const hi = pos(Math.max(...vals), s.min, s.max);
-                          return (
-                            <div className="absolute top-1/2 -translate-y-1/2 h-[5px] rounded-full" style={{ left: `${lo}%`, width: `${Math.max(0.5, hi - lo)}%`, background: 'hsl(var(--av-primary) / 0.15)' }} />
-                          );
-                        })()}
-                        {/* model dots */}
-                        {Object.entries(row.per_model ?? {}).map(([label, v]) => {
-                          const m = markerFor(label);
-                          return (
-                            <span
-                              key={label}
-                              title={`${label}: ${Number(v).toFixed(0)}`}
-                              className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-2.5 w-2.5 ${m.cls}`}
-                              style={{ left: `${pos(Number(v), s.min, s.max)}%`, ...m.style }}
-                            />
-                          );
-                        })}
-                        {/* consensus diamond */}
-                        <span
-                          title={`Consensus: ${Number(row.consensus).toFixed(0)}`}
-                          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-3 w-3 rotate-45"
-                          style={{ left: `${pos(Number(row.consensus), s.min, s.max)}%`, background: 'hsl(var(--av-primary))', boxShadow: '0 0 8px hsl(var(--av-primary) / 0.6)' }}
+
+                    {/* Meter — same visual language as the hero index */}
+                    <div title={tooltip}>
+                      <div className="relative">
+                        <div
+                          className="h-1.5 rounded-full"
+                          style={{ background: 'linear-gradient(90deg, hsl(0 60% 45% / 0.45) 0%, hsl(38 60% 50% / 0.4) 50%, hsl(150 50% 42% / 0.45) 100%)' }}
+                        />
+                        {/* disagreement band */}
+                        {hi - lo > 1 && (
+                          <div
+                            className="absolute -top-[3px] h-[12px] rounded-full"
+                            style={{ left: `${lo}%`, width: `${Math.max(1, hi - lo)}%`, background: 'hsl(var(--av-primary) / 0.18)' }}
+                          />
+                        )}
+                        {/* consensus marker */}
+                        <div
+                          className="absolute -top-[6px] h-[18px] w-[3px] rounded-full"
+                          style={{ left: `calc(${consensusBull}% - 1.5px)`, background: 'hsl(var(--av-primary))', boxShadow: '0 0 10px hsl(var(--av-primary) / 0.8)' }}
                         />
                       </div>
-                      <div className="flex justify-between font-mono text-[8px] uppercase tracking-[0.18em] text-muted-foreground/60 mt-0.5">
-                        <span>{s.left}</span><span>{s.right}</span>
+                      <div className="mt-1.5 flex justify-between font-mono text-[8px] uppercase tracking-[0.18em] text-muted-foreground/60">
+                        <span>Bearish</span><span>Bullish</span>
                       </div>
                     </div>
-                    {/* Numbers */}
-                    <div className="flex sm:flex-col items-baseline sm:items-end gap-3 sm:gap-0.5">
-                      <span className="font-serif text-2xl font-light tabular text-foreground leading-none">{Number(row.consensus).toFixed(0)}</span>
-                      <span className="font-mono text-[9px] uppercase tracking-[0.18em] tabular" style={{ color: spreadHot ? 'hsl(var(--av-warning))' : 'hsl(var(--av-muted-foreground) / 0.7)' }}>
-                        spread {Number(row.dispersion).toFixed(0)}
-                      </span>
+
+                    {/* Verdict + raw value */}
+                    <div className="flex sm:flex-col items-baseline sm:items-end gap-3 sm:gap-1">
+                      <span className="font-serif text-2xl font-light tabular text-foreground leading-none">{fmtRaw(q, Number(row.consensus))}</span>
+                      <span className="font-mono text-[9px] uppercase tracking-[0.2em]" style={{ color: v.color }}>{v.word}</span>
+                      {spreadHot && (
+                        <span className="font-mono text-[8px] uppercase tracking-[0.18em]" style={{ color: 'hsl(var(--av-warning))' }}>
+                          models split
+                        </span>
+                      )}
                     </div>
                   </div>
                 );
