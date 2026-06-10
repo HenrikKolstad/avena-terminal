@@ -14,6 +14,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { HeroBadge, HeroInstrument } from '@/components/v2/HeroInstrument';
 
 export const dynamic = 'force-static';
 
@@ -52,9 +53,9 @@ export default function IntelligencePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
       <main className="min-h-screen">
-        <section className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10">
-          <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
-            Intelligence layer · live · daily · DOI 10.5281/zenodo.19520064
+        <section className="hero-glow relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10">
+          <div className="mb-5">
+            <HeroBadge>Live · refreshed nightly · DOI-anchored</HeroBadge>
           </div>
           <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05] tracking-tight">
             Every signal Avena produces. One surface.
@@ -63,6 +64,15 @@ export default function IntelligencePage() {
             Regulatory signal classification, Monte Carlo scenarios, developer credit stress, health index, policy engine, sovereign research, time-stamped predictions, macro anomalies, multi-agent swarm, event-sourced time travel. Each section below is a working surface, daily-refreshed, methodology-audited, citation-ready.
           </p>
         </section>
+
+        <HeroInstrument
+          stats={[
+            { value: '12', label: 'Signal systems', sub: 'Radar · scenarios · credit · policy · swarm · more' },
+            { value: '119', label: 'Questions put to AIs daily', sub: 'PLAB 36 · DELPHI 12 · Atlas 71' },
+            { value: '06:00', label: 'Daily DELPHI panel · UTC', sub: 'Machine consensus on the record' },
+          ]}
+          callout={<span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">If a number appears here, a cron produced it and an event recorded it.</span>}
+        />
 
         <div className="sticky top-16 z-30 backdrop-blur-md border-b" style={{ background: 'hsl(var(--av-background) / 0.85)', borderColor: 'hsl(var(--av-border) / 0.6)' }}>
           <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 py-2.5 sm:py-3 overflow-x-auto">

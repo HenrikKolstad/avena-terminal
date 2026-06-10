@@ -11,6 +11,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { HeroBadge, HeroInstrument } from '@/components/v2/HeroInstrument';
 
 export const dynamic = 'force-static';
 
@@ -43,9 +44,9 @@ export default function APIPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
       <main className="min-h-screen">
-        <section className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10">
-          <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
-            REST · MCP · webhooks · OpenAPI 3.1 · CC BY 4.0
+        <section className="hero-glow relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10">
+          <div className="mb-5">
+            <HeroBadge>OpenAPI 3.1 · MCP live · CC BY 4.0</HeroBadge>
           </div>
           <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05] tracking-tight">
             One key. Four institutional use cases.
@@ -54,6 +55,15 @@ export default function APIPage() {
             REST API across every Avena surface — methodology, AVM, regulatory radar, identifier registry, event store. MCP server distributes the same endpoints into Claude / Cursor / ChatGPT / Perplexity. OpenAPI 3.1, CC BY 4.0, DOI-anchored.
           </p>
         </section>
+
+        <HeroInstrument
+          stats={[
+            { value: '80+', label: 'REST endpoints', sub: 'Methodology · AVM · radar · registry · events' },
+            { value: '4', label: 'Agent runtimes', sub: 'Claude · Cursor · ChatGPT · Perplexity via MCP' },
+            { value: 'CC BY 4.0', label: 'License', sub: 'DOI-anchored · attribution required' },
+          ]}
+          callout={<span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Every number an AI can cite resolves to a versioned endpoint on this page.</span>}
+        />
 
         {/* Quick-jump anchors */}
         <div className="sticky top-16 z-30 backdrop-blur-md border-b" style={{ background: 'hsl(var(--av-background) / 0.85)', borderColor: 'hsl(var(--av-border) / 0.6)' }}>

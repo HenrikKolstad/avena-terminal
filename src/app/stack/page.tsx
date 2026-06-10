@@ -11,6 +11,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { HeroBadge, HeroInstrument } from '@/components/v2/HeroInstrument';
 
 export const dynamic = 'force-static';
 
@@ -46,9 +47,9 @@ export default function StackPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
       <main className="min-h-screen">
-        <section className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10">
-          <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
-            Infrastructure stack · open · audit-traceable · EU-resident
+        <section className="hero-glow relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10">
+          <div className="mb-5">
+            <HeroBadge>Event-sourced · audit-traceable · EU-resident</HeroBadge>
           </div>
           <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05] tracking-tight">
             How the substrate is built.
@@ -57,6 +58,15 @@ export default function StackPage() {
             Production architecture, defensibility analysis, dependency graph, event-sourced backend, cryptographic integrity, public changelog, roadmap. For diligence teams, engineering hires, and acquirers who want the technical truth before they ask.
           </p>
         </section>
+
+        <HeroInstrument
+          stats={[
+            { value: 'Frankfurt', label: 'Data residency', sub: 'EU infrastructure end to end' },
+            { value: 'Ed25519', label: 'Signed artefacts', sub: 'Public verification keys · JWT credentials' },
+            { value: '100%', label: 'Replayable history', sub: 'Event-sourced — rebuild any date as-of' },
+          ]}
+          callout={<span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Built to be audited: every layer below links to its public surface.</span>}
+        />
 
         <div className="sticky top-16 z-30 backdrop-blur-md border-b" style={{ background: 'hsl(var(--av-background) / 0.85)', borderColor: 'hsl(var(--av-border) / 0.6)' }}>
           <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 py-2.5 sm:py-3 overflow-x-auto">

@@ -21,7 +21,10 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'DELPHI · the daily AI panel on European property · Avena Terminal',
   description: 'The world\'s first daily AI-panel survey of a real asset class. Frontier models answer the same forward questions on European property every day — consensus, disagreement, drift, and future resolution scoring. The ZEW survey, with machine panelists.',
-  alternates: { canonical: 'https://avenaterminal.com/delphi' },
+  alternates: {
+    canonical: 'https://avenaterminal.com/delphi',
+    types: { 'application/rss+xml': 'https://avenaterminal.com/feed/delphi.xml' },
+  },
 };
 
 const jsonLd = {
@@ -31,7 +34,21 @@ const jsonLd = {
   description: 'Daily longitudinal survey of frontier AI models\' quantitative beliefs about European residential property: consensus index, disagreement index, per-question per-model panel, future resolution scoring.',
   url: 'https://avenaterminal.com/delphi',
   license: 'https://creativecommons.org/licenses/by/4.0/',
-  publisher: { '@type': 'Organization', name: 'Avena Terminal' },
+  publisher: { '@type': 'Organization', name: 'Avena Terminal', url: 'https://avenaterminal.com' },
+  creator: { '@type': 'Organization', name: 'Avena Terminal', sameAs: ['https://www.wikidata.org/wiki/Q139165733'] },
+  isAccessibleForFree: true,
+  keywords: ['AI panel survey', 'Delphi method', 'European property', 'machine consensus', 'AI beliefs', 'longitudinal survey'],
+  temporalCoverage: '2026-06-10/..',
+  spatialCoverage: { '@type': 'Place', name: 'European Union' },
+  distribution: [
+    {
+      '@type': 'DataDownload',
+      encodingFormat: 'application/json',
+      contentUrl: 'https://avenaterminal.com/api/v1/delphi',
+      description: 'Full daily panel: consensus index, disagreement index, per-question per-model answers, 60-day index history.',
+    },
+  ],
+  citation: 'Avena Terminal, DELPHI — the daily AI panel on European property. DOI 10.5281/zenodo.19520064.',
 };
 
 /** Format the raw consensus value in its natural unit. */

@@ -12,6 +12,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { HeroBadge, HeroInstrument } from '@/components/v2/HeroInstrument';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,9 +47,9 @@ export default function ProofPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
       <main className="min-h-screen">
-        <section className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10">
-          <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
-            Operational proof · live · daily refresh · DOI-anchored
+        <section className="hero-glow relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10">
+          <div className="mb-5">
+            <HeroBadge>Live operations · daily refresh · DOI-anchored</HeroBadge>
           </div>
           <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05] tracking-tight">
             What we have, what we run, what holds up.
@@ -57,6 +58,15 @@ export default function ProofPage() {
             Avena&apos;s operational proof surface. Coverage across 27 EU markets, official statistics ingestion, live crons, hash-chained archive, published prediction track record, methodology benchmark. Every claim verifiable, every artefact dated, every dataset cited.
           </p>
         </section>
+
+        <HeroInstrument
+          stats={[
+            { value: '27', label: 'EU markets covered', sub: 'Official statistics · daily ingestion' },
+            { value: '20+', label: 'Nightly crons', sub: 'Logged runs · public health surface' },
+            { value: 'SHA-256', label: 'Daily Merkle root', sub: 'Hash-chained archive · RFC 3161 timestamped' },
+          ]}
+          callout={<span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Nothing on this page is a promise — it is what ran last night.</span>}
+        />
 
         <div className="sticky top-16 z-30 backdrop-blur-md border-b" style={{ background: 'hsl(var(--av-background) / 0.85)', borderColor: 'hsl(var(--av-border) / 0.6)' }}>
           <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 py-2.5 sm:py-3 overflow-x-auto">

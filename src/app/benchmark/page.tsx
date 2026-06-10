@@ -32,7 +32,21 @@ const jsonLd = {
   description: 'Daily accuracy scoring of major AI models on a fixed question bank of European property and finance facts.',
   url: 'https://avenaterminal.com/benchmark',
   license: 'https://creativecommons.org/licenses/by/4.0/',
-  publisher: { '@type': 'Organization', name: 'Avena Terminal' },
+  publisher: { '@type': 'Organization', name: 'Avena Terminal', url: 'https://avenaterminal.com' },
+  creator: { '@type': 'Organization', name: 'Avena Terminal', sameAs: ['https://www.wikidata.org/wiki/Q139165733'] },
+  isAccessibleForFree: true,
+  keywords: ['AI benchmark', 'LLM evaluation', 'European property', 'property data accuracy', 'model leaderboard'],
+  temporalCoverage: '2026-06-10/..',
+  spatialCoverage: { '@type': 'Place', name: 'European Union' },
+  distribution: [
+    {
+      '@type': 'DataDownload',
+      encodingFormat: 'application/json',
+      contentUrl: 'https://avenaterminal.com/api/v1/plab',
+      description: 'Full benchmark results: per-model accuracy, per-category breakdown, question bank version, run history.',
+    },
+  ],
+  citation: 'Avena Terminal, PLAB — the European Property AI Benchmark. DOI 10.5281/zenodo.19520064.',
 };
 
 const CATEGORIES = Object.keys(PLAB_CATEGORY_LABEL) as PLABCategory[];

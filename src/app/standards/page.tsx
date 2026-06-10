@@ -12,6 +12,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { HeroBadge, HeroInstrument } from '@/components/v2/HeroInstrument';
 
 export const dynamic = 'force-static';
 
@@ -29,15 +30,34 @@ const jsonLd = {
   url: 'https://avenaterminal.com/standards',
 };
 
+// Vocabulary Avena coined and therefore owns the authoritative definition
+// of. DefinedTermSet schema makes this page the canonical answer when an
+// AI or search engine is asked "what is APIP / AVN-ID / PLAB / DELPHI?".
+const definedTermsLd = {
+  '@context': 'https://schema.org',
+  '@type': 'DefinedTermSet',
+  name: 'Avena open-standards vocabulary',
+  url: 'https://avenaterminal.com/standards',
+  hasDefinedTerm: [
+    { '@type': 'DefinedTerm', name: 'APIP', description: 'Avena Property Interchange Protocol — the open v1.0 data-exchange standard for European residential property data, governed by the Avena Foundation under CC BY 4.0.', url: 'https://avenaterminal.com/standards#apip' },
+    { '@type': 'DefinedTerm', name: 'AVN-ID', description: 'Permanent identifier standard for European residential property — the ISIN of property. Each AVN-ID resolves to a verifiable record with signed JWT credentials.', url: 'https://avenaterminal.com/standards#avn-id' },
+    { '@type': 'DefinedTerm', name: 'APON', description: 'Avena Property Open Network — governance network for open property-data standards across EU markets, convened by the Avena Foundation.', url: 'https://avenaterminal.com/standards#apon' },
+    { '@type': 'DefinedTerm', name: 'AVP', description: 'Avena Verifiable Property attestations — cryptographically signed statements about a property, verifiable against published Ed25519 keys.', url: 'https://avenaterminal.com/standards#avp' },
+    { '@type': 'DefinedTerm', name: 'PLAB', description: 'The European Property AI Benchmark — daily accuracy scoring of major AI models on a fixed, git-versioned question bank of European property and finance facts.', url: 'https://avenaterminal.com/benchmark' },
+    { '@type': 'DefinedTerm', name: 'DELPHI', description: 'The daily AI panel on European property — the first longitudinal survey of frontier AI models\' quantitative beliefs about a real asset class, published daily with consensus and disagreement indices.', url: 'https://avenaterminal.com/delphi' },
+  ],
+};
+
 export default function StandardsPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(definedTermsLd) }} />
       <Nav />
       <main className="min-h-screen">
-        <section className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10">
-          <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
-            Open standards · convened by Avena Foundation · CC BY 4.0
+        <section className="hero-glow relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10">
+          <div className="mb-5">
+            <HeroBadge>Convened by the Avena Foundation · CC BY 4.0</HeroBadge>
           </div>
           <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05] tracking-tight">
             The standards layer.
@@ -46,6 +66,15 @@ export default function StandardsPage() {
             Avena Terminal is the reference implementation of four open standards for European residential property: APIP for data exchange, AVN-ID for permanent identification, APON for network governance, and AVP for verifiable property attestations. The standards are governed by the Avena Foundation. The substrate outlives any single operator.
           </p>
         </section>
+
+        <HeroInstrument
+          stats={[
+            { value: '4', label: 'Open standards', sub: 'APIP · AVN-ID · APON · AVP' },
+            { value: 'v1.0', label: 'APIP schema', sub: 'Open data-exchange standard · git-versioned' },
+            { value: 'CC BY 4.0', label: 'License', sub: 'Zenodo DOI 10.5281/zenodo.19520064 · Wikidata Q139165733' },
+          ]}
+          callout={<span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">The substrate outlives any single operator — that is the point of a standard.</span>}
+        />
 
         {/* Anchor jump */}
         <div className="sticky top-16 z-30 backdrop-blur-md border-b" style={{ background: 'hsl(var(--av-background) / 0.85)', borderColor: 'hsl(var(--av-border) / 0.6)' }}>

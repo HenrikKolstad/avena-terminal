@@ -138,6 +138,40 @@ export default function HomePage() {
         </div>
         </section>
 
+        {/* Two world firsts — PLAB + DELPHI. The homepage carries the
+            site's highest link equity; the instruments no one else has
+            belong on it. */}
+        <section className="border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 py-12 sm:py-16">
+            <div className="flex items-center gap-3 mb-4 sm:mb-6">
+              <span className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
+              <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.32em] text-gold">Two world firsts · live daily</span>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-2.5 sm:gap-4">
+              <Link
+                href="/delphi"
+                className="group rounded-sm border p-5 sm:p-7 transition-colors hover:border-primary"
+                style={{ borderColor: 'hsl(var(--av-primary) / 0.35)', background: 'linear-gradient(135deg, hsl(var(--av-primary) / 0.06) 0%, transparent 60%)' }}
+              >
+                <div className="font-mono text-[9px] uppercase tracking-[0.32em] text-muted-foreground mb-2">DELPHI</div>
+                <div className="font-serif text-xl sm:text-2xl font-light text-foreground leading-snug mb-2">The daily AI panel on European property</div>
+                <p className="text-sm text-muted-foreground leading-relaxed">Every day, frontier AI models answer the same forward questions. Consensus, disagreement, drift — the first longitudinal record of machine beliefs about a real asset class. No one can rebuild it retroactively.</p>
+                <span className="mt-3 inline-block font-mono text-[10px] uppercase tracking-[0.22em] text-gold group-hover:translate-x-1 transition-transform">View today&apos;s panel →</span>
+              </Link>
+              <Link
+                href="/benchmark"
+                className="group rounded-sm border p-5 sm:p-7 transition-colors hover:border-primary"
+                style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
+              >
+                <div className="font-mono text-[9px] uppercase tracking-[0.32em] text-muted-foreground mb-2">PLAB</div>
+                <div className="font-serif text-xl sm:text-2xl font-light text-foreground leading-snug mb-2">The European Property AI Benchmark</div>
+                <p className="text-sm text-muted-foreground leading-relaxed">Major AI models scored daily on a fixed bank of European property and finance facts, against public institutional ground truths. Avena publishes the scoreboard — and never plays on it.</p>
+                <span className="mt-3 inline-block font-mono text-[10px] uppercase tracking-[0.22em] text-gold group-hover:translate-x-1 transition-transform">View the leaderboard →</span>
+              </Link>
+            </div>
+          </div>
+        </section>
+
         {/* Live deals — niche Spanish coastal investment deals.
             Anchor target for the /deals 301 redirect. */}
         <section id="deals" className="border-t scroll-mt-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
