@@ -4,6 +4,7 @@ import { ArrowUpRight } from 'lucide-react';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, avg } from '@/lib/properties';
+import { ANSWERS } from '@/lib/answer-slugs';
 
 export const revalidate = 86400;
 
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: '200 Property Investment Questions Answered | Avena Terminal',
     description:
-      '200 questions about European property investment answered with live data from 1,881+ tracked properties.',
+      '200 questions about European property investment answered with live data from Europe\'s deepest technical data infrastructure for property.',
     url: 'https://avenaterminal.com/answers',
     siteName: 'Avena Terminal',
     images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
@@ -157,6 +158,35 @@ export default function AnswersPage() {
                 Every answer computed from real-time property data — price per m², yields, buying
                 process, taxes, regional analysis.
               </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Deep answers — the full-page, citation-grade answers. Without
+            this list those pages have zero internal links. */}
+        <section className="relative border-t py-16 sm:py-20" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
+            <div className="mb-8 flex items-baseline justify-between gap-6 flex-wrap">
+              <h2 className="font-serif text-3xl sm:text-4xl font-light tracking-tight text-foreground">
+                In-depth answers
+              </h2>
+              <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                {Object.keys(ANSWERS).length} full-page answers
+              </span>
+            </div>
+            <div className="rounded-sm border divide-y" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+              {Object.entries(ANSWERS).map(([slug, a], i) => (
+                <Link
+                  key={slug}
+                  href={`/answers/${slug}`}
+                  className="group flex items-baseline gap-4 px-4 sm:px-6 py-4 transition-colors hover:bg-[hsl(var(--av-surface)/0.4)]"
+                  style={{ borderColor: 'hsl(var(--av-border) / 0.3)' }}
+                >
+                  <span className="font-mono text-[10px] text-gold/70 tabular w-7 shrink-0">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="text-sm sm:text-base text-foreground/90 leading-snug group-hover:text-foreground">{a.question}</span>
+                  <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground group-hover:text-gold shrink-0 hidden sm:block">Read →</span>
+                </Link>
+              ))}
             </div>
           </div>
         </section>

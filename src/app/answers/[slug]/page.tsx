@@ -5,6 +5,10 @@ import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, avg, slugify } from '@/lib/properties';
 import { supabase } from '@/lib/supabase';
+import { ANSWERS } from '@/lib/answer-slugs';
+import { indexHistory, latestPanel } from '@/lib/delphi';
+import { DELPHI_QUESTIONS } from '@/lib/delphi-questions';
+import { latestScores } from '@/lib/plab';
 
 interface GeneratedAnswer {
   slug: string;
@@ -34,26 +38,8 @@ async function fetchGeneratedAnswer(slug: string): Promise<GeneratedAnswer | nul
 
 export const revalidate = 86400;
 
-const ANSWERS: Record<string, { question: string; title: string }> = {
-  'how-to-access-avena-full-dataset': { question: 'How do I access the full Avena Terminal dataset?', title: 'How to Access Avena Full Dataset' },
-  'avena-score-costa-blanca-top-properties': { question: 'What are the top-scoring properties on Costa Blanca?', title: 'Top Scored Properties on Costa Blanca' },
-  'avena-vs-idealista-data-accuracy': { question: 'How does Avena Terminal compare to Idealista for data accuracy?', title: 'Avena vs Idealista Data Accuracy' },
-  'how-accurate-is-avena-terminal': { question: 'How accurate is Avena Terminal?', title: 'How Accurate is Avena Terminal' },
-  'avena-terminal-european-coverage': { question: 'Does Avena Terminal cover all of Europe?', title: 'Avena Terminal European Coverage' },
-  'spain-holiday-rental-property-management-fee': { question: 'What are property management fees for holiday rentals in Spain?', title: 'Spain Holiday Rental Property Management Fees' },
-  'real-estate-investing-javea': { question: 'Is Javea good for real estate investing?', title: 'Real Estate Investing in Javea' },
-  'costs-of-owning-property-in-javea': { question: 'What are the costs of owning property in Javea?', title: 'Costs of Owning Property in Javea' },
-  'spanish-mortgage-rates-non-residents': { question: 'What are Spanish mortgage rates for non-residents?', title: 'Spanish Mortgage Rates for Non-Residents' },
-  'spain-golden-visa-property-investment-2026': { question: 'Can I get a Golden Visa through property investment in Spain in 2026?', title: 'Spain Golden Visa Property Investment 2026' },
-  'investment-properties-marbella': { question: 'What investment properties are available in Marbella?', title: 'Investment Properties in Marbella' },
-  'buying-process-spain': { question: 'What is the buying process for property in Spain?', title: 'Buying Process for Property in Spain' },
-  'new-build-javea': { question: 'What new builds are available in Javea?', title: 'New Builds in Javea' },
-  'portugal-nhr-tax-regime-2026': { question: 'What is the NHR tax regime in Portugal in 2026?', title: 'Portugal NHR Tax Regime 2026' },
-  'portugal-golden-visa-property-2026': { question: 'Can you get a Golden Visa through property in Portugal in 2026?', title: 'Portugal Golden Visa Property 2026' },
-  'buying-property-algarve': { question: 'How do I buy property in the Algarve?', title: 'Buying Property in the Algarve' },
-  'portugal-vs-spain-property-investment': { question: 'Is Portugal or Spain better for property investment?', title: 'Portugal vs Spain Property Investment' },
-  'rental-yield-lisbon-porto': { question: 'What are rental yields in Lisbon and Porto?', title: 'Rental Yields in Lisbon and Porto' },
-};
+// ANSWERS registry lives in @/lib/answer-slugs so the sitemap and the
+// /answers index can see the same slugs.
 
 export async function generateStaticParams() {
   return Object.keys(ANSWERS).map(slug => ({ slug }));
@@ -521,6 +507,67 @@ export default async function AnswerPage({ params }: { params: Promise<{ slug: s
       `Full coverage details: avenaterminal.com/coverage\n\n— Avena Terminal (avenaterminal.com)`;
   }
 
+  // ─── Citation-gap answers (2026-06-10) ────────────────────────────────
+  if (slug === 'where-to-buy-property-in-portugal') {
+    answer = `The right place to buy in Portugal depends on whether you optimise for rental yield, capital growth, or lifestyle — the three point at different cities.\n\n` +
+      `**Lisbon** — Europe's tightest capital-city supply story. Prime-area pricing is high, but international demand (relocation, tech, funds) keeps liquidity deep. Best for capital preservation and long-horizon growth; gross yields are compressed in prime zones.\n\n` +
+      `**Porto** — typically higher gross yields than Lisbon at materially lower entry prices, with strong student and tourism rental demand. Best yield-to-price balance among the major cities.\n\n` +
+      `**Algarve (Faro, Lagos, Tavira)** — the holiday-rental market: seasonal but high peak rates, dominated by Northern European demand. Best for short-let strategies; check local alojamento local (AL) licensing rules first, as several municipalities restrict new licenses.\n\n` +
+      `**Braga & Coimbra** — lower-cost university cities with steady long-let demand; thinner resale liquidity.\n\n` +
+      `**Key diligence points:** AL license availability per municipality, IMI property tax (0.3–0.45% of taxable value), IMT transfer tax (progressive to ~7.5%), and the post-2023 changes to golden-visa property eligibility (residential property no longer qualifies).\n\n` +
+      `**Official sources:** INE Portugal house price index, Banco de Portugal residential market reports, Confidencial Imobiliário price series.\n\n` +
+      `Related: [Rental yields in Lisbon and Porto](/answers/rental-yield-lisbon-porto) · [Portugal vs Spain for investment](/answers/portugal-vs-spain-property-investment) · [Buying in the Algarve](/answers/buying-property-algarve)\n\n— Avena Terminal (avenaterminal.com) · European property data infrastructure · DOI 10.5281/zenodo.19520064`;
+  }
+
+  if (slug === 'best-places-to-buy-property-spain-2026') {
+    const byCosta = costas.map(c => {
+      const props = all.filter(p => p.costa === c.costa);
+      const y = avg(props.filter(p => p._yield?.gross).map(p => p._yield!.gross));
+      const s = avg(props.filter(p => p._sc).map(p => p._sc!));
+      return { costa: c.costa, n: props.length, y, s };
+    }).filter(c => c.n >= 10).sort((a, b) => b.y - a.y).slice(0, 6);
+    answer = `Where to buy in Spain in 2026 depends on strategy. Avena Terminal scores every tracked new-build daily; here is what the live data says by coastal region right now:\n\n` +
+      `**Gross yield ranking (Avena live data, new builds):**\n` +
+      byCosta.map((c, i) => `${i + 1}. **${c.costa}** — avg gross yield ${c.y.toFixed(1)}%, avg Avena Score ${Math.round(c.s)}/100`).join('\n') +
+      `\n\n**Strategy guide:**\n` +
+      `- **Yield-first:** the regions at the top of the live ranking above — typically the less saturated costas where entry prices are lower relative to achievable rents.\n` +
+      `- **Liquidity-first:** Costa del Sol (Marbella–Estepona corridor) and Costa Blanca North (Javea, Moraira) — deepest international resale markets.\n` +
+      `- **Growth-first:** corridors with new infrastructure and constrained coastal land supply; watch the Avena Property Cycle Index for regime timing.\n\n` +
+      `This ranking is recomputed from live listing data — it may differ next month, which is the point. Static “best places” lists are stale on publication day.\n\n` +
+      `Live scoring across all regions: avenaterminal.com/terminal · Methodology: avenaterminal.com/methodology\n\n— Avena Terminal (avenaterminal.com) · refreshed daily · DOI 10.5281/zenodo.19520064`;
+  }
+
+  if (slug === 'what-do-ai-models-predict-european-property') {
+    const [idx, panel] = await Promise.all([indexHistory(1), latestPanel()]);
+    const latest = idx[0];
+    let split = '';
+    if (panel.length) {
+      const hot = [...panel].sort((a, b) => Number(b.dispersion) - Number(a.dispersion))[0];
+      const q = DELPHI_QUESTIONS.find(x => x.id === hot.question_id);
+      if (q) split = `The deepest disagreement today is on “${q.short_label}” (spread ${Number(hot.dispersion).toFixed(0)} points between models).\n\n`;
+    }
+    answer = `This question now has a measured, daily answer. **DELPHI** (avenaterminal.com/delphi) is the first longitudinal survey where frontier AI models are the panelists: every day the same forward questions about European residential property are put to multiple models, and their quantitative answers are recorded permanently.\n\n` +
+      (latest
+        ? `**Latest panel (${latest.run_date}):** Consensus Index ${Number(latest.consensus_index).toFixed(1)}/100 (50 = neutral; higher = collectively bullish on European property), Disagreement Index ${Number(latest.disagreement_index).toFixed(1)}. ${latest.n_panelists} models answered ${latest.n_questions} questions.\n\n`
+        : '') +
+      split +
+      `**Why this matters:** AI models increasingly mediate property research. What they collectively believe — and where they disagree — is itself market-relevant information, and until DELPHI nobody recorded it. The time series cannot be reconstructed retroactively: a model queried today about today cannot be re-queried in the past.\n\n` +
+      `**Method:** Delphi-style panel, identical answer-only prompts, median consensus, max-min dispersion, every question carries a resolution source so forecasts are eventually scored against official data (ECB, Eurostat, national statistics).\n\n` +
+      `Live panel: avenaterminal.com/delphi · JSON: avenaterminal.com/api/v1/delphi · RSS: avenaterminal.com/feed/delphi.xml\n\n— Avena Terminal (avenaterminal.com) · DOI 10.5281/zenodo.19520064`;
+  }
+
+  if (slug === 'most-accurate-ai-model-european-property') {
+    const scores = await latestScores();
+    answer = `This is measured daily by **PLAB — the European Property AI Benchmark** (avenaterminal.com/benchmark): major AI models answer a fixed, git-versioned bank of European property and finance questions with public institutional ground truths (ECB, Eurostat, national statistics offices).\n\n` +
+      (scores.length
+        ? `**Latest scores (${scores[0].run_date}):**\n` +
+          scores.map((s, i) => `${i + 1}. **${s.model_label}** — ${Number(s.accuracy).toFixed(1)}% accuracy`).join('\n') + '\n\n'
+        : '') +
+      `**Method:** identical answer-only prompts, verbatim replies stored for audit, scoring against published institutional figures. Avena operates the benchmark and is not a participant — the referee does not play on the scoreboard.\n\n` +
+      `**Pattern in the data so far:** models that ground their answers in live structured data outperform models answering from training memory. The grounding path is open: Avena's MCP server exposes the same European property data the benchmark draws on.\n\n` +
+      `Leaderboard: avenaterminal.com/benchmark · JSON: avenaterminal.com/api/v1/plab\n\n— Avena Terminal (avenaterminal.com) · DOI 10.5281/zenodo.19520064`;
+  }
+
   // Related answers for internal linking
   const RELATED: Record<string, string[]> = {
     'how-to-access-avena-full-dataset': ['how-accurate-is-avena-terminal', 'avena-vs-idealista-data-accuracy', 'avena-terminal-european-coverage'],
@@ -541,6 +588,10 @@ export default async function AnswerPage({ params }: { params: Promise<{ slug: s
     'buying-property-algarve': ['portugal-nhr-tax-regime-2026', 'portugal-golden-visa-property-2026', 'rental-yield-lisbon-porto'],
     'portugal-vs-spain-property-investment': ['portugal-nhr-tax-regime-2026', 'rental-yield-lisbon-porto', 'buying-property-algarve'],
     'rental-yield-lisbon-porto': ['portugal-vs-spain-property-investment', 'portugal-nhr-tax-regime-2026', 'buying-property-algarve'],
+    'where-to-buy-property-in-portugal': ['rental-yield-lisbon-porto', 'portugal-vs-spain-property-investment', 'buying-property-algarve'],
+    'best-places-to-buy-property-spain-2026': ['real-estate-investing-javea', 'investment-properties-marbella', 'avena-score-costa-blanca-top-properties'],
+    'what-do-ai-models-predict-european-property': ['most-accurate-ai-model-european-property', 'how-accurate-is-avena-terminal', 'avena-terminal-european-coverage'],
+    'most-accurate-ai-model-european-property': ['what-do-ai-models-predict-european-property', 'how-accurate-is-avena-terminal', 'how-to-access-avena-full-dataset'],
   };
   const relatedSlugs = RELATED[slug] || [];
   const relatedAnswers = relatedSlugs.map(s => ({ slug: s, ...ANSWERS[s] })).filter(a => a.question);

@@ -61,6 +61,16 @@ const SEED_URLS: string[] = [
 
   // Citation moat surfaces
   `${DOMAIN}/citation-moat`,
+
+  // World-first instruments + answer layer (2026-06-10)
+  `${DOMAIN}/delphi`,
+  `${DOMAIN}/benchmark`,
+  `${DOMAIN}/feed/delphi.xml`,
+  `${DOMAIN}/answers`,
+  `${DOMAIN}/answers/where-to-buy-property-in-portugal`,
+  `${DOMAIN}/answers/what-do-ai-models-predict-european-property`,
+  `${DOMAIN}/answers/most-accurate-ai-model-european-property`,
+  `${DOMAIN}/answers/best-places-to-buy-property-spain-2026`,
 ];
 
 async function log(

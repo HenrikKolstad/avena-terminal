@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, slugify } from '@/lib/properties';
+import { ANSWER_SLUGS } from '@/lib/answer-slugs';
 
 /**
  * Sitemap rebuilt 2026-05-29 — The Great Consolidation.
@@ -100,6 +101,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // ─── PRO landing (preserved for institutional pricing) ────────────────
     ['/pro',              'weekly',  0.85],
+
+    // ─── Answer layer (AEO) — exact-match questions for retrieval engines ─
+    ['/answers',          'weekly',  0.85],
   ];
 
   const entries: MetadataRoute.Sitemap = STATIC_HIGH.map(([path, freq, prio]) => ({
@@ -108,6 +112,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: freq,
     priority: prio,
   }));
+
+  // ─── Curated answer pages — citation-gap targets ─────────────────────────
+  for (const slug of ANSWER_SLUGS) {
+    entries.push({
+      url: `${base}/answers/${slug}`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    });
+  }
 
   // ─── Dynamic deep-link pages (property / town / costa) ──────────────────
   // These remain canonical destinations linked from /terminal, /institutional,
