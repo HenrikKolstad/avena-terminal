@@ -77,47 +77,47 @@ export default function IntelligencePage() {
 
         <Section id="precursor" title="Precursor — leading regulatory + dark signals"
           body="Pre-policy intelligence. Avena ingests every ECB working paper, ESMA consultation, EBA technical standard, national CB speech, and committee transcript — classifies each for property impact, intent direction (tightening, loosening, neutral), and estimated lag to crystallisation. Bloomberg's Government Affairs desk does this manually for €50K/year per client. Avena publishes it daily, automated, signed."
-          link={{ href: '/intelligence#regulatory', label: 'View live signal stream →' }} />
+          link={{ href: '/precursor', label: 'Open Precursor →' }} />
 
         <Section id="regulatory" title="Regulatory Radar — live classifier feed"
           body="Daily 04:30 UTC ingestion across ECB, ESMA, EBA, EIOPA, ESRB, BdE, BdF, Bundesbank, Banca d'Italia, DNB, BdP. Heuristic pre-filter rejects non-property items; Claude Sonnet 4.5 classifies the remainder into signal_type, intent_direction, topic_tags, and estimated property-market impacts with coefficients in [-1, +1] and lag-day estimates."
-          link={{ href: '/api/v1/events?aggregate_type=regulatory', label: 'JSON feed →' }} />
+          link={{ href: '/regulatory-radar', label: 'Open the live radar →' }} />
 
         <Section id="genesis" title="Genesis — Monte Carlo scenario engine"
           body="Run thousands of property-cycle simulations under user-defined macro inputs. Euribor path, HICP path, regulatory event probability, foreign-buyer cohort assumptions. Output: distribution of forward 12-36 month outcomes by region, cohort, type. Used for stress-testing institutional residential exposure under macroprudential scenarios."
-          link={{ href: '/api/v1/genesis', label: 'API endpoint →' }} />
+          link={{ href: '/genesis', label: 'Run scenarios →' }} />
 
         <Section id="counterpart" title="Counterpart — developer credit stress graph"
           body="Continuous credit grading for every tracked European residential developer. SIR contagion model maps cascade risk across the construction supply chain. Daily 04:00 UTC scan revises grades based on payment delays, legal disputes, court judgements, delivery delays, financial stress signals."
-          link={{ href: '/api/v1/counterpart/developers', label: 'Developer registry →' }} />
+          link={{ href: '/counterpart', label: 'Open the developer graph →' }} />
 
         <Section id="health" title="Health Index — counterpart aggregate"
           body="Cohort-aggregated health metric across European residential developers. Tracks distribution of Counterpart Scores, identifies systemic stress before individual defaults. Macroprudential authorities use this as an early-warning signal for construction-sector vulnerability."
-          link={{ href: '/api/v1/counterpart/health', label: 'JSON snapshot →' }} />
+          link={{ href: '/counterpart/health-index', label: 'View the Health Index →' }} />
 
         <Section id="policy-engine" title="Policy Engine — interactive macroprudential simulator"
           body="Six policy levers (LTV cap, DSTI cap, capital requirement, CCyB, sectoral risk weight, foreign-buyer levy) × 27 EU member states × foreign-buyer-share cohort weighting × forward 12-36 month projections. Output: forward postcode-level price impact, bank NPL projection, cross-border capital rotation estimate. Calibrated against Cerutti/Claessens/Laeven 2017 IMF macroprudential framework."
-          link={{ href: '/api/v1/policy-engine', label: 'Run a scenario →' }} />
+          link={{ href: '/policy-engine', label: 'Run a scenario →' }} />
 
         <Section id="sovereign-briefing" title="Sovereign Briefing — research notes"
           body="Published research notes for central bank and ministry consumption. Volumes 1-4 published 2026-Q2. Vol. 2 documents the Spanish coastal foreign-buyer-channel finding (~4.7× monetary transmission amplification). CC BY 4.0, DOI 10.5281/zenodo.19520064, citation-ready."
-          link={{ href: '/api/v1/sovereign/dispatch/2', label: 'Read Vol. 2 →' }} />
+          link={{ href: '/sovereign-briefing', label: 'Read the briefings →' }} />
 
         <Section id="predictions" title="Predictions — time-stamped, falsifiable"
           body="Ten hand-curated forecasts on EU residential markets, published 2026-05-25 with full reasoning, methodology references, target dates, and resolution sources. Audit trail visible even on misses. Each prediction names a public dataset (Eurostat, ECB SDW, national stat office) that will resolve it on the target date."
-          link={{ href: '/api/v1/events?aggregate_type=prediction', label: 'JSON feed →' }} />
+          link={{ href: '/predictions', label: 'Open the ledger →' }} />
 
         <Section id="alerts" title="Macro Alerts — daily ≥2σ anomaly feed"
           body="Daily anomaly detection across Eurostat HPI, ECB MIR, INE Spain, Insee France, Destatis Germany, Istat Italy, and other national stats sources. ≥2σ deviations from rolling baselines trigger published alerts."
-          link={{ href: '/api/v1/alerts/macro', label: 'JSON feed →' }} />
+          link={{ href: '/alerts/macro', label: 'View the alert feed →' }} />
 
         <Section id="swarm" title="Swarm — multi-agent intelligence"
           body="A dozen named agents run continuously: Atlas (citation monitoring), Demeter (citation rollup), Nostradamus (prediction generation), Arbiter (prediction verification), Causal (causal indicator updates), Mentat (intelligence synthesis), Argus (anomaly detection), Courier (sovereign dispatch), and more. Each agent's output is event-sourced and replayable."
-          link={{ href: '/api/v1/swarm/status', label: 'Swarm status →' }} />
+          link={{ href: '/swarm', label: 'View the swarm →' }} />
 
         <Section id="timetravel" title="Time Travel — event-sourced replay"
           body="Every state change in Avena writes an immutable event before its projection updates. Replay the system as it existed on any historical date. Critical for institutional diligence — when a CoStar analyst asks 'show me the system on 2026-03-14', the literal answer exists."
-          link={{ href: '/api/v1/events', label: 'Event store →' }} />
+          link={{ href: '/timetravel', label: 'Replay the system →' }} />
 
         <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-20">
           <div className="rounded-sm border p-6" style={{ borderColor: 'hsl(var(--av-border) / 0.4)', background: 'hsl(var(--av-surface) / 0.2)' }}>

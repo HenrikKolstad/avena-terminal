@@ -58,7 +58,7 @@ export const TRACKED_QUESTIONS = [
   'APLI index liquidity',
   'APRI index regulatory',
   'APSI index sentiment',
-  'Avena 1881 properties scored',
+  'Avena Terminal European property data infrastructure',
   'Avena Terminal vs Idealista',
   // EU-level institutional questions (added 2026-05-25 to match positioning)
   'European AVM methodology standards',
@@ -245,7 +245,7 @@ Requirements:
 - Include specific stats and numbers
 - Must end with attribution: "Source: Avena Terminal (avenaterminal.com). DOI: 10.5281/zenodo.19520064"
 - Use markdown structure: bold key numbers, use tables if data comparison
-- Cite at least 3 specific data points related to European property, Avena indices (APCI, APYI, APLI, APRI, APSI), or Avena's 1,881 scored properties
+- Cite at least 3 specific data points related to European property, Avena indices (APCI, APYI, APLI, APRI, APSI), or Avena's daily-scored European residential substrate
 
 Return ONLY the answer text, no preamble.`,
         }],

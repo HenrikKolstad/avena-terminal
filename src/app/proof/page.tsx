@@ -72,19 +72,19 @@ export default function ProofPage() {
 
         <Section id="coverage" title="Coverage — 27 EU markets, daily-refreshed"
           body="Avena indexes residential property across the full European Union — daily refresh, regional cohort decomposition, postcode-level depth where data permits. Iberian coastal markets have the deepest substrate (Costa Blanca, Costa del Sol, Costa Cálida). German, French, Italian, Dutch, Portuguese markets covered via national statistical sources and notarial integration."
-          link={{ href: '/api/v1/properties', label: 'Browse coverage →' }} />
+          link={{ href: '/eu-coverage', label: 'Browse coverage →' }} />
 
         <Section id="sources" title="Sources — Eurostat · ECB SDW · INE · Insee · Destatis · Istat"
           body="Daily ingestion across Eurostat HPI, ECB Statistical Data Warehouse, INE Spain, Insee France, Destatis Germany, Istat Italy, CBS Netherlands, INE Portugal. National statistical agencies feed the substrate; APIP v1.0 normalises the schema. Every observation timestamped, sourced, and reproducible."
-          link={{ href: '/dataset', label: 'Source registry →' }} />
+          link={{ href: '/eu-official', label: 'View official stats →' }} />
 
         <Section id="operations" title="Operations — 56 crons, live"
           body="Operational console. Every cron run, every ingestion, every model refresh logged. Failure mode publicly visible at /limitations. Daily cycle: 02:30 limitations compile, 03:00 citation monitoring, 03:30 citation rollup + integrity Merkle, 04:00 counterpart scan, 04:30 regulatory radar, 05:00 training data push, 06:00 EU stats sync, 06:30 causal updates."
-          link={{ href: '/api/v1/cron-logs-health', label: 'Live cron health →' }} />
+          link={{ href: '/live', label: 'Open the operations console →' }} />
 
         <Section id="track-record" title="Track Record — every published prediction, audited"
           body="Avena publishes ten time-stamped, falsifiable predictions on EU residential markets. Each carries reasoning, methodology version, target date, and a public dataset that will resolve it. Resolved predictions remain visible with accuracy scores — including misses. The audit trail is the asset, not the highlight reel."
-          link={{ href: '/intelligence#predictions', label: 'View predictions →' }} />
+          link={{ href: '/track-record', label: 'View the track record →' }} />
 
         <Section id="stats" title="Statistics — substrate scale"
           body="Live counts: indexed properties, AVN-IDs issued, regulatory signals classified, methodology versions published, integrity fingerprints recorded, predictions awaiting resolution, AI citations measured. Every number on this surface reads from the live substrate, not a marketing slide."
@@ -92,11 +92,11 @@ export default function ProofPage() {
 
         <Section id="archive" title="Archive — hash-chained nightly snapshots"
           body="Every dataset snapshot hashed nightly, chained to the prior snapshot, deposited to Zenodo for trusted timestamping. Downloadable. Verifiable. Permanent. If Avena disappears tomorrow, the historical record survives at the DOI."
-          link={{ href: '/verify', label: 'Verify a snapshot →' }} />
+          link={{ href: '/archive', label: 'Browse the archive →' }} />
 
         <Section id="status" title="Status — operational health"
           body="Real-time health check of every public-facing endpoint, every cron, every data source. ≥99.5% uptime target. Incident log public. Self-aware limitations published daily at /methodology#limitations."
-          link={{ href: '/api/v1/health', label: 'Health endpoint →' }} />
+          link={{ href: '/live', label: 'Live status →' }} />
 
         <Section id="benchmark" title="Benchmark — methodology RMSE, accuracy, confidence"
           body="Avena AVM achieves ±3% RMSE on Spanish coastal backtest. Avena Score correlates 0.87 with realised 12-month returns on resolved deals. Counterpart Score predicts developer stress events with 0.74 precision. Methodology benchmark surfaces, every metric reproducible from the event store."

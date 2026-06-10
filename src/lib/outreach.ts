@@ -354,7 +354,7 @@ I'm Henrik Kolstad, founder of Avena Terminal — European residential property 
 
 ${hook ? `Your work on ${hook} is exactly the kind of research Avena's dataset is built to support. ` : `Avena's substrate is built for academic housing economics research. `}We're offering full dataset access (API quotas waived, bulk export, 30-day as-of snapshots via the event store) to researchers at ${org} in exchange for a single citation in the resulting paper. No paywall, no proprietary lock-in, permanent DOI anchor.
 
-What's available: 1,881 properties scored daily, 60 dimensions per record, regime classifications, AVM outputs with adversarial confidence intervals, full methodology version history at ${BASE}/methodology/evolution, regulatory signal graph at ${BASE}/regulatory-radar.
+What's available: the full European residential substrate — daily-refreshed across 27 EU markets, 60 dimensions per record, regime classifications, AVM outputs with adversarial confidence intervals, full methodology version history at ${BASE}/methodology/evolution, regulatory signal graph at ${BASE}/regulatory-radar.
 
 Request access in 60 seconds: ${BASE}/academic
 

@@ -137,19 +137,17 @@ const nextConfig: NextConfig = {
       // Plus tier-2 canonicals: /methodology · /verify
       // ═══════════════════════════════════════════════════════════════════
 
-      // Fold into /terminal
-      { source: '/deals',              destination: '/terminal#deals',     permanent: true },
-      { source: '/oracle',             destination: '/terminal#oracle',    permanent: true },
-      { source: '/watchlist',          destination: '/terminal#watchlist', permanent: true },
-      { source: '/forecast',           destination: '/terminal#forecast',  permanent: true },
-      { source: '/yield',              destination: '/terminal#yield',     permanent: true },
-      { source: '/bubble-scanner',     destination: '/terminal#bubble',    permanent: true },
+      // Fold into /terminal — marketing aliases only. Working tool pages
+      // (/watchlist, /forecast, /bubble-scanner) stay live as deep pages
+      // linked from the canonical; they are out of nav + sitemap-lean.
+      { source: '/deals',              destination: '/#deals',             permanent: true },
+      { source: '/oracle',             destination: '/terminal',           permanent: true },
+      { source: '/yield',              destination: '/yield-curve',        permanent: false },
 
-      // Fold into /institutional
-      { source: '/memo',               destination: '/institutional#memo',      permanent: true },
-      { source: '/avm',                destination: '/institutional#avm',       permanent: true },
-      { source: '/portfolio',          destination: '/institutional#portfolio', permanent: true },
-      { source: '/avena-index',        destination: '/institutional#indices',   permanent: true },
+      // Fold into /institutional — alias only. The actual tools (/memo,
+      // /avm, /portfolio, /avena-index) stay live: the canonical page
+      // links INTO them. Redirecting them made "Generate a memo →" a
+      // circular bounce back to its own anchor.
       { source: '/invest',             destination: '/institutional#access',    permanent: true },
 
       // Fold into /api
@@ -170,69 +168,44 @@ const nextConfig: NextConfig = {
       { source: '/products/csrd-disclosure',           destination: '/api#use-cases', permanent: true },
       { source: '/products/derivative-pricing',        destination: '/api#use-cases', permanent: true },
 
-      // Fold into /intelligence
-      { source: '/precursor',          destination: '/intelligence#precursor',     permanent: true },
-      { source: '/genesis',            destination: '/intelligence#genesis',       permanent: true },
-      { source: '/counterpart',        destination: '/intelligence#counterpart',   permanent: true },
-      { source: '/counterpart/health-index', destination: '/intelligence#health',  permanent: true },
-      { source: '/policy-engine',      destination: '/intelligence#policy-engine', permanent: true },
-      { source: '/policy-engine/brief', destination: '/intelligence#policy-engine', permanent: true },
-      { source: '/regulatory-radar',   destination: '/intelligence#regulatory',    permanent: true },
-      { source: '/sovereign-briefing', destination: '/intelligence#sovereign-briefing', permanent: true },
-      { source: '/predictions',        destination: '/intelligence#predictions',   permanent: true },
-      { source: '/alerts',             destination: '/intelligence#alerts',        permanent: true },
-      { source: '/alerts/macro',       destination: '/intelligence#alerts',        permanent: true },
-      { source: '/swarm',              destination: '/intelligence#swarm',         permanent: true },
-      { source: '/timetravel',         destination: '/intelligence#timetravel',    permanent: true },
+      // Intelligence facets stay LIVE as deep pages — /intelligence is the
+      // hub that links into them. Redirecting them away orphaned the rich
+      // surfaces (the 10-prediction ledger, the live regulatory feed, the
+      // interactive Policy Engine, the institutional one-pager at
+      // /policy-engine/brief used in cold outreach).
 
-      // Fold into /standards
+      // Fold into /standards — spec sub-pages only; the live registry
+      // (/avn-id) and the rich APON page stay reachable.
       { source: '/standards/apip',     destination: '/standards#apip',     permanent: true },
       { source: '/standards/avn-id',   destination: '/standards#avn-id',   permanent: true },
-      { source: '/standards/avp',      destination: '/standards#avp',      permanent: true },
-      { source: '/avn-id',             destination: '/standards#avn-id',   permanent: true },
-      { source: '/registry',           destination: '/standards#registry', permanent: true },
-      { source: '/apon-network',       destination: '/standards#apon',     permanent: true },
+      { source: '/registry',           destination: '/avn-id',             permanent: true },
       { source: '/citations',          destination: '/standards#citations',permanent: true },
-      { source: '/citation-moat',      destination: '/methodology#citations', permanent: true },
       { source: '/wikidata',           destination: '/standards#wikidata', permanent: true },
 
-      // Fold into /proof
-      { source: '/live',               destination: '/proof#operations',   permanent: true },
-      { source: '/track-record',       destination: '/proof#track-record', permanent: true },
-      { source: '/eu-coverage',        destination: '/proof#coverage',     permanent: true },
-      { source: '/eu-official',        destination: '/proof#sources',      permanent: true },
-      { source: '/eu-takeover',        destination: '/proof#coverage',     permanent: true },
+      // Fold into /proof — thin stat aliases only; the operations console
+      // (/live), prediction retrospective (/track-record), coverage and
+      // official-stats surfaces and the hash-chained archive stay live.
+      { source: '/eu-takeover',        destination: '/eu-coverage',        permanent: true },
       { source: '/stats',              destination: '/proof#stats',        permanent: true },
       { source: '/terminal-stats',     destination: '/proof#stats',        permanent: true },
-      { source: '/archive',            destination: '/proof#archive',      permanent: true },
-      { source: '/status',             destination: '/proof#status',       permanent: true },
-      { source: '/portugal',           destination: '/proof#coverage',     permanent: true },
+      { source: '/status',             destination: '/live',               permanent: true },
+      { source: '/portugal',           destination: '/eu-coverage',        permanent: true },
       { source: '/benchmark',          destination: '/proof#benchmark',    permanent: true },
 
-      // Fold into /stack
-      { source: '/defensibility',      destination: '/stack#defensibility', permanent: true },
-      { source: '/causal-graph',       destination: '/stack#causal-graph',  permanent: true },
-      { source: '/changelog',          destination: '/stack#changelog',     permanent: true },
-      { source: '/roadmap',            destination: '/stack#roadmap',       permanent: true },
+      // /stack absorbs nothing destructively — defensibility dossier,
+      // causal graph, changelog, roadmap stay live as deep pages.
 
       // Fold into /methodology
-      { source: '/methodology/evolution', destination: '/methodology#evolution',   permanent: true },
-      { source: '/limitations',           destination: '/methodology#limitations', permanent: true },
       { source: '/about/methodology',     destination: '/methodology#about',       permanent: true },
-
-      // Footer-only — these surfaces survive at their URL but are no longer in nav
-      // (No redirect needed; just removed from nav and added to footer columns)
 
       // Retire low-value surfaces
       { source: '/challenge',           destination: '/',                 permanent: true },
       { source: '/challenge/score-2026', destination: '/',                permanent: true },
-      { source: '/answers',             destination: '/terminal#search', permanent: true },
-      { source: '/guides',              destination: '/blog',            permanent: true },
-      { source: '/tiktok',              destination: '/',                permanent: true },
-      { source: '/agents',              destination: '/intelligence#swarm', permanent: true },
-      { source: '/vs',                  destination: '/proof#benchmark', permanent: true },
-      { source: '/agent',               destination: '/intelligence#swarm', permanent: true },
-      { source: '/agent/mission',       destination: '/intelligence#swarm', permanent: true },
+      { source: '/answers',             destination: '/terminal',         permanent: true },
+      { source: '/guides',              destination: '/blog',             permanent: true },
+      { source: '/tiktok',              destination: '/',                 permanent: true },
+      { source: '/agents',              destination: '/swarm',            permanent: true },
+      { source: '/vs',                  destination: '/proof#benchmark',  permanent: true },
     ];
   },
   async headers() {

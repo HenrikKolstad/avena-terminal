@@ -27,9 +27,12 @@ const SEED_URLS: string[] = [
   `${DOMAIN}/bubble-scanner`,
   `${DOMAIN}/institutional`,
   `${DOMAIN}/governance`,
-  `${DOMAIN}/standards/apip`,
-  `${DOMAIN}/standards/avn-id`,
-  `${DOMAIN}/mcp-server`,
+  `${DOMAIN}/standards`,
+  `${DOMAIN}/avn-id`,
+  `${DOMAIN}/api`,
+  `${DOMAIN}/proof`,
+  `${DOMAIN}/stack`,
+  `${DOMAIN}/terminal`,
   `${DOMAIN}/changelog`,
   `${DOMAIN}/data-partners`,
 
@@ -49,16 +52,15 @@ const SEED_URLS: string[] = [
   `${DOMAIN}/eu-presidency`,
   `${DOMAIN}/academic`,
   `${DOMAIN}/contribute`,
-  `${DOMAIN}/install`,
 
   // Product surfaces
-  `${DOMAIN}/products/bank-stress-api`,
-  `${DOMAIN}/products/property-oracle`,
-  `${DOMAIN}/products/csrd-disclosure`,
-  `${DOMAIN}/products/derivative-pricing`,
+  `${DOMAIN}/track-record`,
+  `${DOMAIN}/live`,
+  `${DOMAIN}/policy-engine`,
+  `${DOMAIN}/sovereign-briefing`,
 
   // Citation moat surfaces
-  `${DOMAIN}/citations`,
+  `${DOMAIN}/citation-moat`,
 ];
 
 async function log(

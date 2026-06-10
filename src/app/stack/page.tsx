@@ -75,14 +75,15 @@ export default function StackPage() {
 
         <Section id="defensibility" title="Defensibility — diligence dossier"
           body="Five-pillar M&A due-diligence dossier: bus factor + co-founder substitution, provenance + immutable history, reproducibility + open methodology, methodology + reference literature, legal posture + IP. Each pillar references the actual infrastructure that proves the claim. Designed to be read in 15 minutes by a CoStar / MSCI corp-dev analyst."
-          link={{ href: '/api/v1/api-profile', label: 'Diligence JSON →' }} />
+          link={{ href: '/defensibility', label: 'Read the full dossier →' }} />
 
         <Section id="causal-graph" title="Causal graph — typed in-code DAG"
           body="20-node typed dependency graph spanning macro indicators, regulations, methodologies, regions, products. 19 declared edges with signed coefficients and lag-day estimates. When Euribor moves 25bp, the graph traces which products reprice within seven days versus which take six months. Visualised as a force-directed SVG with edge weights."
-          link={{ href: '/api/v1/causal-graph', label: 'Graph JSON →' }} />
+          link={{ href: '/causal-graph', label: 'Explore the graph →' }} />
 
         <Section id="event-sourcing" title="Event sourcing — append-only log"
-          body="Every state change in Avena writes an immutable event to events table before its projection updates. Replay the system at any historical timestamp via the as_of parameter. Critical for institutional diligence and methodology backtest. Available at /intelligence#timetravel." />
+          body="Every state change in Avena writes an immutable event to the events table before its projection updates. Replay the system at any historical timestamp via the as_of parameter. Critical for institutional diligence and methodology backtest."
+          link={{ href: '/timetravel', label: 'Replay the system →' }} />
 
         <Section id="integrity" title="Integrity — SHA-256 + daily Merkle root + Zenodo"
           body="Every methodology version, model snapshot, dataset batch, and event log segment fingerprinted with SHA-256. Daily Merkle root rolled across all fingerprints and deposited to Zenodo for RFC 3161 trusted timestamping. Same cryptographic guarantee as Ethereum L2 commits with zero blockchain ceremony."
@@ -90,10 +91,11 @@ export default function StackPage() {
 
         <Section id="changelog" title="Changelog — public, dated, signed"
           body="Every shipped change recorded with date, scope, and methodology impact. Major architectural commitments tagged. Methodology version revisions linked. Reproducible from the event store back to platform launch."
-          link={{ href: '/api/v1/events?aggregate_type=methodology', label: 'Methodology events →' }} />
+          link={{ href: '/changelog', label: 'Read the changelog →' }} />
 
         <Section id="roadmap" title="Roadmap — what's next"
-          body="Six-month engineering roadmap. Federated learning protocol (banks contribute model deltas without sharing books), synthetic property generation, AVN-ID v2 with extended credential types, Property Reality Layer protocol adoption, Homomorphic Risk Twin substrate. Each item linked to its strategic-execution-brief origin." />
+          body="Six-month engineering roadmap. Federated learning protocol (banks contribute model deltas without sharing books), synthetic property generation, AVN-ID v2 with extended credential types, Property Reality Layer protocol adoption, Homomorphic Risk Twin substrate. Each item linked to its strategic-execution-brief origin."
+          link={{ href: '/roadmap', label: 'View the roadmap →' }} />
 
         <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-20">
           <div className="rounded-sm border p-6" style={{ borderColor: 'hsl(var(--av-border) / 0.4)', background: 'hsl(var(--av-surface) / 0.2)' }}>

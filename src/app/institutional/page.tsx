@@ -74,11 +74,11 @@ export default function InstitutionalPage() {
 
         <Section id="avm" title="AVM — bank-grade in under one second"
           body="Town × type median €/m² base with multiplicative hedonic adjustments. Approximates the full hedonic OLS to ±3% RMSE on Spanish coastal backtest. Returns predicted value, confidence band, SHAP-style attribution, methodology version. EBA AVM consultation-compliant by design."
-          link={{ href: '/api/v1/avm/value', label: 'API endpoint →' }} />
+          link={{ href: '/avm', label: 'Run a valuation →' }} />
 
         <Section id="portfolio" title="Portfolio Risk Simulator — upload your book"
           body="Drop in a portfolio (CSV, parquet, or APIP JSON). Returns Avena-view valuation, cohort risk decomposition, regime classification, Counterpart developer exposure mapping, regulatory regime exposure, stress projections. The institutional view across your residential book."
-          link={{ href: '/api/v1/portfolio', label: 'Run a portfolio →' }} />
+          link={{ href: '/portfolio', label: 'Run a portfolio →' }} />
 
         <Section id="indices" title="Index Family — AVENA-CC · AVENA-VAL · AVENA-SCR · AVENA-DPT"
           body="The Avena Property Cycle Index (CC) composite of five sub-signals from BIS residential cycle literature. AVENA-VAL aggregates AVM medians. AVENA-SCR rolls up Avena Scores. AVENA-DPT tracks regional depth metrics. All daily-refreshed, methodology-audited, citation-stable under DOI."
@@ -86,7 +86,7 @@ export default function InstitutionalPage() {
 
         <Section id="agent" title="Agent — autonomous research workflow"
           body="Define a research question; Avena's agent runs a multi-step workflow against the substrate — pulls properties, classifies, generates memos, builds scenarios, returns a research dossier. Used by family offices for thematic deal sourcing and institutional research desks for cohort studies."
-          link={{ href: '/agent', label: 'Agent endpoint →' }} />
+          link={{ href: '/agent', label: 'Open the agent →' }} />
 
         <section id="pricing" className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-12">
           <h2 className="font-serif text-2xl sm:text-3xl font-light text-foreground mb-3 tracking-tight">Pricing</h2>
