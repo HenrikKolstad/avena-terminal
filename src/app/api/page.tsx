@@ -133,12 +133,12 @@ export default function APIPage() {
         <section id="pricing" className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-20">
           <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">Pricing</div>
           <div className="grid md:grid-cols-4 gap-4">
-            <Tier name="Free"          price="€0 / mo"     reqs="100 / day"    cta="Get API key" href="/login" />
-            <Tier name="Starter"       price="€49 / mo"    reqs="1,000 / day"  cta="Subscribe"   href="/pro" />
-            <Tier name="PRO"           price="€149 / mo"   reqs="10,000 / day" cta="Subscribe"   href="/pro" />
-            <Tier name="Institutional" price="Custom"      reqs="Unlimited"    cta="Contact"     href="/contact" highlight />
+            <Tier name="Developer"  price="€0 / mo"        reqs="100 / day · attribution required · evaluation & research" cta="Get API key" href="/login" />
+            <Tier name="Builder"    price="€490 / mo"      reqs="10,000 / day · commercial use · email support"            cta="Subscribe"   href="/contact" />
+            <Tier name="Desk"       price="€2,500 / mo"    reqs="Full API + institutional tools · 99.5% SLA · priority support" cta="Request access" href="/institutional#access" />
+            <Tier name="Enterprise" price="From €12,000 / mo" reqs="Unlimited · custom endpoints · index licensing · DPA + contract" cta="Contact" href="/contact" highlight />
           </div>
-          <p className="mt-4 text-sm text-muted-foreground italic">Free designated-authority tier for ECB, EBA, ESMA, EIOPA, ESRB, national CBs, IMF, BIS, OECD. <Link href="/eu-presidency" className="text-primary hover:underline">Presidency partnership →</Link></p>
+          <p className="mt-4 text-sm text-muted-foreground italic">Free designated-authority tier for ECB, EBA, ESMA, EIOPA, ESRB, national central banks, IMF, BIS, OECD — and free academic access in exchange for citation. <Link href="/eu-presidency" className="text-primary hover:underline">Presidency partnership →</Link></p>
         </section>
       </main>
       <Footer />

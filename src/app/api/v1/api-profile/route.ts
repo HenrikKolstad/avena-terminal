@@ -30,10 +30,10 @@ export async function GET() {
       { method: 'GET', path: '/docs', description: 'Interactive API documentation' },
     ],
     pricing: [
-      { tier: 'Free', price: '\u20AC0/month', rate_limit: '100 requests/day', features: 'Core property data, market stats' },
-      { tier: 'Starter', price: '\u20AC49/month', rate_limit: '1,000 requests/day', features: 'AI scores, yield data, signals' },
-      { tier: 'Pro', price: '\u20AC199/month', rate_limit: '10,000 requests/day', features: 'Full API access, bulk exports, genome data' },
-      { tier: 'Institutional', price: 'Custom', rate_limit: 'Unlimited', features: 'SLA, dedicated support, raw data access, custom models' },
+      { tier: 'Developer', price: '\u20AC0/month', rate_limit: '100 requests/day', features: 'Core property data, market stats \u2014 attribution required, evaluation & research' },
+      { tier: 'Builder', price: '\u20AC490/month', rate_limit: '10,000 requests/day', features: 'Commercial use, AI scores, yield data, signals, email support' },
+      { tier: 'Desk', price: '\u20AC2,500/month', rate_limit: 'Full API', features: 'Institutional tools (Memo, AVM, Portfolio), 99.5% SLA, priority support' },
+      { tier: 'Enterprise', price: 'From \u20AC12,000/month', rate_limit: 'Unlimited', features: 'Custom endpoints, index licensing, raw data access, DPA + contract, dedicated support' },
     ],
     use_cases: [
       'Property investment analysis and portfolio optimization',
