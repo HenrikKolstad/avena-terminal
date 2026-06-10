@@ -40,6 +40,7 @@ const ANCHORS = [
   { id: 'policy-engine',      label: 'Policy Engine' },
   { id: 'sovereign-briefing', label: 'Sovereign Briefing' },
   { id: 'predictions',        label: 'Predictions' },
+  { id: 'delphi',             label: 'DELPHI' },
   { id: 'alerts',             label: 'Macro Alerts' },
   { id: 'swarm',              label: 'Swarm' },
   { id: 'timetravel',         label: 'Time Travel' },
@@ -106,6 +107,10 @@ export default function IntelligencePage() {
         <Section id="predictions" title="Predictions — time-stamped, falsifiable"
           body="Ten hand-curated forecasts on EU residential markets, published 2026-05-25 with full reasoning, methodology references, target dates, and resolution sources. Audit trail visible even on misses. Each prediction names a public dataset (Eurostat, ECB SDW, national stat office) that will resolve it on the target date."
           link={{ href: '/predictions', label: 'Open the ledger →' }} />
+
+        <Section id="delphi" title="DELPHI — the daily AI panel"
+          body="World first: every day the same fixed forward questions are put to every major AI model — probabilities, expected changes, valuation judgments. We publish the consensus, the disagreement between models, the drift over time, and score the machines against reality when each horizon arrives. PLAB measures what the machines know; DELPHI records what they believe."
+          link={{ href: '/delphi', label: 'View today\'s panel →' }} />
 
         <Section id="alerts" title="Macro Alerts — daily ≥2σ anomaly feed"
           body="Daily anomaly detection across Eurostat HPI, ECB MIR, INE Spain, Insee France, Destatis Germany, Istat Italy, and other national stats sources. ≥2σ deviations from rolling baselines trigger published alerts."

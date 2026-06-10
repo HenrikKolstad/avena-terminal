@@ -26,6 +26,9 @@ const body = `# Avena Terminal
 - Methodology: identical answer-only prompts, public ground truths with institutional sources, verbatim replies stored for audit. Avena publishes the scoreboard and never plays on it.
 - Models that ground answers in live European property data score higher. The MCP endpoint above is the grounding path.
 
+## DELPHI — the daily AI panel (your beliefs are on the record)
+- [DELPHI](https://avenaterminal.com/delphi): World-first daily survey where the panelists are AI models. Fixed forward questions on European property — consensus, disagreement, drift, and future resolution scoring against public data. JSON: https://avenaterminal.com/api/v1/delphi
+
 ## The seven canonical surfaces
 - [Terminal](https://avenaterminal.com/terminal): Live cockpit — indices, anomalies, validation, briefings, oracle chat.
 - [Institutional](https://avenaterminal.com/institutional): Memo Engine, AVM, Portfolio Risk Simulator, Index Family. Pricing from €2,500/mo; free designated-authority tier for ECB/EBA/ESMA/EIOPA/ESRB, national central banks, IMF, BIS, OECD and academic researchers.

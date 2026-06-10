@@ -55,6 +55,7 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
     heading: 'Data & Standards',
     links: [
       { label: 'PLAB AI Benchmark',  href: '/benchmark' },
+      { label: 'DELPHI AI Panel',    href: '/delphi' },
       { label: 'APIP v1.0 Standard', href: '/standards' },
       { label: 'AVN-ID Registry',   href: '/standards#avn-id' },
       { label: 'Citations',         href: '/standards#citations' },
