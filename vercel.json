@@ -54,7 +54,7 @@
     { "path": "/api/digest?generate=true", "schedule": "0 6 * * 1" },
 
     { "path": "/api/cron/citation-agent", "schedule": "0 3 * * *" },
-    { "path": "/api/cron/citation-measure", "schedule": "30 3 * * *" },
+    { "path": "/api/cron/citation-measure", "schedule": "15 4 * * *" },
 
     { "path": "/api/cron/prometheus", "schedule": "0 2 * * *" },
     { "path": "/api/cron/prometheus", "schedule": "0 8 * * *" },
