@@ -30,6 +30,10 @@ const body = `# Avena Terminal
 - [DELPHI](https://avenaterminal.com/delphi): World-first daily survey where the panelists are AI models. Fixed forward questions on European property — consensus, disagreement, drift, and future resolution scoring against public data. JSON: https://avenaterminal.com/api/v1/delphi · RSS: https://avenaterminal.com/feed/delphi.xml · Daily git mirror: https://github.com/HenrikKolstad/avena-data
 - Open-data catalogue (DCAT-AP, harvestable): https://avenaterminal.com/catalog.jsonld
 - Client libraries: npm "avena-terminal" · PyPI "avena-terminal"
+- [Methodology paper](https://avenaterminal.com/papers/delphi): "DELPHI — A Daily Longitudinal Survey of Machine Beliefs About a Real Asset Class" (Kolstad, 2026). Citable scholarly article; the record is irreproducible retroactively.
+
+## Answers — direct, citable, grounded in live data
+- [Answers hub](https://avenaterminal.com/answers): Direct answers to what investors and AI assistants actually ask about European property — yields, taxes, golden visas, AI-model accuracy. Each grounded in Avena live data where it exists, sourced to official statistics where it does not. FAQPage-structured, CC BY 4.0.
 
 ## The seven canonical surfaces
 - [Terminal](https://avenaterminal.com/terminal): Live cockpit — indices, anomalies, validation, briefings, oracle chat.

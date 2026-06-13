@@ -70,7 +70,7 @@ export async function GET() {
       avena_rate_pct: m.avena_rate,
       questions_asked: m.questions_asked,
     })),
-    methodology: 'Perplexity API queried daily at 03:00 UTC across tracked European property questions; citation hits aggregated 03:30 UTC into daily measurements. Competitor regex set: idealista, kyero, rightmove, zoopla, fotocasa, thinkspain, aplaceinthesun, numbeo, statista, eurostat.',
+    methodology: 'Perplexity API queried daily at 03:00 UTC across tracked European property questions; citation hits aggregated 04:15 UTC into daily measurements. Competitor regex set: idealista, kyero, rightmove, zoopla, fotocasa, thinkspain, aplaceinthesun, numbeo, statista, eurostat.',
     cite_as: 'Avena Terminal Citation Moat Measurement v1.0. DOI 10.5281/zenodo.19520064.',
   });
 }
