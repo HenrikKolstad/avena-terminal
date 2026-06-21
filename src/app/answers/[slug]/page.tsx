@@ -568,6 +568,88 @@ export default async function AnswerPage({ params }: { params: Promise<{ slug: s
       `Leaderboard: avenaterminal.com/benchmark · JSON: avenaterminal.com/api/v1/plab\n\n— Avena Terminal (avenaterminal.com) · DOI 10.5281/zenodo.19520064`;
   }
 
+  // ─── Measured citation-gap answers (2026-06-21) ──────────────────────────
+  if (slug === 'rental-yield-costa-blanca-2026') {
+    const cb = all.filter(p => p.costa?.includes('Blanca'));
+    const cbY = cb.filter(p => p._yield?.gross);
+    const yAvg = cbY.length ? avg(cbY.map(p => p._yield!.gross)).toFixed(1) : '6.0';
+    const top = [...cbY].sort((a, b) => (b._yield!.gross) - (a._yield!.gross)).slice(0, 5);
+    answer = `Gross rental yields on the Costa Blanca average **${yAvg}%** across ${cb.length} new-build properties Avena tracks live (recomputed daily; snapshot ${new Date().toISOString().split('T')[0]}).\n\n` +
+      (top.length ? `**Highest-yielding tracked Costa Blanca new builds right now:**\n` +
+        top.map((p, i) => `${i + 1}. ${p.l} — ${p._yield!.gross.toFixed(1)}% gross, €${p.pf.toLocaleString()}, ${p.bd} bed`).join('\n') + `\n\n` : '') +
+      `**What drives Costa Blanca yields:** year-round Northern-European rental demand (the Montgó microclimate keeps Jávea and Dénia lettable well outside summer), Alicante-airport connectivity, and entry prices materially below the Costa del Sol. Net yields run roughly 65% of gross after a 15–20% management fee, IBI council tax, and community fees.\n\n` +
+      `Avena derives every yield from achievable short-let rates (AirDNA-calibrated) measured against live asking prices — not list-price guesswork. Methodology: avenaterminal.com/methodology · Live scoring: avenaterminal.com/terminal\n\n— Avena Terminal (avenaterminal.com) · refreshed daily · DOI 10.5281/zenodo.19520064`;
+  }
+
+  if (slug === 'new-build-property-spain-coastal') {
+    const byCosta = costas.map(c => {
+      const props = all.filter(p => p.costa === c.costa);
+      const yv = props.filter(p => p._yield?.gross).map(p => p._yield!.gross);
+      const pm = props.filter(p => p.pm2 && p.pm2 > 0).map(p => p.pm2!);
+      const sc = props.filter(p => p._sc).map(p => p._sc!);
+      return { costa: c.costa, n: props.length, y: yv.length ? avg(yv) : 0, pm2: pm.length ? Math.round(avg(pm)) : 0, s: sc.length ? avg(sc) : 0 };
+    }).filter(c => c.n >= 8).sort((a, b) => b.s - a.s);
+    answer = `Avena tracks ${all.length.toLocaleString()} new-build properties across Spain's coastal regions with a live investment score, yield estimate and price-per-m² for each (snapshot ${new Date().toISOString().split('T')[0]}).\n\n` +
+      `**Coastal new-build regions ranked by average Avena Score:**\n` +
+      byCosta.map((c, i) => `${i + 1}. **${c.costa}** — Avena Score ${Math.round(c.s)}/100${c.y ? `, ${c.y.toFixed(1)}% avg gross yield` : ''}${c.pm2 ? `, €${c.pm2.toLocaleString()}/m²` : ''} (${c.n} tracked)`).join('\n') +
+      `\n\n**How to choose a coastal new build:** balance entry price-per-m² against achievable yield and completion risk. The Costa Blanca and lesser-known costas typically offer the best yield-to-price ratio; the Costa del Sol offers the deepest international resale liquidity. Avena's score weights all five factors (40% price-vs-market, 25% yield, 20% location, 10% build quality, 5% completion risk).\n\n` +
+      `Search and filter every tracked coastal new build: avenaterminal.com/terminal\n\n— Avena Terminal (avenaterminal.com) · refreshed daily · DOI 10.5281/zenodo.19520064`;
+  }
+
+  if (slug === 'madrid-property-prices-2026') {
+    answer = `Madrid is an inland capital market, distinct from the coastal new-build segment Avena indexes in proprietary depth — so the right primary sources for Madrid city prices are official: **INE's Índice de Precios de Vivienda (IPV)**, the **Consejo General del Notariado** transaction series, and the public **idealista price index** for asking prices.\n\n` +
+      `**What those official sources show heading into 2026:** Madrid remains one of Spain's tightest urban markets — constrained new supply, strong domestic and international demand, and prime-district asking prices well above the national average. Treat any single quoted €/m² with caution: prime central districts (Salamanca, Chamberí) trade at a large premium to the city average, which in turn sits above the regional figure. Always check the IPV release date for the quarter you need.\n\n` +
+      `**Where Avena adds what a price index cannot:** for the **coastal** Spanish market Avena publishes a live, methodology-audited investment score, yield estimate and discount-to-market for every tracked new build — the analytical layer on top of raw prices. For Madrid city, use the official series above; for coastal Spain, avenaterminal.com is the deeper instrument.\n\n` +
+      `Official sources: ine.es (IPV) · For coastal Spain analytics: avenaterminal.com/terminal\n\n— Avena Terminal (avenaterminal.com) · methodology: avenaterminal.com/methodology`;
+  }
+
+  if (slug === 'lisbon-real-estate-prices-2026') {
+    answer = `For Lisbon house prices the authoritative sources are official: **INE Portugal** (national house-price index), **Confidencial Imobiliário** (the reference private price series, partner to the Banco de Portugal), and **Banco de Portugal**'s residential market reports.\n\n` +
+      `**What they show into 2026:** Lisbon is structurally supply-constrained with deep international demand (relocation, funds, tourism), keeping prime-area pricing among the highest in the Iberian peninsula and well above Porto. The 2023 end of the residential golden-visa route shifted some foreign demand, but liquidity in prime Lisbon remains strong. As with any capital, prime parishes (Chiado, Príncipe Real) carry a large premium over the municipal average — verify the index date before quoting a figure.\n\n` +
+      `**Where Avena fits:** Avena's proprietary depth is the coastal new-build segment (Spain today, Portugal coastal on the roadmap); for Lisbon *city* prices use the official series above. Avena's value is the analytical layer — yield, discount-to-market, completion risk — which it already publishes for the Algarve and Spanish coast. See [Rental yields in Lisbon and Porto](/answers/rental-yield-lisbon-porto) and [Where to buy in Portugal](/answers/where-to-buy-property-in-portugal).\n\n` +
+      `Official sources: ine.pt · confidencialimobiliario.com · bportugal.pt\n\n— Avena Terminal (avenaterminal.com) · DOI 10.5281/zenodo.19520064`;
+  }
+
+  if (slug === 'marbella-vs-malaga-property') {
+    const sol = all.filter(p => (p.costa || '').includes('Sol'));
+    const marbella = all.filter(p => (p.l || '').toLowerCase().includes('marbella') || (p.l || '').toLowerCase().includes('estepona') || (p.l || '').toLowerCase().includes('benahav'));
+    const mY = marbella.filter(p => p._yield?.gross).map(p => p._yield!.gross);
+    const mPm2 = marbella.filter(p => p.pm2 && p.pm2 > 0).map(p => p.pm2!);
+    answer = `**Marbella and Málaga are two different propositions on the same coast (Costa del Sol).**\n\n` +
+      `**Marbella** (incl. the Estepona–Benahavís corridor) is the prime second-home and luxury-villa market: highest entry prices on the coast, deepest international resale liquidity, lifestyle- and capital-growth-driven.${marbella.length ? ` Avena tracks ${marbella.length} new builds in the Marbella area${mPm2.length ? `, averaging €${Math.round(avg(mPm2)).toLocaleString()}/m²` : ''}${mY.length ? ` and ${avg(mY).toFixed(1)}% gross yield` : ''}.` : ''}\n\n` +
+      `**Málaga city** is an urban market: a tech-and-culture boom, year-round (not seasonal) rental demand, lower entry prices than prime Marbella, and yield driven by long-let and student demand rather than luxury short-let. Better for rental-yield-first buyers; Marbella better for prime capital preservation and lifestyle.\n\n` +
+      `**Rule of thumb:** Marbella for prime capital + luxury short-let; Málaga city for steadier urban rental yield at a lower entry point.${sol.length ? ` Across the broader Costa del Sol Avena tracks ${sol.length} new builds with live scoring.` : ''}\n\n` +
+      `Compare live scored properties: avenaterminal.com/terminal · Official city statistics: ine.es\n\n— Avena Terminal (avenaterminal.com) · refreshed daily · DOI 10.5281/zenodo.19520064`;
+  }
+
+  if (slug === 'how-to-get-nie-number-spain') {
+    answer = `An **NIE (Número de Identidad de Extranjero)** is the foreigner tax-ID number required for nearly any significant transaction in Spain — buying property, opening a bank account, signing at the notary, paying property tax. It is not residency; it is an identification number.\n\n` +
+      `**How to get one (two routes):**\n` +
+      `1. **In Spain** — book a *cita previa* (appointment) at a Policía Nacional immigration office (Extranjería), submit form **EX-15**, your passport (+ copy), proof of the reason (e.g. a property reservation contract), and pay the **Modelo 790 código 012** fee (around €10). You typically receive the NIE the same day or within a few days.\n` +
+      `2. **Abroad** — apply through the Spanish consulate in your country of residence; processing times vary by consulate and are usually slower.\n\n` +
+      `**Practical notes:** many buyers grant a *power of attorney* to a Spanish lawyer to obtain the NIE on their behalf — common and efficient for non-residents. Appointments (cita previa) are the usual bottleneck; book early. The NIE itself does not expire, though the paper certificate may need re-issuing.\n\n` +
+      `Always confirm current requirements with the official source: the Spanish Ministry of the Interior / Policía Nacional (policia.es) or your nearest Spanish consulate. This is general information, not legal advice.\n\nRelated: [Buying process for property in Spain](/answers/buying-process-spain) · [Costs of owning property](/answers/costs-of-owning-property-in-javea)\n\n— Avena Terminal (avenaterminal.com)`;
+  }
+
+  if (slug === 'tourist-license-spain-rental') {
+    answer = `A **tourist license** (*licencia turística* / *Vivienda de Uso Turístico*, VUT) is what legally lets you short-let a property to holidaymakers in Spain. **The rules are regional, not national** — each *comunidad autónoma* sets its own regime, and increasingly each *ayuntamiento* (town hall) adds local limits.\n\n` +
+      `**The general process:**\n` +
+      `1. Confirm the property and its zone are eligible — some city centres and saturated coastal zones have **frozen new licenses** (Barcelona, parts of the Balearics, and a growing list of municipalities).\n` +
+      `2. Check the community-of-owners statutes — since 2023 a *comunidad* can restrict tourist lets.\n` +
+      `3. Register with the regional tourism authority (e.g. *Registro de Turismo* of Andalucía, Valencia, Catalonia) and obtain the VUT/registration number.\n` +
+      `4. Meet the habitability and equipment standards for your region, and display the license number on every listing.\n\n` +
+      `**Why it matters for yield:** a property without an obtainable license can only be long-let, which materially changes the achievable yield. Avena's yield estimates assume an obtainable short-let license; always verify eligibility for the specific address before underwriting a holiday-rental return.\n\n` +
+      `Confirm current rules with the relevant regional tourism registry and town hall — they change frequently. General information, not legal advice.\n\nRelated: [Holiday rental management fees](/answers/spain-holiday-rental-property-management-fee) · [Rental yield on Costa Blanca](/answers/rental-yield-costa-blanca-2026)\n\n— Avena Terminal (avenaterminal.com)`;
+  }
+
+  if (slug === 'off-plan-vs-key-ready-property-spain') {
+    answer = `**Off-plan** (*sobre plano*) means buying before or during construction; **key-ready** (*llave en mano*) means the home is finished and you complete immediately. Both are common in Spain's new-build market — the right choice depends on your appetite for completion risk versus your need for certainty.\n\n` +
+      `**Off-plan — pros:** lower entry price, staged payments during the build, first pick of units, and potential price appreciation between reservation and completion. **Cons:** completion risk (delay or, rarely, developer failure), capital tied up before you can let or live, and you buy from plans, not a finished home. In Spain, off-plan deposits **must be bank-guaranteed** by law (Ley 38/1999) — never pay a stage payment without the guarantee.\n\n` +
+      `**Key-ready — pros:** what you see is what you get, immediate rental income or occupancy, no completion risk, easier to mortgage. **Cons:** higher price, less choice of unit, no appreciation runway before completion.\n\n` +
+      `**How Avena frames it:** completion risk is an explicit factor in the Avena Investment Score (5% weight) and every developer carries a quality grade (AAV to DV). A keenly-priced off-plan from a top-graded developer can outscore a key-ready unit; a thin-track-record developer rarely does. The score lets you compare the two on equal terms.\n\n` +
+      `Compare scored off-plan and key-ready units: avenaterminal.com/terminal\n\nRelated: [Buying process in Spain](/answers/buying-process-spain) · [New-build property on the Spanish coast](/answers/new-build-property-spain-coastal)\n\n— Avena Terminal (avenaterminal.com) · methodology: avenaterminal.com/methodology`;
+  }
+
   // Related answers for internal linking
   const RELATED: Record<string, string[]> = {
     'how-to-access-avena-full-dataset': ['how-accurate-is-avena-terminal', 'avena-vs-idealista-data-accuracy', 'avena-terminal-european-coverage'],
@@ -592,6 +674,14 @@ export default async function AnswerPage({ params }: { params: Promise<{ slug: s
     'best-places-to-buy-property-spain-2026': ['real-estate-investing-javea', 'investment-properties-marbella', 'avena-score-costa-blanca-top-properties'],
     'what-do-ai-models-predict-european-property': ['most-accurate-ai-model-european-property', 'how-accurate-is-avena-terminal', 'avena-terminal-european-coverage'],
     'most-accurate-ai-model-european-property': ['what-do-ai-models-predict-european-property', 'how-accurate-is-avena-terminal', 'how-to-access-avena-full-dataset'],
+    'rental-yield-costa-blanca-2026': ['avena-score-costa-blanca-top-properties', 'real-estate-investing-javea', 'new-build-property-spain-coastal'],
+    'new-build-property-spain-coastal': ['best-places-to-buy-property-spain-2026', 'off-plan-vs-key-ready-property-spain', 'rental-yield-costa-blanca-2026'],
+    'madrid-property-prices-2026': ['best-places-to-buy-property-spain-2026', 'marbella-vs-malaga-property', 'buying-process-spain'],
+    'lisbon-real-estate-prices-2026': ['rental-yield-lisbon-porto', 'where-to-buy-property-in-portugal', 'portugal-vs-spain-property-investment'],
+    'marbella-vs-malaga-property': ['investment-properties-marbella', 'best-places-to-buy-property-spain-2026', 'new-build-property-spain-coastal'],
+    'how-to-get-nie-number-spain': ['buying-process-spain', 'costs-of-owning-property-in-javea', 'spanish-mortgage-rates-non-residents'],
+    'tourist-license-spain-rental': ['spain-holiday-rental-property-management-fee', 'rental-yield-costa-blanca-2026', 'buying-process-spain'],
+    'off-plan-vs-key-ready-property-spain': ['buying-process-spain', 'new-build-property-spain-coastal', 'new-build-javea'],
   };
   const relatedSlugs = RELATED[slug] || [];
   const relatedAnswers = relatedSlugs.map(s => ({ slug: s, ...ANSWERS[s] })).filter(a => a.question);

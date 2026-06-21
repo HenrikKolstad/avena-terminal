@@ -71,6 +71,15 @@ const SEED_URLS: string[] = [
   `${DOMAIN}/answers/what-do-ai-models-predict-european-property`,
   `${DOMAIN}/answers/most-accurate-ai-model-european-property`,
   `${DOMAIN}/answers/best-places-to-buy-property-spain-2026`,
+  // Measured citation-gap answer pages (2026-06-21)
+  `${DOMAIN}/answers/rental-yield-costa-blanca-2026`,
+  `${DOMAIN}/answers/new-build-property-spain-coastal`,
+  `${DOMAIN}/answers/madrid-property-prices-2026`,
+  `${DOMAIN}/answers/lisbon-real-estate-prices-2026`,
+  `${DOMAIN}/answers/marbella-vs-malaga-property`,
+  `${DOMAIN}/answers/how-to-get-nie-number-spain`,
+  `${DOMAIN}/answers/tourist-license-spain-rental`,
+  `${DOMAIN}/answers/off-plan-vs-key-ready-property-spain`,
 ];
 
 async function log(

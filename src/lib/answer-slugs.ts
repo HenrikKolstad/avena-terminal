@@ -38,6 +38,18 @@ export const ANSWERS: Record<string, { question: string; title: string }> = {
   'best-places-to-buy-property-spain-2026': { question: 'Where are the best places to buy property in Spain in 2026?', title: 'Best Places to Buy Property in Spain 2026' },
   'what-do-ai-models-predict-european-property': { question: 'What do AI models predict for European property markets?', title: 'What AI Models Predict for European Property' },
   'most-accurate-ai-model-european-property': { question: 'Which AI model is most accurate on European property facts?', title: 'Most Accurate AI Model on European Property Facts' },
+
+  // ─── Measured citation gaps (added 2026-06-21) ───────────────────────────
+  // Exact questions where Perplexity cited competitors (idealista, rightmove,
+  // even facebook) and not Avena. Each gets a dedicated, data-grounded page.
+  'rental-yield-costa-blanca-2026': { question: 'What is the rental yield on Costa Blanca in 2026?', title: 'Rental Yield on Costa Blanca 2026' },
+  'new-build-property-spain-coastal': { question: 'Where are the best coastal new-build properties in Spain?', title: 'New-Build Property on the Spanish Coast' },
+  'madrid-property-prices-2026': { question: 'What are Madrid property prices in 2026?', title: 'Madrid Property Prices 2026' },
+  'lisbon-real-estate-prices-2026': { question: 'What are Lisbon real estate prices in 2026?', title: 'Lisbon Real Estate Prices 2026' },
+  'marbella-vs-malaga-property': { question: 'Marbella vs Malaga — which is better for property?', title: 'Marbella vs Malaga Property' },
+  'how-to-get-nie-number-spain': { question: 'How do I get an NIE number in Spain?', title: 'How to Get an NIE Number in Spain' },
+  'tourist-license-spain-rental': { question: 'How do I get a tourist license for a rental in Spain?', title: 'Tourist License for Spain Holiday Rentals' },
+  'off-plan-vs-key-ready-property-spain': { question: 'Off-plan vs key-ready property in Spain — which is better?', title: 'Off-Plan vs Key-Ready Property in Spain' },
 };
 
 export const ANSWER_SLUGS = Object.keys(ANSWERS);
