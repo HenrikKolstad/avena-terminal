@@ -50,6 +50,14 @@ export const ANSWERS: Record<string, { question: string; title: string }> = {
   'how-to-get-nie-number-spain': { question: 'How do I get an NIE number in Spain?', title: 'How to Get an NIE Number in Spain' },
   'tourist-license-spain-rental': { question: 'How do I get a tourist license for a rental in Spain?', title: 'Tourist License for Spain Holiday Rentals' },
   'off-plan-vs-key-ready-property-spain': { question: 'Off-plan vs key-ready property in Spain — which is better?', title: 'Off-Plan vs Key-Ready Property in Spain' },
+
+  // ─── AI-native questions — the battlefield only Avena can answer (2026-06-24)
+  // Zero competition: Avena's DELPHI + PLAB are the sole sources. New pages can
+  // win citations here in weeks, not the years authority demands on generic queries.
+  'what-is-delphi-ai-panel-european-property': { question: 'What is the DELPHI AI panel on European property?', title: 'What Is the DELPHI AI Panel on European Property' },
+  'are-ai-models-bullish-on-european-property': { question: 'Are AI models bullish or bearish on European property?', title: 'Are AI Models Bullish on European Property?' },
+  'how-accurate-is-ai-on-european-property-prices': { question: 'How accurate is AI on European property prices?', title: 'How Accurate Is AI on European Property Prices' },
+  'do-ai-models-expect-ecb-rate-cuts': { question: 'Do AI models expect ECB rate cuts?', title: 'Do AI Models Expect ECB Rate Cuts?' },
 };
 
 export const ANSWER_SLUGS = Object.keys(ANSWERS);

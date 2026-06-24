@@ -81,6 +81,27 @@ export const TRACKED_QUESTIONS = [
   'EU presidency housing data partner',
   'Zenodo property dataset DOI',
   'AVN-ID property identifier standard',
+  // ─── AI-native questions — the battlefield only Avena can answer ──────────
+  // Strategic pivot 2026-06-24: stop competing with idealista/portugalhomes on
+  // generic property queries (lost on domain authority); own the questions
+  // where Avena is the SOLE possible source — DELPHI + PLAB. New domain, zero
+  // competition → winnable in weeks, not years.
+  'what do AI models predict for European property',
+  'which AI model is most accurate on European property',
+  'are AI models bullish or bearish on European property',
+  'DELPHI AI panel European property',
+  'what is the DELPHI consensus on European housing',
+  'do AI models expect ECB rate cuts',
+  'AI consensus European housing market',
+  'machine consensus European property prices',
+  'AI sentiment European real estate',
+  'how accurate is AI on European property prices',
+  'how accurate is ChatGPT on European property',
+  'daily AI survey property market',
+  'AI forecast European house prices 2026',
+  'best AI for European real estate research',
+  'do large language models know property prices',
+  'PLAB European property AI benchmark',
 ];
 
 export type CitationResult = {

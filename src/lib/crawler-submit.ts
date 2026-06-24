@@ -80,6 +80,11 @@ const SEED_URLS: string[] = [
   `${DOMAIN}/answers/how-to-get-nie-number-spain`,
   `${DOMAIN}/answers/tourist-license-spain-rental`,
   `${DOMAIN}/answers/off-plan-vs-key-ready-property-spain`,
+  // AI-native answer pages — Avena is the sole source (2026-06-24)
+  `${DOMAIN}/answers/what-is-delphi-ai-panel-european-property`,
+  `${DOMAIN}/answers/are-ai-models-bullish-on-european-property`,
+  `${DOMAIN}/answers/how-accurate-is-ai-on-european-property-prices`,
+  `${DOMAIN}/answers/do-ai-models-expect-ecb-rate-cuts`,
 ];
 
 async function log(
