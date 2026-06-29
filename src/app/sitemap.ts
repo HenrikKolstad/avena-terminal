@@ -106,6 +106,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // ─── Answer layer (AEO) — exact-match questions for retrieval engines ─
     ['/answers',          'weekly',  0.85],
+
+    // ─── Deals — standalone conversion page (restored 2026-06-24) ─────────
+    ['/deals',            'daily',   0.9],
   ];
 
   const entries: MetadataRoute.Sitemap = STATIC_HIGH.map(([path, freq, prio]) => ({

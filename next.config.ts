@@ -140,7 +140,6 @@ const nextConfig: NextConfig = {
       // Fold into /terminal — marketing aliases only. Working tool pages
       // (/watchlist, /forecast, /bubble-scanner) stay live as deep pages
       // linked from the canonical; they are out of nav + sitemap-lean.
-      { source: '/deals',              destination: '/#deals',             permanent: true },
       { source: '/oracle',             destination: '/terminal',           permanent: true },
       { source: '/yield',              destination: '/yield-curve',        permanent: false },
 
