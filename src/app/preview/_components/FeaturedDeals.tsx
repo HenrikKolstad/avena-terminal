@@ -7,7 +7,8 @@ export function FeaturedDeals() {
   // Top 50 deals: must have score, price, valid pm2/mm2, positive discount
   // (Old Avena terminal is deprecating — new UI becomes the single home for all deals)
   const top = all
-    .filter(p => p._sc != null && p.pf > 0 && p.pm2 && p.mm2 && p.mm2 > p.pm2)
+    // require ref: a deal with no ref would link to "/" — a silent dead-end.
+    .filter(p => p.ref && p._sc != null && p.pf > 0 && p.pm2 && p.mm2 && p.mm2 > p.pm2)
     .sort((a, b) => (b._sc ?? 0) - (a._sc ?? 0))
     .slice(0, 50);
 
@@ -26,8 +27,10 @@ export function FeaturedDeals() {
     const region = d.costa ? `ES · ${d.costa.replace('Costa ', 'C')}` : 'ES';
     const built = Math.round(d.bm || 0);
     const rawSaved = Math.round((mm2 - pm2) * built);
+    // Capped rows must show a saving equal to 35% of market value (what the
+    // displayed "−35%" claims), so discount, €/m² and Saved reconcile.
     const saved = rawDiscount > DISPLAY_CAP_PCT
-      ? Math.round(pm2 * built * (DISPLAY_CAP_PCT / (100 - DISPLAY_CAP_PCT)))
+      ? Math.round(mm2 * built * (DISPLAY_CAP_PCT / 100))
       : rawSaved;
     const thumb = Array.isArray(d.imgs) && d.imgs.length > 0 ? d.imgs[0] : null;
     const yieldGross = d._yield?.gross ?? 0;

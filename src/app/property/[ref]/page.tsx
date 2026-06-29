@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { Nav } from '@/components/v2/Nav';
@@ -69,29 +70,9 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
   const { ref } = await params;
   const property = findProperty(decodeURIComponent(ref));
 
-  if (!property) {
-    return (
-      <div className="avena-v2 min-h-screen flex flex-col">
-        <Nav />
-        <main className="flex-1 flex items-center justify-center pt-16">
-          <div className="text-center">
-            <h1 className="font-serif text-5xl font-light text-foreground mb-4">
-              Property <span className="italic text-gold">not found</span>.
-            </h1>
-            <p className="text-muted-foreground mb-8">This reference does not exist in our dataset.</p>
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 rounded-sm px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold"
-              style={{ background: 'var(--av-gradient-gold)' }}
-            >
-              ← Back to Terminal
-            </Link>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
+  // Real 404 (status + branded /not-found.tsx, which is noindex) instead of a
+  // soft-404 that returned 200 for any non-existent ref.
+  if (!property) notFound();
 
   const p = property;
   const pm2 = p.bm > 0 ? Math.round(p.pf / p.bm) : null;
@@ -110,8 +91,11 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
   const discount = rawDiscount !== null
     ? Math.min(rawDiscount, DISPLAY_CAP_PCT)
     : null;
-  const saved = isCapped && pm2 && p.bm
-    ? Math.round(pm2 * p.bm * (DISPLAY_CAP_PCT / (100 - DISPLAY_CAP_PCT)))
+  // When the discount is capped at 35% for display, the saving must equal
+  // 35% of market value (= what "−35%" claims), not a grossed-up figure off
+  // the paid price — otherwise the headline "−35%" and "Saved €X" disagree.
+  const saved = isCapped && marketPm2 && p.bm
+    ? Math.round(marketPm2 * p.bm * (DISPLAY_CAP_PCT / 100))
     : rawSaved;
 
   // Rank-in-town: "this is the Nth best-scored property out of M in {town}"
@@ -338,7 +322,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                   <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-2">Share</div>
                   <ShareButtons
                     url={`https://avenaterminal.com/property/${encodeURIComponent(p.ref)}`}
-                    text={`${p.p || `${p.t} in ${p.l}`} · Avena Score ${Math.round(p._sc ?? 0)}/100 · €${p.pf.toLocaleString()}${discount ? ` · ${discount}% below market` : ''}`}
+                    text={`${p.p || `${p.t} in ${p.l}`} · Avena Score ${Math.round(p._sc ?? 0)}/100 · €${p.pf.toLocaleString()}${discount && discount > 0 ? ` · ${discount}% below market` : ''}`}
                   />
                 </div>
               )}

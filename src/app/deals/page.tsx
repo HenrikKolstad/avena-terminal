@@ -15,9 +15,8 @@ import { Footer } from '@/components/v2/Footer';
 import { HeroBadge } from '@/components/v2/HeroInstrument';
 import { AlphaOfTheWeek } from '@/components/v2/AlphaOfTheWeek';
 import { FeaturedDeals } from '@/app/preview/_components/FeaturedDeals';
-import { getAllProperties } from '@/lib/properties';
 
-export const revalidate = 21600; // 6h, matching the refresh cadence
+export const revalidate = 21600; // re-rendered through the day
 
 export const metadata: Metadata = {
   title: 'Deals · scored Spanish coastal property, daily · Avena Terminal',
@@ -38,8 +37,6 @@ const jsonLd = {
 };
 
 export default function DealsPage() {
-  const total = getAllProperties().length;
-
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
@@ -53,7 +50,7 @@ export default function DealsPage() {
             Find the deals the market hasn&apos;t priced in.
           </h1>
           <p className="max-w-3xl text-base sm:text-lg text-muted-foreground leading-relaxed">
-            Every new-build property indexed daily across Spanish coastal markets and scored 0–100 on the open Avena Score methodology — discount-to-market, rental yield, developer quality and completion risk in a single number. Average operator saving: €130,000 vs market reference. {total.toLocaleString()} properties tracked, refreshed every 6 hours.
+            Every new-build property indexed daily across Spanish coastal markets and scored 0–100 on the open Avena Score methodology — discount-to-market, rental yield, developer quality and completion risk in a single number. Average operator saving: €130,000 vs market reference. Re-scored daily.
           </p>
           <div className="mt-6 flex flex-wrap gap-3 font-mono text-[10px] uppercase tracking-[0.22em]">
             <Link href="/methodology" className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>How the score works →</Link>

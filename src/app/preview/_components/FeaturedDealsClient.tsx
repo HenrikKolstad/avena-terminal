@@ -135,57 +135,34 @@ export function FeaturedDealsClient({ items: rawItems, total }: { items: DealIte
   return (
     <section
       id="deals"
-      className="relative border-t py-24 sm:py-32"
-      style={{
-        borderColor: 'hsl(var(--av-border) / 0.6)',
-        background: 'hsl(var(--av-background))',
-      }}
+      className="relative scroll-mt-16 pt-4 pb-16 sm:pt-6 sm:pb-24"
+      style={{ background: 'hsl(var(--av-background))' }}
     >
       <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
-        {/* Section header */}
-        <div className="mb-14 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
-          <div>
-            <span className="mb-4 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
-              <span
-                className="h-px w-10"
-                style={{ background: 'hsl(var(--av-primary))' }}
-              />
-              Live Rankings · 01
-            </span>
-            <h2 className="font-serif text-5xl font-light leading-[1] tracking-tight text-foreground sm:text-6xl lg:text-7xl">
-              The deals the market
-              <br />
-              <span className="italic text-gold">hasn&apos;t priced in</span>.
-            </h2>
-          </div>
-          <div className="flex items-center gap-8">
-            <div className="flex flex-col">
-              <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                Scored
-              </span>
-              <span className="font-mono text-sm tabular text-foreground">
-                {total.toLocaleString()} properties
-              </span>
-            </div>
-            {isPaid ? (
-              <Link
-                href="/"
-                className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-primary"
-              >
-                View all
-                <ArrowUpRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </Link>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setProOpen(true)}
-                className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-primary hover:text-gold cursor-pointer"
-              >
-                View all
-                <Lock className="h-3 w-3" />
-              </button>
-            )}
-          </div>
+        {/* Section header — compact & functional; the page hero carries the headline */}
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+          <span className="inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary">
+            <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+            Live rankings · top 50 by Avena Score
+          </span>
+          {isPaid ? (
+            <Link
+              href="/terminal"
+              className="group inline-flex items-center gap-2 rounded-sm font-mono text-[11px] uppercase tracking-[0.22em] text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+            >
+              Open the terminal
+              <ArrowUpRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setProOpen(true)}
+              className="group inline-flex items-center gap-2 rounded-sm font-mono text-[11px] uppercase tracking-[0.22em] text-primary hover:text-gold cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+            >
+              See all ranked deals
+              <Lock className="h-3 w-3" />
+            </button>
+          )}
         </div>
 
         {/* Filters bar */}
@@ -389,7 +366,8 @@ export function FeaturedDealsClient({ items: rawItems, total }: { items: DealIte
           </div>
         )}
 
-        {/* Desktop table */}
+        {/* Desktop table — hidden entirely when no deals match (no empty shell) */}
+        {items.length > 0 && (
         <div
           className="hidden overflow-hidden rounded-sm border lg:block relative"
           style={{
@@ -436,7 +414,7 @@ export function FeaturedDealsClient({ items: rawItems, total }: { items: DealIte
                 return (
                   <tr
                     key={d.ref || rank}
-                    className="group cursor-pointer transition-colors"
+                    className={`group transition-colors ${gated ? '' : 'hover:bg-[hsl(var(--av-surface)/0.5)]'}`}
                     style={rowStyle}
                     aria-hidden={gated}
                   >
@@ -462,7 +440,8 @@ export function FeaturedDealsClient({ items: rawItems, total }: { items: DealIte
                         <div className="flex flex-col min-w-0">
                           <Link
                             href={href}
-                            className="font-serif text-base text-foreground transition-colors hover:text-primary max-w-[240px] truncate"
+                            tabIndex={gated ? -1 : undefined}
+                            className="font-serif text-base text-foreground transition-colors hover:text-primary max-w-[240px] line-clamp-2"
                             title={d.project}
                           >
                             {d.project}
@@ -502,7 +481,7 @@ export function FeaturedDealsClient({ items: rawItems, total }: { items: DealIte
                       <span className="font-mono text-xs tabular text-muted-foreground">{fmt(Math.round(d.mm2))}</span>
                     </td>
                     <td className="border-b px-4 py-4 text-right" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
-                      <span className="font-mono text-sm font-semibold tabular text-primary">−{d.discount}%</span>
+                      <span className="font-mono text-sm font-semibold tabular text-primary">{d.discount > 0 ? `−${d.discount}%` : `${d.discount}%`}</span>
                     </td>
                     <td className="border-b px-4 py-4 text-right" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
                       <span
@@ -516,16 +495,22 @@ export function FeaturedDealsClient({ items: rawItems, total }: { items: DealIte
                       <span className="font-mono text-xs tabular text-foreground/80">{d.built}m²</span>
                     </td>
                     <td className="border-b px-4 py-4 text-right" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
-                      <span className="font-mono text-xs tabular text-foreground/80">{d.beds ?? '—'}</span>
+                      <span className="font-mono text-xs tabular text-foreground/80">{d.beds ? d.beds : '—'}</span>
                     </td>
                     <td className="border-b px-4 py-4 text-right" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
-                      <Link
-                        href={href}
-                        aria-label="Open"
-                        className="inline-flex h-7 w-7 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-primary"
-                      >
-                        <ArrowUpRight className="h-3 w-3" />
-                      </Link>
+                      {gated ? (
+                        <span className="inline-flex h-7 w-7 items-center justify-center rounded-sm text-muted-foreground/60" aria-hidden="true">
+                          <Lock className="h-3 w-3" />
+                        </span>
+                      ) : (
+                        <Link
+                          href={href}
+                          aria-label={`Open ${d.project}`}
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+                        >
+                          <ArrowUpRight className="h-3 w-3" />
+                        </Link>
+                      )}
                     </td>
                   </tr>
                 );
@@ -534,6 +519,7 @@ export function FeaturedDealsClient({ items: rawItems, total }: { items: DealIte
           </table>
 
         </div>
+        )}
 
         {/* Desktop unlock CTA — sits below the table, not overlaid on it */}
         {!isPaid && items.length > FREE_VISIBLE && (
@@ -584,7 +570,7 @@ export function FeaturedDealsClient({ items: rawItems, total }: { items: DealIte
                     </span>
                     <span className="font-serif text-3xl font-light tabular text-gold">{d.score}</span>
                   </div>
-                  <span className="font-mono text-sm font-semibold tabular text-primary">−{d.discount}%</span>
+                  <span className="font-mono text-sm font-semibold tabular text-primary">{d.discount > 0 ? `−${d.discount}%` : `${d.discount}%`}</span>
                 </div>
 
                 <div

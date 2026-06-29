@@ -71,7 +71,7 @@ export default function HomePage() {
             Find the deals the market hasn&apos;t priced in.
           </h1>
           <p className="max-w-3xl text-[15px] sm:text-lg md:text-xl text-muted-foreground leading-relaxed mb-7 sm:mb-8">
-            Every new-build property indexed daily across Spanish coastal markets and scored 0–100 on the open Avena Score — discount-to-market, rental yield, developer quality and completion risk in a single number. Average operator saving: €130,000 vs market reference. Refreshed every 6 hours.
+            Every new-build property indexed daily across Spanish coastal markets and scored 0–100 on the open Avena Score — discount-to-market, rental yield, developer quality and completion risk in a single number. Average operator saving: €130,000 vs market reference. Re-scored daily.
           </p>
 
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2.5 sm:gap-3">
@@ -99,14 +99,12 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* The deals themselves — top-50 scored new builds, refreshed daily */}
-        <section id="deals" className="scroll-mt-16">
-          <FeaturedDeals />
-          <div className="section-defer"><AlphaOfTheWeek /></div>
-        </section>
+        {/* The deals themselves — top-50 scored new builds (component owns id="deals") */}
+        <FeaturedDeals />
+        <div className="section-defer"><AlphaOfTheWeek /></div>
 
         {/* Institutional positioning — the one claim, four pillars (now below the deals) */}
-        <section className="section-tinted border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+        <section className="section-tinted">
         <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 py-12 sm:py-20">
           <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.32em] text-gold mb-3 sm:mb-4">
             What sits beneath the deals
