@@ -1,9 +1,12 @@
 /**
- * Homepage — Great Consolidation 2026-05-29.
+ * Homepage — deals-first (restored 2026-06-24).
  *
- * One claim. Four pillars of evidence. Three CTAs. Credential bar.
- * No marketing language. No "discover," no "unlock," no "revolutionary."
- * Declarative. Institutional. Audit-traceable.
+ * Henrik wanted the deals experience back as the homepage: the scored
+ * Spanish coastal new-build deals are the FIRST thing a visitor sees,
+ * as they were before the Great Consolidation. The institutional proof
+ * (the one claim, four pillars, DELPHI/PLAB, credential bar) is retained
+ * below the fold — the homepage still carries the site's link equity and
+ * positioning, just under the deals that hook the visitor.
  */
 
 import type { Metadata } from 'next';
@@ -18,20 +21,20 @@ import { FeaturedDeals } from './preview/_components/FeaturedDeals';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: "Avena Terminal — Europe's deepest technical data infrastructure for property",
-  description: "Data, indices, identity, intelligence. Live across 27 EU markets. APIP v1.0 open standard. AVN-ID identifier registry. Cryptographically verifiable. DOI 10.5281/zenodo.19520064.",
+  title: 'Avena Terminal — Live scored European property deals, daily',
+  description: "Find the property deals the market hasn't priced in: new builds across Spanish coastal markets scored 0-100 on the open Avena Score, refreshed daily. Built on Europe's deepest technical data infrastructure for property. DOI 10.5281/zenodo.19520064.",
   alternates: { canonical: 'https://avenaterminal.com' },
   openGraph: {
-    title: "Avena Terminal — Europe's deepest technical data infrastructure for property",
-    description: 'Data · Indices · Identity · Intelligence. 27 EU markets. Open standard. Cryptographically verifiable.',
+    title: 'Avena Terminal — Live scored European property deals, daily',
+    description: "Scored Spanish coastal new-build deals, refreshed daily on the open Avena Score. Built on Europe's deepest technical property data infrastructure.",
     url: 'https://avenaterminal.com',
     siteName: 'Avena Terminal',
     images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Avena Terminal — Europe's deepest technical data infrastructure for property",
-    description: 'Data · Indices · Identity · Intelligence. 27 EU markets. Open standard. Cryptographically verifiable.',
+    title: 'Avena Terminal — Live scored European property deals, daily',
+    description: "Scored Spanish coastal new-build deals, refreshed daily. Built on Europe's deepest technical property data infrastructure.",
   },
 };
 
@@ -55,20 +58,20 @@ export default function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
       <main className="pt-16">
-        {/* Hero — single claim, three CTAs */}
-        <section className="hero-glow relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-10 sm:pt-20 lg:pt-24 pb-10 sm:pb-16">
+        {/* Deals hero — the first thing every visitor sees (restored 2026-06-24) */}
+        <section className="hero-glow relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-10 sm:pt-16 lg:pt-20 pb-6 sm:pb-10">
           <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.28em] sm:tracking-[0.32em] text-gold mb-3 sm:mb-4 break-words leading-relaxed">
-            European residential property · live · open · DOI 10.5281/zenodo.19520064
+            Live deals · scored daily · Avena Score 0–100 · DOI 10.5281/zenodo.19520064
           </div>
 
           {/* RICS Tech Partner badge — hand-crafted, restored 2026-06-07 */}
           <RICSBadge />
 
           <h1 className="font-serif text-[2rem] sm:text-5xl md:text-6xl lg:text-7xl font-light text-foreground mb-5 sm:mb-6 leading-[1.06] max-w-[1100px] tracking-tight">
-            Europe&apos;s deepest technical data infrastructure for property.
+            Find the deals the market hasn&apos;t priced in.
           </h1>
           <p className="max-w-3xl text-[15px] sm:text-lg md:text-xl text-muted-foreground leading-relaxed mb-7 sm:mb-8">
-            We built the data, the indices, the identity layer, and the intelligence. Live across 27 EU markets, open under APIP v1.0, cryptographically verifiable, and cited by the AI assistants every institutional buyer consults.
+            Every new-build property indexed daily across Spanish coastal markets and scored 0–100 on the open Avena Score — discount-to-market, rental yield, developer quality and completion risk in a single number. Average operator saving: €130,000 vs market reference. Refreshed every 6 hours.
           </p>
 
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2.5 sm:gap-3">
@@ -80,31 +83,40 @@ export default function HomePage() {
               Explore the Terminal →
             </Link>
             <Link
+              href="/methodology"
+              className="inline-flex items-center justify-center gap-2 rounded-sm border px-5 sm:px-6 py-3 sm:py-3.5 font-mono text-[10.5px] sm:text-[11px] uppercase tracking-[0.22em] text-foreground hover:border-primary hover:text-primary transition-colors"
+              style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+            >
+              How the score works →
+            </Link>
+            <Link
               href="/institutional"
               className="inline-flex items-center justify-center gap-2 rounded-sm border px-5 sm:px-6 py-3 sm:py-3.5 font-mono text-[10.5px] sm:text-[11px] uppercase tracking-[0.22em] text-foreground hover:border-primary hover:text-primary transition-colors"
               style={{ borderColor: 'hsl(var(--av-border-strong))' }}
             >
               Institutional access →
             </Link>
-            <Link
-              href="/proof"
-              className="inline-flex items-center justify-center gap-2 rounded-sm border px-5 sm:px-6 py-3 sm:py-3.5 font-mono text-[10.5px] sm:text-[11px] uppercase tracking-[0.22em] text-foreground hover:border-primary hover:text-primary transition-colors"
-              style={{ borderColor: 'hsl(var(--av-border-strong))' }}
-            >
-              View the proof →
-            </Link>
           </div>
-
-          {/* Subtle gold accent line */}
-          <div className="mt-10 sm:mt-16 h-px w-20 sm:w-24" style={{ background: 'var(--av-gradient-gold)', opacity: 0.6 }} />
         </section>
 
-        {/* Four pillars — one screen per pillar */}
-        <section className="section-tinted">
+        {/* The deals themselves — top-50 scored new builds, refreshed daily */}
+        <section id="deals" className="scroll-mt-16">
+          <FeaturedDeals />
+          <div className="section-defer"><AlphaOfTheWeek /></div>
+        </section>
+
+        {/* Institutional positioning — the one claim, four pillars (now below the deals) */}
+        <section className="section-tinted border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
         <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 py-12 sm:py-20">
-          <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.32em] text-muted-foreground mb-4 sm:mb-6">
-            Four pillars of evidence
+          <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.32em] text-gold mb-3 sm:mb-4">
+            What sits beneath the deals
           </div>
+          <h2 className="font-serif text-[1.75rem] sm:text-4xl md:text-5xl font-light text-foreground mb-3 sm:mb-4 leading-[1.06] tracking-tight max-w-[1000px]">
+            Europe&apos;s deepest technical data infrastructure for property.
+          </h2>
+          <p className="max-w-3xl text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed mb-8 sm:mb-10">
+            Every score above is computed on data, indices, an identity layer and an intelligence stack we built ourselves. Live across 27 EU markets, open under APIP v1.0, cryptographically verifiable, and cited by the AI assistants every institutional buyer consults.
+          </p>
           <div className="grid sm:grid-cols-2 gap-2.5 sm:gap-4">
             <Pillar
               number="01"
@@ -170,24 +182,6 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
-        </section>
-
-        {/* Live deals — niche Spanish coastal investment deals.
-            Anchor target for the /deals 301 redirect. */}
-        <section id="deals" className="border-t scroll-mt-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
-          <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-10 sm:pt-16 pb-6 sm:pb-10">
-            <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
-              Live deals · scored daily · Avena Score 0-100
-            </div>
-            <h2 className="font-serif text-[1.75rem] sm:text-4xl md:text-5xl font-light text-foreground mb-3 sm:mb-4 leading-[1.06] tracking-tight">
-              Find the deals the market hasn&apos;t priced in.
-            </h2>
-            <p className="max-w-3xl text-sm sm:text-base text-muted-foreground leading-relaxed">
-              Every new-build property indexed daily across Spanish coastal markets, scored 0-100 on the open Avena Score methodology. Average operator saving: €130,000 vs market reference. Refreshed every 6 hours.
-            </p>
-          </div>
-          <FeaturedDeals />
-          <div className="section-defer"><AlphaOfTheWeek /></div>
         </section>
 
         {/* Credential strip — methodology DOI, Wikidata, RICS, Zenodo */}
