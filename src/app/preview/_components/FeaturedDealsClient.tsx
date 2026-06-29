@@ -26,6 +26,52 @@ export interface DealItem {
 
 const fmt = (n: number) => n.toLocaleString('en-US').replace(/,/g, ' ');
 
+/**
+ * Thumbnail that degrades gracefully: a dead image URL would otherwise
+ * render the browser's broken-image glyph. On error (or no src) we fall
+ * back to a clean surface-coloured placeholder instead.
+ */
+function DealThumb({ src, className }: { src: string | null; className: string }) {
+  const [failed, setFailed] = useState(false);
+  if (!src || failed) {
+    return <div className={className} style={{ background: 'hsl(var(--av-surface))' }} aria-hidden="true" />;
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt=""
+      aria-hidden="true"
+      loading="lazy"
+      onError={() => setFailed(true)}
+      className={className}
+      style={{ background: 'hsl(var(--av-surface))' }}
+    />
+  );
+}
+
+/** Mobile card hero image — collapses entirely if the URL is dead. */
+function DealHeroImage({ src, project, town }: { src: string | null; project: string; town: string }) {
+  const [failed, setFailed] = useState(false);
+  if (!src || failed) return null;
+  return (
+    <div className="relative -mx-4 -mt-4 mb-4 aspect-[16/9] overflow-hidden rounded-t-sm max-w-[calc(100%+2rem)]">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt={`${project} — ${town}`}
+        loading="lazy"
+        onError={() => setFailed(true)}
+        className="h-full w-full object-cover block"
+      />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: 'linear-gradient(180deg, transparent 50%, hsl(var(--av-background) / 0.8) 100%)' }}
+      />
+    </div>
+  );
+}
+
 const FREE_VISIBLE = 3;
 
 const PRICE_MIN = 50_000;
@@ -412,23 +458,7 @@ export function FeaturedDealsClient({ items: rawItems, total }: { items: DealIte
                     </td>
                     <td className="border-b px-4 py-4" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
                       <div className="flex items-center gap-3">
-                        {d.thumb ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={d.thumb}
-                            alt=""
-                            aria-hidden="true"
-                            loading="lazy"
-                            className="h-12 w-16 flex-shrink-0 rounded-sm object-cover"
-                            style={{ background: 'hsl(var(--av-surface))' }}
-                          />
-                        ) : (
-                          <div
-                            className="h-12 w-16 flex-shrink-0 rounded-sm"
-                            style={{ background: 'hsl(var(--av-surface))' }}
-                            aria-hidden="true"
-                          />
-                        )}
+                        <DealThumb src={d.thumb} className="h-12 w-16 flex-shrink-0 rounded-sm object-cover" />
                         <div className="flex flex-col min-w-0">
                           <Link
                             href={href}
@@ -544,25 +574,8 @@ export function FeaturedDealsClient({ items: rawItems, total }: { items: DealIte
 
             const Card = (
               <>
-                {/* Thumbnail header — full card width, no horizontal overflow */}
-                {d.thumb && (
-                  <div className="relative -mx-4 -mt-4 mb-4 aspect-[16/9] overflow-hidden rounded-t-sm max-w-[calc(100%+2rem)]">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={d.thumb}
-                      alt={`${d.project} — ${d.town}`}
-                      loading="lazy"
-                      className="h-full w-full object-cover block"
-                    />
-                    <div
-                      className="absolute inset-0 pointer-events-none"
-                      style={{
-                        background:
-                          'linear-gradient(180deg, transparent 50%, hsl(var(--av-background) / 0.8) 100%)',
-                      }}
-                    />
-                  </div>
-                )}
+                {/* Thumbnail header — full card width; collapses if URL is dead */}
+                <DealHeroImage src={d.thumb} project={d.project} town={d.town} />
 
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
