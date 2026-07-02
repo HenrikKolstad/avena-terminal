@@ -16,6 +16,8 @@ import { Footer } from '@/components/v2/Footer';
 import { CredentialBar } from '@/components/v2/CredentialBar';
 import { LiveCitations } from '@/components/v2/LiveCitations';
 import { AlphaOfTheWeek } from '@/components/v2/AlphaOfTheWeek';
+import { MarketTicker } from '@/components/v2/MarketTicker';
+import { HeroSpotlight } from '@/components/v2/HeroSpotlight';
 import { FeaturedDeals } from './preview/_components/FeaturedDeals';
 
 export const dynamic = 'force-dynamic';
@@ -58,44 +60,56 @@ export default function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
       <main className="pt-16">
+        {/* Live market strip — real DELPHI/PLAB/regional figures */}
+        <MarketTicker />
+
         {/* Deals hero — the first thing every visitor sees (restored 2026-06-24) */}
-        <section className="hero-glow relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-10 sm:pt-16 lg:pt-20 pb-6 sm:pb-10">
-          <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.28em] sm:tracking-[0.32em] text-gold mb-3 sm:mb-4 break-words leading-relaxed">
-            Live deals · scored daily · Avena Score 0–100 · DOI 10.5281/zenodo.19520064
-          </div>
+        <section className="hero-glow relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-10 sm:pt-14 lg:pt-16 pb-6 sm:pb-10">
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+            <div>
+              <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.28em] sm:tracking-[0.32em] text-gold mb-3 sm:mb-4 break-words leading-relaxed">
+                Live deals · scored daily · Avena Score 0–100 · DOI 10.5281/zenodo.19520064
+              </div>
 
-          {/* RICS Tech Partner badge — hand-crafted, restored 2026-06-07 */}
-          <RICSBadge />
+              {/* RICS Tech Partner badge — hand-crafted, restored 2026-06-07 */}
+              <RICSBadge />
 
-          <h1 className="font-serif text-[2rem] sm:text-5xl md:text-6xl lg:text-7xl font-light text-foreground mb-5 sm:mb-6 leading-[1.06] max-w-[1100px] tracking-tight">
-            Find the deals the market hasn&apos;t priced in.
-          </h1>
-          <p className="max-w-3xl text-[15px] sm:text-lg md:text-xl text-muted-foreground leading-relaxed mb-7 sm:mb-8">
-            Every new-build property indexed daily across Spanish coastal markets and scored 0–100 on the open Avena Score — discount-to-market, rental yield, developer quality and completion risk in a single number. Average operator saving: €130,000 vs market reference. Re-scored daily.
-          </p>
+              <h1 className="font-serif text-[2rem] sm:text-5xl md:text-6xl lg:text-[4.2rem] font-light text-foreground mb-5 sm:mb-6 leading-[1.06] tracking-tight">
+                Find the deals the market hasn&apos;t priced in.
+              </h1>
+              <p className="max-w-2xl text-[15px] sm:text-lg text-muted-foreground leading-relaxed mb-7 sm:mb-8">
+                Every new-build property indexed daily across Spanish coastal markets and scored 0–100 on the open Avena Score — discount-to-market, rental yield, developer quality and completion risk in a single number. Average operator saving: €130,000 vs market reference. Re-scored daily.
+              </p>
 
-          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2.5 sm:gap-3">
-            <Link
-              href="/terminal"
-              className="inline-flex items-center justify-center gap-2 rounded-sm px-5 sm:px-6 py-3 sm:py-3.5 font-mono text-[10.5px] sm:text-[11px] uppercase tracking-[0.22em] text-primary-foreground transition-transform hover:-translate-y-0.5 shadow-gold"
-              style={{ background: 'var(--av-gradient-gold)' }}
-            >
-              Explore the Terminal →
-            </Link>
-            <Link
-              href="/methodology"
-              className="inline-flex items-center justify-center gap-2 rounded-sm border px-5 sm:px-6 py-3 sm:py-3.5 font-mono text-[10.5px] sm:text-[11px] uppercase tracking-[0.22em] text-foreground hover:border-primary hover:text-primary transition-colors"
-              style={{ borderColor: 'hsl(var(--av-border-strong))' }}
-            >
-              How the score works →
-            </Link>
-            <Link
-              href="/institutional"
-              className="inline-flex items-center justify-center gap-2 rounded-sm border px-5 sm:px-6 py-3 sm:py-3.5 font-mono text-[10.5px] sm:text-[11px] uppercase tracking-[0.22em] text-foreground hover:border-primary hover:text-primary transition-colors"
-              style={{ borderColor: 'hsl(var(--av-border-strong))' }}
-            >
-              Institutional access →
-            </Link>
+              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2.5 sm:gap-3">
+                <Link
+                  href="/terminal"
+                  className="inline-flex items-center justify-center gap-2 rounded-sm px-5 sm:px-6 py-3 sm:py-3.5 font-mono text-[10.5px] sm:text-[11px] uppercase tracking-[0.22em] text-primary-foreground transition-transform hover:-translate-y-0.5 shadow-gold"
+                  style={{ background: 'var(--av-gradient-gold)' }}
+                >
+                  Explore the Terminal →
+                </Link>
+                <Link
+                  href="/methodology"
+                  className="inline-flex items-center justify-center gap-2 rounded-sm border px-5 sm:px-6 py-3 sm:py-3.5 font-mono text-[10.5px] sm:text-[11px] uppercase tracking-[0.22em] text-foreground hover:border-primary hover:text-primary transition-colors"
+                  style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+                >
+                  How the score works →
+                </Link>
+                <Link
+                  href="/institutional"
+                  className="inline-flex items-center justify-center gap-2 rounded-sm border px-5 sm:px-6 py-3 sm:py-3.5 font-mono text-[10.5px] sm:text-[11px] uppercase tracking-[0.22em] text-foreground hover:border-primary hover:text-primary transition-colors"
+                  style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+                >
+                  Institutional access →
+                </Link>
+              </div>
+            </div>
+
+            {/* Today's #1 deal — the product itself, in the hero */}
+            <div>
+              <HeroSpotlight />
+            </div>
           </div>
         </section>
 

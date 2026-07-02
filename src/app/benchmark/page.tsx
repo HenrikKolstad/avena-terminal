@@ -13,6 +13,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
+import { MarketTicker } from '@/components/v2/MarketTicker';
 import { Footer } from '@/components/v2/Footer';
 import { latestScores, latestRuns, PLAB_PENDING } from '@/lib/plab';
 import { PLAB_QUESTIONS, PLAB_VERSION, PLAB_CATEGORY_LABEL, type PLABCategory } from '@/lib/plab-questions';
@@ -70,6 +71,7 @@ export default async function BenchmarkPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
       <main className="min-h-screen pt-16">
+        <MarketTicker />
         <section className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10">
           <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
             PLAB v{PLAB_VERSION} · {PLAB_QUESTIONS.length} questions · scored daily 05:30 UTC · CC BY 4.0

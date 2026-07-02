@@ -13,6 +13,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { MarketTicker } from '@/components/v2/MarketTicker';
 import { indexHistory, latestPanel, type DelphiDailyRow } from '@/lib/delphi';
 import { DELPHI_QUESTIONS, DELPHI_VERSION, bullishness, type DelphiQuestion } from '@/lib/delphi-questions';
 
@@ -112,6 +113,7 @@ export default async function DelphiPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
       <main className="min-h-screen pt-16">
+        <MarketTicker />
         {/* Hero */}
         <section className="hero-glow relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-12">
           <div className="flex flex-wrap items-center gap-3 mb-4">

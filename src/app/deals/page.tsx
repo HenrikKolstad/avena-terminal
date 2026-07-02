@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { HeroBadge } from '@/components/v2/HeroInstrument';
+import { MarketTicker } from '@/components/v2/MarketTicker';
 import { AlphaOfTheWeek } from '@/components/v2/AlphaOfTheWeek';
 import { FeaturedDeals } from '@/app/preview/_components/FeaturedDeals';
 
@@ -41,7 +42,8 @@ export default function DealsPage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
-      <main className="min-h-screen">
+      <main className="min-h-screen pt-16">
+        <MarketTicker />
         <section className="hero-glow relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-6 sm:pb-10">
           <div className="mb-5">
             <HeroBadge>Live deals · scored daily · Avena Score 0–100</HeroBadge>

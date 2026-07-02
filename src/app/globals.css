@@ -571,3 +571,17 @@ body > * {
   .avena-v2 section { page-break-inside: avoid; }
   @page { margin: 16mm 14mm; size: A4; }
 }
+
+/* ─── Market ticker — slow seamless marquee (2026-07-02) ─────────────────
+   Track holds two identical rows; translating -50% loops seamlessly.
+   Pauses on hover so values can be read/clicked; static under
+   prefers-reduced-motion (first row remains fully readable). */
+@keyframes av-ticker-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.av-ticker-track { animation: av-ticker-scroll 55s linear infinite; }
+.av-ticker:hover .av-ticker-track { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .av-ticker-track { animation: none; }
+}
