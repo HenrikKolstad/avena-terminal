@@ -5,25 +5,20 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ProModal } from './ProModal';
-import { WatchlistBadge } from './WatchlistButton';
 import { useAuth } from '@/context/AuthContext';
 
-// ─── Nav structure (Great Consolidation 2026-05-29) ───────────────────────
-// 7 top-level items. Flat. No dropdowns. Each item earns its place as
-// evidence for the one claim: Europe's deepest technical data infrastructure
-// for property.
+// ─── Nav structure: deal-finder front (2026-07-02) ────────────────────────
+// Four items + one CTA. A buyer sees deals, regions, how it works; the
+// entire technical cathedral lives behind one door (/engine) and the
+// footer. Every old page stays live at its URL — this is emphasis, not
+// deletion.
 
 interface NavItem { label: string; href: string; live?: boolean }
 
 const NAV: NavItem[] = [
-  { label: 'Terminal',      href: '/terminal' },
-  { label: 'Institutional', href: '/institutional' },
-  { label: 'API',           href: '/api' },
-  { label: 'Intelligence',  href: '/intelligence' },
-  { label: 'Delphi',        href: '/delphi', live: true },
-  { label: 'Standards',     href: '/standards' },
-  { label: 'Proof',         href: '/proof' },
-  { label: 'Stack',         href: '/stack' },
+  { label: 'Deals',        href: '/deals', live: true },
+  { label: 'Regions',      href: '/regions' },
+  { label: 'How it works', href: '/how-it-works' },
 ];
 
 export function Nav() {
@@ -135,14 +130,6 @@ export function Nav() {
             <kbd className="font-mono text-[9px] uppercase tracking-[0.22em]">CMD&nbsp;K</kbd>
           </button>
           <Link
-            href="/watchlist"
-            aria-label="Watchlist"
-            className="hidden h-9 items-center justify-center rounded-sm px-2 text-muted-foreground transition-colors hover:text-primary lg:inline-flex"
-          >
-            <Star className="h-4 w-4" />
-            <WatchlistBadge />
-          </Link>
-          <Link
             href="/login"
             className="hidden items-center gap-2 rounded-sm border px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground transition-colors hover:text-primary hover:border-primary lg:inline-flex"
             style={{ borderColor: 'hsl(var(--av-border-strong))' }}
@@ -150,15 +137,13 @@ export function Nav() {
             {user ? <UserIcon className="h-3.5 w-3.5" /> : <LogIn className="h-3.5 w-3.5" />}
             {user ? (isPaid ? 'PRO' : 'Account') : 'Sign in'}
           </Link>
-          {!isPaid && (
-            <button
-              onClick={() => setProOpen(true)}
-              className="hidden rounded-sm px-5 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5 lg:inline-flex"
-              style={{ background: 'var(--av-gradient-gold)' }}
-            >
-              Upgrade →
-            </button>
-          )}
+          <Link
+            href="/enquire"
+            className="hidden rounded-sm px-5 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5 lg:inline-flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+            style={{ background: 'var(--av-gradient-gold)' }}
+          >
+            Enquire →
+          </Link>
 
           {/* Mobile menu toggle */}
           <button
@@ -231,13 +216,21 @@ export function Nav() {
               </Link>
             </div>
 
+            <Link
+              href="/enquire"
+              onClick={() => setOpen(false)}
+              className="mt-3 inline-flex items-center justify-center rounded-sm py-3.5 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold"
+              style={{ background: 'var(--av-gradient-gold)' }}
+            >
+              Enquire →
+            </Link>
             {!isPaid && (
               <button
                 onClick={() => { setOpen(false); setProOpen(true); }}
-                className="mt-3 inline-flex items-center justify-center rounded-sm py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold"
-                style={{ background: 'var(--av-gradient-gold)' }}
+                className="mt-3 inline-flex items-center justify-center rounded-sm border py-3 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground"
+                style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}
               >
-                Upgrade to PRO →
+                Upgrade to PRO
               </button>
             )}
 

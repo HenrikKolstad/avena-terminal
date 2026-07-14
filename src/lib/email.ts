@@ -160,3 +160,96 @@ export async function sendWelcomeEmail(email: string): Promise<{ sent: boolean; 
     return { sent: false, error: e instanceof Error ? e.message : 'Unknown error' };
   }
 }
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * Enquiry pipeline (2026-07-02) — the money wire.
+ * Every buyer enquiry must reach the selling agent within seconds.
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+export interface EnquiryPayload {
+  name: string;
+  email: string;
+  phone?: string;
+  budget?: string;
+  region?: string;
+  message?: string;
+  property_ref?: string;
+  property_name?: string;
+}
+
+/** New-lead alert to the agent. Subject built for inbox scanning. */
+export async function sendEnquiryToAgent(e: EnquiryPayload): Promise<{ sent: boolean; error?: string }> {
+  const resend = getResend();
+  if (!resend) return { sent: false, error: 'RESEND_API_KEY missing' };
+
+  const subj = e.property_ref
+    ? `🔔 Avena lead: ${e.name} → ${e.property_ref}${e.budget ? ` (${e.budget})` : ''}`
+    : `🔔 Avena lead: ${e.name}${e.budget ? ` (${e.budget})` : ''}${e.region ? ` · ${e.region}` : ''}`;
+
+  const row = (k: string, v?: string) => (v ? `<tr><td style="padding:6px 14px 6px 0;color:#8a8578;font-family:monospace;font-size:12px;text-transform:uppercase;letter-spacing:1px;vertical-align:top">${k}</td><td style="padding:6px 0;color:#1c1a15;font-size:14px">${v}</td></tr>` : '');
+
+  const html = `<!doctype html><html><body style="margin:0;padding:24px;background:#f7f5f0;font-family:Georgia,serif;color:#1c1a15">
+  <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #e3ded2;border-top:3px solid #c9a24b;padding:28px">
+    <p style="font-family:monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#c9a24b;margin:0 0 14px">New enquiry · avenaterminal.com</p>
+    <table style="border-collapse:collapse;width:100%">
+      ${row('Name', e.name)}
+      ${row('Email', `<a href="mailto:${e.email}">${e.email}</a>`)}
+      ${row('Phone', e.phone)}
+      ${row('Budget', e.budget)}
+      ${row('Region', e.region)}
+      ${row('Property', e.property_ref ? `${e.property_name ?? ''} · <a href="https://avenaterminal.com/property/${encodeURIComponent(e.property_ref)}">${e.property_ref}</a>` : undefined)}
+      ${row('Message', e.message)}
+    </table>
+    <p style="margin:20px 0 0;font-size:13px;color:#6d675b">Reply directly to this email to answer ${e.name.split(' ')[0]} — reply-to is set to their address.</p>
+  </div></body></html>`;
+
+  try {
+    const { error } = await resend.emails.send({
+      from: FROM,
+      to: 'henrik@xaviaestate.com',
+      replyTo: e.email,
+      subject: subj,
+      html,
+      text: `New Avena enquiry\n\nName: ${e.name}\nEmail: ${e.email}\nPhone: ${e.phone ?? '-'}\nBudget: ${e.budget ?? '-'}\nRegion: ${e.region ?? '-'}\nProperty: ${e.property_ref ?? '-'}\nMessage: ${e.message ?? '-'}`,
+    });
+    if (error) return { sent: false, error: error.message };
+    return { sent: true };
+  } catch (err) {
+    return { sent: false, error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+/** Instant acknowledgement to the buyer. */
+export async function sendEnquiryAck(e: EnquiryPayload): Promise<{ sent: boolean; error?: string }> {
+  const resend = getResend();
+  if (!resend) return { sent: false, error: 'RESEND_API_KEY missing' };
+
+  const propLine = e.property_ref
+    ? `<p style="margin:0 0 16px;font-size:15px;line-height:1.7">You asked about <a href="https://avenaterminal.com/property/${encodeURIComponent(e.property_ref)}" style="color:#c9a24b">${e.property_name ?? e.property_ref}</a> — a good pick. We'll come back with the full picture: price history, comparable sales, and anything the listing doesn't tell you.</p>`
+    : `<p style="margin:0 0 16px;font-size:15px;line-height:1.7">We'll come back with hand-picked deals matching your budget and region — each scored on discount-to-market, rental yield and developer quality.</p>`;
+
+  const html = `<!doctype html><html><body style="margin:0;padding:24px;background:#f7f5f0;font-family:Georgia,serif;color:#1c1a15">
+  <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #e3ded2;border-top:3px solid #c9a24b;padding:28px">
+    <p style="font-family:monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#c9a24b;margin:0 0 14px">Avena · enquiry received</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.7">Hi ${e.name.split(' ')[0]},</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.7">Thanks for your enquiry — it has landed directly with our agent, and you'll hear from us <strong>within the hour</strong> (usually much faster).</p>
+    ${propLine}
+    <p style="margin:0 0 4px;font-size:15px;line-height:1.7">While you wait: <a href="https://avenaterminal.com/deals" style="color:#c9a24b">this week's top-scored deals</a> · <a href="https://avenaterminal.com/how-it-works" style="color:#c9a24b">how Avena works</a></p>
+    <p style="margin:20px 0 0;font-size:13px;color:#6d675b">Avena — underpriced Spanish coastal property, scored daily. Every score is built on a signed, audited data engine: <a href="https://avenaterminal.com/engine" style="color:#6d675b">avenaterminal.com/engine</a></p>
+  </div></body></html>`;
+
+  try {
+    const { error } = await resend.emails.send({
+      from: FROM,
+      to: e.email,
+      replyTo: REPLY_TO,
+      subject: 'We got your enquiry — expect to hear from us within the hour',
+      html,
+      text: `Hi ${e.name.split(' ')[0]},\n\nThanks for your enquiry — it has landed with our agent and you'll hear from us within the hour.\n\nWhile you wait: https://avenaterminal.com/deals\n\n— Avena`,
+    });
+    if (error) return { sent: false, error: error.message };
+    return { sent: true };
+  } catch (err) {
+    return { sent: false, error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}

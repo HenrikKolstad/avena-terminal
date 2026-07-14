@@ -108,7 +108,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ['/answers',          'weekly',  0.85],
 
     // ─── Deals — standalone conversion page (restored 2026-06-24) ─────────
-    ['/deals',            'daily',   0.9],
+    ['/deals',            'daily',   0.95],
+
+    // ─── Buyer-facing primaries (deal-finder front, 2026-07-02) ───────────
+    ['/regions',          'daily',   0.9],
+    ['/how-it-works',     'weekly',  0.9],
+    ['/enquire',          'monthly', 0.8],
+    ['/engine',           'weekly',  0.85],
   ];
 
   const entries: MetadataRoute.Sitemap = STATIC_HIGH.map(([path, freq, prio]) => ({

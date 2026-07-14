@@ -497,19 +497,29 @@ export function FeaturedDealsClient({ items: rawItems, total }: { items: DealIte
                     <td className="border-b px-4 py-4 text-right" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
                       <span className="font-mono text-xs tabular text-foreground/80">{d.beds ? d.beds : '—'}</span>
                     </td>
-                    <td className="border-b px-4 py-4 text-right" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
+                    <td className="border-b px-4 py-4 text-right whitespace-nowrap" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
                       {gated ? (
                         <span className="inline-flex h-7 w-7 items-center justify-center rounded-sm text-muted-foreground/60" aria-hidden="true">
                           <Lock className="h-3 w-3" />
                         </span>
                       ) : (
-                        <Link
-                          href={href}
-                          aria-label={`Open ${d.project}`}
-                          className="inline-flex h-7 w-7 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
-                        >
-                          <ArrowUpRight className="h-3 w-3" />
-                        </Link>
+                        <span className="inline-flex items-center gap-2">
+                          <Link
+                            href={`/enquire?ref=${encodeURIComponent(d.ref!)}&name=${encodeURIComponent(d.project)}`}
+                            aria-label={`Enquire about ${d.project}`}
+                            className="inline-flex items-center rounded-sm px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.18em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+                            style={{ background: 'var(--av-gradient-gold)' }}
+                          >
+                            Enquire
+                          </Link>
+                          <Link
+                            href={href}
+                            aria-label={`Open ${d.project}`}
+                            className="inline-flex h-7 w-7 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+                          >
+                            <ArrowUpRight className="h-3 w-3" />
+                          </Link>
+                        </span>
                       )}
                     </td>
                   </tr>
@@ -647,14 +657,32 @@ export function FeaturedDealsClient({ items: rawItems, total }: { items: DealIte
             }
 
             return (
-              <Link
+              <div
                 key={d.ref || rank}
-                href={href}
-                className="rounded-sm border p-4 active:opacity-80 transition-opacity overflow-hidden block"
+                className="rounded-sm border p-4 overflow-hidden"
                 style={cardStyle}
               >
-                {Card}
-              </Link>
+                <Link href={href} className="block active:opacity-80 transition-opacity">
+                  {Card}
+                </Link>
+                <div className="mt-4 grid grid-cols-[1fr_auto] gap-2">
+                  <Link
+                    href={d.ref ? `/enquire?ref=${encodeURIComponent(d.ref)}&name=${encodeURIComponent(d.project)}` : '/enquire'}
+                    className="inline-flex items-center justify-center rounded-sm py-3 font-mono text-[10px] uppercase tracking-[0.2em] text-primary-foreground shadow-gold"
+                    style={{ background: 'var(--av-gradient-gold)' }}
+                  >
+                    Enquire about this property →
+                  </Link>
+                  <Link
+                    href={href}
+                    aria-label={`View ${d.project}`}
+                    className="inline-flex items-center justify-center rounded-sm border px-4 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground"
+                    style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+                  >
+                    View
+                  </Link>
+                </div>
+              </div>
             );
           })}
 
@@ -705,6 +733,10 @@ export function FeaturedDealsClient({ items: rawItems, total }: { items: DealIte
               ? `Showing top ${items.length} of ${total.toLocaleString()} · request full feed above`
               : `Live data — ${total.toLocaleString()} scored properties · full access`
             : `Showing top ${FREE_VISIBLE} · ${(total - FREE_VISIBLE).toLocaleString()}+ more properties with PRO`}
+        </p>
+        <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/80">
+          Every score is built on a signed, audited data engine.{' '}
+          <Link href="/engine" className="text-gold hover:underline">See how →</Link>
         </p>
       </div>
 

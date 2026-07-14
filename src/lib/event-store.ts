@@ -33,7 +33,8 @@ export type AggregateType =
   | 'macro'
   | 'regulatory'
   | 'prediction'
-  | 'limitation';
+  | 'limitation'
+  | 'lead';
 
 export interface EventRecord<P = Record<string, unknown>> {
   event_id: string;

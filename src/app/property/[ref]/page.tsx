@@ -284,13 +284,20 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                 const mailto = `mailto:henrik@xaviaestate.com?subject=${subject}&body=${body}`;
                 return (
                   <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                    <a
-                      href={mailto}
+                    <Link
+                      href={`/enquire?ref=${encodeURIComponent(p.ref ?? '')}&name=${encodeURIComponent(p.p || `${p.t} in ${p.l}`)}`}
                       className="group inline-flex items-center justify-center gap-3 rounded-sm px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5 flex-1"
                       style={{ background: 'var(--av-gradient-gold)' }}
                     >
-                      Contact Avena
+                      Enquire about this property
                       <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </Link>
+                    <a
+                      href={mailto}
+                      className="inline-flex items-center justify-center gap-2 rounded-sm border px-5 py-4 font-mono text-[10px] uppercase tracking-[0.22em] text-foreground hover:border-primary hover:text-primary transition-colors"
+                      style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+                    >
+                      Email instead
                     </a>
                     {p.ref && <WatchlistButton propertyRef={p.ref} size="md" />}
                   </div>
