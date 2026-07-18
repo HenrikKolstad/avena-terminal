@@ -228,13 +228,18 @@ export async function sendEnquiryToAgent(e: EnquiryPayload): Promise<{ sent: boo
     <p style="margin:20px 0 0;font-size:13px;color:#6d675b">Reply directly to this email to answer ${e.name.split(' ')[0]} — reply-to is set to their address.</p>
   </div></body></html>`;
 
-  return sendWithFallback(resend, {
-    to: 'henrik@xaviaestate.com',
-    replyTo: e.email,
-    subject: subj,
-    html,
-    text: `New Avena enquiry\n\nName: ${e.name}\nEmail: ${e.email}\nPhone: ${e.phone ?? '-'}\nBudget: ${e.budget ?? '-'}\nRegion: ${e.region ?? '-'}\nProperty: ${e.property_ref ?? '-'}\nMessage: ${e.message ?? '-'}`,
-  });
+  const text = `New Avena enquiry\n\nName: ${e.name}\nEmail: ${e.email}\nPhone: ${e.phone ?? '-'}\nBudget: ${e.budget ?? '-'}\nRegion: ${e.region ?? '-'}\nProperty: ${e.property_ref ?? '-'}\nMessage: ${e.message ?? '-'}`;
+
+  // Recipient fallback: until the avenaterminal.com domain is verified in
+  // Resend, test-mode only delivers to the account's own address. Henrik owns
+  // both inboxes — an alert in the fallback inbox beats a lost lead.
+  const primary = await sendWithFallback(resend, { to: 'henrik@xaviaestate.com', replyTo: e.email, subject: subj, html, text });
+  if (primary.sent) return primary;
+  console.error('[email] agent alert to xaviaestate failed, trying fallback inbox:', primary.error);
+  const fallback = await sendWithFallback(resend, { to: 'henrik@betongsproyting.no', replyTo: e.email, subject: `${subj} [levert til fallback-innboks]`, html, text });
+  return fallback.sent
+    ? { sent: true, error: 'delivered to fallback inbox (verify avenaterminal.com in Resend to route to xaviaestate)' }
+    : { sent: false, error: `xaviaestate: ${primary.error} · fallback: ${fallback.error}` };
 }
 
 /** Instant acknowledgement to the buyer. */
