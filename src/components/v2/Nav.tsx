@@ -137,6 +137,15 @@ export function Nav() {
             {user ? <UserIcon className="h-3.5 w-3.5" /> : <LogIn className="h-3.5 w-3.5" />}
             {user ? (isPaid ? 'PRO' : 'Account') : 'Sign in'}
           </Link>
+          {!isPaid && (
+            <button
+              onClick={() => setProOpen(true)}
+              className="hidden items-center rounded-sm border px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-gold transition-colors hover:border-primary lg:inline-flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+              style={{ borderColor: 'hsl(var(--av-primary) / 0.45)' }}
+            >
+              PRO
+            </button>
+          )}
           <Link
             href="/enquire"
             className="hidden rounded-sm px-5 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5 lg:inline-flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
