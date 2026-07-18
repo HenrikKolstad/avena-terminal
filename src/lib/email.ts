@@ -166,6 +166,31 @@ export async function sendWelcomeEmail(email: string): Promise<{ sent: boolean; 
  * Every buyer enquiry must reach the selling agent within seconds.
  * ──────────────────────────────────────────────────────────────────────────── */
 
+/**
+ * Send with sender-fallback: if the branded from-address fails (typically an
+ * unverified domain in Resend), retry once from Resend's always-verified
+ * onboarding sender. A lead alert from a fallback address beats no alert.
+ */
+async function sendWithFallback(
+  resend: Resend,
+  args: { to: string; replyTo: string; subject: string; html: string; text: string },
+): Promise<{ sent: boolean; error?: string }> {
+  const attempt = async (from: string) => {
+    const { error } = await resend.emails.send({ from, ...args });
+    return error ? error.message : null;
+  };
+  try {
+    const primaryErr = await attempt(FROM);
+    if (!primaryErr) return { sent: true };
+    console.error('[email] primary sender failed:', primaryErr);
+    const fallbackErr = await attempt('Avena <onboarding@resend.dev>');
+    if (!fallbackErr) return { sent: true, error: `primary failed (${primaryErr}); sent via fallback sender` };
+    return { sent: false, error: `primary: ${primaryErr} · fallback: ${fallbackErr}` };
+  } catch (e) {
+    return { sent: false, error: e instanceof Error ? e.message : 'Unknown error' };
+  }
+}
+
 export interface EnquiryPayload {
   name: string;
   email: string;
@@ -203,20 +228,13 @@ export async function sendEnquiryToAgent(e: EnquiryPayload): Promise<{ sent: boo
     <p style="margin:20px 0 0;font-size:13px;color:#6d675b">Reply directly to this email to answer ${e.name.split(' ')[0]} — reply-to is set to their address.</p>
   </div></body></html>`;
 
-  try {
-    const { error } = await resend.emails.send({
-      from: FROM,
-      to: 'henrik@xaviaestate.com',
-      replyTo: e.email,
-      subject: subj,
-      html,
-      text: `New Avena enquiry\n\nName: ${e.name}\nEmail: ${e.email}\nPhone: ${e.phone ?? '-'}\nBudget: ${e.budget ?? '-'}\nRegion: ${e.region ?? '-'}\nProperty: ${e.property_ref ?? '-'}\nMessage: ${e.message ?? '-'}`,
-    });
-    if (error) return { sent: false, error: error.message };
-    return { sent: true };
-  } catch (err) {
-    return { sent: false, error: err instanceof Error ? err.message : 'Unknown error' };
-  }
+  return sendWithFallback(resend, {
+    to: 'henrik@xaviaestate.com',
+    replyTo: e.email,
+    subject: subj,
+    html,
+    text: `New Avena enquiry\n\nName: ${e.name}\nEmail: ${e.email}\nPhone: ${e.phone ?? '-'}\nBudget: ${e.budget ?? '-'}\nRegion: ${e.region ?? '-'}\nProperty: ${e.property_ref ?? '-'}\nMessage: ${e.message ?? '-'}`,
+  });
 }
 
 /** Instant acknowledgement to the buyer. */
@@ -238,18 +256,11 @@ export async function sendEnquiryAck(e: EnquiryPayload): Promise<{ sent: boolean
     <p style="margin:20px 0 0;font-size:13px;color:#6d675b">Avena — underpriced Spanish coastal property, scored daily. Every score is built on a signed, audited data engine: <a href="https://avenaterminal.com/engine" style="color:#6d675b">avenaterminal.com/engine</a></p>
   </div></body></html>`;
 
-  try {
-    const { error } = await resend.emails.send({
-      from: FROM,
-      to: e.email,
-      replyTo: REPLY_TO,
-      subject: 'We got your enquiry — expect to hear from us within the hour',
-      html,
-      text: `Hi ${e.name.split(' ')[0]},\n\nThanks for your enquiry — it has landed with our agent and you'll hear from us within the hour.\n\nWhile you wait: https://avenaterminal.com/deals\n\n— Avena`,
-    });
-    if (error) return { sent: false, error: error.message };
-    return { sent: true };
-  } catch (err) {
-    return { sent: false, error: err instanceof Error ? err.message : 'Unknown error' };
-  }
+  return sendWithFallback(resend, {
+    to: e.email,
+    replyTo: REPLY_TO,
+    subject: 'We got your enquiry — expect to hear from us within the hour',
+    html,
+    text: `Hi ${e.name.split(' ')[0]},\n\nThanks for your enquiry — it has landed with our agent and you'll hear from us within the hour.\n\nWhile you wait: https://avenaterminal.com/deals\n\n— Avena`,
+  });
 }

@@ -50,8 +50,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'valid_email_required' }, { status: 400 });
   }
 
-  // 1. Store (best-effort — never blocks the lead)
+  // 1. STORE FIRST — non-negotiable. Rich table when it exists; otherwise
+  //    fall back to the proven `leads` table (the same path /api/leads uses,
+  //    known-working in prod). The lead must never depend on email.
   let stored = false;
+  let storePath: string = 'none';
   if (supabaseAdmin) {
     try {
       const { error } = await supabaseAdmin.from('leads_enquiries').insert({
@@ -64,34 +67,64 @@ export async function POST(req: NextRequest) {
         property_ref: payload.property_ref ?? null,
         source: payload.property_ref ? 'property_card' : 'enquire_page',
       });
-      stored = !error;
-      if (error) console.error('[enquire] db insert failed:', error.message);
+      if (!error) { stored = true; storePath = 'leads_enquiries'; }
+      else console.error('[enquire] leads_enquiries insert failed:', error.message);
     } catch (e) {
-      console.error('[enquire] db error:', e);
+      console.error('[enquire] leads_enquiries error:', e);
+    }
+
+    if (!stored) {
+      // Fallback: the working `leads` table. Narrower schema, so the full
+      // enquiry is packed into its text columns — readable, nothing lost.
+      try {
+        const details = [
+          payload.name,
+          payload.phone && `tel ${payload.phone}`,
+          payload.budget && `budget ${payload.budget}`,
+          payload.region && `region ${payload.region}`,
+          payload.message && `msg: ${payload.message.slice(0, 500)}`,
+        ].filter(Boolean).join(' · ');
+        const { error } = await supabaseAdmin.from('leads').insert({
+          property_ref: payload.property_ref ?? 'general-enquiry',
+          property_name: payload.property_name ?? null,
+          developer: details,
+          action: 'enquiry',
+          user_email: payload.email,
+        });
+        if (!error) { stored = true; storePath = 'leads(fallback)'; }
+        else console.error('[enquire] leads fallback insert failed:', error.message);
+      } catch (e) {
+        console.error('[enquire] leads fallback error:', e);
+      }
     }
   }
 
-  // 2. The critical path — agent alert
+  // 2. Agent alert (secondary to storage, still vital)
   const agent = await sendEnquiryToAgent(payload);
   if (!agent.sent) console.error('[enquire] AGENT EMAIL FAILED:', agent.error);
 
   // 3. Buyer acknowledgement (best-effort)
   const ack = await sendEnquiryAck(payload);
 
-  // 4. Event trail
+  // 4. Event trail (metadata only — events are publicly readable, no PII)
   try {
     await recordEvent({
       event_type: 'lead.enquiry_received',
       aggregate_type: 'lead',
-      aggregate_id: payload.property_ref ?? payload.email,
-      payload: { has_property: !!payload.property_ref, region: payload.region ?? null, stored, agent_emailed: agent.sent },
+      aggregate_id: payload.property_ref ?? 'general',
+      payload: { has_property: !!payload.property_ref, region: payload.region ?? null, stored, store_path: storePath, agent_emailed: agent.sent },
     });
   } catch { /* non-fatal */ }
 
-  // Lead reached a human (or at least the DB) → success for the buyer.
-  const delivered = agent.sent || stored;
+  // 5. Last-resort persistence: if NOTHING above worked, the full enquiry
+  //    goes to the function log so the lead is recoverable from Vercel logs.
+  const delivered = stored || agent.sent;
+  if (!delivered) {
+    console.error('[enquire] LEAD NOT DELIVERED — FULL PAYLOAD FOR RECOVERY:', JSON.stringify(payload));
+  }
+
   return NextResponse.json(
-    { ok: delivered, stored, agent_emailed: agent.sent, ack_emailed: ack.sent },
+    { ok: delivered, stored, store_path: storePath, agent_emailed: agent.sent, ack_emailed: ack.sent },
     { status: delivered ? 200 : 502 },
   );
 }
