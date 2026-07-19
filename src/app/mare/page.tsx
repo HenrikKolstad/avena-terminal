@@ -89,50 +89,13 @@ export default function MarePage() {
     <div style={{ background: '#070a12' }}>
       {/* ═══════════════════════ HERO — the living dusk ═══════════════════════ */}
       <section className="relative h-[100svh] min-h-[640px] overflow-hidden">
+        {/* Henrik's photograph + living-water shader (see MareHero) */}
         <MareSea className="absolute inset-0 h-full w-full" />
 
-        {/* Cliffside villa silhouette, warm windows */}
-        <svg
-          viewBox="0 0 1000 620" preserveAspectRatio="xMaxYMax slice" aria-hidden="true"
-          className="pointer-events-none absolute right-0 bottom-0 h-[86%] w-auto max-w-[62%] opacity-95"
-        >
-          <defs>
-            <linearGradient id="cliff" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stopColor="#0d0f16" />
-              <stop offset="1" stopColor="#05060b" />
-            </linearGradient>
-            <filter id="warm" x="-80%" y="-80%" width="260%" height="260%">
-              <feGaussianBlur stdDeviation="2.2" />
-            </filter>
-          </defs>
-          {/* headland */}
-          <path d="M1000,620 L1000,150 C930,160 905,205 860,225 C815,246 800,300 748,318 C700,335 690,392 640,410 C596,427 560,470 545,505 C525,552 470,585 430,620 Z" fill="url(#cliff)" />
-          {/* terraced villa block */}
-          <path d="M1000,620 L1000,235 L870,255 L868,330 L780,348 L778,430 L690,448 L688,530 L600,548 L598,620 Z" fill="#090b12" />
-          {/* arched loggia hints */}
-          <g fill="#f5b56a" filter="url(#warm)">
-            <rect x="912" y="286" width="16" height="26" rx="8" opacity="0.9" />
-            <rect x="944" y="286" width="16" height="26" rx="8" opacity="0.75" />
-            <rect x="822" y="376" width="15" height="24" rx="7.5" opacity="0.9" />
-            <rect x="852" y="376" width="15" height="24" rx="7.5" opacity="0.65" />
-            <rect x="732" y="470" width="14" height="22" rx="7" opacity="0.85" />
-            <rect x="762" y="470" width="14" height="22" rx="7" opacity="0.7" />
-            <rect x="642" y="562" width="13" height="20" rx="6.5" opacity="0.8" />
-          </g>
-          {/* cypresses */}
-          <g fill="#04060a">
-            <path d="M585,620 C578,560 580,528 585,505 C590,528 592,560 585,620 Z" />
-            <path d="M853,255 C847,205 849,180 853,162 C857,180 859,205 853,255 Z" />
-            <path d="M760,352 C755,308 756,286 760,270 C764,286 765,308 760,352 Z" />
-          </g>
-          {/* pool lip catching light */}
-          <rect x="600" y="616" width="400" height="4" fill="#f5b56a" opacity="0.28" filter="url(#warm)" />
-        </svg>
-
-        {/* legibility gradient */}
-        <div className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(100deg, rgba(4,6,12,0.72) 0%, rgba(4,6,12,0.28) 45%, rgba(4,6,12,0.05) 70%)' }} />
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-28" style={{ background: 'linear-gradient(180deg, rgba(4,6,12,0.6), transparent)' }} />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24" style={{ background: 'linear-gradient(0deg, rgba(4,6,12,0.55), transparent)' }} />
+        {/* legibility scrims — tuned for a bright photograph */}
+        <div className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(97deg, rgba(10,10,18,0.66) 0%, rgba(10,10,18,0.34) 42%, rgba(10,10,18,0.02) 68%)' }} />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-32" style={{ background: 'linear-gradient(180deg, rgba(8,8,15,0.55), transparent)' }} />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28" style={{ background: 'linear-gradient(0deg, rgba(8,8,15,0.5), transparent)' }} />
 
         {/* ── nav ── */}
         <header className="absolute inset-x-0 top-0 z-20">
