@@ -196,7 +196,7 @@ export function MareSea({ className }: { className?: string }) {
 
     const io = new IntersectionObserver(([e]) => {
       const visible = e.isIntersecting;
-      if (visible && !running) { running = true; frame(); }
+      if (visible && !running) { running = true; last = 0; frame(performance.now()); }
       if (!visible) { running = false; cancelAnimationFrame(raf); }
     });
     io.observe(canvas);
