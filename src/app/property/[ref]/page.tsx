@@ -153,6 +153,20 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
       {p.ref && <RecordPropertyView propertyRef={p.ref} />}
 
       <main className="pt-16 overflow-x-clip" style={{ maxWidth: '100vw' }}>
+        {/* Dossier strip — stitches the detail page into the MARE register */}
+        <div className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.5)', background: 'hsl(var(--av-surface) / 0.35)' }}>
+          <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-x-6 gap-y-1 px-5 py-3 font-mono text-[9px] uppercase tracking-[0.35em] text-foreground/60 sm:px-12">
+            <span className="flex items-center gap-3">
+              <span className="h-px w-6" style={{ background: 'hsl(var(--av-primary))' }} />
+              The dossier · {p.ref ?? '—'}
+            </span>
+            <span className="hidden sm:inline">{(p.costa ?? 'Costa Blanca').toUpperCase()} · ES</span>
+            <span>
+              Avena Score <span className="text-gold">{Math.round(p._sc ?? 0)}</span> · scored this morning
+            </span>
+          </div>
+        </div>
+
         <div className="mx-auto max-w-[1400px] px-5 sm:px-12 py-10 min-w-0" style={{ width: '100%' }}>
           {/* Breadcrumb */}
           <nav className="mb-8 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground flex flex-wrap items-center gap-2">
@@ -216,10 +230,13 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                     <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
                       Avena Score
                     </div>
-                    <div className={`font-serif text-5xl sm:text-6xl font-light tabular ${
-                      p._sc >= 70 ? 'text-primary' : p._sc >= 50 ? 'text-accent' : 'text-destructive'
-                    }`}>
-                      {Math.round(p._sc)}
+                    <div className="flex items-center gap-3">
+                      <span className={`font-serif text-5xl sm:text-6xl font-light tabular ${
+                        p._sc >= 70 ? 'text-primary' : p._sc >= 50 ? 'text-accent' : 'text-destructive'
+                      }`}>
+                        {Math.round(p._sc)}
+                      </span>
+                      <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary) / 0.5)' }} />
                     </div>
                     {townTotal > 3 && rankInTown > 0 && (
                       <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mt-1">
