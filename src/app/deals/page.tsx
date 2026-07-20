@@ -1,67 +1,80 @@
 /**
- * /deals — the standalone deals page (restored 2026-06-24).
+ * /deals — the full ranked book, MARE register (2026-07-20).
  *
- * The niche Spanish coastal new-build investment deals, scored daily on
- * the open Avena Score. Historically this lived only as the homepage
- * #deals section with /deals 301-redirecting to it; Henrik wanted the
- * dedicated page back, so /deals is now a real page (redirect removed)
- * reusing the same live FeaturedDeals + AlphaOfTheWeek surfaces.
+ * A shorter cinematic band, the live ticker, then the complete top-50
+ * table with the same PRO gating economics as before (first rows clear,
+ * the rest behind the unlock). Same shared math as every other surface.
  */
 
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
-import { HeroBadge } from '@/components/v2/HeroInstrument';
 import { MarketTicker } from '@/components/v2/MarketTicker';
-import { AlphaOfTheWeek } from '@/components/v2/AlphaOfTheWeek';
-import { FeaturedDeals } from '@/app/preview/_components/FeaturedDeals';
+import { LuxuryRankings } from '@/components/mare/LuxuryRankings';
+import { PrivateOffice } from '@/components/mare/Sections';
+import { getTopDeals } from '@/lib/deals';
+import { getAllProperties } from '@/lib/properties';
 
-export const revalidate = 21600; // re-rendered through the day
+export const revalidate = 21600;
 
 export const metadata: Metadata = {
-  title: 'Deals · scored Spanish coastal property, daily · Avena Terminal',
-  description:
-    'Live new-build property deals across Spanish coastal markets, each scored 0-100 on the open Avena Score. Discount-to-market, rental yield and six-figure savings surfaced daily. Find the deals the market has not priced in.',
+  title: 'Deals · the week\'s underpriced coastal homes, ranked · Avena',
+  description: 'The complete ranked book: every top-scored new-build on the Spanish coast with discount-to-market, market value and savings. Re-scored daily on the open Avena Score.',
   alternates: { canonical: 'https://avenaterminal.com/deals' },
 };
 
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
-  name: 'Avena Terminal — Live Property Deals',
-  description:
-    'Scored new-build investment deals across Spanish coastal markets, refreshed daily on the open Avena Score methodology.',
+  name: 'Avena — Ranked Coastal Property Deals',
+  description: 'Scored new-build investment deals across Spanish coastal markets, ranked daily on the open Avena Score methodology.',
   url: 'https://avenaterminal.com/deals',
-  isPartOf: { '@type': 'WebSite', name: 'Avena Terminal', url: 'https://avenaterminal.com' },
+  isPartOf: { '@type': 'WebSite', name: 'Avena', url: 'https://avenaterminal.com' },
   license: 'https://creativecommons.org/licenses/by/4.0/',
 };
 
 export default function DealsPage() {
+  const deals = getTopDeals(50);
+  const total = getAllProperties().length;
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
       <main className="min-h-screen pt-16">
-        <MarketTicker />
-        <section className="hero-glow relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-6 sm:pb-10">
-          <div className="mb-5">
-            <HeroBadge>Live deals · scored daily · Avena Score 0–100</HeroBadge>
+        {/* Cinematic band */}
+        <section className="relative h-[52svh] min-h-[420px] overflow-hidden">
+          <div className="absolute inset-0 av-slow-zoom">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/mare/hero.jpg" alt="" className="h-full w-full object-cover" />
           </div>
-          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05] tracking-tight">
-            Find the deals the market hasn&apos;t priced in.
-          </h1>
-          <p className="max-w-3xl text-base sm:text-lg text-muted-foreground leading-relaxed">
-            Every new-build property indexed daily across Spanish coastal markets and scored 0–100 on the open Avena Score methodology — discount-to-market, rental yield, developer quality and completion risk in a single number. Average operator saving: €130,000 vs market reference. Re-scored daily.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3 font-mono text-[10px] uppercase tracking-[0.22em]">
-            <Link href="/methodology" className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>How the score works →</Link>
-            <Link href="/terminal" className="rounded-sm border px-3 py-1.5 text-muted-foreground hover:text-foreground hover:border-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>Open the terminal →</Link>
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, hsl(var(--av-background) / 0.75), hsl(var(--av-background) / 0.25) 45%, hsl(var(--av-background)) 100%)' }} />
+          <div className="relative z-10 mx-auto flex h-full max-w-[1500px] flex-col justify-end px-5 pb-14 sm:px-8 lg:px-12">
+            <div className="av-fade-up">
+              <div className="mb-5 flex items-center gap-4">
+                <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+                <span className="font-mono text-[10px] uppercase tracking-[0.5em] text-gold">The full book · re-scored daily</span>
+              </div>
+              <h1 className="font-serif font-light leading-[1.04] tracking-[-0.02em] text-foreground" style={{ fontSize: 'clamp(2.2rem, 5vw, 4rem)' }}>
+                Every ranked deal, <em className="italic" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>in one ledger.</em>
+              </h1>
+            </div>
           </div>
         </section>
 
-        <FeaturedDeals />
-        <div className="section-defer"><AlphaOfTheWeek /></div>
+        <MarketTicker />
+
+        <LuxuryRankings
+          deals={deals}
+          total={total}
+          freeVisible={3}
+          eyebrow="Live rankings · the complete top 50"
+          titleA="The"
+          titleEm="underpriced"
+          titleB="fifty."
+        />
+
+        <PrivateOffice />
       </main>
       <Footer />
     </>

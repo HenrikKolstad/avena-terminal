@@ -585,3 +585,52 @@ body > * {
 @media (prefers-reduced-motion: reduce) {
   .av-ticker-track { animation: none; }
 }
+
+/* ═══ MARE rollout (2026-07-20): cinematic homepage + smooth navigation ═══ */
+
+/* Route-change entrance — applied by src/app/template.tsx on every navigation */
+@keyframes av-page-enter {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.av-page-enter { animation: av-page-enter 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+html { scroll-behavior: smooth; }
+
+/* Hero photograph settle */
+@keyframes av-slow-zoom { from { transform: scale(1.08); } to { transform: scale(1); } }
+.av-slow-zoom { animation: av-slow-zoom 20s ease-out forwards; }
+
+/* Hero copy rise */
+@keyframes av-fade-up { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+.av-fade-up { animation: av-fade-up 1.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* Town marquee */
+@keyframes av-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.av-marquee-track { animation: av-marquee 70s linear infinite; }
+
+/* Drifting light on the hero water (screen-blended, masked to the lower half) */
+.av-caustics {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 55%;
+  pointer-events: none; mix-blend-mode: screen; opacity: 0.5;
+  background-image:
+    radial-gradient(ellipse 22% 10% at 20% 30%, hsl(195 60% 80% / 0.30), transparent 60%),
+    radial-gradient(ellipse 18% 9% at 55% 55%, hsl(195 60% 78% / 0.24), transparent 65%),
+    radial-gradient(ellipse 24% 11% at 80% 40%, hsl(200 55% 79% / 0.28), transparent 60%),
+    radial-gradient(ellipse 16% 8% at 40% 75%, hsl(198 58% 80% / 0.26), transparent 65%);
+  filter: blur(6px);
+  mask-image: linear-gradient(to top, black 30%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, black 30%, transparent 100%);
+  animation: av-caustics-drift 14s ease-in-out infinite alternate;
+}
+.av-caustics-2 { animation-duration: 22s; animation-direction: alternate-reverse; opacity: 0.35; filter: blur(10px); transform: scale(1.2) rotate(4deg); }
+@keyframes av-caustics-drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(-2%, 1%, 0) scale(1.05); }
+  100% { transform: translate3d(2%, -1%, 0) scale(1.02); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .av-page-enter, .av-slow-zoom, .av-fade-up, .av-marquee-track, .av-caustics, .av-caustics-2 { animation: none; }
+  html { scroll-behavior: auto; }
+}
