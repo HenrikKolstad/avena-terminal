@@ -70,11 +70,14 @@ export default function RegionsPage() {
       <Nav />
       <main className="min-h-screen pt-16">
         <section className="hero-glow relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-10">
-          <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
-            Regions · scored daily · live aggregates
+          <div className="mb-6 flex items-center gap-4">
+            <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+            <span className="font-mono text-[10px] uppercase tracking-[0.44em] text-gold">The Coastline · scored daily</span>
           </div>
-          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05] tracking-tight">
-            Three coasts. One score.
+          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05] tracking-[-0.02em]">
+            Three coasts,
+            <br />
+            <em className="italic" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>one honest score.</em>
           </h1>
           <p className="max-w-3xl text-base sm:text-lg text-muted-foreground leading-relaxed">
             Every region below is tracked daily and scored on the same open methodology — so a 78 on the Costa Blanca means exactly what a 78 means on the Costa del Sol. Pick your coast.

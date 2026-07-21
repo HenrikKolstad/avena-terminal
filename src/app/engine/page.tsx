@@ -84,8 +84,10 @@ export default function EnginePage() {
           <div className="mb-5">
             <HeroBadge>Signed · audited · running every night</HeroBadge>
           </div>
-          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05] tracking-tight">
-            The Avena Engine.
+          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light text-foreground mb-4 leading-[1.05] tracking-[-0.02em]">
+            The house does not guess.
+            <br />
+            <em className="italic" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>This is the engine.</em>
           </h1>
           <p className="max-w-3xl text-base sm:text-lg text-muted-foreground leading-relaxed">
             Every deal score on this site is produced by the infrastructure below: an open methodology, cryptographic proof, two world-first AI instruments, open standards, and an event-sourced architecture — Europe&apos;s deepest technical data infrastructure for property. This page is the door. Everything behind it is live.

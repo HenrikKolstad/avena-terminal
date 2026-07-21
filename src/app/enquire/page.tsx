@@ -23,11 +23,14 @@ export default function EnquirePage() {
       <Nav />
       <main className="min-h-screen pt-16">
         <section className="hero-glow relative mx-auto max-w-[820px] px-5 sm:px-8 pt-12 sm:pt-16 pb-16 sm:pb-24">
-          <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">
-            Enquire · answered within the hour
+          <div className="mb-6 flex items-center gap-4">
+            <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+            <span className="font-mono text-[10px] uppercase tracking-[0.44em] text-gold">The Private Office · answered within the hour</span>
           </div>
-          <h1 className="font-serif text-4xl sm:text-5xl font-light text-foreground mb-4 leading-[1.08] tracking-tight">
-            Talk to a human about the deal.
+          <h1 className="font-serif text-4xl sm:text-5xl font-light text-foreground mb-4 leading-[1.08] tracking-[-0.02em]">
+            A quiet conversation,
+            <br />
+            <em className="italic" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>about the right home.</em>
           </h1>
           <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-10 max-w-xl">
             Tell us what you&apos;re looking for — or ask about a specific property. Your enquiry lands directly with our agent, not a call centre, and you&apos;ll hear back within the hour.

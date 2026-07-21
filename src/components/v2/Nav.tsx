@@ -82,7 +82,7 @@ export function Nav() {
           <div className="flex flex-col leading-none">
             <span className="font-serif text-lg font-light tracking-wide text-foreground">Avena</span>
             <span className="font-mono text-[9px] uppercase tracking-[0.32em] text-muted-foreground mt-0.5 hidden sm:block">
-              Terminal · Est. 2026
+              Coastal deals · Est. MMXXVI
             </span>
           </div>
         </Link>
