@@ -129,7 +129,7 @@ export function LuxuryRankings({
                       </div>
                     </td>
                     <td className="py-6 pr-4">
-                      <Link href={gated ? '#' : href} tabIndex={gated ? -1 : undefined} className="font-serif text-lg font-light leading-tight text-foreground transition-colors hover:text-gold line-clamp-1 max-w-[280px]" title={d.name}>
+                      <Link href={gated ? '#' : href} tabIndex={gated ? -1 : undefined} className="font-serif text-lg font-light leading-tight text-foreground transition-colors hover:text-gold line-clamp-2 max-w-[340px]" title={d.name}>
                         {d.name}
                       </Link>
                       <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/50">{d.town.toUpperCase()}</div>

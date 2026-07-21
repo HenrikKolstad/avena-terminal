@@ -62,11 +62,11 @@ export default function HomePage() {
       <main className="av-clean">
         <CineHero />
         <LuxuryRankings deals={deals.slice(0, 5)} total={total} seeAllHref="/deals" />
+        <PrivateOffice />
         <TownMarquee />
         <Statement />
         <LuxuryCollection deals={deals.slice(0, 4)} />
         <CoastPanels />
-        <PrivateOffice />
       </main>
       <Footer />
     </div>

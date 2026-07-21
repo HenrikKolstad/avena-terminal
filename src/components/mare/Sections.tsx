@@ -200,7 +200,7 @@ export function PrivateOffice() {
         <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, hsl(var(--av-background)), hsl(var(--av-background) / 0.88), hsl(var(--av-background)))' }} />
       </div>
 
-      <div className="relative mx-auto max-w-[860px] px-5 py-24 sm:px-8 md:py-36">
+      <div className="relative mx-auto max-w-[860px] px-5 py-16 sm:px-8 md:py-24">
         <div className="text-center">
           <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-gold">The Private Office</span>
           <h2 className="mt-8 font-serif text-5xl font-light leading-[1] tracking-[-0.02em] text-foreground md:text-7xl">
