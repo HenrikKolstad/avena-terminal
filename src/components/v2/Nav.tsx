@@ -116,14 +116,6 @@ export function Nav() {
           >
             {user ? (isPaid ? 'PRO' : 'Account') : 'Sign in'}
           </Link>
-          {!isPaid && (
-            <button
-              onClick={() => setProOpen(true)}
-              className="hidden font-mono text-[10px] uppercase tracking-[0.3em] text-gold/80 transition-colors hover:text-gold lg:inline focus-visible:outline-none"
-            >
-              PRO
-            </button>
-          )}
           <Link
             href="/enquire"
             className="group hidden items-center gap-3 border px-6 py-2.5 font-mono text-[10px] uppercase tracking-[0.35em] transition-colors lg:inline-flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"

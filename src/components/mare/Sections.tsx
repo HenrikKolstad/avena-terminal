@@ -36,17 +36,17 @@ export function Statement() {
   return (
     <section className="relative">
       <div className="mx-auto max-w-[1200px] px-5 py-28 text-center sm:px-8 md:py-40">
-        <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-gold">The Avena Method</span>
+        <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-gold">The Avena Philosophy</span>
         <h2 className="mt-8 font-serif text-4xl font-light leading-[1.05] tracking-[-0.02em] text-foreground md:text-6xl lg:text-7xl">
           We do not list houses.
           <br />
-          <em className="italic" style={{ color: GOLD_SOFT }}>We score every one of them</em>
+          <em className="italic" style={{ color: GOLD_SOFT }}>We keep a very short book</em>
           <br />
-          against the honest market.
+          of the ones worth keeping.
         </h2>
         <div className="mx-auto mt-14 h-px w-40" style={{ background: 'linear-gradient(90deg, transparent, hsl(var(--av-primary) / 0.4), transparent)' }} />
         <p className="mx-auto mt-10 max-w-2xl font-serif text-xl font-light leading-[1.7] text-foreground/75 md:text-2xl">
-          Every new-build on the coast is indexed daily and weighed against comparable sales — discount, yield, developer, completion risk — by an engine whose methodology is public to the last weight. The underpriced ones rise. Nothing else does.
+          Every residence in our collection is weighed against the last decade of comparable sales, scored by an engine whose methodology is public to the last weight, and only entered into the book if it stands on its own — for the view, for the light, and for the price.
         </p>
         <Link href="/engine" className="group mt-10 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-foreground/70 transition-colors hover:text-gold">
           <span className="h-px w-6 transition-all group-hover:w-10" style={{ background: 'hsl(var(--av-primary))' }} />
@@ -64,15 +64,15 @@ export function LuxuryCollection({ deals }: { deals: Deal[] }) {
       <div className="mx-auto max-w-[1500px] px-5 py-20 sm:px-8 lg:px-12 md:py-32">
         <div className="grid gap-8 md:grid-cols-12 md:items-end">
           <div className="md:col-span-8">
-            <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-gold">The Collection · scored this morning</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-gold">The Collection · Scored Daily</span>
             <h2 className="mt-6 font-serif text-5xl font-light leading-[1] tracking-[-0.02em] text-foreground md:text-7xl">
               {ROMAN[deals.length - 1] ? `${['One','Two','Three','Four','Five','Six'][deals.length - 1]} residences,` : 'Residences,'}
               <br />
-              <em className="italic" style={{ color: GOLD_SOFT }}>surfaced by the score.</em>
+              <em className="italic" style={{ color: GOLD_SOFT }}>chosen this season.</em>
             </h2>
           </div>
           <p className="font-serif text-lg font-light leading-relaxed text-foreground/70 md:col-span-4">
-            Chosen by the engine, not by a salesman: the highest-scored homes on the coast today, each priced beneath its market reference.
+            Each home is scored against the honest market and priced beneath its reference. Discretion is assumed.
           </p>
         </div>
 
@@ -158,13 +158,13 @@ export function CoastPanels() {
           <div className="md:col-span-7">
             <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-gold">The Coastline</span>
             <h2 className="mt-6 font-serif text-5xl font-light leading-[1] text-foreground md:text-7xl">
-              Three coasts,
+              Four hundred kilometres
               <br />
-              <em className="italic" style={{ color: GOLD_SOFT }}>one honest score.</em>
+              <em className="italic" style={{ color: GOLD_SOFT }}>of considered coast.</em>
             </h2>
           </div>
           <p className="font-serif text-lg font-light leading-relaxed text-foreground/70 md:col-span-5">
-            A 78 on the Blanca means exactly what a 78 means on the Sol — the same open methodology, recomputed each morning.
+            We keep a close eye on the coast's sub-markets. Each has its own weather, its own rhythm, and its own reasons to be there.
           </p>
         </div>
 

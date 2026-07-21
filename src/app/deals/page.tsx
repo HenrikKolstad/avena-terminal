@@ -40,7 +40,7 @@ export default function DealsPage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
-      <main className="av-clean min-h-screen pt-16">
+      <main className="av-clean min-h-screen">
         {/* Cinematic band */}
         <section className="relative h-[72svh] min-h-[520px] overflow-hidden">
           <div className="absolute inset-0 av-slow-zoom">
@@ -52,10 +52,10 @@ export default function DealsPage() {
             <div className="av-fade-up">
               <div className="mb-5 flex items-center gap-4">
                 <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
-                <span className="font-mono text-[10px] uppercase tracking-[0.5em] text-gold">The full book · re-scored daily</span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.5em] text-gold">Live Rankings · Top by Avena Score</span>
               </div>
               <h1 className="font-serif font-light leading-[1.04] tracking-[-0.02em] text-foreground" style={{ fontSize: 'clamp(2.2rem, 5vw, 4rem)' }}>
-                Every ranked deal, <em className="italic" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>in one ledger.</em>
+                The week's <em className="italic" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>underpriced</em> homes.
               </h1>
             </div>
           </div>
