@@ -60,7 +60,7 @@ export default function HomePage() {
     <div className="avena-v2 relative min-h-screen w-full">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
-      <main className="pt-16">
+      <main className="av-clean pt-16">
         <CineHero />
         <MarketTicker />
         <LuxuryRankings deals={deals.slice(0, 5)} total={total} seeAllHref="/deals" />

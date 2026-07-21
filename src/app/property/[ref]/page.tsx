@@ -152,7 +152,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
       <Nav />
       {p.ref && <RecordPropertyView propertyRef={p.ref} />}
 
-      <main className="pt-16 overflow-x-clip" style={{ maxWidth: '100vw' }}>
+      <main className="av-clean pt-16 overflow-x-clip" style={{ maxWidth: '100vw' }}>
         {/* Dossier strip — stitches the detail page into the MARE register */}
         <div className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.5)', background: 'hsl(var(--av-surface) / 0.35)' }}>
           <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-x-6 gap-y-1 px-5 py-3 font-mono text-[9px] uppercase tracking-[0.35em] text-foreground/60 sm:px-12">

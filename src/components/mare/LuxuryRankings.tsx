@@ -41,7 +41,7 @@ export function LuxuryRankings({
 
   return (
     <section id="rankings" className="scroll-mt-16 border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>
-      <div className="mx-auto max-w-[1500px] px-5 py-20 sm:px-8 lg:px-12 md:py-28">
+      <div className="mx-auto max-w-[1500px] px-5 py-14 sm:px-8 lg:px-12 md:py-20">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
             <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-gold">{eyebrow}</span>
@@ -57,7 +57,51 @@ export function LuxuryRankings({
           )}
         </div>
 
-        <div className="mt-14 overflow-x-auto">
+        {/* Mobile — editorial cards; a 900px table has no business on a phone */}
+        <div className="mt-10 space-y-0 lg:hidden">
+          {deals.map((d, idx) => {
+            const gated = idx >= gatedFrom;
+            const href = `/property/${encodeURIComponent(d.ref)}`;
+            return (
+              <div
+                key={d.ref}
+                className="border-b py-6"
+                style={{ borderColor: 'hsl(var(--av-border) / 0.4)', ...(gated ? { filter: 'blur(6px) saturate(0.7)', opacity: 0.55, userSelect: 'none' as const, pointerEvents: 'none' as const } : {}) }}
+                aria-hidden={gated}
+              >
+                <div className="flex items-baseline justify-between gap-4">
+                  <span className="font-mono text-[10px] tracking-[0.3em] text-foreground/45">{String(idx + 1).padStart(2, '0')}</span>
+                  <span className="font-serif text-3xl font-light" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>{d.score}</span>
+                </div>
+                <Link href={gated ? '#' : href} tabIndex={gated ? -1 : undefined} className="mt-1 block font-serif text-xl font-light leading-snug text-foreground line-clamp-2">
+                  {d.name}
+                </Link>
+                <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/50">{d.town.toUpperCase()} · {d.region.toUpperCase()}</div>
+                <div className="mt-4 flex flex-wrap items-baseline gap-x-5 gap-y-1">
+                  <span className="font-serif text-lg text-foreground">€{fmt(d.price)}</span>
+                  <span className="font-mono text-sm text-gold">−{d.discount}%</span>
+                  <span className="font-serif text-lg" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>€{fmt(d.saved)} saved</span>
+                </div>
+                {!gated && (
+                  <div className="mt-4 grid grid-cols-[1fr_auto] gap-2">
+                    <Link
+                      href={`/enquire?ref=${encodeURIComponent(d.ref)}&name=${encodeURIComponent(d.name)}`}
+                      className="inline-flex items-center justify-center py-3 font-mono text-[10px] uppercase tracking-[0.3em] text-primary-foreground shadow-gold"
+                      style={{ background: 'var(--av-gradient-gold)' }}
+                    >
+                      Enquire →
+                    </Link>
+                    <Link href={href} className="inline-flex items-center justify-center border px-5 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground" style={{ borderColor: 'hsl(var(--av-border-strong))' }}>
+                      View
+                    </Link>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="mt-12 hidden overflow-x-auto lg:block">
           <table className="w-full min-w-[900px] border-collapse">
             <thead>
               <tr className="border-y font-mono text-[10px] uppercase tracking-[0.35em] text-foreground/50" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>

@@ -41,9 +41,10 @@ export default function DealsPage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
-      <main className="min-h-screen pt-16">
+      <main className="av-clean min-h-screen pt-16">
+        <MarketTicker />
         {/* Cinematic band */}
-        <section className="relative h-[52svh] min-h-[420px] overflow-hidden">
+        <section className="relative h-[46svh] min-h-[380px] overflow-hidden">
           <div className="absolute inset-0 av-slow-zoom">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/mare/hero.jpg" alt="" className="h-full w-full object-cover" />
@@ -62,7 +63,6 @@ export default function DealsPage() {
           </div>
         </section>
 
-        <MarketTicker />
 
         <LuxuryRankings
           deals={deals}

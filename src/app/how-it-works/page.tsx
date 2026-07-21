@@ -61,7 +61,7 @@ export default function HowItWorksPage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
-      <main className="min-h-screen pt-16">
+      <main className="av-clean min-h-screen pt-16">
         <section className="hero-glow relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-10">
           <div className="mb-6 flex items-center gap-4">
             <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />

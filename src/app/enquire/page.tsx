@@ -21,7 +21,7 @@ export default function EnquirePage() {
   return (
     <>
       <Nav />
-      <main className="min-h-screen pt-16">
+      <main className="av-clean min-h-screen pt-16">
         <section className="hero-glow relative mx-auto max-w-[820px] px-5 sm:px-8 pt-12 sm:pt-16 pb-16 sm:pb-24">
           <div className="mb-6 flex items-center gap-4">
             <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />

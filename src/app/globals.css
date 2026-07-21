@@ -634,3 +634,7 @@ html { scroll-behavior: smooth; }
   .av-page-enter, .av-slow-zoom, .av-fade-up, .av-marquee-track, .av-caustics, .av-caustics-2 { animation: none; }
   html { scroll-behavior: auto; }
 }
+
+/* MARE pages run clean night — no blueprint grid, no side rails */
+body:has(main.av-clean)::before,
+body:has(main.av-clean)::after { display: none; }
