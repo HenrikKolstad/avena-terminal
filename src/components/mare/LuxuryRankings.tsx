@@ -87,7 +87,7 @@ export function LuxuryRankings({
                     <Link
                       href={`/enquire?ref=${encodeURIComponent(d.ref)}&name=${encodeURIComponent(d.name)}`}
                       className="inline-flex items-center justify-center py-3 font-mono text-[10px] uppercase tracking-[0.3em] text-primary-foreground shadow-gold"
-                      style={{ background: 'var(--av-gradient-gold)' }}
+                      style={{ background: 'hsl(var(--av-primary) / 0.9)' }}
                     >
                       Enquire →
                     </Link>
@@ -164,8 +164,8 @@ export function LuxuryRankings({
         {gatedFrom !== Infinity && deals.length > freeVisible && (
           <button
             onClick={() => setProOpen(true)}
-            className="mt-6 flex w-full flex-col items-center justify-center gap-1 py-5 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
-            style={{ background: 'var(--av-gradient-gold)' }}
+            className="mt-6 flex w-full flex-col items-center justify-center gap-1 py-5 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground transition-transform hover:-translate-y-0.5"
+            style={{ background: 'hsl(var(--av-primary) / 0.9)' }}
           >
             <span className="flex items-center gap-3">
               <Lock className="h-3.5 w-3.5" />

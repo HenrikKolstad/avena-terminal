@@ -90,7 +90,7 @@ export function CineHero() {
           </a>
 
           <div className="mt-8 flex flex-wrap items-center gap-6">
-            <a href="#rankings" className="group inline-flex items-center gap-4 px-8 py-3.5 font-mono text-[11px] uppercase tracking-[0.35em] text-primary-foreground shadow-gold transition hover:-translate-y-0.5" style={{ background: 'var(--av-gradient-gold)' }}>
+            <a href="#rankings" className="group inline-flex items-center gap-4 px-8 py-3.5 font-mono text-[11px] uppercase tracking-[0.35em] text-primary-foreground transition hover:-translate-y-0.5" style={{ background: 'hsl(var(--av-primary) / 0.9)' }}>
               See this week&apos;s deals
               <span className="transition group-hover:translate-x-1">→</span>
             </a>

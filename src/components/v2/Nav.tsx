@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu, Search, X, LogIn, Star, User as UserIcon } from 'lucide-react';
+import { Menu, X, Star, LogIn, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -71,20 +71,10 @@ export function Nav() {
       style={scrolled ? { borderColor: 'hsl(var(--av-border) / 0.6)' } : {}}
     >
       <div className="mx-auto flex h-16 max-w-[1600px] items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Brand */}
-        <Link href="/" className="group flex items-center gap-3 shrink-0">
-          <span
-            className="flex h-9 w-9 items-center justify-center rounded-sm border transition-colors group-hover:border-primary"
-            style={{ borderColor: 'hsl(var(--av-primary) / 0.35)', background: 'hsl(var(--av-primary) / 0.06)' }}
-          >
-            <span className="font-serif text-lg italic text-gold leading-none">A</span>
-          </span>
-          <div className="flex flex-col leading-none">
-            <span className="font-serif text-lg font-light tracking-wide text-foreground">Avena</span>
-            <span className="font-mono text-[9px] uppercase tracking-[0.32em] text-muted-foreground mt-0.5 hidden sm:block">
-              Coastal deals · Est. MMXXVI
-            </span>
-          </div>
+        {/* Brand — the quiet wordmark */}
+        <Link href="/" className="flex items-baseline gap-3 shrink-0">
+          <span className="font-serif text-[22px] font-light tracking-[0.3em] text-foreground">AVENA</span>
+          <span className="hidden font-mono text-[9px] uppercase tracking-[0.45em] text-muted-foreground/70 md:inline">· Mare ·</span>
         </Link>
 
         {/* Desktop nav */}
@@ -95,7 +85,7 @@ export function Nav() {
               <Link
                 key={item.label}
                 href={item.href}
-                className={`group relative inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.22em] leading-none transition-colors ${
+                className={`group relative inline-flex items-center gap-1.5 font-mono text-[10.5px] uppercase tracking-[0.3em] leading-none transition-colors ${
                   active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
@@ -118,40 +108,29 @@ export function Nav() {
           })}
         </nav>
 
-        {/* Right-side controls */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          <button
-            onClick={() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))}
-            className="hidden h-9 items-center gap-2 rounded-sm border px-2.5 text-muted-foreground transition-colors hover:text-foreground hover:border-primary lg:flex"
-            aria-label="Search (Cmd + K)"
-            style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
-          >
-            <Search className="h-3.5 w-3.5" />
-            <kbd className="font-mono text-[9px] uppercase tracking-[0.22em]">CMD&nbsp;K</kbd>
-          </button>
+        {/* Right side — hushed: one text link, one thin-bordered CTA */}
+        <div className="flex items-center gap-2 sm:gap-6">
           <Link
             href="/login"
-            className="hidden items-center gap-2 rounded-sm border px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground transition-colors hover:text-primary hover:border-primary lg:inline-flex"
-            style={{ borderColor: 'hsl(var(--av-border-strong))' }}
+            className="hidden font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground transition-colors hover:text-foreground lg:inline"
           >
-            {user ? <UserIcon className="h-3.5 w-3.5" /> : <LogIn className="h-3.5 w-3.5" />}
             {user ? (isPaid ? 'PRO' : 'Account') : 'Sign in'}
           </Link>
           {!isPaid && (
             <button
               onClick={() => setProOpen(true)}
-              className="hidden items-center rounded-sm border px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-gold transition-colors hover:border-primary lg:inline-flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
-              style={{ borderColor: 'hsl(var(--av-primary) / 0.45)' }}
+              className="hidden font-mono text-[10px] uppercase tracking-[0.3em] text-gold/80 transition-colors hover:text-gold lg:inline focus-visible:outline-none"
             >
               PRO
             </button>
           )}
           <Link
             href="/enquire"
-            className="hidden rounded-sm px-5 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5 lg:inline-flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
-            style={{ background: 'var(--av-gradient-gold)' }}
+            className="group hidden items-center gap-3 border px-6 py-2.5 font-mono text-[10px] uppercase tracking-[0.35em] transition-colors lg:inline-flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+            style={{ borderColor: 'hsl(var(--av-primary) / 0.45)', color: 'hsl(var(--av-primary) / 0.92)' }}
           >
-            Enquire →
+            Enquire
+            <span className="transition group-hover:translate-x-0.5">→</span>
           </Link>
 
           {/* Mobile menu toggle */}

@@ -11,7 +11,6 @@
 import type { Metadata } from 'next';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
-import { MarketTicker } from '@/components/v2/MarketTicker';
 import { CineHero } from '@/components/mare/CineHero';
 import { LuxuryRankings } from '@/components/mare/LuxuryRankings';
 import { TownMarquee, Statement, LuxuryCollection, CoastPanels, PrivateOffice } from '@/components/mare/Sections';
@@ -62,7 +61,6 @@ export default function HomePage() {
       <Nav />
       <main className="av-clean pt-16">
         <CineHero />
-        <MarketTicker />
         <LuxuryRankings deals={deals.slice(0, 5)} total={total} seeAllHref="/deals" />
         <TownMarquee />
         <Statement />

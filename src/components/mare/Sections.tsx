@@ -117,8 +117,8 @@ export function LuxuryCollection({ deals }: { deals: Deal[] }) {
                 <div className="mt-7 flex items-center gap-6">
                   <Link
                     href={`/enquire?ref=${encodeURIComponent(d.ref)}&name=${encodeURIComponent(d.name)}`}
-                    className="inline-flex items-center gap-3 px-6 py-3 font-mono text-[10px] uppercase tracking-[0.35em] text-primary-foreground shadow-gold transition hover:-translate-y-0.5"
-                    style={{ background: 'var(--av-gradient-gold)' }}
+                    className="inline-flex items-center gap-3 px-6 py-3 font-mono text-[10px] uppercase tracking-[0.35em] text-primary-foreground transition hover:-translate-y-0.5"
+                    style={{ background: 'hsl(var(--av-primary) / 0.9)' }}
                   >
                     Enquire →
                   </Link>

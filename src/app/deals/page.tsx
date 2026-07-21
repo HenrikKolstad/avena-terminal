@@ -9,7 +9,6 @@
 import type { Metadata } from 'next';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
-import { MarketTicker } from '@/components/v2/MarketTicker';
 import { LuxuryRankings } from '@/components/mare/LuxuryRankings';
 import { PrivateOffice } from '@/components/mare/Sections';
 import { getTopDeals } from '@/lib/deals';
@@ -42,15 +41,14 @@ export default function DealsPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
       <main className="av-clean min-h-screen pt-16">
-        <MarketTicker />
         {/* Cinematic band */}
-        <section className="relative h-[46svh] min-h-[380px] overflow-hidden">
+        <section className="relative h-[72svh] min-h-[520px] overflow-hidden">
           <div className="absolute inset-0 av-slow-zoom">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/mare/hero.jpg" alt="" className="h-full w-full object-cover" />
           </div>
           <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, hsl(var(--av-background) / 0.75), hsl(var(--av-background) / 0.25) 45%, hsl(var(--av-background)) 100%)' }} />
-          <div className="relative z-10 mx-auto flex h-full max-w-[1500px] flex-col justify-end px-5 pb-14 sm:px-8 lg:px-12">
+          <div className="relative z-10 mx-auto flex h-full max-w-[1500px] flex-col justify-end px-5 pb-20 sm:px-8 lg:px-12">
             <div className="av-fade-up">
               <div className="mb-5 flex items-center gap-4">
                 <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
