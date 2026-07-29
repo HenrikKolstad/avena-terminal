@@ -13,6 +13,7 @@ import { Lock } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { ProModal } from '@/components/v2/ProModal';
 import type { Deal } from '@/lib/deals';
+import { MareThumb } from '@/app/mare/MareThumb';
 
 const fmt = (n: number) => n.toLocaleString('en-US').replace(/,/g, ' ');
 
@@ -69,6 +70,10 @@ export function LuxuryRankings({
                 style={{ borderColor: 'hsl(var(--av-border) / 0.4)', ...(gated ? { filter: 'blur(6px) saturate(0.7)', opacity: 0.55, userSelect: 'none' as const, pointerEvents: 'none' as const } : {}) }}
                 aria-hidden={gated}
               >
+                <Link href={gated ? '#' : href} tabIndex={-1} className="relative mb-4 block overflow-hidden" style={{ aspectRatio: '16 / 9', background: 'hsl(var(--av-surface))' }} aria-hidden="true">
+                  <MareThumb src={d.image} alt="" />
+                  <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, hsl(var(--av-background) / 0.45), transparent 50%)' }} />
+                </Link>
                 <div className="flex items-baseline justify-between gap-4">
                   <span className="font-mono text-[10px] tracking-[0.3em] text-foreground/45">{String(idx + 1).padStart(2, '0')}</span>
                   <span className="font-serif text-3xl font-light" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>{d.score}</span>
@@ -129,10 +134,17 @@ export function LuxuryRankings({
                       </div>
                     </td>
                     <td className="py-6 pr-4">
-                      <Link href={gated ? '#' : href} tabIndex={gated ? -1 : undefined} className="font-serif text-lg font-light leading-tight text-foreground transition-colors hover:text-gold line-clamp-2 max-w-[340px]" title={d.name}>
-                        {d.name}
-                      </Link>
-                      <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/50">{d.town.toUpperCase()}</div>
+                      <div className="flex items-center gap-4">
+                        <Link href={gated ? '#' : href} className="relative block h-16 w-24 shrink-0 overflow-hidden" style={{ background: 'hsl(var(--av-surface))', boxShadow: 'inset 0 0 0 1px hsl(var(--av-border) / 0.5)' }} aria-hidden="true" tabIndex={-1}>
+                          <MareThumb src={d.image} alt="" />
+                        </Link>
+                        <div className="min-w-0">
+                          <Link href={gated ? '#' : href} tabIndex={gated ? -1 : undefined} className="font-serif text-lg font-light leading-tight text-foreground transition-colors hover:text-gold line-clamp-2 max-w-[300px]" title={d.name}>
+                            {d.name}
+                          </Link>
+                          <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/50">{d.town.toUpperCase()}</div>
+                        </div>
+                      </div>
                     </td>
                     <td className="py-6 pr-4 font-mono text-[11px] uppercase tracking-[0.25em] text-foreground/65">{d.region.toUpperCase()}</td>
                     <td className="py-6 pr-4 font-serif text-lg text-foreground">€{fmt(d.price)}</td>
