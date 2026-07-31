@@ -47,37 +47,49 @@ export async function GET(req: NextRequest) {
 }
 const count7d = count7dImpl;
   const sevenDaysAgo = new Date(Date.now() - 7 * 86400_000).toISOString();
+  const url = new URL(req.url);
+  const from = Number(url.searchParams.get('from') ?? 0);
+  const to = Math.min(Number(url.searchParams.get('to') ?? TABLES.length), TABLES.length);
+  const slice = TABLES.slice(from, to);
   const out: Record<string, unknown> = {};
 
-  for (const t of TABLES) {
-    const row: Record<string, unknown> = { rows: await count(t) };
-    if (typeof row.rows === 'number' && row.rows > 0) {
-      const min = await edgeValue(t, 'created_at', true);
-      if (min) {
-        row.min = min;
-        row.max = await edgeValue(t, 'created_at', false);
-        row.last_7d = await count7d(t, sevenDaysAgo);
+  // Parallel in chunks of 12 — sequential blows past the function timeout.
+  for (let i = 0; i < slice.length; i += 12) {
+    const chunk = slice.slice(i, i + 12);
+    const results = await Promise.all(chunk.map(async t => {
+      const row: Record<string, unknown> = { rows: await count(t) };
+      if (typeof row.rows === 'number' && row.rows > 0) {
+        const [min, max, d7] = await Promise.all([
+          edgeValue(t, 'created_at', true),
+          edgeValue(t, 'created_at', false),
+          count7d(t, sevenDaysAgo),
+        ]);
+        if (min) { row.min = min; row.max = max; row.last_7d = d7; }
       }
-    }
-    out[t] = row;
+      return [t, row] as const;
+    }));
+    for (const [t, row] of results) out[t] = row;
   }
 
   const targeted: Record<string, unknown> = {};
-  for (const [t, cols] of Object.entries({
-    eu_properties: ['price', 'score', 'yield', 'valuation'],
-    property_transactions: ['sold_price', 'price'],
-    sold_properties: ['sold_price', 'price'],
-    property_valuation: ['valuation', 'value', 'avm_value'],
-    price_history: ['price'],
-  })) {
-    const cells: Record<string, number | string> = { total: await count(t) };
-    for (const c of cols) cells[`${c}_non_null`] = await count(t, c);
-    targeted[t] = cells;
+  if (url.searchParams.get('targeted') === '1') {
+    for (const [t, cols] of Object.entries({
+      eu_properties: ['price', 'score', 'yield', 'valuation'],
+      property_transactions: ['sold_price', 'price'],
+      sold_properties: ['sold_price', 'price'],
+      property_valuation: ['valuation', 'value', 'avm_value'],
+      price_history: ['price'],
+    })) {
+      const cells: Record<string, number | string> = { total: await count(t) };
+      for (const c of cols) cells[`${c}_non_null`] = await count(t, c);
+      targeted[t] = cells;
+    }
   }
 
   return NextResponse.json({
     generated_at: new Date().toISOString(),
     table_count: TABLES.length,
+    range: [from, to],
     tables: out,
     targeted,
     note_db_size: 'Not obtainable via PostgREST. Supabase SQL editor: select pg_size_pretty(pg_database_size(current_database()));',
