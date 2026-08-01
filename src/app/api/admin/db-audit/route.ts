@@ -74,16 +74,24 @@ const count7d = count7dImpl;
   const targeted: Record<string, unknown> = {};
   if (url.searchParams.get('targeted') === '1') {
     for (const [t, cols] of Object.entries({
-      eu_properties: ['price', 'score', 'yield', 'valuation'],
-      property_transactions: ['sold_price', 'price'],
-      sold_properties: ['sold_price', 'price'],
-      property_valuation: ['valuation', 'value', 'avm_value'],
-      price_history: ['price'],
+      property_transactions: ['price_eur', 'price_per_m2_eur', 'transacted_at'],
+      property_pricing_history: ['price_eur', 'recorded_at'],
+      findings: ['recorded_at', 'action'],
+      properties_registry: ['municipality', 'country'],
+      score_history: ['score'],
     })) {
       const cells: Record<string, number | string> = { total: await count(t) };
       for (const c of cols) cells[`${c}_non_null`] = await count(t, c);
       targeted[t] = cells;
     }
+    targeted.date_ranges = {
+      tx_min: await edgeValue('property_transactions', 'transacted_at', true),
+      tx_max: await edgeValue('property_transactions', 'transacted_at', false),
+      pricing_min: await edgeValue('property_pricing_history', 'recorded_at', true),
+      pricing_max: await edgeValue('property_pricing_history', 'recorded_at', false),
+      findings_min: await edgeValue('findings', 'recorded_at', true),
+      findings_max: await edgeValue('findings', 'recorded_at', false),
+    };
   }
 
   return NextResponse.json({
