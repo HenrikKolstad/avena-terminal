@@ -61,9 +61,11 @@ export default function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
       <main className="av-clean">
-        <CineHero />
+        <CineHero stats={engineStats} />
         <LuxuryRankings deals={deals.slice(0, 5)} total={total} seeAllHref="/deals" />
-        <EngineProof stats={engineStats} />
+        <div className="lg:hidden">
+          <EngineProof stats={engineStats} />
+        </div>
         <PrivateOffice />
         <TownMarquee />
         <Statement />
