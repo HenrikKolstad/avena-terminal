@@ -7,13 +7,49 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { getUniqueTowns, getUniqueCostas, getAllProperties } from '@/lib/properties';
-import type { Deal } from '@/lib/deals';
+import type { Deal, EngineStats } from '@/lib/deals';
 import { MareThumb } from '@/app/mare/MareThumb';
 import { EnquireForm } from '@/app/enquire/EnquireForm';
 
 const fmt = (n: number) => n.toLocaleString('en-US').replace(/,/g, ' ');
 const GOLD_SOFT = 'hsl(var(--av-primary) / 0.92)';
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+
+/* ── Engine proof — the moat, in numbers (live from the dataset) ── */
+export function EngineProof({ stats }: { stats: EngineStats }) {
+  const compact = `€${Math.round(stats.savingsTotal / 1e6)}M`;
+  const supporting: Array<[string, string]> = [
+    [fmt(stats.liveDeals), 'Scored daily'],
+    [fmt(stats.underpriced), 'Underpriced homes'],
+    [`${stats.avgDiscount}%`, 'Average discount'],
+    [String(stats.regions), 'Coastal regions'],
+  ];
+  return (
+    <section className="relative border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>
+      <div className="mx-auto max-w-[1200px] px-5 py-28 text-center sm:px-8 md:py-36">
+        <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-gold">Every score, backed by data</span>
+        <div className="mt-8 font-serif font-light leading-[0.98] tracking-[-0.02em]" style={{ fontSize: 'clamp(3rem, 8vw, 6rem)', color: GOLD_SOFT }}>
+          {compact}
+        </div>
+        <p className="mx-auto mt-6 max-w-xl font-serif text-xl font-light leading-[1.6] text-foreground/70">
+          in identified savings across {fmt(stats.underpriced)} underpriced homes — every figure computed from live data, recomputed nightly, never guessed.
+        </p>
+        <div className="mx-auto mt-14 grid max-w-3xl grid-cols-2 gap-y-10 border-t pt-12 sm:grid-cols-4" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>
+          {supporting.map(([big, label]) => (
+            <div key={label}>
+              <div className="font-serif text-4xl font-light text-foreground md:text-5xl">{big}</div>
+              <div className="mt-3 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/50">{label}</div>
+            </div>
+          ))}
+        </div>
+        <Link href="/engine" className="group mt-14 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-foreground/70 transition-colors hover:text-gold">
+          <span className="h-px w-6 transition-all group-hover:w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+          See the engine
+        </Link>
+      </div>
+    </section>
+  );
+}
 
 /* ── Quiet marquee — real towns from the dataset ── */
 export function TownMarquee() {

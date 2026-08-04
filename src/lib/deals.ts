@@ -63,3 +63,37 @@ export function getTopDeals(n = 50): Deal[] {
 }
 
 export const fmtEUR = (n: number) => `€${n.toLocaleString('en-US').replace(/,/g, ' ')}`;
+
+export interface EngineStats {
+  savingsTotal: number;   // Σ capped savings across underpriced homes
+  underpriced: number;    // homes trading below the market benchmark
+  liveDeals: number;      // scored new-builds in the live feed
+  regions: number;        // unique coastal regions covered
+  avgDiscount: number;    // mean capped discount (%)
+}
+
+/** Live moat figures computed from the current dataset — same capped math as getTopDeals. */
+export function getEngineStats(): EngineStats {
+  const all = getAllProperties();
+  let savingsTotal = 0, underpriced = 0, discSum = 0;
+  const costas = new Set<string>();
+  for (const p of all) {
+    if (p.costa) costas.add(p.costa);
+    if (!(p.pf > 0 && p.pm2 && p.mm2 && p.bm) || !(p.mm2 > p.pm2)) continue;
+    const built = Math.round(p.bm);
+    const raw = Math.round((1 - p.pm2 / p.mm2) * 100);
+    const disc = Math.min(raw, DISPLAY_CAP_PCT);
+    savingsTotal += raw > DISPLAY_CAP_PCT
+      ? Math.round(p.mm2 * built * (DISPLAY_CAP_PCT / 100))
+      : Math.round((p.mm2 - p.pm2) * built);
+    discSum += disc;
+    underpriced++;
+  }
+  return {
+    savingsTotal,
+    underpriced,
+    liveDeals: all.length,
+    regions: costas.size,
+    avgDiscount: underpriced ? Math.round((discSum / underpriced) * 10) / 10 : 0,
+  };
+}
