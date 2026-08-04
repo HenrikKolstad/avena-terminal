@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { CheckCircle2, ArrowUpRight, Sparkles } from 'lucide-react';
 import { Nav } from '@/components/v2/Nav';
@@ -11,6 +11,8 @@ import { trackEvent, identifyUser } from '@/lib/tracking';
 export default function CheckoutSuccessPage() {
   const { user, isPaid } = useAuth();
   const [secondsLeft, setSecondsLeft] = useState(5);
+  const [signingIn, setSigningIn] = useState(false);
+  const attempted = useRef(false);
 
   useEffect(() => {
     // Fire TikTok CompletePayment conversion
@@ -20,6 +22,29 @@ export default function CheckoutSuccessPage() {
     const t = setInterval(() => setSecondsLeft((s) => Math.max(0, s - 1)), 1000);
     return () => clearInterval(t);
   }, [user]);
+
+  // One-click access: a buyer who paid while logged out lands here with the
+  // Stripe session_id. Mint a Supabase magic link from that paid session and
+  // sign them straight in — no email, no retyping. Fail-safe: on any error we
+  // simply leave the existing email login link as the fallback.
+  useEffect(() => {
+    if (attempted.current || isPaid) return;
+    const sid = new URLSearchParams(window.location.search).get('session_id');
+    if (!sid) return;
+    attempted.current = true;
+    setSigningIn(true);
+    fetch('/api/checkout/session-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sid }),
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        if (d?.url) window.location.href = d.url as string;
+        else setSigningIn(false);
+      })
+      .catch(() => setSigningIn(false));
+  }, [isPaid]);
 
   return (
     <div className="avena-v2 min-h-screen flex flex-col">
@@ -120,7 +145,7 @@ export default function CheckoutSuccessPage() {
 
             {!isPaid && (
               <p className="mt-6 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground/70">
-                Account syncing — refresh in {secondsLeft}s if PRO badge hasn&apos;t appeared
+                {signingIn ? 'Signing you in…' : 'Check your email to finish signing in'}
               </p>
             )}
           </div>

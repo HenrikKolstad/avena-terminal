@@ -52,6 +52,7 @@ export async function POST(req: NextRequest) {
       success_url: `${appUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/?cancelled=true`,
       'subscription_data[metadata][email]': email,
+      'subscription_data[trial_period_days]': '7',
       'metadata[email]': email,
       allow_promotion_codes: 'true',
     };

@@ -74,7 +74,6 @@ export function Nav() {
         {/* Brand — the quiet wordmark */}
         <Link href="/" className="flex items-baseline gap-3 shrink-0">
           <span className="font-serif text-[22px] font-light tracking-[0.3em] text-foreground">AVENA</span>
-          <span className="hidden font-mono text-[9px] uppercase tracking-[0.45em] text-muted-foreground/70 md:inline">· Mare ·</span>
         </Link>
 
         {/* Desktop nav */}

@@ -39,6 +39,10 @@ export function LuxuryRankings({
   const { isPaid } = useAuth();
   const [proOpen, setProOpen] = useState(false);
   const gatedFrom = freeVisible > 0 && !isPaid ? freeVisible : Infinity;
+  // When gated, render only the free rows + a short blurred teaser, so the
+  // unlock CTA sits right under the last free deal instead of after all 50.
+  const TEASER_BLURRED = 3;
+  const shown = gatedFrom === Infinity ? deals : deals.slice(0, freeVisible + TEASER_BLURRED);
 
   return (
     <section id="rankings" className="scroll-mt-16 border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}>
@@ -60,7 +64,7 @@ export function LuxuryRankings({
 
         {/* Mobile — editorial cards; a 900px table has no business on a phone */}
         <div className="mt-10 space-y-0 lg:hidden">
-          {deals.map((d, idx) => {
+          {shown.map((d, idx) => {
             const gated = idx >= gatedFrom;
             const href = `/property/${encodeURIComponent(d.ref)}`;
             return (
@@ -116,7 +120,7 @@ export function LuxuryRankings({
               </tr>
             </thead>
             <tbody className="font-serif text-foreground/85">
-              {deals.map((d, idx) => {
+              {shown.map((d, idx) => {
                 const gated = idx >= gatedFrom;
                 const href = `/property/${encodeURIComponent(d.ref)}`;
                 return (
