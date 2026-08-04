@@ -18,7 +18,7 @@ interface NavItem { label: string; href: string; live?: boolean }
 const NAV: NavItem[] = [
   { label: 'Deals',        href: '/deals', live: true },
   { label: 'Regions',      href: '/regions' },
-  { label: 'How it works', href: '/how-it-works' },
+  { label: 'Avena Engine', href: '/engine' },
 ];
 
 export function Nav() {
