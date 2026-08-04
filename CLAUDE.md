@@ -32,8 +32,9 @@ in chat is normal; commit messages and code in English.
 - Mono eyebrows: `text-[10px] uppercase tracking-[0.4em]` + `h-px w-10` gold rule.
 - Thin gold-bordered ghost buttons for secondary actions (Enquire in nav).
 - Route transitions: `template.tsx` av-page-enter (450ms cubic-bezier(0.16,1,0.3,1)).
-- Reference implementation Henrik approved: `C:\Users\hainr\costa-deals-hub`
-  (Lovable "Costa Deals Hub", TanStack Start) — that repo is the visual source of truth.
+- Reference implementation Henrik approved: https://github.com/HenrikKolstad/costa-deals-hub
+  (private; Lovable "Costa Deals Hub", TanStack Start) — the visual source of truth.
+  Clone it next to this repo. See its DESIGN.md and SPEC.md.
 
 ## Data layer
 - **`public/data.json`** — 1,881 Spanish new-builds, 100% populated (price,
