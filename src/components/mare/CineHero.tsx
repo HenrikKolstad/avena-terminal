@@ -82,14 +82,23 @@ export function CineHero({ stats }: { stats: EngineStats }) {
             Every new-build on the Costa Blanca, Cálida and del Sol, scored on discount-to-market, yield, and developer quality. The underpriced ones, surfaced first — with the data to prove it.
           </p>
 
-          {/* RICS marque — thin border, no fills */}
-          <a href="https://www.rics.org" target="_blank" rel="noopener noreferrer" className="mt-7 inline-flex items-center border transition-colors hover:border-primary" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>
-            <span className="border-r px-4 py-2.5 font-serif text-base tracking-[0.18em] text-foreground" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>RICS</span>
-            <span className="flex items-center gap-2.5 px-4 py-2.5">
-              <span className="h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
-              <span className="font-mono text-[9px] uppercase tracking-[0.35em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Official Tech Partner · 2026</span>
-            </span>
-          </a>
+          {/* Credentials bar — matched thin-gold marques */}
+          <div className="mt-7 flex flex-wrap items-center gap-3">
+            <a href="https://www.rics.org" target="_blank" rel="noopener noreferrer" className="inline-flex items-center border transition-colors hover:border-primary" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>
+              <span className="border-r px-4 py-2.5 font-serif text-base tracking-[0.18em] text-foreground" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>RICS</span>
+              <span className="flex items-center gap-2.5 px-4 py-2.5">
+                <span className="h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
+                <span className="font-mono text-[9px] uppercase tracking-[0.35em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Official Tech Partner · 2026</span>
+              </span>
+            </a>
+            <div className="inline-flex items-center border transition-colors hover:border-primary" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>
+              <span className="border-r px-4 py-2.5 font-serif text-base tracking-[0.18em] text-foreground" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>Perplexity</span>
+              <span className="flex items-center gap-2.5 px-4 py-2.5">
+                <span className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
+                <span className="font-mono text-[9px] uppercase tracking-[0.35em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Cited AI Source · 2026</span>
+              </span>
+            </div>
+          </div>
 
           <div className="mt-8 flex flex-wrap items-center gap-6">
             <a href="#rankings" className="group inline-flex items-center gap-4 px-8 py-3.5 font-mono text-[11px] uppercase tracking-[0.35em] text-primary-foreground transition hover:-translate-y-0.5" style={{ background: 'hsl(var(--av-primary) / 0.9)' }}>
