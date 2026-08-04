@@ -109,6 +109,10 @@ export function Nav() {
 
         {/* Right side — hushed: one text link, one thin-bordered CTA */}
         <div className="flex items-center gap-2 sm:gap-6">
+          <span className="hidden items-center gap-2 font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground/70 xl:inline-flex">
+            <span className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
+            Join 37 already using Avena
+          </span>
           <Link
             href="/login"
             className="hidden font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground transition-colors hover:text-foreground lg:inline"
