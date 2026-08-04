@@ -12,11 +12,14 @@ import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 
-const GOLD = '#C79A4B';
-const PAPER = '#FAF9F6';
-const INK = '#1A1712';
-const MUTED = '#6B655C';
-const LINE = '#E7E2D8';
+const GOLD = 'hsl(var(--av-primary))';
+const PAPER = 'hsl(var(--av-surface))';
+const INK = 'hsl(var(--av-foreground))';
+const MUTED = 'hsl(var(--av-foreground) / 0.6)';
+const LINE = 'hsl(var(--av-border) / 0.7)';
+const SURFACE = 'hsl(var(--av-surface))';
+const POS = '#5FB87A';
+const NEG = '#E0785C';
 
 // ── Verified figures ─────────────────────────────────────────────────────────
 // Deal math (savings / underpriced) computed with the exact deals.ts logic
@@ -90,7 +93,7 @@ function MiniStat({ value, prefix = '', suffix = '', label, run }: { value: numb
 function Metric({ value, prefix = '', suffix = '', label, run }: { value: number; prefix?: string; suffix?: string; label: string; run: boolean }) {
   const v = useCountUp(value, run);
   return (
-    <div style={{ background: '#fff', border: `1px solid ${LINE}`, borderRadius: 4, padding: '28px 26px' }}>
+    <div style={{ background: SURFACE, border: `1px solid ${LINE}`, borderRadius: 4, padding: '28px 26px' }}>
       <div style={{ fontFamily: 'Georgia, serif', fontSize: 38, fontWeight: 300, color: INK, lineHeight: 1, letterSpacing: '-0.02em' }}>{prefix}{grp(v)}{suffix}</div>
       <div style={{ marginTop: 12, fontFamily: 'ui-monospace, monospace', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: MUTED }}>{label}</div>
     </div>
@@ -124,7 +127,7 @@ export default function EngineClient() {
   ];
 
   return (
-    <div style={{ background: PAPER, color: INK, minHeight: '100vh' }}>
+    <div style={{ background: 'hsl(var(--av-background))', color: INK, minHeight: '100vh' }}>
       <Nav />
 
       {/* Hero */}
@@ -143,11 +146,11 @@ export default function EngineClient() {
           </div>
 
           {/* Live status card */}
-          <div style={{ background: '#fff', border: `1px solid ${LINE}`, borderRadius: 6, padding: 28, boxShadow: '0 1px 2px rgba(26,23,18,0.05)' }}>
+          <div style={{ background: SURFACE, border: `1px solid ${LINE}`, borderRadius: 6, padding: 28, boxShadow: '0 1px 2px rgba(26,23,18,0.05)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Label>Engine status</Label>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'ui-monospace, monospace', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#2E7D46' }}>
-                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#2E7D46', boxShadow: '0 0 0 3px rgba(46,125,70,0.15)' }} /> Operational
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'ui-monospace, monospace', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: POS }}>
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: POS, boxShadow: '0 0 0 3px rgba(46,125,70,0.15)' }} /> Operational
               </span>
             </div>
             <div style={{ marginTop: 24, paddingBottom: 22, borderBottom: `1px solid ${LINE}` }}>
@@ -168,7 +171,7 @@ export default function EngineClient() {
       </section>
 
       {/* Coverage */}
-      <section style={{ borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, background: '#fff' }}>
+      <section style={{ borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, background: SURFACE }}>
         <div className="av-eng-cov" style={{ maxWidth: 1280, margin: '0 auto', padding: '56px 32px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 40 }}>
           {[
             ['Live scoring', 'Spanish coast', `Costa Blanca, Cálida, del Sol, Tropical — ${F.regions} regions, ${grp(F.liveDeals)} new-builds scored daily.`],
@@ -203,7 +206,7 @@ export default function EngineClient() {
       </section>
 
       {/* Pipeline */}
-      <section style={{ borderTop: `1px solid ${LINE}`, background: '#fff' }}>
+      <section style={{ borderTop: `1px solid ${LINE}`, background: SURFACE }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '72px 32px' }}>
           <Label>How raw data becomes a score</Label>
           <h2 style={{ fontFamily: 'Georgia, serif', fontWeight: 300, fontSize: 'clamp(2rem,3.6vw,3rem)', letterSpacing: '-0.02em', margin: '18px 0 40px' }}>The data pipeline</h2>
@@ -235,7 +238,7 @@ export default function EngineClient() {
       </section>
 
       {/* Why it matters */}
-      <section style={{ borderTop: `1px solid ${LINE}`, background: '#fff' }}>
+      <section style={{ borderTop: `1px solid ${LINE}`, background: SURFACE }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '72px 32px' }}>
           <Label>Why it matters</Label>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 14, marginTop: 32 }}>
@@ -253,14 +256,14 @@ export default function EngineClient() {
       <section style={{ maxWidth: 1280, margin: '0 auto', padding: '84px 32px' }}>
         <Label>Recent price movements · latest sweep</Label>
         <h2 style={{ fontFamily: 'Georgia, serif', fontWeight: 300, fontSize: 'clamp(2rem,3.6vw,3rem)', letterSpacing: '-0.02em', margin: '18px 0 36px' }}>What the engine caught</h2>
-        <div style={{ border: `1px solid ${LINE}`, borderRadius: 4, overflow: 'hidden', background: '#fff' }}>
+        <div style={{ border: `1px solid ${LINE}`, borderRadius: 4, overflow: 'hidden', background: SURFACE }}>
           {MOVEMENTS.map((m, i) => {
             const pct = Math.round(((m.to - m.from) / m.from) * 100);
             return (
               <div key={m.ref} className="av-eng-mv" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr auto auto', gap: 20, alignItems: 'center', padding: '18px 26px', borderTop: i === 0 ? 'none' : `1px solid ${LINE}` }}>
                 <span style={{ fontFamily: 'ui-monospace, monospace', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: MUTED }}>{m.town}</span>
                 <span style={{ fontFamily: 'Georgia, serif', fontSize: 15 }}>{eur(m.from)} → {eur(m.to)}</span>
-                <span style={{ fontFamily: 'ui-monospace, monospace', fontSize: 13, color: pct < 0 ? '#B4472B' : '#2E7D46' }}>{pct > 0 ? '+' : ''}{pct}%</span>
+                <span style={{ fontFamily: 'ui-monospace, monospace', fontSize: 13, color: pct < 0 ? NEG : POS }}>{pct > 0 ? '+' : ''}{pct}%</span>
                 <span style={{ fontFamily: 'ui-monospace, monospace', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: MUTED }}>logged</span>
               </div>
             );
@@ -270,7 +273,7 @@ export default function EngineClient() {
       </section>
 
       {/* Closing */}
-      <section style={{ borderTop: `1px solid ${LINE}`, background: '#fff' }}>
+      <section style={{ borderTop: `1px solid ${LINE}`, background: SURFACE }}>
         <div style={{ maxWidth: 900, margin: '0 auto', padding: '96px 32px', textAlign: 'center' }}>
           <h2 style={{ fontFamily: 'Georgia, serif', fontWeight: 300, fontSize: 'clamp(2.2rem,4.4vw,3.6rem)', lineHeight: 1.1, letterSpacing: '-0.025em' }}>Every opportunity begins<br />with <em style={{ color: GOLD, fontStyle: 'italic' }}>better data</em>.</h2>
           <p style={{ maxWidth: 620, margin: '26px auto 0', color: MUTED, fontSize: 16, lineHeight: 1.65, fontWeight: 300 }}>
