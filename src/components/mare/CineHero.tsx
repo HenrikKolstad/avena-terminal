@@ -82,8 +82,8 @@ export function CineHero({ stats }: { stats: EngineStats }) {
             Every new-build on the Costa Blanca, Cálida and del Sol, scored on discount-to-market, yield, and developer quality. The underpriced ones, surfaced first — with the data to prove it.
           </p>
 
-          {/* Credentials bar — matched thin-gold marques */}
-          <div className="mt-7 flex flex-wrap items-center gap-3">
+          {/* Credentials — matched thin-gold marques, stacked */}
+          <div className="mt-7 flex flex-col items-start gap-3">
             <a href="https://www.rics.org" target="_blank" rel="noopener noreferrer" className="inline-flex items-center border transition-colors hover:border-primary" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>
               <span className="border-r px-4 py-2.5 font-serif text-base tracking-[0.18em] text-foreground" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>RICS</span>
               <span className="flex items-center gap-2.5 px-4 py-2.5">
@@ -92,11 +92,11 @@ export function CineHero({ stats }: { stats: EngineStats }) {
               </span>
             </a>
             <div className="inline-flex items-center border transition-colors hover:border-primary" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>
-              <span className="border-r px-4 py-2.5 font-serif text-base tracking-[0.18em] text-foreground" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>Perplexity</span>
-              <span className="flex items-center gap-2.5 px-4 py-2.5">
+              <span className="flex items-center gap-2.5 border-r px-4 py-2.5" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>
                 <span className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
-                <span className="font-mono text-[9px] uppercase tracking-[0.35em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Cited AI Source · 2026</span>
+                <span className="font-mono text-[9px] uppercase tracking-[0.35em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Cited by</span>
               </span>
+              <span className="px-4 py-2.5 font-serif text-base tracking-[0.18em] text-foreground">Perplexity</span>
             </div>
           </div>
 

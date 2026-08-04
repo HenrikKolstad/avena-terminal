@@ -1,0 +1,59 @@
+name: Nightly feed refresh
+
+# Regenerates public/data.json from the RedSP feed every night on GitHub's
+# servers — no local machine needed. Commits the refreshed data to main, which
+# Vercel auto-deploys. This is what stops the deal feed from ever freezing.
+#
+# Runs before the Vercel score cron (02:00 UTC) so score_history is written
+# from fresh prices. Also runnable on demand from the Actions tab.
+
+on:
+  schedule:
+    - cron: '37 1 * * *'   # 01:37 UTC daily
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: feed-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Run the RedSP feed
+        run: node parse-feed.js
+        env:
+          # Falls back to the hardcoded RedSP URL if the secret is unset.
+          FEED_URL: ${{ secrets.FEED_URL }}
+          # Optional: set these repo secrets to also write sold_properties +
+          # price_snapshots to Supabase. Without them the script skips that step.
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+      - name: Commit refreshed feed (if changed)
+        run: |
+          git config user.name "avena-feed-bot"
+          git config user.email "feed@avenaterminal.com"
+          git add public/data.json
+          if git diff --staged --quiet; then
+            echo "No feed changes today."
+          else
+            COUNT=$(node -e "console.log(require('./public/data.json').length)")
+            git commit -m "chore(feed): nightly RedSP refresh — ${COUNT} listings [skip ci]"
+            git push
+            echo "Pushed refreshed feed (${COUNT} listings)."
+          fi
