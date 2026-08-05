@@ -127,13 +127,13 @@ export function AvenaConcierge() {
     return () => window.removeEventListener('keydown', onKey);
   }, [open]);
 
-  const turn = useCallback(async (nextMessages: Msg[]) => {
+  const turn = useCallback(async (nextMessages: Msg[], viaChip = false) => {
     setBusy(true); setFailed(false);
     try {
       const res = await fetch('/api/concierge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: nextMessages.filter((m) => m.role !== 'cards'), prefs: prefsRef.current ?? undefined }),
+        body: JSON.stringify({ messages: nextMessages.filter((m) => m.role !== 'cards'), prefs: prefsRef.current ?? undefined, viaChip }),
       });
       if (!res.ok) throw new Error(String(res.status));
       const data = await res.json();
@@ -193,7 +193,9 @@ export function AvenaConcierge() {
       const res = await fetch('/api/concierge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: full.filter((m) => m.role === 'user' || (m.role === 'assistant' && m.text)) }),
+        // viaChip: the showcase turns are scripted (chip-equivalent) — the
+        // homepage demo must stay instant and cost nothing per pageview.
+        body: JSON.stringify({ messages: full.filter((m) => m.role === 'user' || (m.role === 'assistant' && m.text)), viaChip: true }),
       });
       if (!res.ok) throw new Error(String(res.status));
       const data = await res.json();
@@ -230,7 +232,7 @@ export function AvenaConcierge() {
     if (showcaseRef.current) { prefsRef.current = null; showcaseRef.current = false; }
     const next: Msg[] = [...base, { role: 'user', text: clean }];
     setMessages(next);
-    turn(next);
+    turn(next, viaChip);
   }, [messages, busy, turn]);
 
   const submitLead = useCallback(async (form: { name: string; contact: string; method: string }) => {

@@ -276,11 +276,11 @@ export function validateRegions(regions: string[]): string[] {
 
 /** One conversational turn: extract → decide what to ask next, or search. */
 export function conciergeTurn(userTexts: string[]): ConciergeTurn {
-  return turnFromPrefs(extractPreferences(userTexts));
+  return turnFromPrefs(extractPreferences(userTexts), userTexts.length === 0);
 }
 
 /** The deterministic decision step, callable with (possibly AI-merged) prefs. */
-export function turnFromPrefs(prefs: ConciergePrefs): ConciergeTurn {
+export function turnFromPrefs(prefs: ConciergePrefs, opening = false): ConciergeTurn {
   const missing: string[] = [];
   if (!prefs.regions) missing.push('region');
   if (!prefs.maxPrice) missing.push('budget');
@@ -290,7 +290,9 @@ export function turnFromPrefs(prefs: ConciergePrefs): ConciergeTurn {
   // Ask ONE focused question at a time, with adaptive quick replies.
   if (!prefs.regions) {
     return { prefs, missing, ask: {
-      question: 'Welcome. Where in Spain are you looking?',
+      // The welcome line belongs to the opening only — mid-conversation the
+      // fallback must not re-greet (looked absurd after a real exchange).
+      question: opening ? 'Welcome. Where in Spain are you looking?' : 'Which part of the Spanish coast should I focus on?',
       quickReplies: ['Costa del Sol, near the sea. Up to €650,000.', 'Costa del Sol', 'Costa Blanca', 'Costa Cálida', 'Anywhere coastal'],
     } };
   }

@@ -52,7 +52,7 @@ function mergePrefs(primary: ConciergePrefs, filler: Partial<ConciergePrefs>): C
 }
 
 export async function POST(req: NextRequest) {
-  let body: { messages?: Array<{ role?: string; text?: string }>; prefs?: unknown };
+  let body: { messages?: Array<{ role?: string; text?: string }>; prefs?: unknown; viaChip?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -72,18 +72,22 @@ export async function POST(req: NextRequest) {
     // fully re-validated, and mergePrefs keeps the budget cap monotonic.
     const echoed = sanitizePrefs(body.prefs);
     const parsed = extractPreferences(userTexts);
-    const det = turnFromPrefs(mergePrefs(parsed, echoed));
+    const opening = userTexts.length === 0;
+    const det = turnFromPrefs(mergePrefs(parsed, echoed), opening);
 
-    // Was the latest message machine-parseable on its own? Chips always are;
-    // clean typed answers usually are. If so, skip the AI round-trip.
+    // Engine choice is about HOW the buyer answered, not whether the regex
+    // got lucky: chip clicks (client tells us) are structured → deterministic
+    // and free; anything the buyer TYPED deserves the conversational AI.
+    // (Earlier heuristic — "the regex parsed something, skip the AI" — made
+    // 'i want pool and beach close' hit the scripted flow and re-greet.)
     const lastText = userTexts[userTexts.length - 1];
-    const lastParsed = lastText ? Object.keys(extractPreferences([lastText])).length > 0 : true;
+    const viaChip = body.viaChip === true;
 
-    if (!lastText || lastParsed) {
+    if (!lastText || viaChip) {
       return NextResponse.json({ ok: true, engine: 'deterministic', ...det });
     }
 
-    // Free text the parser couldn't use → Claude interprets it.
+    // Typed free text → Claude interprets it.
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
     const ai = await conciergeAI({ conversation, currentPrefs: det.prefs, missing: det.missing }, ip);
 
@@ -94,7 +98,7 @@ export async function POST(req: NextRequest) {
 
     // parsed > AI > echoed history
     const merged = mergePrefs(parsed, mergePrefs(ai.prefs as ConciergePrefs, echoed));
-    const turn = turnFromPrefs(merged);
+    const turn = turnFromPrefs(merged, false);
 
     // Claude's reply becomes the conversational text; chips + results stay deterministic.
     if (turn.recommendations?.length) {
