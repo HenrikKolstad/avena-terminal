@@ -17,6 +17,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { track } from '@vercel/analytics';
 
 interface Card {
@@ -41,6 +42,12 @@ const eur = (n: number) => '€' + n.toLocaleString('en-US').replace(/,/g, ' ');
 const t = (event: string, data?: Record<string, string | number>) => { try { track(event, data); } catch { /* analytics must never break the panel */ } };
 
 export function AvenaConcierge() {
+  // Rendered through a portal into document.body: the homepage's route
+  // transition (template.tsx av-page-enter) applies a transform, which turns
+  // any transformed ancestor into the containing block for position:fixed —
+  // without the portal the launcher anchors to the page, not the viewport.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
   const [open, setOpen] = useState(false);
   const [invite, setInvite] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -169,7 +176,9 @@ export function AvenaConcierge() {
     }
   }, [messages, leadMode]);
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <>
       {/* ── Collapsed launcher ── */}
       <div style={{ position: 'fixed', right: 20, bottom: 20, zIndex: 60, display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -314,7 +323,8 @@ export function AvenaConcierge() {
         }
         @media (prefers-reduced-motion: reduce) { .avc-panel { animation: none !important; } }
       `}</style>
-    </>
+    </>,
+    document.body,
   );
 }
 
