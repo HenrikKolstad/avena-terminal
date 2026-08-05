@@ -18,6 +18,8 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
     links: [
       { label: 'This week’s deals', href: '/deals' },
       { label: 'Regions',         href: '/regions' },
+      { label: 'All towns',       href: '/towns' },
+      { label: 'The three costas', href: '/costas' },
       { label: 'How it works',    href: '/how-it-works' },
       { label: 'Enquire',         href: '/enquire' },
       { label: 'Buying guides',   href: '/answers' },

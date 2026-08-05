@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { getUniqueCostas, getPropertiesByCosta, avg } from '@/lib/properties';
+import { permanentRedirect } from 'next/navigation';
+import { getUniqueCostas, getPropertiesByCosta, getCanonicalCostaSlug, avg, slugify } from '@/lib/properties';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 
@@ -14,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ costa: st
   const { costa } = await params;
   const data = getPropertiesByCosta(costa);
   if (!data) return { title: 'Costa Not Found | Avena Terminal' };
-  const title = `New Build Investments on ${data.costa} — Ranked by Data | Avena Terminal`;
+  const title = `New Build Property for Sale on the ${data.costa} — ${data.properties.length} Developments Compared | Avena`;
   const avgScoreMeta = Math.round(avg(data.properties.filter(p => p._sc).map(p => p._sc!)));
   const avgYieldMeta = avg(data.properties.filter(p => p._yield).map(p => p._yield!.gross)).toFixed(1);
   const description = `${data.costa} new builds: ${data.properties.length} properties, ${avgScoreMeta}/100 avg score, ${avgYieldMeta}% gross yield. Live data from Avena Terminal.`;
@@ -24,6 +25,11 @@ export async function generateMetadata({ params }: { params: Promise<{ costa: st
 export default async function CostaPage({ params }: { params: Promise<{ costa: string }> }) {
   const { costa } = await params;
   const data = getPropertiesByCosta(costa);
+  if (!data) {
+    // Legacy accent-mangled slug (e.g. costa-c-lida) → 301 to the clean URL.
+    const canonical = getCanonicalCostaSlug(costa);
+    if (canonical) permanentRedirect(`/costas/${canonical}`);
+  }
   if (!data) return (
     <div className="avena-v2 min-h-screen">
       <Nav />
@@ -41,6 +47,17 @@ export default async function CostaPage({ params }: { params: Promise<{ costa: s
   const avgScore = Math.round(avg(props.filter(p => p._sc).map(p => p._sc!)));
   const avgYield = avg(props.filter(p => p._yield).map(p => p._yield!.gross)).toFixed(1);
   const top20 = props.slice(0, 20);
+
+  // Towns on this costa — the hub's children in the crawl tree
+  // (costa → town → property). Sorted by inventory size.
+  const townMap = new Map<string, number>();
+  for (const p of props) {
+    if (!p.l) continue;
+    townMap.set(p.l, (townMap.get(p.l) ?? 0) + 1);
+  }
+  const towns = [...townMap.entries()]
+    .map(([townName, count]) => ({ name: townName.split(',')[0].trim(), slug: slugify(townName), count }))
+    .sort((a, b) => b.count - a.count);
   const minPrice = Math.min(...props.map(p => p.pf));
   const maxPrice = Math.max(...props.map(p => p.pf));
 
@@ -143,6 +160,32 @@ export default async function CostaPage({ params }: { params: Promise<{ costa: s
                 </Link>
               ))}
             </div>
+
+            {/* Towns on this costa — completes the costa → town → property
+                crawl tree. Before this, costa pages linked zero town pages. */}
+            {towns.length > 0 && (
+              <div className="mt-12">
+                <div className="mb-4">
+                  <span className="mb-2 inline-block font-mono text-[10px] uppercase tracking-[0.4em] text-primary">By town</span>
+                  <h3 className="font-serif text-2xl font-light tracking-tight text-foreground">
+                    New builds across {towns.length} towns on the {name}
+                  </h3>
+                </div>
+                <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-1.5">
+                  {towns.map((t) => (
+                    <li key={t.slug}>
+                      <Link
+                        href={`/towns/${t.slug}`}
+                        className="flex items-baseline justify-between gap-3 rounded-sm px-2 py-1.5 transition-colors hover:bg-[hsl(var(--av-surface)/0.5)]"
+                      >
+                        <span className="min-w-0 truncate font-serif text-sm font-light text-foreground/85">{t.name}</span>
+                        <span className="shrink-0 font-mono text-[10px] tabular text-muted-foreground">{t.count}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-muted-foreground text-right mt-6">
               Data last updated: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}

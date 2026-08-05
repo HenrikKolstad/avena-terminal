@@ -24,8 +24,13 @@ export async function generateMetadata({ params }: { params: Promise<{ ref: stri
   const p = findProperty(decodeURIComponent(ref));
   if (!p) return { title: 'Property Not Found | Avena Terminal' };
 
-  const title = `${p.bd}-bed new build in ${p.l} — ${Math.round(p._sc ?? 0)}/100 investment score | Avena Terminal`;
-  const description = `New build in ${p.l}. Asking from €${(p.pf ?? 0).toLocaleString()}. Estimated rental yield ${p._yield?.gross?.toFixed(1) ?? '–'}%. Investment score ${Math.round(p._sc ?? 0)}/100. Analyse on Avena Terminal.`;
+  // Title leads with what buyers actually search ("3-bed apartment for sale
+  // in Estepona"), not our internal score — a "33/100" in a SERP title
+  // repels the click. Score/yield stay in the description where they
+  // differentiate us.
+  const metaTown = p.l.split(',')[0].trim();
+  const title = `${p.bd}-Bed ${p.t} for Sale in ${metaTown} — New Build from €${(p.pf ?? 0).toLocaleString()} | Avena`;
+  const description = `New build ${p.t.toLowerCase()} in ${p.l}. From €${(p.pf ?? 0).toLocaleString()}, est. gross yield ${p._yield?.gross?.toFixed(1) ?? '–'}%, Avena Score ${Math.round(p._sc ?? 0)}/100 — re-scored daily against the town's €/m² benchmark.`;
 
   return {
     title, description,
@@ -115,17 +120,36 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
     ],
   };
 
-  // Rich product JSON-LD — machine-readable for LLM quotation
+  // Rich listing JSON-LD — machine-readable for LLM quotation.
+  // RealEstateListing (a CreativeWork) legally carries `offers`; the old
+  // Residence type did not, which made every property page validate with
+  // errors. The dwelling itself lives in `about`, and our proprietary
+  // metrics attach to it via additionalProperty (valid on Place).
   const productJsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Residence',
+    '@type': 'RealEstateListing',
     name: p.p || `${p.t} in ${p.l}`,
     url: `https://avenaterminal.com/property/${encodeURIComponent(p.ref ?? '')}`,
     identifier: p.ref,
-    address: { '@type': 'PostalAddress', addressLocality: p.l, addressRegion: p.costa ?? undefined, addressCountry: 'ES' },
-    numberOfRooms: p.bd,
-    numberOfBathroomsTotal: p.ba,
-    floorSize: p.bm ? { '@type': 'QuantitativeValue', value: p.bm, unitCode: 'MTK' } : undefined,
+    ...(p._added ? { datePosted: p._added } : {}),
+    ...(p.imgs?.[0] ? { image: p.imgs.slice(0, 3) } : {}),
+    about: {
+      '@type': 'Residence',
+      name: p.p || `${p.t} in ${p.l}`,
+      address: { '@type': 'PostalAddress', addressLocality: p.l, addressRegion: p.costa ?? undefined, addressCountry: 'ES' },
+      numberOfRooms: p.bd,
+      numberOfBathroomsTotal: p.ba,
+      floorSize: p.bm ? { '@type': 'QuantitativeValue', value: p.bm, unitCode: 'MTK' } : undefined,
+      ...(p.lat && p.lng ? { geo: { '@type': 'GeoCoordinates', latitude: p.lat, longitude: p.lng } } : {}),
+      additionalProperty: [
+        { '@type': 'PropertyValue', name: 'avena_score', value: Math.round(p._sc ?? 0), maxValue: 100 },
+        p.mm2 ? { '@type': 'PropertyValue', name: 'town_median_eur_m2', value: Math.round(p.mm2) } : null,
+        pm2 ? { '@type': 'PropertyValue', name: 'price_eur_m2', value: pm2 } : null,
+        discount ? { '@type': 'PropertyValue', name: 'discount_vs_town_pct', value: discount } : null,
+        p._yield?.gross ? { '@type': 'PropertyValue', name: 'yield_gross_pct', value: Number(p._yield.gross.toFixed(2)) } : null,
+        townTotal > 0 ? { '@type': 'PropertyValue', name: 'rank_in_town', value: rankInTown, maxValue: townTotal } : null,
+      ].filter(Boolean),
+    },
     offers: {
       '@type': 'Offer',
       price: p.pf,
@@ -133,14 +157,6 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
       availability: p.s === 'ready' ? 'https://schema.org/InStock' : 'https://schema.org/PreOrder',
       seller: { '@type': 'Organization', name: p.d ?? 'Avena Terminal' },
     },
-    additionalProperty: [
-      { '@type': 'PropertyValue', name: 'avena_score', value: Math.round(p._sc ?? 0), maxValue: 100 },
-      p.mm2 ? { '@type': 'PropertyValue', name: 'town_median_eur_m2', value: Math.round(p.mm2) } : null,
-      pm2 ? { '@type': 'PropertyValue', name: 'price_eur_m2', value: pm2 } : null,
-      discount ? { '@type': 'PropertyValue', name: 'discount_vs_town_pct', value: discount } : null,
-      p._yield?.gross ? { '@type': 'PropertyValue', name: 'yield_gross_pct', value: Number(p._yield.gross.toFixed(2)) } : null,
-      townTotal > 0 ? { '@type': 'PropertyValue', name: 'rank_in_town', value: rankInTown, maxValue: townTotal } : null,
-    ].filter(Boolean),
     isAccessibleForFree: true,
     license: 'https://creativecommons.org/licenses/by/4.0/',
   };

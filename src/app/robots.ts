@@ -133,9 +133,11 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: '*', allow: '/', disallow: STANDARD_DISALLOW },
       ...namedBots.map((r) => ({ ...r, disallow: STANDARD_DISALLOW })),
     ],
+    // sitemap-news.xml removed 2026-08-05: Google News sitemaps are for
+    // actual news articles; declaring tool pages as "news" with a rolling
+    // fetch-time publication_date is a spam signal, not a ranking one.
     sitemap: [
       'https://avenaterminal.com/sitemap.xml',
-      'https://avenaterminal.com/sitemap-news.xml',
       'https://avenaterminal.com/sitemap-images.xml',
       'https://avenaterminal.com/sitemap-ai.xml',
     ],

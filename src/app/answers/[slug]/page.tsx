@@ -10,6 +10,22 @@ import { indexHistory, latestPanel } from '@/lib/delphi';
 import { DELPHI_QUESTIONS } from '@/lib/delphi-questions';
 import { latestScores } from '@/lib/plab';
 
+/**
+ * Minimal markdown → HTML for the answer bodies. Previously the raw markdown
+ * string rendered as-is, so visitors (and Google) saw literal **asterisks**
+ * and dead [link](/href) syntax. Escapes HTML first (DB-sourced Prometheus
+ * answers are untrusted), then converts bold, italics and links — the links
+ * become real crawlable <a> tags. Line structure is preserved by the
+ * surrounding whitespace-pre-wrap.
+ */
+function mdToHtml(md: string): string {
+  const esc = md.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return esc
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/(^|[\s(])\*([^*\n]+)\*(?=[\s).,;:!?]|$)/g, '$1<em>$2</em>')
+    .replace(/\[([^\]]+)\]\((\/[^)\s]*|https?:\/\/[^)\s]+)\)/g, '<a href="$2" class="text-primary hover:underline">$1</a>');
+}
+
 interface GeneratedAnswer {
   slug: string;
   question: string;
@@ -823,9 +839,10 @@ export default async function AnswerPage({ params }: { params: Promise<{ slug: s
                 borderColor: 'hsl(var(--av-border) / 0.6)',
               }}
             >
-              <div className="whitespace-pre-wrap font-light text-base leading-relaxed text-foreground/90">
-                {answer}
-              </div>
+              <div
+                className="whitespace-pre-wrap font-light text-base leading-relaxed text-foreground/90"
+                dangerouslySetInnerHTML={{ __html: mdToHtml(answer) }}
+              />
               {generated && (
                 <div className="mt-6 pt-4 border-t font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/70" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
                   Generated {new Date(generated.generated_at).toISOString().slice(0, 10)} · Agent Prometheus · CC BY 4.0

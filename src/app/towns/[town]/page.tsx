@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { getUniqueTowns, getPropertiesByTown, avg, slugify } from '@/lib/properties';
+import { permanentRedirect } from 'next/navigation';
+import { getUniqueTowns, getPropertiesByTown, getCanonicalTownSlug, avg, slugify } from '@/lib/properties';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 
@@ -16,10 +17,12 @@ export async function generateMetadata({ params }: { params: Promise<{ town: str
   if (!data) return { title: 'Town Not Found | Avena Terminal' };
   const { town: name, properties: props } = data;
   const avgScore = Math.round(avg(props.filter(p => p._sc).map(p => p._sc!)));
-  const title = `New Build Properties in ${name} — Investment Scores & Rental Yield | Avena Terminal`;
+  const townOnly = name.split(',')[0].trim();
+  const minPriceMeta = Math.min(...props.map(p => p.pf));
+  const title = `New Build Property for Sale in ${townOnly} — ${props.length} Listings from \u20AC${minPriceMeta.toLocaleString()} | Avena`;
   const avgPm2Meta = Math.round(avg(props.filter(p => p.pm2).map(p => p.pm2!)));
   const avgYieldMeta = avg(props.filter(p => p._yield).map(p => p._yield!.gross)).toFixed(1);
-  const description = `${name} new builds: avg \u20AC${avgPm2Meta.toLocaleString()}/m\u00B2, ${avgScore}/100 score, ${avgYieldMeta}% gross yield. Live data from Avena Terminal.`;
+  const description = `${props.length} scored new builds in ${name}: avg \u20AC${avgPm2Meta.toLocaleString()}/m\u00B2, ${avgYieldMeta}% gross yield, avg Avena Score ${avgScore}/100. Prices, discounts to market and yields — re-scored daily.`;
   return {
     title, description,
     alternates: { canonical: `https://avenaterminal.com/towns/${town}` },
@@ -30,6 +33,12 @@ export async function generateMetadata({ params }: { params: Promise<{ town: str
 export default async function TownPage({ params }: { params: Promise<{ town: string }> }) {
   const { town } = await params;
   const data = getPropertiesByTown(town);
+  if (!data) {
+    // Old accent-mangled slug (e.g. estepona-m-laga)? 301 to the clean URL
+    // so the ~96 previously indexed town pages keep their equity.
+    const canonical = getCanonicalTownSlug(town);
+    if (canonical) permanentRedirect(`/towns/${canonical}`);
+  }
   if (!data) return (
     <div className="avena-v2 min-h-screen">
       <Nav />
@@ -167,6 +176,35 @@ export default async function TownPage({ params }: { params: Promise<{ town: str
                 </Link>
               ))}
             </div>
+
+            {/* Full inventory — every scored new-build in this town gets a
+                crawlable link. Before this, only the top 10 were linked, so
+                the rest of the town's properties were orphans to Google. */}
+            {props.length > top10.length && (
+              <div className="mt-12">
+                <div className="mb-4">
+                  <span className="mb-2 inline-block font-mono text-[10px] uppercase tracking-[0.4em] text-primary">Full inventory</span>
+                  <h3 className="font-serif text-2xl font-light tracking-tight text-foreground">
+                    All {props.length} new builds in {name.split(',')[0].trim()}
+                  </h3>
+                </div>
+                <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-1.5">
+                  {props.slice(top10.length).map((p) => (
+                    <li key={p.ref}>
+                      <Link
+                        href={`/property/${encodeURIComponent(p.ref ?? '')}`}
+                        className="flex items-baseline justify-between gap-3 rounded-sm px-2 py-1.5 transition-colors hover:bg-[hsl(var(--av-surface)/0.5)]"
+                      >
+                        <span className="min-w-0 truncate font-serif text-sm font-light text-foreground/85">{p.p}</span>
+                        <span className="shrink-0 font-mono text-[10px] tabular text-muted-foreground">
+                          &euro;{Math.round(p.pf / 1000)}k &middot; {Math.round(p._sc ?? 0)}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {costa && (
               <div className="mt-8 text-center">
