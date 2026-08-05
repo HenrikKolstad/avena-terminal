@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { getAllProperties, getUniqueTowns, slugify, avg } from '@/lib/properties';
+import { getAllProperties, getUniqueTowns, slugify, legacySlugify, avg } from '@/lib/properties';
+import { permanentRedirect } from 'next/navigation';
 import { Property } from '@/lib/types';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
@@ -40,6 +41,19 @@ function generateTownPairs() {
     }
   }
   return pairs;
+}
+
+/**
+ * Resolve one side of an A-vs-B slug to its canonical town slug.
+ * Returns the side unchanged if it already matches, the clean slug if the
+ * side is a legacy accent-mangled form (marbella-m-laga → marbella-malaga
+ * — these are the site's top-clicked URLs in Search Console), else null.
+ */
+function canonicalSideSlug(side: string): string | null {
+  const all = getAllProperties();
+  if (all.some(p => slugify(p.l) === side)) return side;
+  const legacy = all.find(p => legacySlugify(p.l) === side);
+  return legacy ? slugify(legacy.l) : null;
 }
 
 function parseTownsFromSlug(slug: string) {
@@ -745,7 +759,16 @@ export default async function ComparePage({ params }: { params: Promise<{ slug: 
     return <CountryComparisonPage slug={slug} data={countryData} />;
   }
 
-  // 2. Fall back to town-vs-town comparison
+  // 2. Legacy accent-mangled town pair (e.g. marbella-m-laga-vs-calpe-alicante)
+  //    → 301 to the clean pair so the indexed compare URLs keep their equity.
+  const legacyParts = slug.split('-vs-');
+  if (legacyParts.length === 2) {
+    const a = canonicalSideSlug(legacyParts[0]);
+    const b = canonicalSideSlug(legacyParts[1]);
+    if (a && b && `${a}-vs-${b}` !== slug) permanentRedirect(`/compare/${a}-vs-${b}`);
+  }
+
+  // 3. Fall back to town-vs-town comparison
   const townData = parseTownsFromSlug(slug);
   if (townData) {
     const { nameA, nameB, slugA, slugB, propsA, propsB } = townData;
