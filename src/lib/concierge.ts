@@ -227,9 +227,29 @@ export function searchProperties(prefs: ConciergePrefs, limit = 3): ConciergeCar
   }));
 }
 
+/** Validate AI-proposed region labels against the real dataset (costas + towns). */
+export function validateRegions(regions: string[]): string[] {
+  const towns = new Set(getUserTownIndex().map(([, label]) => label));
+  const townByLower = new Map(getUserTownIndex().map(([key, label]) => [key, label]));
+  const out: string[] = [];
+  for (const r of regions) {
+    if (typeof r !== 'string') continue;
+    const costa = COSTA_KEYS.find((c) => c.match.test(r));
+    if (costa) { out.push(costa.label); continue; }
+    if (towns.has(r)) { out.push(r); continue; }
+    const byName = townByLower.get(r.toLowerCase().split(',')[0].trim());
+    if (byName) out.push(byName);
+  }
+  return [...new Set(out)];
+}
+
 /** One conversational turn: extract → decide what to ask next, or search. */
 export function conciergeTurn(userTexts: string[]): ConciergeTurn {
-  const prefs = extractPreferences(userTexts);
+  return turnFromPrefs(extractPreferences(userTexts));
+}
+
+/** The deterministic decision step, callable with (possibly AI-merged) prefs. */
+export function turnFromPrefs(prefs: ConciergePrefs): ConciergeTurn {
   const missing: string[] = [];
   if (!prefs.regions) missing.push('region');
   if (!prefs.maxPrice) missing.push('budget');
