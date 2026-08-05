@@ -51,7 +51,7 @@ function GridStat({ icon: Icon, value, suffix = '', label }: { icon: typeof Glob
 }
 
 export function HeroEngineCard({ stats }: { stats: EngineStats }) {
-  const savings = useCountUp(stats.savingsTotal, 1700);
+  const savingsM = useCountUp(Math.round(stats.savingsTotal / 1e6), 1600);
   const [secs, setSecs] = useState(0);
   useEffect(() => { const t = setInterval(() => setSecs((s) => s + 7), 1000); return () => clearInterval(t); }, []);
 
@@ -79,7 +79,7 @@ export function HeroEngineCard({ stats }: { stats: EngineStats }) {
 
       {/* Hero figure */}
       <div style={{ marginTop: 20, paddingBottom: 20, borderBottom: `1px solid ${LINE}` }}>
-        <div style={{ fontFamily: 'Georgia, "Times New Roman", serif', fontSize: 40, fontWeight: 300, letterSpacing: '-0.01em', lineHeight: 1 }}>€{grp(savings)}</div>
+        <div style={{ fontFamily: 'Georgia, "Times New Roman", serif', fontSize: 46, fontWeight: 300, letterSpacing: '-0.01em', lineHeight: 1 }}>€{savingsM}M</div>
         <div style={{ marginTop: 9, fontFamily: 'ui-monospace, monospace', fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase', color: MUTED }}>
           Identified savings · {grp(stats.underpriced)} underpriced homes
         </div>
