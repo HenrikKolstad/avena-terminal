@@ -43,10 +43,20 @@ in chat is normal; commit messages and code in English.
 - **`src/lib/deals.ts`** — single source for ranked deals + DISPLAY_CAP_PCT=35
   capped savings math. All surfaces must reconcile through it.
 - **Supabase** (service key only in Vercel env; `.env.local` has no active keys):
-  the defensible part is the observation history — `score_history` (~186k rows,
-  daily since Apr 2026), `property_pricing_history` (~374k). `property_transactions`
-  (~376k) is French DVF open data (cols: price_eur, transacted_at, price_per_m2_eur —
-  NOT sold_price). ~68 of 139 tables are empty scaffolding. Audit endpoint:
+  the defensible part is the observation history. **The ref-keyed transaction
+  layer (all fed by the LIVE RedSP feed via getAllProperties, never the frozen
+  properties_registry):** `score_history` (daily score+price per ref, scribe @02:00),
+  `price_snapshots` (daily enriched price per ref, pricing-history cron @02:20),
+  `sold_properties` (delisting/absorption ledger: refs that left the feed w/ last
+  price+date). `property_pricing_history` = per-move event log (avn_prop_id=ref
+  going forward). **NEVER repoint pricing-history back at properties_registry — it
+  froze 2026-05-24; that was the bug that stopped the moat capturing anything new.**
+  Delisting/price-move detection is gated to a recent prior snapshot (≤4 days) +
+  ≥50% feed overlap, so a broken feed can't mass-flag phantom sales.
+  `property_transactions` (~380k) is French DVF open data (cols: price_eur,
+  transacted_at, price_per_m2_eur — NOT sold_price); it's the home for external
+  CONFIRMED transactions (source-tagged), kept distinct from our derived
+  delistings for provenance. ~68 of 139 tables are empty scaffolding. Audit endpoint:
   `/api/admin/db-audit?from=&to=&targeted=1` (cron-auth, batched).
 
 ## Build & deploy discipline
