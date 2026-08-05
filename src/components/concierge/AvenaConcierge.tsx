@@ -31,6 +31,15 @@ type Msg =
 
 const SS_KEY = 'av_concierge_v1';
 const SS_DISMISS = 'av_concierge_dismissed';
+
+// ── Showcase mode (per Henrik's homepage mockup, 2026-08-05) ────────────────
+// On a fresh desktop visit the panel opens pre-filled with this example
+// conversation. The user turns are scripted; the assistant's "found" line and
+// the three property cards come from the REAL engine — the same API call a
+// visitor's own answers would trigger. Nothing about the properties is staged.
+const SHOWCASE_GREETING = 'Welcome. Where in Spain are you looking?';
+const SHOWCASE_U1 = 'Costa del Sol, near the sea. Up to €650,000.';
+const SHOWCASE_U2 = 'Both — ready within 12 months.';
 const GOLD = 'hsl(var(--av-primary))';
 const GOLD_SOFT = 'hsl(var(--av-primary) / 0.45)';
 const IVORY = 'hsl(var(--av-foreground) / 0.92)';
@@ -65,24 +74,34 @@ export function AvenaConcierge() {
   const launcherRef = useRef<HTMLButtonElement>(null);
   const reducedMotion = useRef(false);
 
-  // ── Restore session state ──
+  // ── Restore session state / launch the showcase ──
   useEffect(() => {
     reducedMotion.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let hasSaved = false;
     try {
       const saved = sessionStorage.getItem(SS_KEY);
       if (saved) {
         const s = JSON.parse(saved);
+        if (Array.isArray(s.messages) && s.messages.length > 0) hasSaved = true;
         if (Array.isArray(s.messages)) setMessages(s.messages);
         if (Array.isArray(s.quickReplies)) setQuickReplies(s.quickReplies);
         if (s.prefs && typeof s.prefs === 'object') prefsRef.current = s.prefs;
       }
     } catch { /* fresh start */ }
-    // Restrained invitation after a short delay, unless dismissed this session
     const dismissed = sessionStorage.getItem(SS_DISMISS) === '1';
+    const desktop = window.matchMedia('(min-width: 1024px)').matches;
+
+    // Fresh desktop visit → the mockup state: panel open, showcase running.
+    if (!hasSaved && !dismissed && desktop) {
+      runShowcase();
+      return;
+    }
+    // Otherwise: the restrained invitation, unless dismissed this session.
     if (!dismissed) {
       const timer = setTimeout(() => { setInvite(true); t('concierge_invitation_shown'); }, 6000);
       return () => clearTimeout(timer);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Persist on change ──
@@ -93,8 +112,12 @@ export function AvenaConcierge() {
   // ── Autoscroll + focus management ──
   useEffect(() => { scrollRef.current?.scrollTo({ top: 99999, behavior: reducedMotion.current ? 'auto' : 'smooth' }); }, [messages, busy, leadMode]);
   useEffect(() => {
-    if (open) { panelRef.current?.focus(); document.body.dataset.avcOpen = '1'; }
-    else { delete document.body.dataset.avcOpen; }
+    if (open) {
+      // Focus only on intentional opens — the auto-opened showcase must not
+      // steal keyboard focus from a visitor who just landed on the page.
+      if (userOpenedRef.current) panelRef.current?.focus();
+      document.body.dataset.avcOpen = '1';
+    } else { delete document.body.dataset.avcOpen; }
   }, [open]);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && open) { setOpen(false); launcherRef.current?.focus(); } };
@@ -131,10 +154,62 @@ export function AvenaConcierge() {
     }
   }, []);
 
+  const userOpenedRef = useRef(false);
+
   const openPanel = useCallback(() => {
+    userOpenedRef.current = true;
     setOpen(true); setInvite(false); t('concierge_opened');
     if (messages.length === 0) turn([]);
   }, [messages.length, turn]);
+
+  /**
+   * The homepage showcase: greeting + example answer appear, the REAL engine
+   * runs the search, then the found-line (with the true count), the second
+   * example answer, and the three real property cards render — exactly the
+   * mockup, populated from live inventory.
+   */
+  const runShowcase = useCallback(async () => {
+    setOpen(true);
+    t('concierge_opened');
+    const opening: Msg[] = [
+      { role: 'assistant', text: SHOWCASE_GREETING },
+      { role: 'user', text: SHOWCASE_U1 },
+    ];
+    setMessages(opening);
+    setBusy(true);
+    try {
+      const full: Msg[] = [...opening,
+        { role: 'assistant', text: '' }, // placeholder — replaced with the real found-line below
+        { role: 'user', text: SHOWCASE_U2 },
+      ];
+      const res = await fetch('/api/concierge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: full.filter((m) => m.role === 'user' || (m.role === 'assistant' && m.text)) }),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      const data = await res.json();
+      if (data.prefs && typeof data.prefs === 'object') prefsRef.current = data.prefs;
+
+      if (data.recommendations?.length) {
+        const n = data.recommendations.length;
+        const count = n === 3 ? 'three' : String(n);
+        full[2] = { role: 'assistant', text: `I found ${count} strong ${n === 1 ? 'opportunity' : 'opportunities'}. Are you buying for lifestyle, investment, or both?` };
+        setMessages([...full, { role: 'cards', cards: data.recommendations }]);
+        t('concierge_results_shown', { count: n, region: 'Costa del Sol' });
+      } else if (data.ask) {
+        // Engine couldn't complete the showcase (e.g. no matches) — fall back
+        // to a normal conversation from the first answer.
+        setMessages([...opening, { role: 'assistant', text: data.ask.question }]);
+        setQuickReplies(data.ask.quickReplies ?? []);
+      }
+    } catch {
+      setFailed(true); t('concierge_error');
+    } finally {
+      setBusy(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const send = useCallback((text: string, viaChip: boolean) => {
     const clean = text.trim();
@@ -188,19 +263,17 @@ export function AvenaConcierge() {
             <button aria-label="Dismiss" onClick={() => { setInvite(false); sessionStorage.setItem(SS_DISMISS, '1'); }} style={{ background: 'none', border: 'none', color: MUTED, cursor: 'pointer', fontSize: 14, lineHeight: 1, padding: 2 }}>✕</button>
           </div>
         )}
-        {!open && (
-          <button
-            ref={launcherRef}
-            onClick={openPanel}
-            aria-label="Open Avena Concierge"
-            style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-          >
-            <span style={{ background: PANEL_BG, border: `1px solid ${GOLD_SOFT}`, borderRadius: 3, padding: '9px 14px', fontFamily: 'ui-monospace, Menlo, monospace', fontSize: 10, letterSpacing: '0.3em', textTransform: 'uppercase', color: IVORY, backdropFilter: 'blur(8px)' }}>Ask Avena</span>
-            <span style={{ width: 46, height: 46, borderRadius: '50%', background: `linear-gradient(140deg, hsl(var(--av-primary) / 0.95), hsl(var(--av-primary) / 0.75))`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 30px -8px rgba(0,0,0,0.55)', border: '1px solid hsl(var(--av-primary) / 0.6)' }}>
-              <span style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: 22, fontWeight: 300, color: 'hsl(var(--av-background))', lineHeight: 1, transform: 'translateY(-1px)' }}>A</span>
-            </span>
-          </button>
-        )}
+        <button
+          ref={launcherRef}
+          onClick={() => { if (open) { setOpen(false); t('concierge_closed'); } else { openPanel(); } }}
+          aria-label={open ? 'Close Avena Concierge' : 'Open Avena Concierge'}
+          style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+        >
+          <span style={{ background: PANEL_BG, border: `1px solid ${GOLD_SOFT}`, borderRadius: 3, padding: '9px 14px', fontFamily: 'ui-monospace, Menlo, monospace', fontSize: 10, letterSpacing: '0.3em', textTransform: 'uppercase', color: IVORY, backdropFilter: 'blur(8px)' }}>Ask Avena</span>
+          <span style={{ width: 46, height: 46, borderRadius: '50%', background: `linear-gradient(140deg, hsl(var(--av-primary) / 0.95), hsl(var(--av-primary) / 0.75))`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 30px -8px rgba(0,0,0,0.55)', border: '1px solid hsl(var(--av-primary) / 0.6)' }}>
+            <span style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: 22, fontWeight: 300, color: 'hsl(var(--av-background))', lineHeight: 1, transform: 'translateY(-1px)' }}>A</span>
+          </span>
+        </button>
       </div>
 
       {/* ── Expanded panel ── */}
@@ -238,29 +311,26 @@ export function AvenaConcierge() {
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     {m.note && <div style={{ fontFamily: 'Georgia, serif', fontSize: 14, fontWeight: 300, lineHeight: 1.55, color: IVORY, maxWidth: '92%' }}>{m.note}</div>}
                     {m.cards.map((c) => (
-                      <a key={c.propertyId} href={c.slug} onClick={() => t('concierge_property_clicked', { ref: c.propertyId })} style={{ display: 'grid', gridTemplateColumns: '86px 1fr', gap: 12, textDecoration: 'none', color: IVORY, border: `1px solid hsl(var(--av-border) / 0.6)`, borderRadius: 4, padding: 10, background: 'hsl(var(--av-surface) / 0.5)' }}>
-                        <span style={{ width: 86, height: 64, borderRadius: 3, overflow: 'hidden', background: 'hsl(var(--av-surface))', display: 'block' }}>
+                      <a key={c.propertyId} href={c.slug} title={c.name} onClick={() => t('concierge_property_clicked', { ref: c.propertyId })} style={{ display: 'grid', gridTemplateColumns: '96px 1fr', gap: 13, alignItems: 'center', textDecoration: 'none', color: IVORY, border: `1px solid hsl(var(--av-border) / 0.6)`, borderRadius: 4, padding: 10, background: 'hsl(var(--av-surface) / 0.5)' }}>
+                        <span style={{ width: 96, height: 70, borderRadius: 3, overflow: 'hidden', background: 'hsl(var(--av-surface))', display: 'block' }}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          {c.imageUrl && <img src={c.imageUrl} alt="" loading="lazy" width={86} height={64} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                          {c.imageUrl && <img src={c.imageUrl} alt="" loading="lazy" width={96} height={70} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
                         </span>
                         <span style={{ minWidth: 0 }}>
-                          <span style={{ display: 'block', fontFamily: 'ui-monospace, monospace', fontSize: 8.5, letterSpacing: '0.22em', textTransform: 'uppercase', color: GOLD }}>{c.location.split(',')[0]}</span>
-                          <span style={{ display: 'block', marginTop: 2, fontFamily: 'Georgia, serif', fontSize: 14.5, fontWeight: 300, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.name}</span>
-                          <span style={{ display: 'block', marginTop: 3, fontFamily: 'ui-monospace, monospace', fontSize: 10, color: MUTED }}>
-                            From {eur(c.priceFrom)}{c.bedrooms ? ` · ${c.bedrooms} bed` : ''}{c.completion ? ` · ${c.completion}` : ''}{c.avenaScore != null ? ` · Score ${c.avenaScore}` : ''}
+                          <span style={{ display: 'block', fontFamily: 'ui-monospace, monospace', fontSize: 9, letterSpacing: '0.26em', textTransform: 'uppercase', color: GOLD }}>{c.location.split(',')[0]}</span>
+                          <span style={{ display: 'block', marginTop: 4, fontFamily: 'Georgia, serif', fontSize: 19, fontWeight: 300, letterSpacing: '-0.01em' }}>€{c.priceFrom.toLocaleString('en-US')}</span>
+                          <span style={{ display: 'block', marginTop: 4, fontFamily: 'ui-monospace, monospace', fontSize: 9, letterSpacing: '0.08em', color: MUTED, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {(c.matchReasons.length ? c.matchReasons : [c.completion, c.avenaScore != null ? `Score ${c.avenaScore}` : null].filter(Boolean) as string[]).slice(0, 2).join(' · ')}
                           </span>
-                          {c.matchReasons.length > 0 && (
-                            <span style={{ display: 'block', marginTop: 4, fontFamily: 'ui-monospace, monospace', fontSize: 8.5, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'hsl(var(--av-primary) / 0.85)' }}>{c.matchReasons.join(' · ')}</span>
-                          )}
                         </span>
                       </a>
                     ))}
-                    {!leadSent && (
-                      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 2 }}>
-                        <button onClick={() => { setLeadMode('call'); t('concierge_call_requested'); }} style={ctaStyle(true)}>Book a private call</button>
-                        <button onClick={() => { setLeadMode('matches'); t('concierge_whatsapp_requested'); }} style={ctaStyle(false)}>Send me these matches</button>
-                      </div>
-                    )}
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 2 }}>
+                      <a href="/deals" style={{ ...ctaStyle(true), textDecoration: 'none' }} onClick={() => t('concierge_property_clicked', { ref: 'view_matches' })}>View {m.cards.length} matches</a>
+                      {!leadSent && (
+                        <button onClick={() => { setLeadMode('call'); t('concierge_call_requested'); }} style={ctaStyle(false)}>Book a private call</button>
+                      )}
+                    </div>
                   </div>
                 );
               }
@@ -316,7 +386,8 @@ export function AvenaConcierge() {
       {/* Panel geometry + entrance animation. Mobile: near-full-screen. */}
       <style>{`
         @keyframes avcIn { from { opacity: 0; transform: translateY(14px) scale(0.98); } to { opacity: 1; transform: none; } }
-        .avc-panel { right: 20px; bottom: 20px; width: 460px; max-width: calc(100vw - 40px); height: min(640px, calc(100vh - 120px)); }
+        /* Desktop: anchored above the always-visible ASK AVENA control (mockup) */
+        .avc-panel { right: 20px; bottom: 84px; width: 460px; max-width: calc(100vw - 40px); height: min(760px, calc(100vh - 168px)); }
         @media (max-width: 640px) {
           .avc-panel { right: 10px; left: 10px; bottom: 10px; width: auto; height: calc(100dvh - 76px); }
           body[data-avc-open] { overflow: hidden; }
