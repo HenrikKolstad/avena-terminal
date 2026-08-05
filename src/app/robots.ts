@@ -69,11 +69,14 @@ const TRAINING_ALLOW: string[] = [
   '/api/training/instructions',
 ];
 
-export default function robots(): MetadataRoute.Robots {
-  return {
-    rules: [
-      { userAgent: '*', allow: '/', disallow: ['/admin/', '/api/stripe/', '/api/auth/', '/api/cron/', '/api/email-capture', '/api/email/'] },
+// Paths no crawler should touch. Applied to EVERY group below: a named
+// per-UA group is exclusive in robots.txt (a bot that matches its own group
+// ignores `*` entirely), so without this each named bot was implicitly
+// invited into /admin/ and the billing/auth/cron API surface.
+const STANDARD_DISALLOW = ['/admin/', '/api/stripe/', '/api/auth/', '/api/cron/', '/api/email-capture', '/api/email/'];
 
+export default function robots(): MetadataRoute.Robots {
+  const namedBots: Array<{ userAgent: string; allow: string | string[] }> = [
       // Reasoning / search bots
       { userAgent: 'PerplexityBot',        allow: BROAD_ALLOW },
       { userAgent: 'OAI-SearchBot',        allow: BROAD_ALLOW },
@@ -123,6 +126,12 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: 'Omgili',               allow: BROAD_ALLOW },
       { userAgent: 'KagiBot',              allow: BROAD_ALLOW },
       { userAgent: 'NeevaBot',             allow: BROAD_ALLOW },
+  ];
+
+  return {
+    rules: [
+      { userAgent: '*', allow: '/', disallow: STANDARD_DISALLOW },
+      ...namedBots.map((r) => ({ ...r, disallow: STANDARD_DISALLOW })),
     ],
     sitemap: [
       'https://avenaterminal.com/sitemap.xml',

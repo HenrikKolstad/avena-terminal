@@ -4,10 +4,10 @@
  * numbers aren't stale.
  */
 
-import { BUBBLE_DATA_UPDATED } from '@/lib/bubble-data';
+import { getFeedUpdatedAt } from '@/lib/properties';
 
 interface Props {
-  /** override the timestamp. Defaults to BUBBLE_DATA_UPDATED. */
+  /** override the timestamp. Defaults to the live feed's refresh time. */
   updatedAt?: string | Date;
   label?: string;
 }
@@ -29,8 +29,9 @@ function humanize(ts: string | Date): string {
   return `${mo}mo ago`;
 }
 
-export function DataFreshness({ updatedAt = BUBBLE_DATA_UPDATED, label = 'Data' }: Props) {
-  const ts = typeof updatedAt === 'string' ? new Date(updatedAt) : updatedAt;
+export function DataFreshness({ updatedAt, label = 'Data' }: Props) {
+  const resolved = updatedAt ?? getFeedUpdatedAt();
+  const ts = typeof resolved === 'string' ? new Date(resolved) : resolved;
   const human = humanize(ts);
   const isoDate = ts.toISOString();
 

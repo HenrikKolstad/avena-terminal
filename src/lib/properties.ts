@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import { readFileSync, statSync } from 'fs';
 import path from 'path';
 import { Property } from './types';
 import { initProperty } from './scoring';
@@ -11,6 +11,25 @@ export function getAllProperties(): Property[] {
   const raw: Property[] = JSON.parse(readFileSync(filePath, 'utf8'));
   _cache = raw.map(initProperty);
   return _cache;
+}
+
+let _feedUpdatedAt: Date | null = null;
+
+/**
+ * When the feed data was last refreshed — data.json's mtime, which on Vercel
+ * is the build triggered by the nightly feed commit. Real signal, unlike the
+ * old hardcoded BUBBLE_DATA_UPDATED constant that drifted months stale.
+ */
+export function getFeedUpdatedAt(): Date {
+  if (_feedUpdatedAt) return _feedUpdatedAt;
+  try {
+    _feedUpdatedAt = statSync(path.join(process.cwd(), 'public', 'data.json')).mtime;
+  } catch {
+    // Fallback: the newest _added date in the feed (coarser but still real).
+    const max = getAllProperties().reduce((m, p) => (p._added && p._added > m ? p._added : m), '');
+    _feedUpdatedAt = max ? new Date(max) : new Date();
+  }
+  return _feedUpdatedAt;
 }
 
 export function slugify(s: string): string {

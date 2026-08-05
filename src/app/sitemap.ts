@@ -20,7 +20,12 @@ import { ANSWER_SLUGS } from '@/lib/answer-slugs';
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = 'https://avenaterminal.com';
-  const now = new Date();
+  // NOTE (2026-08-05): no blanket `lastModified: now`. Stamping every URL as
+  // "changed right now" on every request teaches Google to distrust and
+  // permanently ignore our lastmod — losing the one lever that triggers
+  // re-crawls when the nightly feed actually changes something. We emit
+  // lastmod only where we have a real signal (property `_added` date) and
+  // omit it elsewhere, which is valid sitemap XML.
 
   const STATIC_HIGH: Array<[string, MetadataRoute.Sitemap[number]['changeFrequency'], number]> = [
     // ─── Homepage ──────────────────────────────────────────────────────────
@@ -94,11 +99,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ['/brand',            'monthly', 0.5],
 
     // ─── Dataset / open data ──────────────────────────────────────────────
+    // (JSON/JSON-LD assets removed 2026-08-05 — sitemaps are for indexable
+    // HTML; machine endpoints are discovered via robots + on-page links.)
     ['/dataset',          'weekly',  0.9],
-    ['/standards/apip-v1.json', 'monthly', 0.9],
-    ['/api/openapi.json', 'weekly',  0.85],
-    ['/api/v1/openapi.json', 'weekly', 0.85],
-    ['/catalog.jsonld',   'weekly',  0.8],
     ['/papers/delphi',    'monthly', 0.85],
 
     // ─── PRO landing (preserved for institutional pricing) ────────────────
@@ -115,11 +118,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ['/how-it-works',     'weekly',  0.9],
     ['/enquire',          'monthly', 0.8],
     ['/engine',           'weekly',  0.85],
+    // Hub pages for the town/costa long-tail — breadcrumb targets sitewide,
+    // previously missing from the sitemap entirely.
+    ['/towns',            'daily',   0.9],
+    ['/costas',           'daily',   0.9],
   ];
 
   const entries: MetadataRoute.Sitemap = STATIC_HIGH.map(([path, freq, prio]) => ({
     url: `${base}${path}`,
-    lastModified: now,
     changeFrequency: freq,
     priority: prio,
   }));
@@ -128,7 +134,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const slug of ANSWER_SLUGS) {
     entries.push({
       url: `${base}/answers/${slug}`,
-      lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.7,
     });
@@ -143,7 +148,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       if (!p.ref) continue;
       entries.push({
         url: `${base}/property/${p.ref}`,
-        lastModified: now,
+        // `_added` = the date this ref first appeared in the feed — a real,
+        // stable timestamp (unlike the old always-now stamp).
+        ...(p._added ? { lastModified: new Date(p._added) } : {}),
         changeFrequency: 'daily',
         priority: 0.6,
       });
@@ -154,7 +161,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const t of getUniqueTowns()) {
       entries.push({
         url: `${base}/towns/${t.slug}`,
-        lastModified: now,
         changeFrequency: 'daily',
         priority: 0.55,
       });
@@ -162,7 +168,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const c of getUniqueCostas()) {
       entries.push({
         url: `${base}/costas/${slugify(c.costa)}`,
-        lastModified: now,
         changeFrequency: 'daily',
         priority: 0.55,
       });

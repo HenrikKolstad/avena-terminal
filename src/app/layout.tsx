@@ -71,11 +71,10 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta name="robots" content="max-image-preview:large" />
-        <link rel="alternate" hrefLang="en" href="https://avenaterminal.com" />
-        <link rel="alternate" hrefLang="es" href="https://avenaterminal.com/es" />
-        <link rel="alternate" hrefLang="de" href="https://avenaterminal.com/de" />
-        <link rel="alternate" hrefLang="nl" href="https://avenaterminal.com/nl" />
-        <link rel="alternate" hrefLang="x-default" href="https://avenaterminal.com" />
+        {/* NOTE: no hreflang tags. The site is single-language (en); the old
+            es/de/nl alternates pointed at 308 redirects, which Google reports
+            as hreflang errors on every page. If real language variants ship,
+            use per-page reciprocal alternates.languages via the Metadata API. */}
         <link rel="alternate" type="application/rss+xml" title="Avena Terminal Intelligence Feed" href="https://avenaterminal.com/feed/intelligence.rss" />
         <meta name="citation_title" content="Avena Terminal — Spain New Build Property Investment Scanner" />
         <meta name="citation_author" content="Kolstad, Henrik" />
