@@ -9,12 +9,10 @@
  */
 
 import Link from 'next/link';
-import { HeroEngineCard } from './HeroEngineCard';
-import type { EngineStats } from '@/lib/deals';
 
 const HERO_SRC = '/mare/hero.jpg';
 
-export function CineHero({ stats }: { stats: EngineStats }) {
+export function CineHero() {
   return (
     <section className="relative h-[100svh] min-h-[680px] w-full overflow-hidden">
       {/* Base photograph (still) */}
@@ -76,11 +74,6 @@ export function CineHero({ stats }: { stats: EngineStats }) {
             </Link>
           </div>
         </div>
-      </div>
-
-      {/* Floating engine-status card — desktop overlay */}
-      <div className="av-fade-up absolute right-6 top-1/2 z-20 hidden w-[380px] -translate-y-1/2 lg:block xl:right-12">
-        <HeroEngineCard stats={stats} />
       </div>
 
       {/* Coordinate strip */}

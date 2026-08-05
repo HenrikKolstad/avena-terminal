@@ -10,6 +10,7 @@
 import type { Metadata } from 'next';
 import EngineClient from './EngineClient';
 import { getEngineDeltas } from '@/lib/deltas';
+import { getEngineStats } from '@/lib/deals';
 
 // Revalidate hourly: the Delta Layer (live price moves + sell-outs from the
 // moat tables) refreshes after each nightly capture instead of being frozen
@@ -33,11 +34,11 @@ const jsonLd = {
 };
 
 export default async function EnginePage() {
-  const deltas = await getEngineDeltas();
+  const [deltas, stats] = [await getEngineDeltas(), getEngineStats()];
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <EngineClient deltas={deltas} />
+      <EngineClient deltas={deltas} stats={stats} />
     </>
   );
 }

@@ -13,8 +13,9 @@ import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { CineHero } from '@/components/mare/CineHero';
 import { LuxuryRankings } from '@/components/mare/LuxuryRankings';
-import { TownMarquee, Statement, LuxuryCollection, CoastPanels, PrivateOffice, EngineProof } from '@/components/mare/Sections';
-import { getTopDeals, getEngineStats } from '@/lib/deals';
+import { TownMarquee, Statement, LuxuryCollection, CoastPanels, PrivateOffice } from '@/components/mare/Sections';
+import { AvenaConcierge } from '@/components/concierge/AvenaConcierge';
+import { getTopDeals } from '@/lib/deals';
 import { getAllProperties } from '@/lib/properties';
 
 export const dynamic = 'force-dynamic';
@@ -54,18 +55,14 @@ const jsonLd = {
 export default function HomePage() {
   const deals = getTopDeals(50);
   const total = getAllProperties().length;
-  const engineStats = getEngineStats();
 
   return (
     <div className="avena-v2 relative min-h-screen w-full">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Nav />
       <main className="av-clean">
-        <CineHero stats={engineStats} />
+        <CineHero />
         <LuxuryRankings deals={deals.slice(0, 5)} total={total} seeAllHref="/deals" />
-        <div className="lg:hidden">
-          <EngineProof stats={engineStats} />
-        </div>
         <PrivateOffice />
         <TownMarquee />
         <Statement />
@@ -73,6 +70,8 @@ export default function HomePage() {
         <CoastPanels />
       </main>
       <Footer />
+      {/* Avena Concierge — the floating property advisor (engine stats moved to /engine) */}
+      <AvenaConcierge />
     </div>
   );
 }

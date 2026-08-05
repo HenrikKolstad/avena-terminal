@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import type { EngineDeltas, PriceMove } from '@/lib/deltas';
+import type { EngineStats } from '@/lib/deals';
 
 const GOLD = 'hsl(var(--av-primary))';
 const PAPER = 'hsl(var(--av-surface))';
@@ -101,12 +102,21 @@ function Metric({ value, prefix = '', suffix = '', label, run }: { value: number
   );
 }
 
-export default function EngineClient({ deltas }: { deltas?: EngineDeltas }) {
+export default function EngineClient({ deltas, stats }: { deltas?: EngineDeltas; stats?: EngineStats }) {
   const hero = useInView<HTMLDivElement>();
   const grid = useInView<HTMLDivElement>();
   const [ticked, setTicked] = useState(0);
   useEffect(() => { const t = setInterval(() => setTicked((s) => s + 7), 1000); return () => clearInterval(t); }, []);
-  const savingsCount = useCountUp(F.savingsTotal, hero.seen);
+
+  // Live figures from the feed (passed by the server wrapper — this card
+  // moved here from the homepage hero 2026-08-05); F constants as fallback.
+  const live = {
+    savingsTotal: stats?.savingsTotal ?? F.savingsTotal,
+    underpriced: stats?.underpriced ?? F.underpriced,
+    liveDeals: stats?.liveDeals ?? F.liveDeals,
+    regions: stats?.regions ?? F.regions,
+  };
+  const savingsCount = useCountUp(live.savingsTotal, hero.seen);
 
   // The Delta Layer: real moves from the moat tables when the nightly
   // capture has them; the verified historical sweep as fallback until then.
@@ -161,11 +171,11 @@ export default function EngineClient({ deltas }: { deltas?: EngineDeltas }) {
             </div>
             <div style={{ marginTop: 24, paddingBottom: 22, borderBottom: `1px solid ${LINE}` }}>
               <div style={{ fontFamily: 'Georgia, serif', fontSize: 40, fontWeight: 300, color: INK, lineHeight: 1, letterSpacing: '-0.02em' }}>{eur(savingsCount)}</div>
-              <div style={{ marginTop: 8, fontFamily: 'ui-monospace, monospace', fontSize: 9, letterSpacing: '0.16em', textTransform: 'uppercase', color: MUTED }}>Identified savings · {grp(F.underpriced)} underpriced homes</div>
+              <div style={{ marginTop: 8, fontFamily: 'ui-monospace, monospace', fontSize: 9, letterSpacing: '0.16em', textTransform: 'uppercase', color: MUTED }}>Identified savings · {grp(live.underpriced)} underpriced homes</div>
             </div>
             <div style={{ marginTop: 22, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '22px 24px' }}>
               <MiniStat value={F.dailyUpdates} label="Today's score updates" run={hero.seen} />
-              <MiniStat value={F.regions} label="Coastal regions" run={hero.seen} />
+              <MiniStat value={live.regions} label="Coastal regions" run={hero.seen} />
               <MiniStat value={F.indexed} label="Records indexed" run={hero.seen} />
               <MiniStat value={F.priceRecords} suffix="+" label="Price records" run={hero.seen} />
               <MiniStat value={F.transactions} suffix="+" label="Verified transactions" run={hero.seen} />
@@ -180,7 +190,7 @@ export default function EngineClient({ deltas }: { deltas?: EngineDeltas }) {
       <section style={{ borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, background: SURFACE }}>
         <div className="av-eng-cov" style={{ maxWidth: 1280, margin: '0 auto', padding: '56px 32px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 40 }}>
           {[
-            ['Live scoring', 'Spanish coast', `Costa Blanca, Cálida, del Sol, Tropical — ${F.regions} regions, ${grp(F.liveDeals)} new-builds scored daily.`],
+            ['Live scoring', 'Spanish coast', `Costa Blanca, Cálida, del Sol, Tropical — ${live.regions} regions, ${grp(live.liveDeals)} new-builds scored daily.`],
             ['Transaction record', `${grp(F.transactions)}+`, 'Verified European transactions reconciled against market benchmarks.'],
             ['Observation depth', 'Since Apr 2026', 'Daily score and price observations, compounding every night — irreproducible after the fact.'],
           ].map(([l, big, body]) => (
@@ -232,14 +242,14 @@ export default function EngineClient({ deltas }: { deltas?: EngineDeltas }) {
         <Label>The engine today</Label>
         <h2 style={{ fontFamily: 'Georgia, serif', fontWeight: 300, fontSize: 'clamp(2rem,3.6vw,3rem)', letterSpacing: '-0.02em', margin: '18px 0 40px' }}>Verified scale</h2>
         <div ref={grid.ref} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 14 }}>
-          <Metric value={F.savingsTotal} prefix="€" label="Identified savings" run={grid.seen} />
+          <Metric value={live.savingsTotal} prefix="€" label="Identified savings" run={grid.seen} />
           <Metric value={F.priceRecords} suffix="+" label="Historical price records" run={grid.seen} />
           <Metric value={F.transactions} suffix="+" label="Verified transactions" run={grid.seen} />
           <Metric value={F.scoreRevisions} label="Score revisions" run={grid.seen} />
           <Metric value={F.findings} label="Findings logged" run={grid.seen} />
           <Metric value={F.indexed} label="Records indexed" run={grid.seen} />
           <Metric value={F.dailyUpdates} label="Score updates / day" run={grid.seen} />
-          <Metric value={F.underpriced} label="Underpriced homes" run={grid.seen} />
+          <Metric value={live.underpriced} label="Underpriced homes" run={grid.seen} />
         </div>
       </section>
 
