@@ -85,18 +85,18 @@ export function CineHero({ stats }: { stats: EngineStats }) {
           {/* Credentials — matched thin-gold marques, stacked */}
           <div className="mt-7 flex flex-col items-start gap-3">
             <a href="https://www.rics.org" target="_blank" rel="noopener noreferrer" className="inline-flex items-center border transition-colors hover:border-primary" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>
-              <span className="border-r px-4 py-2.5 font-serif text-base tracking-[0.18em] text-foreground" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>RICS</span>
-              <span className="flex items-center gap-2.5 px-4 py-2.5">
+              <span className="border-r px-3 py-2 font-serif text-sm tracking-[0.12em] text-foreground sm:px-4 sm:py-2.5 sm:text-base sm:tracking-[0.18em]" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>RICS</span>
+              <span className="flex items-center gap-2 px-3 py-2 sm:gap-2.5 sm:px-4 sm:py-2.5">
                 <span className="h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
-                <span className="font-mono text-[9px] uppercase tracking-[0.35em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Official Tech Partner · 2026</span>
+                <span className="font-mono text-[8px] uppercase tracking-[0.13em] whitespace-nowrap sm:text-[9px] sm:tracking-[0.35em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Official Tech Partner · 2026</span>
               </span>
             </a>
             <div className="inline-flex items-center border transition-colors hover:border-primary" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>
               <span className="flex items-center gap-2.5 border-r px-4 py-2.5" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>
                 <span className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
-                <span className="font-mono text-[9px] uppercase tracking-[0.35em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Cited by</span>
+                <span className="font-mono text-[8px] uppercase tracking-[0.13em] whitespace-nowrap sm:text-[9px] sm:tracking-[0.35em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Cited by</span>
               </span>
-              <span className="px-4 py-2.5 font-serif text-base tracking-[0.18em] text-foreground">Perplexity</span>
+              <span className="px-3 py-2 font-serif text-sm tracking-[0.12em] text-foreground sm:px-4 sm:py-2.5 sm:text-base sm:tracking-[0.18em]">Perplexity</span>
             </div>
           </div>
 
