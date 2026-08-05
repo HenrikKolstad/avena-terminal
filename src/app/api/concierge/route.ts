@@ -18,7 +18,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { turnFromPrefs, extractPreferences, sanitizePrefs, validateRegions, type ConciergePrefs } from '@/lib/concierge';
+import { turnFromPrefs, extractPreferences, sanitizePrefs, mergePrefs, type ConciergePrefs } from '@/lib/concierge';
 import { conciergeAI } from '@/lib/concierge-ai';
 
 export const dynamic = 'force-dynamic';
@@ -27,29 +27,10 @@ export const maxDuration = 30;
 const MAX_MESSAGES = 40;
 const MAX_TEXT = 500;
 
-/**
- * Merge preference layers: `primary` wins on every field, `filler` fills the
- * gaps (features union). Precedence across the turn is
- *   parsed-from-current-texts  >  AI interpretation  >  echoed history
- * so the buyer's own parseable words always beat the model, and the model
- * beats stale history (a buyer CAN raise a budget in free text). Every layer
- * is bounds-checked before it gets here, and searchProperties enforces
- * whatever maxPrice results as a hard filter — no path recommends over cap.
- */
-function mergePrefs(primary: ConciergePrefs, filler: Partial<ConciergePrefs>): ConciergePrefs {
-  const merged: ConciergePrefs = { ...primary };
-  if (!merged.regions?.length && filler.regions?.length) {
-    const valid = validateRegions(filler.regions);
-    if (valid.length) merged.regions = valid;
-  }
-  if (!merged.maxPrice && filler.maxPrice) merged.maxPrice = filler.maxPrice;
-  if (!merged.minPrice && filler.minPrice) merged.minPrice = filler.minPrice;
-  if (!merged.bedrooms && filler.bedrooms) merged.bedrooms = filler.bedrooms;
-  if (!merged.purposes && filler.purposes) merged.purposes = filler.purposes;
-  if (!merged.timeline && filler.timeline) merged.timeline = filler.timeline;
-  if (filler.features?.length) merged.features = [...new Set([...(merged.features ?? []), ...filler.features])];
-  return merged;
-}
+// Merge precedence across a turn: parsed-from-current-texts > AI
+// interpretation > echoed history. mergePrefs (lib) applies primary-wins with
+// a floor/cap contradiction guard; searchProperties enforces the resulting
+// budget as a hard filter — no path can recommend outside it.
 
 export async function POST(req: NextRequest) {
   let body: { messages?: Array<{ role?: string; text?: string }>; prefs?: unknown; viaChip?: unknown };

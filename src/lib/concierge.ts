@@ -264,6 +264,28 @@ export function sanitizePrefs(raw: unknown): Partial<ConciergePrefs> {
   return prefs;
 }
 
+/**
+ * Merge preference layers: `primary` wins on every field, `filler` fills gaps
+ * (features union). Contradiction guard: a filler cap below the primary floor
+ * (or filler floor above the primary cap) is stale history — e.g. "up to
+ * €650k" then "above €1M" — and is dropped rather than producing an empty
+ * impossible range.
+ */
+export function mergePrefs(primary: ConciergePrefs, filler: Partial<ConciergePrefs>): ConciergePrefs {
+  const merged: ConciergePrefs = { ...primary };
+  if (!merged.regions?.length && filler.regions?.length) {
+    const valid = validateRegions(filler.regions);
+    if (valid.length) merged.regions = valid;
+  }
+  if (!merged.maxPrice && filler.maxPrice && (!merged.minPrice || filler.maxPrice >= merged.minPrice)) merged.maxPrice = filler.maxPrice;
+  if (!merged.minPrice && filler.minPrice && (!merged.maxPrice || filler.minPrice <= merged.maxPrice)) merged.minPrice = filler.minPrice;
+  if (!merged.bedrooms && filler.bedrooms) merged.bedrooms = filler.bedrooms;
+  if (!merged.purposes && filler.purposes) merged.purposes = filler.purposes;
+  if (!merged.timeline && filler.timeline) merged.timeline = filler.timeline;
+  if (filler.features?.length) merged.features = [...new Set([...(merged.features ?? []), ...filler.features])];
+  return merged;
+}
+
 /** Validate AI-proposed region labels against the real dataset (costas + towns). */
 export function validateRegions(regions: string[]): string[] {
   const towns = new Set(getUserTownIndex().map(([, label]) => label));
