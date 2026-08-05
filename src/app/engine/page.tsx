@@ -9,8 +9,12 @@
 
 import type { Metadata } from 'next';
 import EngineClient from './EngineClient';
+import { getEngineDeltas } from '@/lib/deltas';
 
-export const dynamic = 'force-static';
+// Revalidate hourly: the Delta Layer (live price moves + sell-outs from the
+// moat tables) refreshes after each nightly capture instead of being frozen
+// into a fully static build.
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'The Avena Engine — the data infrastructure behind every score · Avena',
@@ -28,11 +32,12 @@ const jsonLd = {
   url: 'https://avenaterminal.com/engine',
 };
 
-export default function EnginePage() {
+export default async function EnginePage() {
+  const deltas = await getEngineDeltas();
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <EngineClient />
+      <EngineClient deltas={deltas} />
     </>
   );
 }

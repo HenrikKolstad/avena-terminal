@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import type { EngineDeltas, PriceMove } from '@/lib/deltas';
 
 const GOLD = 'hsl(var(--av-primary))';
 const PAPER = 'hsl(var(--av-surface))';
@@ -100,12 +101,17 @@ function Metric({ value, prefix = '', suffix = '', label, run }: { value: number
   );
 }
 
-export default function EngineClient() {
+export default function EngineClient({ deltas }: { deltas?: EngineDeltas }) {
   const hero = useInView<HTMLDivElement>();
   const grid = useInView<HTMLDivElement>();
   const [ticked, setTicked] = useState(0);
   useEffect(() => { const t = setInterval(() => setTicked((s) => s + 7), 1000); return () => clearInterval(t); }, []);
   const savingsCount = useCountUp(F.savingsTotal, hero.seen);
+
+  // The Delta Layer: real moves from the moat tables when the nightly
+  // capture has them; the verified historical sweep as fallback until then.
+  const movements: PriceMove[] = deltas?.moves?.length ? deltas.moves : MOVEMENTS;
+  const liveDeltas = Boolean(deltas?.moves?.length);
 
   const timeline: Array<[string, string, string]> = [
     ['02:00', 'Score engine runs', 'One score written per property, every day — the observation history no competitor can rebuild backwards.'],
@@ -252,24 +258,48 @@ export default function EngineClient() {
         </div>
       </section>
 
-      {/* Recent movements */}
+      {/* Recent movements — the Delta Layer, live from the moat tables */}
       <section style={{ maxWidth: 1280, margin: '0 auto', padding: '84px 32px' }}>
-        <Label>Recent price movements · latest sweep</Label>
+        <Label>{liveDeltas ? 'Price movements · last 7 days · live' : 'Recent price movements · latest sweep'}</Label>
         <h2 style={{ fontFamily: 'Georgia, serif', fontWeight: 300, fontSize: 'clamp(2rem,3.6vw,3rem)', letterSpacing: '-0.02em', margin: '18px 0 36px' }}>What the engine caught</h2>
         <div style={{ border: `1px solid ${LINE}`, borderRadius: 4, overflow: 'hidden', background: SURFACE }}>
-          {MOVEMENTS.map((m, i) => {
+          {movements.map((m, i) => {
             const pct = Math.round(((m.to - m.from) / m.from) * 100);
             return (
-              <div key={m.ref} className="av-eng-mv" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr auto auto', gap: 20, alignItems: 'center', padding: '18px 26px', borderTop: i === 0 ? 'none' : `1px solid ${LINE}` }}>
+              <Link key={m.ref} href={`/property/${encodeURIComponent(m.ref)}`} className="av-eng-mv" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr auto auto', gap: 20, alignItems: 'center', padding: '18px 26px', borderTop: i === 0 ? 'none' : `1px solid ${LINE}`, color: 'inherit', textDecoration: 'none' }}>
                 <span style={{ fontFamily: 'ui-monospace, monospace', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: MUTED }}>{m.town}</span>
                 <span style={{ fontFamily: 'Georgia, serif', fontSize: 15 }}>{eur(m.from)} → {eur(m.to)}</span>
                 <span style={{ fontFamily: 'ui-monospace, monospace', fontSize: 13, color: pct < 0 ? NEG : POS }}>{pct > 0 ? '+' : ''}{pct}%</span>
-                <span style={{ fontFamily: 'ui-monospace, monospace', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: MUTED }}>logged</span>
-              </div>
+                <span style={{ fontFamily: 'ui-monospace, monospace', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: MUTED }}>{m.date ?? 'logged'}</span>
+              </Link>
             );
           })}
         </div>
         <p style={{ color: MUTED, fontSize: 12.5, marginTop: 14 }}>Every movement is written to permanent price history — the record that makes &ldquo;underpriced&rdquo; provable.</p>
+
+        {/* Left the market — the absorption signal the source deletes */}
+        {deltas && deltas.selloutCount30d > 0 && (
+          <div style={{ marginTop: 56 }}>
+            <Label>Left the market · last 30 days · live</Label>
+            <h3 style={{ fontFamily: 'Georgia, serif', fontWeight: 300, fontSize: 'clamp(1.5rem,2.6vw,2.1rem)', letterSpacing: '-0.02em', margin: '16px 0 10px' }}>
+              {deltas.selloutCount30d} new-builds gone from the feed
+              {deltas.medianExitPm2 ? ` · median exit ${eur(deltas.medianExitPm2)}/m²` : ''}
+            </h3>
+            <p style={{ color: MUTED, fontSize: 13.5, margin: '0 0 24px', maxWidth: 640 }}>
+              When a unit sells, the source removes it — the listing, the price, everything. These records now exist only here.
+            </p>
+            <div style={{ border: `1px solid ${LINE}`, borderRadius: 4, overflow: 'hidden', background: SURFACE }}>
+              {deltas.sellouts.map((s, i) => (
+                <div key={s.ref} className="av-eng-mv" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr auto auto', gap: 20, alignItems: 'center', padding: '16px 26px', borderTop: i === 0 ? 'none' : `1px solid ${LINE}` }}>
+                  <span style={{ fontFamily: 'ui-monospace, monospace', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: MUTED }}>{s.town ?? '—'}</span>
+                  <span style={{ fontFamily: 'Georgia, serif', fontSize: 15 }}>{s.type ?? 'New build'}{s.lastPrice ? ` · last asked ${eur(s.lastPrice)}` : ''}</span>
+                  <span style={{ fontFamily: 'ui-monospace, monospace', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: MUTED }}>{s.lastSeen}</span>
+                  <span style={{ fontFamily: 'ui-monospace, monospace', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: GOLD }}>archived</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
 
       {/* Closing */}
