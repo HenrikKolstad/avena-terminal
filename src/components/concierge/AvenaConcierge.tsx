@@ -31,6 +31,9 @@ type Msg =
 
 const SS_KEY = 'av_concierge_v1';
 const SS_DISMISS = 'av_concierge_dismissed';
+// Set when the visitor explicitly closes the panel — the auto-popup respects
+// that for the rest of the session (cleared if they reopen it themselves).
+const SS_CLOSED = 'av_concierge_closed';
 
 // ── Showcase mode (per Henrik's homepage mockup, 2026-08-05) ────────────────
 // On a fresh desktop visit the panel opens pre-filled with this example
@@ -74,6 +77,11 @@ export function AvenaConcierge() {
   const launcherRef = useRef<HTMLButtonElement>(null);
   const reducedMotion = useRef(false);
 
+  const closePanel = useCallback(() => {
+    try { sessionStorage.setItem(SS_CLOSED, '1'); } catch { /* ok */ }
+    setOpen(false); t('concierge_closed');
+  }, []);
+
   // ── Restore session state / launch the showcase ──
   useEffect(() => {
     reducedMotion.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -89,14 +97,19 @@ export function AvenaConcierge() {
       }
     } catch { /* fresh start */ }
     const dismissed = sessionStorage.getItem(SS_DISMISS) === '1';
+    const closedByUser = sessionStorage.getItem(SS_CLOSED) === '1';
     const desktop = window.matchMedia('(min-width: 1024px)').matches;
 
-    // Fresh desktop visit → the mockup state: panel open, showcase running.
-    if (!hasSaved && !dismissed && desktop) {
-      runShowcase();
+    // Desktop auto-popup on EVERY visit (Henrik's call), unless the visitor
+    // explicitly closed it this session: fresh visitors get the showcase,
+    // returning visitors get their own conversation reopened.
+    if (desktop && !closedByUser) {
+      if (hasSaved) setOpen(true);
+      else runShowcase();
       return;
     }
-    // Otherwise: the restrained invitation, unless dismissed this session.
+    // Collapsed (mobile, or closed-by-user): the restrained invitation,
+    // unless dismissed this session.
     if (!dismissed) {
       const timer = setTimeout(() => { setInvite(true); t('concierge_invitation_shown'); }, 6000);
       return () => clearTimeout(timer);
@@ -122,10 +135,10 @@ export function AvenaConcierge() {
     } else { delete document.body.dataset.avcOpen; }
   }, [open]);
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && open) { setOpen(false); launcherRef.current?.focus(); } };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && open) { closePanel(); launcherRef.current?.focus(); } };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [open]);
+  }, [open, closePanel]);
 
   const turn = useCallback(async (nextMessages: Msg[], viaChip = false) => {
     setBusy(true); setFailed(false);
@@ -165,9 +178,11 @@ export function AvenaConcierge() {
 
   const openPanel = useCallback(() => {
     userOpenedRef.current = true;
+    try { sessionStorage.removeItem(SS_CLOSED); } catch { /* ok */ }
     setOpen(true); setInvite(false); t('concierge_opened');
     if (messages.length === 0) turn([]);
   }, [messages.length, turn]);
+
 
   /**
    * The homepage showcase: greeting + example answer appear, the REAL engine
@@ -278,7 +293,7 @@ export function AvenaConcierge() {
         )}
         <button
           ref={launcherRef}
-          onClick={() => { if (open) { setOpen(false); t('concierge_closed'); } else { openPanel(); } }}
+          onClick={() => { if (open) { closePanel(); } else { openPanel(); } }}
           aria-label={open ? 'Close Avena Concierge' : 'Open Avena Concierge'}
           style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
         >
@@ -313,7 +328,7 @@ export function AvenaConcierge() {
                 <span style={{ width: 5, height: 5, borderRadius: '50%', background: GREEN }} /> Property advisor
               </div>
             </div>
-            <button aria-label="Minimize concierge" onClick={() => { setOpen(false); t('concierge_closed'); launcherRef.current?.focus(); }} style={{ background: 'none', border: `1px solid hsl(var(--av-border) / 0.6)`, borderRadius: 3, color: MUTED, cursor: 'pointer', width: 28, height: 28, fontSize: 13, lineHeight: 1 }}>—</button>
+            <button aria-label="Minimize concierge" onClick={() => { closePanel(); launcherRef.current?.focus(); }} style={{ background: 'none', border: `1px solid hsl(var(--av-border) / 0.6)`, borderRadius: 3, color: MUTED, cursor: 'pointer', width: 28, height: 28, fontSize: 13, lineHeight: 1 }}>—</button>
           </div>
 
           {/* Messages */}
