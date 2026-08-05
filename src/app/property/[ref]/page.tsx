@@ -29,6 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ ref: stri
 
   return {
     title, description,
+    alternates: { canonical: `https://avenaterminal.com/property/${encodeURIComponent(p.ref ?? '')}` },
     openGraph: {
       title, description,
       url: `https://avenaterminal.com/property/${encodeURIComponent(p.ref ?? '')}`,

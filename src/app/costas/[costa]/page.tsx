@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ costa: st
   const avgScoreMeta = Math.round(avg(data.properties.filter(p => p._sc).map(p => p._sc!)));
   const avgYieldMeta = avg(data.properties.filter(p => p._yield).map(p => p._yield!.gross)).toFixed(1);
   const description = `${data.costa} new builds: ${data.properties.length} properties, ${avgScoreMeta}/100 avg score, ${avgYieldMeta}% gross yield. Live data from Avena Terminal.`;
-  return { title, description, openGraph: { title, description, url: `https://avenaterminal.com/costas/${costa}`, siteName: 'Avena Terminal', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] } };
+  return { title, description, alternates: { canonical: `https://avenaterminal.com/costas/${costa}` }, openGraph: { title, description, url: `https://avenaterminal.com/costas/${costa}`, siteName: 'Avena Terminal', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] } };
 }
 
 export default async function CostaPage({ params }: { params: Promise<{ costa: string }> }) {

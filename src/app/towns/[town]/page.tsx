@@ -22,6 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ town: str
   const description = `${name} new builds: avg \u20AC${avgPm2Meta.toLocaleString()}/m\u00B2, ${avgScore}/100 score, ${avgYieldMeta}% gross yield. Live data from Avena Terminal.`;
   return {
     title, description,
+    alternates: { canonical: `https://avenaterminal.com/towns/${town}` },
     openGraph: { title, description, url: `https://avenaterminal.com/towns/${town}`, siteName: 'Avena Terminal', images: [{ url: '/opengraph-image', width: 1200, height: 630 }] },
   };
 }

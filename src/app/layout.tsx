@@ -23,7 +23,10 @@ export const metadata: Metadata = {
   verification: { google: "DGv4LcZcrNU5mn_wXz8-vAErjw0oSxLMN-7KHqdDSd4" },
   description: "Avena Terminal scores and ranks 1,881 new build properties across Costa Blanca, Costa Cálida and Costa del Sol using hedonic regression and discount-to-market analysis. Investment score, rental yield, price per m². Spain's first PropTech terminal.",
   metadataBase: new URL("https://avenaterminal.com"),
-  alternates: { canonical: 'https://avenaterminal.com' },
+  // NOTE: no site-wide canonical here. A fixed root canonical makes every
+  // sub-page (all /property, /towns, /costas URLs) canonicalise to the
+  // homepage, so Google drops them from the index. Each page sets its own
+  // self-referencing canonical instead; the homepage sets it in page.tsx.
   icons: {
     icon: '/favicon.svg',
     shortcut: '/favicon.svg',
