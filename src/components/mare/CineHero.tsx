@@ -17,46 +17,11 @@ const HERO_SRC = '/mare/hero.jpg';
 export function CineHero({ stats }: { stats: EngineStats }) {
   return (
     <section className="relative h-[100svh] min-h-[680px] w-full overflow-hidden">
-      {/* SVG filter for living pool water */}
-      <svg className="absolute -z-10 h-0 w-0" aria-hidden="true">
-        <defs>
-          <filter id="av-pool-water" x="-5%" y="-5%" width="110%" height="110%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.9 0.045" numOctaves="2" seed="7" result="fine">
-              <animate attributeName="baseFrequency" dur="7s" values="0.9 0.045;0.95 0.05;0.9 0.045" repeatCount="indefinite" />
-            </feTurbulence>
-            <feTurbulence type="fractalNoise" baseFrequency="0.018 0.006" numOctaves="2" seed="3" result="swell">
-              <animate attributeName="baseFrequency" dur="22s" values="0.018 0.006;0.022 0.008;0.018 0.006" repeatCount="indefinite" />
-            </feTurbulence>
-            <feComposite in="fine" in2="swell" operator="arithmetic" k1="0" k2="0.55" k3="0.55" k4="0" result="waves" />
-            <feGaussianBlur in="waves" stdDeviation="0.6" result="soft" />
-            <feDisplacementMap in="SourceGraphic" in2="soft" scale="7" xChannelSelector="R" yChannelSelector="G" />
-          </filter>
-        </defs>
-      </svg>
-
       {/* Base photograph (still) */}
       <div className="absolute inset-0 av-slow-zoom">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={HERO_SRC} alt="Cliffside seafront villa at golden hour on the Spanish coast" className="h-full w-full object-cover" width={1920} height={1200} />
       </div>
-
-      {/* Living pool water — displaced duplicate, masked to the lower half */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent 45%, black 68%, black 100%)',
-          maskImage: 'linear-gradient(to bottom, transparent 45%, black 68%, black 100%)',
-        }}
-      >
-        <div className="absolute inset-0 av-slow-zoom" style={{ filter: 'url(#av-pool-water)' }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={HERO_SRC} alt="" aria-hidden="true" className="h-full w-full object-cover" />
-        </div>
-      </div>
-
-      {/* Drifting light on the water */}
-      <div className="av-caustics" />
-      <div className="av-caustics av-caustics-2" />
 
       {/* Cinematic scrims */}
       <div className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(180deg, hsl(var(--av-background) / 0.72) 0%, hsl(var(--av-background) / 0.08) 38%, hsl(var(--av-background)) 100%)' }} />

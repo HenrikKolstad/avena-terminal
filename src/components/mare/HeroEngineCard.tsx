@@ -60,8 +60,8 @@ export function HeroEngineCard({ stats }: { stats: EngineStats }) {
       style={{
         width: '100%',
         background: 'rgba(249,247,243,0.90)',
-        backdropFilter: 'blur(18px)',
-        WebkitBackdropFilter: 'blur(18px)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
         border: '1px solid rgba(255,255,255,0.45)',
         borderRadius: 16,
         padding: '26px 28px',
