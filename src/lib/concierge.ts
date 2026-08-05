@@ -84,15 +84,21 @@ export function extractPreferences(userTexts: string[]): ConciergePrefs {
     }
     if (/anywhere|whole coast|all (of )?spain|open to any/i.test(t)) prefs.regions = [];
 
-    // Budget — ranges, "up to", "under", "max", "between"
+    // Budget — ranges, "up to/under" (max), "above/over/from" (min), bare €
     const range = t.match(/([\d][\d.,\s]*\s*[km]?)\s*(?:-|–|to|and)\s*(€?\s*[\d][\d.,\s]*\s*[km]?)/i);
     const upTo = t.match(/(?:up to|under|max(?:imum)?|below|budget of|budget)\s*€?\s*([\d][\d.,\s]*\s*[km]?)/i);
+    const above = t.match(/(?:above|over|more than|at least|min(?:imum)?(?: of)?|starting (?:at|from)|from|upwards of)\s*€?\s*([\d][\d.,\s]*\s*[km]?)/i);
     if (range) {
       const lo = money(range[1]); const hi = money(range[2]);
       if (lo && hi && hi > lo) { prefs.minPrice = lo; prefs.maxPrice = hi; }
     } else if (upTo) {
       const v = money(upTo[1]);
       if (v) prefs.maxPrice = v;
+    } else if (above) {
+      // "Above €1,000,000" is a FLOOR, not a cap (the old fallthrough capped
+      // the search at €1M and returned sub-million properties).
+      const v = money(above[1]);
+      if (v) { prefs.minPrice = v; delete prefs.maxPrice; }
     } else {
       const bare = t.match(/€\s*([\d][\d.,\s]*\s*[km]?)/i);
       if (bare) { const v = money(bare[1]); if (v) prefs.maxPrice = v; }
@@ -283,7 +289,8 @@ export function conciergeTurn(userTexts: string[]): ConciergeTurn {
 export function turnFromPrefs(prefs: ConciergePrefs, opening = false): ConciergeTurn {
   const missing: string[] = [];
   if (!prefs.regions) missing.push('region');
-  if (!prefs.maxPrice) missing.push('budget');
+  // A floor ("Above €1,000,000") answers the budget question just as well as a cap.
+  if (!prefs.maxPrice && !prefs.minPrice) missing.push('budget');
   if (!prefs.purposes) missing.push('purpose');
   if (!prefs.timeline) missing.push('timeline');
 
@@ -296,7 +303,7 @@ export function turnFromPrefs(prefs: ConciergePrefs, opening = false): Concierge
       quickReplies: ['Costa del Sol, near the sea. Up to €650,000.', 'Costa del Sol', 'Costa Blanca', 'Costa Cálida', 'Anywhere coastal'],
     } };
   }
-  if (!prefs.maxPrice) {
+  if (!prefs.maxPrice && !prefs.minPrice) {
     return { prefs, missing, ask: {
       question: 'What budget should I work with?',
       quickReplies: ['Up to €400,000', '€400,000–€650,000', '€650,000–€1,000,000', 'Above €1,000,000'],
