@@ -17,7 +17,7 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk';
-import type { ConciergePrefs } from './concierge';
+import { sanitizePrefs, type ConciergePrefs } from './concierge';
 
 const MODEL = 'claude-opus-5';
 const MAX_CALLS_PER_IP_PER_MIN = 8;
@@ -106,22 +106,7 @@ export async function conciergeAI(
     const raw = JSON.parse(textBlock.text) as Record<string, unknown>;
 
     // Server-side validation — nothing from the model is trusted as-is.
-    const prefs: Partial<ConciergePrefs> = {};
-    const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) && v >= 10_000 && v <= 50_000_000 ? Math.round(v) : undefined);
-    if (Array.isArray(raw.regions)) prefs.regions = raw.regions.filter((r): r is string => typeof r === 'string').slice(0, 5);
-    const maxP = num(raw.maxPrice); if (maxP) prefs.maxPrice = maxP;
-    const minP = num(raw.minPrice); if (minP) prefs.minPrice = minP;
-    if (typeof raw.bedrooms === 'number' && raw.bedrooms >= 1 && raw.bedrooms <= 10) prefs.bedrooms = Math.round(raw.bedrooms);
-    if (Array.isArray(raw.purposes)) {
-      const p = raw.purposes.filter((x): x is 'lifestyle' | 'investment' => x === 'lifestyle' || x === 'investment');
-      if (p.length) prefs.purposes = [...new Set(p)];
-    }
-    if (raw.timeline === 'ready' || raw.timeline === 'within12' || raw.timeline === 'offplan_ok') prefs.timeline = raw.timeline;
-    if (Array.isArray(raw.features)) {
-      const f = raw.features.filter((x): x is string => ['sea', 'golf', 'pool', 'frontline'].includes(x as string));
-      if (f.length) prefs.features = [...new Set(f)];
-    }
-
+    const prefs = sanitizePrefs(raw);
     const reply = typeof raw.reply === 'string' ? raw.reply.trim().slice(0, 600) : '';
     if (!reply) return null;
     return { reply, prefs };

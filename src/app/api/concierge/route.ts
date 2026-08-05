@@ -18,7 +18,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { conciergeTurn, turnFromPrefs, extractPreferences, validateRegions, type ConciergePrefs } from '@/lib/concierge';
+import { turnFromPrefs, extractPreferences, sanitizePrefs, validateRegions, type ConciergePrefs } from '@/lib/concierge';
 import { conciergeAI } from '@/lib/concierge-ai';
 
 export const dynamic = 'force-dynamic';
@@ -27,24 +27,32 @@ export const maxDuration = 30;
 const MAX_MESSAGES = 40;
 const MAX_TEXT = 500;
 
-/** Deterministic wins; AI only fills gaps. maxPrice: the LOWER of the two — the model may never loosen a parsed budget. */
-function mergePrefs(det: ConciergePrefs, ai: Partial<ConciergePrefs>): ConciergePrefs {
-  const merged: ConciergePrefs = { ...det };
-  if (!merged.regions?.length && ai.regions?.length) {
-    const valid = validateRegions(ai.regions);
+/**
+ * Merge preference layers: `primary` wins on every field, `filler` fills the
+ * gaps (features union). Precedence across the turn is
+ *   parsed-from-current-texts  >  AI interpretation  >  echoed history
+ * so the buyer's own parseable words always beat the model, and the model
+ * beats stale history (a buyer CAN raise a budget in free text). Every layer
+ * is bounds-checked before it gets here, and searchProperties enforces
+ * whatever maxPrice results as a hard filter — no path recommends over cap.
+ */
+function mergePrefs(primary: ConciergePrefs, filler: Partial<ConciergePrefs>): ConciergePrefs {
+  const merged: ConciergePrefs = { ...primary };
+  if (!merged.regions?.length && filler.regions?.length) {
+    const valid = validateRegions(filler.regions);
     if (valid.length) merged.regions = valid;
   }
-  if (ai.maxPrice) merged.maxPrice = merged.maxPrice ? Math.min(merged.maxPrice, ai.maxPrice) : ai.maxPrice;
-  if (!merged.minPrice && ai.minPrice) merged.minPrice = ai.minPrice;
-  if (!merged.bedrooms && ai.bedrooms) merged.bedrooms = ai.bedrooms;
-  if (!merged.purposes && ai.purposes) merged.purposes = ai.purposes;
-  if (!merged.timeline && ai.timeline) merged.timeline = ai.timeline;
-  if (ai.features?.length) merged.features = [...new Set([...(merged.features ?? []), ...ai.features])];
+  if (!merged.maxPrice && filler.maxPrice) merged.maxPrice = filler.maxPrice;
+  if (!merged.minPrice && filler.minPrice) merged.minPrice = filler.minPrice;
+  if (!merged.bedrooms && filler.bedrooms) merged.bedrooms = filler.bedrooms;
+  if (!merged.purposes && filler.purposes) merged.purposes = filler.purposes;
+  if (!merged.timeline && filler.timeline) merged.timeline = filler.timeline;
+  if (filler.features?.length) merged.features = [...new Set([...(merged.features ?? []), ...filler.features])];
   return merged;
 }
 
 export async function POST(req: NextRequest) {
-  let body: { messages?: Array<{ role?: string; text?: string }> };
+  let body: { messages?: Array<{ role?: string; text?: string }>; prefs?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -58,7 +66,13 @@ export async function POST(req: NextRequest) {
   const userTexts = conversation.filter((m) => m.role === 'user').map((m) => m.text);
 
   try {
-    const det = conciergeTurn(userTexts);
+    // Cross-turn memory: the client echoes back the prefs the server returned
+    // last turn (needed because AI-extracted facts like "half a million" are
+    // not re-derivable from the raw text). Treated as untrusted input —
+    // fully re-validated, and mergePrefs keeps the budget cap monotonic.
+    const echoed = sanitizePrefs(body.prefs);
+    const parsed = extractPreferences(userTexts);
+    const det = turnFromPrefs(mergePrefs(parsed, echoed));
 
     // Was the latest message machine-parseable on its own? Chips always are;
     // clean typed answers usually are. If so, skip the AI round-trip.
@@ -78,7 +92,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, engine: 'deterministic', ...det });
     }
 
-    const merged = mergePrefs(det.prefs, ai.prefs);
+    // parsed > AI > echoed history
+    const merged = mergePrefs(parsed, mergePrefs(ai.prefs as ConciergePrefs, echoed));
     const turn = turnFromPrefs(merged);
 
     // Claude's reply becomes the conversational text; chips + results stay deterministic.

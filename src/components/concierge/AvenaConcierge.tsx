@@ -45,6 +45,9 @@ export function AvenaConcierge() {
   const [invite, setInvite] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [quickReplies, setQuickReplies] = useState<string[]>([]);
+  // Server-derived preferences, echoed back each turn so AI-extracted facts
+  // ("half a million" → maxPrice) survive turns the regex parser handles.
+  const prefsRef = useRef<Record<string, unknown> | null>(null);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
   const [leadMode, setLeadMode] = useState<null | 'call' | 'matches'>(null);
@@ -64,6 +67,7 @@ export function AvenaConcierge() {
         const s = JSON.parse(saved);
         if (Array.isArray(s.messages)) setMessages(s.messages);
         if (Array.isArray(s.quickReplies)) setQuickReplies(s.quickReplies);
+        if (s.prefs && typeof s.prefs === 'object') prefsRef.current = s.prefs;
       }
     } catch { /* fresh start */ }
     // Restrained invitation after a short delay, unless dismissed this session
@@ -76,7 +80,7 @@ export function AvenaConcierge() {
 
   // ── Persist on change ──
   useEffect(() => {
-    try { sessionStorage.setItem(SS_KEY, JSON.stringify({ messages, quickReplies })); } catch { /* full */ }
+    try { sessionStorage.setItem(SS_KEY, JSON.stringify({ messages, quickReplies, prefs: prefsRef.current })); } catch { /* full */ }
   }, [messages, quickReplies]);
 
   // ── Autoscroll + focus management ──
@@ -97,10 +101,11 @@ export function AvenaConcierge() {
       const res = await fetch('/api/concierge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: nextMessages.filter((m) => m.role !== 'cards') }),
+        body: JSON.stringify({ messages: nextMessages.filter((m) => m.role !== 'cards'), prefs: prefsRef.current ?? undefined }),
       });
       if (!res.ok) throw new Error(String(res.status));
       const data = await res.json();
+      if (data.prefs && typeof data.prefs === 'object') prefsRef.current = data.prefs;
       const additions: Msg[] = [];
       if (data.recommendations?.length) {
         additions.push({ role: 'cards', cards: data.recommendations, note: data.resultNote });

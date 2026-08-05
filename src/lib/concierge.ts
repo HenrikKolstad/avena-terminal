@@ -227,6 +227,37 @@ export function searchProperties(prefs: ConciergePrefs, limit = 3): ConciergeCar
   }));
 }
 
+/**
+ * Sanitize preference objects from untrusted sources (the AI's structured
+ * output, or prefs echoed back by the client for cross-turn persistence).
+ * Everything is re-validated: regions must match real costas/towns, numbers
+ * must be finite and in sane bounds, enums are whitelisted.
+ */
+export function sanitizePrefs(raw: unknown): Partial<ConciergePrefs> {
+  if (!raw || typeof raw !== 'object') return {};
+  const r = raw as Record<string, unknown>;
+  const prefs: Partial<ConciergePrefs> = {};
+  const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) && v >= 10_000 && v <= 50_000_000 ? Math.round(v) : undefined);
+
+  if (Array.isArray(r.regions)) {
+    const valid = validateRegions(r.regions.filter((x): x is string => typeof x === 'string').slice(0, 5));
+    if (valid.length) prefs.regions = valid;
+  }
+  const maxP = num(r.maxPrice); if (maxP) prefs.maxPrice = maxP;
+  const minP = num(r.minPrice); if (minP) prefs.minPrice = minP;
+  if (typeof r.bedrooms === 'number' && r.bedrooms >= 1 && r.bedrooms <= 10) prefs.bedrooms = Math.round(r.bedrooms);
+  if (Array.isArray(r.purposes)) {
+    const p = r.purposes.filter((x): x is 'lifestyle' | 'investment' => x === 'lifestyle' || x === 'investment');
+    if (p.length) prefs.purposes = [...new Set(p)];
+  }
+  if (r.timeline === 'ready' || r.timeline === 'within12' || r.timeline === 'offplan_ok') prefs.timeline = r.timeline;
+  if (Array.isArray(r.features)) {
+    const f = r.features.filter((x): x is string => ['sea', 'golf', 'pool', 'frontline'].includes(x as string));
+    if (f.length) prefs.features = [...new Set(f)];
+  }
+  return prefs;
+}
+
 /** Validate AI-proposed region labels against the real dataset (costas + towns). */
 export function validateRegions(regions: string[]): string[] {
   const towns = new Set(getUserTownIndex().map(([, label]) => label));
