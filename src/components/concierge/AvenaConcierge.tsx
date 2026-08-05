@@ -104,8 +104,10 @@ export function AvenaConcierge() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ── Persist on change ──
+  // ── Persist on change ── (the untouched teaching example is NOT saved —
+  // only real customer conversations survive minimize/reload)
   useEffect(() => {
+    if (showcaseRef.current) return;
     try { sessionStorage.setItem(SS_KEY, JSON.stringify({ messages, quickReplies, prefs: prefsRef.current })); } catch { /* full */ }
   }, [messages, quickReplies]);
 
@@ -155,6 +157,11 @@ export function AvenaConcierge() {
   }, []);
 
   const userOpenedRef = useRef(false);
+  // True while the panel shows the untouched teaching example. The moment the
+  // customer sends their own message, their conversation starts FRESH — the
+  // example's preferences (Costa del Sol, €650k…) must never leak into a real
+  // buyer's search.
+  const showcaseRef = useRef(false);
 
   const openPanel = useCallback(() => {
     userOpenedRef.current = true;
@@ -169,6 +176,7 @@ export function AvenaConcierge() {
    * mockup, populated from live inventory.
    */
   const runShowcase = useCallback(async () => {
+    showcaseRef.current = true;
     setOpen(true);
     t('concierge_opened');
     const opening: Msg[] = [
@@ -217,7 +225,10 @@ export function AvenaConcierge() {
     t(viaChip ? 'concierge_quick_reply_clicked' : 'concierge_message_sent');
     setInput('');
     setQuickReplies([]);
-    const next: Msg[] = [...messages, { role: 'user', text: clean }];
+    // First message after the teaching example → their own fresh conversation.
+    const base = showcaseRef.current ? [] : messages;
+    if (showcaseRef.current) { prefsRef.current = null; showcaseRef.current = false; }
+    const next: Msg[] = [...base, { role: 'user', text: clean }];
     setMessages(next);
     turn(next);
   }, [messages, busy, turn]);
