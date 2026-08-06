@@ -23,7 +23,12 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Underpriced Spanish coastal property, scored daily — Avena',
   description: 'Every new-build on the Costa Blanca, Cálida and del Sol, scored on discount-to-market, yield and developer quality. The underpriced ones, surfaced first — with the data to prove it.',
-  alternates: { canonical: 'https://avenaterminal.com' },
+  alternates: {
+    canonical: 'https://avenaterminal.com',
+    // Reciprocal hreflang with the Norwegian buyer funnel — real language
+    // variants only (the old es/de/nl tags pointed at redirects and are gone).
+    languages: { en: 'https://avenaterminal.com', nb: 'https://avenaterminal.com/no' },
+  },
   openGraph: {
     title: 'Underpriced Spanish coastal property, scored daily — Avena',
     description: 'Every new-build on the Costa Blanca, Cálida and del Sol, scored on discount-to-market, yield and developer quality. The underpriced ones, surfaced first.',

@@ -103,6 +103,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // HTML; machine endpoints are discovered via robots + on-page links.)
     ['/dataset',          'weekly',  0.9],
     ['/papers/delphi',    'monthly', 0.85],
+    // ─── Norwegian buyer funnel (2026-08-06) ──────────────────────────────
+    ['/no',                                   'daily',   0.9],
+    ['/no/kjope-bolig-i-spania',              'weekly',  0.85],
+    ['/no/costa-blanca-eller-costa-del-sol',  'daily',   0.85],
+    // Compare index (the town-vs-town pattern is the site's proven organic
+    // winner per Search Console — pairs are added dynamically below)
+    ['/compare',          'weekly',  0.8],
 
     // ─── PRO landing (preserved for institutional pricing) ────────────────
     ['/pro',              'weekly',  0.85],
@@ -171,6 +178,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: 'daily',
         priority: 0.55,
       });
+    }
+
+    // Town-vs-town compare pages — the top-clicked pages in Search Console,
+    // previously absent from the sitemap entirely. Mirrors the compare
+    // page's generateStaticParams (top 30 towns, unordered pairs).
+    const topTowns = getUniqueTowns().slice(0, 30);
+    for (let i = 0; i < topTowns.length; i++) {
+      for (let j = i + 1; j < topTowns.length; j++) {
+        entries.push({
+          url: `${base}/compare/${topTowns[i].slug}-vs-${topTowns[j].slug}`,
+          changeFrequency: 'weekly',
+          priority: 0.5,
+        });
+      }
     }
   } catch { /* ignore */ }
 
