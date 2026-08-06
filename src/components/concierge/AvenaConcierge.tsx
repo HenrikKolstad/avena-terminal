@@ -96,24 +96,34 @@ export function AvenaConcierge() {
         if (s.prefs && typeof s.prefs === 'object') prefsRef.current = s.prefs;
       }
     } catch { /* fresh start */ }
-    const dismissed = sessionStorage.getItem(SS_DISMISS) === '1';
-    const closedByUser = sessionStorage.getItem(SS_CLOSED) === '1';
-    const desktop = window.matchMedia('(min-width: 1024px)').matches;
+    // Decide AFTER a short settle delay: some environments hydrate while the
+    // viewport is transiently narrow (window restore, split-screen, embedded
+    // panes), which made the desktop check fail at effect time even on a
+    // 1280px screen. 250ms costs nothing perceptible and reads the real size.
+    let inviteTimer: ReturnType<typeof setTimeout> | undefined;
+    const decideTimer = setTimeout(() => {
+      const dismissed = sessionStorage.getItem(SS_DISMISS) === '1';
+      const closedByUser = sessionStorage.getItem(SS_CLOSED) === '1';
+      // 768px: wide enough for the 460px panel — half-screen laptop windows
+      // count as desktop too. Only ≤640px (the mobile CSS breakpoint) plus a
+      // safety band stays collapsed.
+      const desktop = window.matchMedia('(min-width: 768px)').matches;
 
-    // Desktop auto-popup on EVERY visit (Henrik's call), unless the visitor
-    // explicitly closed it this session: fresh visitors get the showcase,
-    // returning visitors get their own conversation reopened.
-    if (desktop && !closedByUser) {
-      if (hasSaved) setOpen(true);
-      else runShowcase();
-      return;
-    }
-    // Collapsed (mobile, or closed-by-user): the restrained invitation,
-    // unless dismissed this session.
-    if (!dismissed) {
-      const timer = setTimeout(() => { setInvite(true); t('concierge_invitation_shown'); }, 6000);
-      return () => clearTimeout(timer);
-    }
+      // Auto-popup on EVERY visit (Henrik's call), unless the visitor
+      // explicitly closed it this session: fresh visitors get the showcase,
+      // returning visitors get their own conversation reopened.
+      if (desktop && !closedByUser) {
+        if (hasSaved) setOpen(true);
+        else runShowcase();
+        return;
+      }
+      // Collapsed (mobile, or closed-by-user): the restrained invitation,
+      // unless dismissed this session.
+      if (!dismissed) {
+        inviteTimer = setTimeout(() => { setInvite(true); t('concierge_invitation_shown'); }, 6000);
+      }
+    }, 250);
+    return () => { clearTimeout(decideTimer); if (inviteTimer) clearTimeout(inviteTimer); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
