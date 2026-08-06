@@ -5,21 +5,17 @@ import { ArrowUpRight, Check, Lock, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { trackEvent } from '@/lib/tracking';
 
-// Private Client inclusions — institutional feature set, editorial phrasing
+// Private Client inclusions (rewritten 2026-08-06) — only what PRO actually
+// unlocks today. No roadmap promises, no retired tooling.
 const PRO_FEATURES = [
-  'Unrestricted Oracle access · 10 analytical tools',
-  'Live alpha signal alerts · 8 anomaly classes',
-  'Deal alerts by region, yield, and price band',
-  'Developer stress scores · quarterly refresh',
-  'Priority deal rankings · first-look access',
-  'Dataset export · CSV, JSONL, SPARQL',
-  'Private ROI, mortgage, and tax calculators',
-  'Yield curve by beach-distance band',
-  'Historical price snapshots · monthly archive',
-  'Programmatic API access · personal key',
-  'Private office hours with the desk',
-  'Early access · Portugal Q3, Italy Q4',
-  'Discreet email support · 24h response',
+  'The complete ranked book — every scored home, not just the top three',
+  'Discount-to-market and savings on every property',
+  'Price-change history — what moved, when, and by how much',
+  'Sell-out tracking — what left the market, and at what price',
+  'Watchlist with price-drop alerts',
+  'Yield and ROI tools · rental-return modelling',
+  'Deal alerts by region, budget and score',
+  'Priority introductions through Xavia Estate',
 ];
 
 export function ProModal({
@@ -97,20 +93,22 @@ export function ProModal({
 
   return (
     <div
-      className="avena-v2 fixed inset-0 z-[100] flex items-center justify-center p-4"
+      className="avena-v2 fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto overscroll-contain p-4 sm:items-center"
       role="dialog"
       aria-modal="true"
     >
-      {/* Backdrop */}
+      {/* Backdrop — fixed so it covers the viewport even when the panel scrolls */}
       <div
-        className="absolute inset-0 backdrop-blur-sm"
+        className="fixed inset-0 backdrop-blur-sm"
         style={{ background: 'hsl(var(--av-background) / 0.85)' }}
         onClick={onClose}
       />
 
-      {/* Modal */}
+      {/* Modal — scrolls within the viewport instead of overflowing past the
+          top of the screen (the old fixed+centered+overflow-hidden combination
+          made the price and headline unreachable on short windows). */}
       <div
-        className="relative w-full max-w-lg rounded-sm border overflow-hidden"
+        className="relative my-auto w-full max-w-lg rounded-sm border"
         style={{
           background: 'linear-gradient(180deg, hsl(var(--av-primary) / 0.08) 0%, hsl(var(--av-surface)) 100%)',
           borderColor: 'hsl(var(--av-primary) / 0.4)',
