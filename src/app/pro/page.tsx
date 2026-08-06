@@ -34,8 +34,8 @@ export default function ProPage() {
               <span className="italic text-gold">speculation</span>.
             </h1>
             <p className="mx-auto mt-8 max-w-xl font-light text-base text-muted-foreground sm:text-lg">
-              The full Avena intelligence stack. Unlimited Oracle. Live alpha signals.
-              Developer stress scores. Everything, unlocked.
+              The complete ranked book, the discount behind every price, and the
+              price history no other source keeps. Everything, unlocked.
             </p>
 
             <div className="mt-12 flex justify-center">
@@ -45,7 +45,7 @@ export default function ProPage() {
                   className="group inline-flex items-center gap-3 rounded-sm px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
                   style={{ background: 'var(--av-gradient-gold)' }}
                 >
-                  Open the Oracle
+                  Open the terminal
                   <ArrowUpRight className="h-3.5 w-3.5" />
                 </Link>
               ) : (

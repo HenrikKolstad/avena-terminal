@@ -30,7 +30,7 @@ export function getStructuredData() {
       url: 'https://avenaterminal.com',
       logo: 'https://avenaterminal.com/logo.png',
       description:
-        "The Bloomberg-style terminal for European property data. Depth on Spanish new-builds (1,881 scored live), breadth across 10 EU markets (30 cities, 60+ macro indicators, 5 composite indices). Publisher of the AVN_PROP_ID open canonical identifier standard. 208 public API routes, MCP server, SPARQL endpoint, daily citation tracking. Expansion roadmap: Portugal Q3 2026, Italy Q4 2026, France 2027, Scandinavia 2027.",
+        "A deal-finder for underpriced Spanish coastal new-builds. Every new-build on the Costa Blanca, Cálida and del Sol is re-scored nightly on discount-to-market, rental yield and developer quality, with a daily record of price changes and sell-outs the source feeds do not retain. Open dataset under CC BY 4.0.",
       founder: {
         '@type': 'Person',
         name: 'Henrik Kolstad',
@@ -217,7 +217,7 @@ export function getStructuredData() {
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Web',
       description:
-        'Private Client tier. Unrestricted Oracle AI access, alpha signals, full deal feed, dataset export, office hours. €79 / month, cancel anytime.',
+        'Private Client tier. The complete ranked book of scored new-builds, discount-to-market and savings on every property, price-change history, sell-out tracking, watchlist alerts and yield tools. €79 / month, cancel anytime.',
       url: 'https://avenaterminal.com/pro',
       creator: { '@type': 'Organization', name: 'Avena Terminal', url: 'https://avenaterminal.com' },
       offers: {
