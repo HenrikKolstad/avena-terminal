@@ -96,34 +96,46 @@ export function AvenaConcierge() {
         if (s.prefs && typeof s.prefs === 'object') prefsRef.current = s.prefs;
       }
     } catch { /* fresh start */ }
-    // Decide AFTER a short settle delay: some environments hydrate while the
+    // Auto-popup on EVERY desktop visit (Henrik's call), unless the visitor
+    // explicitly closed it this session. Some environments hydrate while the
     // viewport is transiently narrow (window restore, split-screen, embedded
-    // panes), which made the desktop check fail at effect time even on a
-    // 1280px screen. 250ms costs nothing perceptible and reads the real size.
+    // panes) and only settle to their real width afterwards — so beyond the
+    // initial check we LISTEN for the viewport crossing the desktop
+    // threshold and open then. 768px: wide enough for the 460px panel, so
+    // half-screen laptop windows count as desktop too.
+    const mql = window.matchMedia('(min-width: 768px)');
     let inviteTimer: ReturnType<typeof setTimeout> | undefined;
+    let opened = false;
+
+    const tryOpen = (): boolean => {
+      if (opened) return true;
+      if (!mql.matches) return false;
+      if (sessionStorage.getItem(SS_CLOSED) === '1') return false;
+      opened = true;
+      if (hasSaved) setOpen(true);
+      else runShowcase();
+      return true;
+    };
+
+    const onViewportChange = () => { if (tryOpen()) mql.removeEventListener('change', onViewportChange); };
     const decideTimer = setTimeout(() => {
+      if (tryOpen()) return;
+      // Not desktop yet — watch for it, and meanwhile show the restrained
+      // invitation on the collapsed control (never nag after an explicit
+      // dismiss/close; they know where the button is).
+      mql.addEventListener('change', onViewportChange);
       const dismissed = sessionStorage.getItem(SS_DISMISS) === '1';
       const closedByUser = sessionStorage.getItem(SS_CLOSED) === '1';
-      // 768px: wide enough for the 460px panel — half-screen laptop windows
-      // count as desktop too. Only ≤640px (the mobile CSS breakpoint) plus a
-      // safety band stays collapsed.
-      const desktop = window.matchMedia('(min-width: 768px)').matches;
-
-      // Auto-popup on EVERY visit (Henrik's call), unless the visitor
-      // explicitly closed it this session: fresh visitors get the showcase,
-      // returning visitors get their own conversation reopened.
-      if (desktop && !closedByUser) {
-        if (hasSaved) setOpen(true);
-        else runShowcase();
-        return;
-      }
-      // Collapsed (mobile): the restrained invitation — but never nag someone
-      // who dismissed it or explicitly closed the panel; they know it's there.
       if (!dismissed && !closedByUser) {
         inviteTimer = setTimeout(() => { setInvite(true); t('concierge_invitation_shown'); }, 6000);
       }
     }, 250);
-    return () => { clearTimeout(decideTimer); if (inviteTimer) clearTimeout(inviteTimer); };
+
+    return () => {
+      clearTimeout(decideTimer);
+      if (inviteTimer) clearTimeout(inviteTimer);
+      mql.removeEventListener('change', onViewportChange);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
