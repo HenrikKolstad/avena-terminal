@@ -93,22 +93,25 @@ export function ProModal({
 
   return (
     <div
-      className="avena-v2 fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto overscroll-contain p-4 sm:items-center"
+      className="avena-v2 fixed inset-0 z-[100] overflow-y-auto overscroll-contain"
       role="dialog"
       aria-modal="true"
     >
-      {/* Backdrop — fixed so it covers the viewport even when the panel scrolls */}
+      {/* Backdrop — fixed so it covers the viewport while the panel scrolls */}
       <div
         className="fixed inset-0 backdrop-blur-sm"
         style={{ background: 'hsl(var(--av-background) / 0.85)' }}
         onClick={onClose}
       />
 
-      {/* Modal — scrolls within the viewport instead of overflowing past the
-          top of the screen (the old fixed+centered+overflow-hidden combination
-          made the price and headline unreachable on short windows). */}
+      {/* Scroll container: min-h-full + items-center centres the panel when it
+          fits and lets it grow downward when it doesn't. Centring on the
+          SCROLLING element (the previous fix) is the classic flexbox trap —
+          overflow escapes past both edges and the top becomes unreachable,
+          which is exactly what hid the price and headline. */}
+      <div className="relative flex min-h-full items-center justify-center p-4">
       <div
-        className="relative my-auto w-full max-w-lg rounded-sm border"
+        className="relative my-4 w-full max-w-lg rounded-sm border"
         style={{
           background: 'linear-gradient(180deg, hsl(var(--av-primary) / 0.08) 0%, hsl(var(--av-surface)) 100%)',
           borderColor: 'hsl(var(--av-primary) / 0.4)',
@@ -217,6 +220,7 @@ export function ProModal({
             </>
           )}
         </div>
+      </div>
       </div>
     </div>
   );
