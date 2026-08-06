@@ -79,7 +79,7 @@ export default async function DealsPage() {
         <LuxuryRankings
           deals={deals}
           total={total}
-          freeVisible={3}
+          freeVisible={10}
           eyebrow="Live rankings · the complete top 50"
           titleA="The"
           titleEm="underpriced"
