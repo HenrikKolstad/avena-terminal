@@ -319,7 +319,7 @@ export function AvenaConcierge() {
           aria-label={open ? 'Close Avena Concierge' : 'Open Avena Concierge'}
           style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
         >
-          <span style={{ background: PANEL_BG, border: `1px solid ${GOLD_SOFT}`, borderRadius: 3, padding: '9px 14px', fontFamily: 'ui-monospace, Menlo, monospace', fontSize: 10, letterSpacing: '0.3em', textTransform: 'uppercase', color: IVORY, backdropFilter: 'blur(8px)' }}>Ask Avena</span>
+          <span style={{ background: PANEL_BG, border: `1px solid ${GOLD_SOFT}`, borderRadius: 3, padding: '9px 14px', fontFamily: 'ui-monospace, Menlo, monospace', fontSize: 10, letterSpacing: '0.3em', textTransform: 'uppercase', color: IVORY, backdropFilter: 'blur(8px)', whiteSpace: 'nowrap' }}>Ask Avena</span>
           <span style={{ width: 46, height: 46, borderRadius: '50%', background: `linear-gradient(140deg, hsl(var(--av-primary) / 0.95), hsl(var(--av-primary) / 0.75))`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 30px -8px rgba(0,0,0,0.55)', border: '1px solid hsl(var(--av-primary) / 0.6)' }}>
             <span style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: 22, fontWeight: 300, color: 'hsl(var(--av-background))', lineHeight: 1, transform: 'translateY(-1px)' }}>A</span>
           </span>
