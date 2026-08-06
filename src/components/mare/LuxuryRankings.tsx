@@ -197,6 +197,22 @@ export function LuxuryRankings({
           </button>
         )}
 
+        {/* Show more — the top "All ranked deals" link is easy to miss once a
+            visitor is scrolling; this is the one they actually reach. Only on
+            ungated surfaces (the gated table already ends in the unlock CTA). */}
+        {seeAllHref && gatedFrom === Infinity && (
+          <Link
+            href={seeAllHref}
+            className="group mt-8 flex w-full items-center justify-center gap-4 border py-5 font-mono text-[11px] uppercase tracking-[0.32em] transition-colors hover:text-primary-foreground"
+            style={{ borderColor: 'hsl(var(--av-primary) / 0.45)', color: 'hsl(var(--av-primary) / 0.92)' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'hsl(var(--av-primary) / 0.9)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+          >
+            Show more · {total.toLocaleString()} homes ranked
+            <span className="transition group-hover:translate-x-1">→</span>
+          </Link>
+        )}
+
         <p className="mt-6 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-foreground/50">
           Every score is built on a signed, audited data engine.{' '}
           <Link href="/engine" className="text-gold hover:underline">See how →</Link>
