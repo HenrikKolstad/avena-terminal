@@ -193,7 +193,7 @@ export function LuxuryRankings({
               <Lock className="h-3.5 w-3.5" />
               Unlock {(total - freeVisible).toLocaleString()} more ranked properties · PRO €79/mo
             </span>
-            <span className="font-mono text-[9px] uppercase tracking-[0.3em] opacity-85">Full terminal · yield calculator · alpha signals</span>
+            <span className="font-mono text-[9px] uppercase tracking-[0.3em] opacity-85">Full ranked book · price history · yield tools</span>
           </button>
         )}
 
