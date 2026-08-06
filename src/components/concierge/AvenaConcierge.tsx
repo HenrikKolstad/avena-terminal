@@ -117,9 +117,9 @@ export function AvenaConcierge() {
         else runShowcase();
         return;
       }
-      // Collapsed (mobile, or closed-by-user): the restrained invitation,
-      // unless dismissed this session.
-      if (!dismissed) {
+      // Collapsed (mobile): the restrained invitation — but never nag someone
+      // who dismissed it or explicitly closed the panel; they know it's there.
+      if (!dismissed && !closedByUser) {
         inviteTimer = setTimeout(() => { setInvite(true); t('concierge_invitation_shown'); }, 6000);
       }
     }, 250);
