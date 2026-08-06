@@ -111,7 +111,11 @@ export function ExitIntent() {
 
   return (
     <div
-      className="avena-v2 fixed inset-0 z-[90] flex items-center justify-center p-4"
+      className="avena-v2 z-[90] flex items-center justify-center p-4"
+      /* inline position: globals.css `.avena-v2 { position: relative }`
+         out-cascades Tailwind's `fixed`, which would drop this overlay
+         into the page flow instead of pinning it to the viewport. */
+      style={{ position: 'fixed', inset: 0 }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="ei-heading"

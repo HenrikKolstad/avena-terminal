@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { ArrowUpRight, Check, Lock, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { trackEvent } from '@/lib/tracking';
@@ -29,6 +30,8 @@ export function ProModal({
   const [inlineEmail, setInlineEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   // Close on Escape
   useEffect(() => {
@@ -89,18 +92,26 @@ export function ProModal({
     }
   }
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
-  return (
+  return createPortal(
     <div
-      className="avena-v2 fixed inset-0 z-[100] overflow-y-auto overscroll-contain"
+      /* position:fixed is set INLINE deliberately. globals.css has
+         `.avena-v2 { position: relative }`, which out-cascades Tailwind's
+         `fixed` utility — so this overlay was never anchored to the viewport;
+         it rendered ~2,500px down the page flow, which is the real reason the
+         top of the panel was unreachable. Inline style cannot be overridden.
+         Portaling to <body> additionally escapes template.tsx's page-enter
+         transform, which would otherwise re-anchor even a fixed element. */
+      style={{ position: 'fixed', inset: 0 }}
+      className="avena-v2 z-[100] overflow-y-auto overscroll-contain"
       role="dialog"
       aria-modal="true"
     >
       {/* Backdrop — fixed so it covers the viewport while the panel scrolls */}
       <div
-        className="fixed inset-0 backdrop-blur-sm"
-        style={{ background: 'hsl(var(--av-background) / 0.85)' }}
+        className="backdrop-blur-sm"
+        style={{ position: 'fixed', inset: 0, background: 'hsl(var(--av-background) / 0.85)' }}
         onClick={onClose}
       />
 
@@ -222,7 +233,8 @@ export function ProModal({
         </div>
       </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
