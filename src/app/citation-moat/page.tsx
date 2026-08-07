@@ -15,7 +15,7 @@ import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { loadMeasurements, currentHitRate } from '@/lib/citation-measure';
-import { TRACKED_QUESTIONS } from '@/lib/citation-agent';
+import { TRACKED_QUESTIONS, BENCHMARK_VERSION } from '@/lib/citation-agent';
 
 export const dynamic = 'force-dynamic';
 
@@ -204,7 +204,7 @@ export default async function CitationMoatPage() {
           <div className="rounded-sm border p-6" style={{ borderColor: 'hsl(var(--av-border) / 0.4)', background: 'hsl(var(--av-surface) / 0.2)' }}>
             <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-2">How this is measured</div>
             <p className="text-sm text-foreground/85 leading-relaxed max-w-3xl">
-              Agent Atlas runs daily at 03:00 UTC. For each of the {TRACKED_QUESTIONS.length} tracked questions (market-level, brand-and-tool, city-specific, regulatory, EU-level institutional), Atlas queries the Perplexity API with the question verbatim, parses the cited sources, and records (a) whether avenaterminal.com is among them, (b) which named competitors appear. Raw results land in <span className="font-mono text-foreground">citation_monitoring</span>. At 03:30 UTC, Agent Demeter rolls the day&apos;s rows into <span className="font-mono text-foreground">citation_measurements</span> — the table this page reads. The full source lives at <span className="font-mono text-foreground">src/lib/citation-agent.ts</span> and <span className="font-mono text-foreground">src/lib/citation-measure.ts</span>.
+              Agent Atlas runs Monday, Wednesday and Friday at 03:00 UTC. For each of the {TRACKED_QUESTIONS.length} tracked questions in benchmark {BENCHMARK_VERSION} — real buyer questions about region choice, towns, budgets, price per m², market direction, yield, running costs, process and relocation, plus a small branded control group that is excluded from the headline rate — Atlas queries the Perplexity API with the question verbatim, parses the cited sources, and records (a) whether avenaterminal.com is among them, (b) which named competitors appear. Raw results land in <span className="font-mono text-foreground">citation_monitoring</span>. At 03:30 UTC, Agent Demeter rolls the day&apos;s rows into <span className="font-mono text-foreground">citation_measurements</span> — the table this page reads. The full source lives at <span className="font-mono text-foreground">src/lib/citation-agent.ts</span> and <span className="font-mono text-foreground">src/lib/citation-measure.ts</span>.
             </p>
             <div className="mt-4 flex flex-wrap gap-3 font-mono text-[10px] uppercase tracking-[0.22em]">
               <Link href="/api/v1/citation-score" className="text-foreground/85 hover:text-primary">JSON endpoint →</Link>

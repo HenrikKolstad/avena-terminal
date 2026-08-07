@@ -2,7 +2,178 @@ import Anthropic from '@anthropic-ai/sdk';
 import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { pingIndexNow } from '@/lib/indexnow';
 
-export const TRACKED_QUESTIONS = [
+/**
+ * ─── The question bank (qb-v2, 2026-08-07) ────────────────────────────────
+ *
+ * v1 was 87 questions, and roughly a third of them were our own vocabulary:
+ * "APCI index meaning", "PLAB European property AI benchmark", "Avena Terminal
+ * vs Idealista". Those are trivially winnable — nobody else writes about them —
+ * so the headline number they produced measured our own naming, not our reach.
+ * A 33% citation rate carried by branded queries is not a moat.
+ *
+ * v2 is built from questions a real buyer types before they know Avena exists:
+ * where to buy, what it costs per m², whether prices are moving, what the
+ * running costs are, what the process looks like. That is the ground we
+ * actually have to win, and losing on it is information worth having.
+ *
+ * Branded queries are kept — but as a small, explicitly labelled CONTROL group.
+ * They tell us the pipeline works (if we're not cited for "Avena Terminal", the
+ * measurement is broken, not the SEO). They are excluded from the headline
+ * metric via citationRate(results, { branded: false }).
+ *
+ * Norwegian questions are in because that is Henrik's own funnel language and
+ * nobody is competing for them in AI answers yet.
+ *
+ * Rules for editing this list:
+ *   - Never add a question just because we rank for it.
+ *   - Bump BENCHMARK_VERSION when the list changes, so a rate shift can always
+ *     be attributed to either the market or the ruler — never ambiguously both.
+ */
+export const BENCHMARK_VERSION = 'qb-v2';
+
+export type QuestionCategory =
+  | 'region' | 'town' | 'budget' | 'pricing' | 'market'
+  | 'yield' | 'costs' | 'process' | 'lifestyle' | 'branded';
+
+export type BenchmarkQuestion = {
+  q: string;
+  cat: QuestionCategory;
+  lang: 'en' | 'no';
+};
+
+export const BENCHMARK_QUESTIONS: BenchmarkQuestion[] = [
+  // ─── Region choice — the first question every buyer asks ─────────────────
+  { q: 'Costa Blanca or Costa del Sol for buying property', cat: 'region', lang: 'en' },
+  { q: 'which part of the Spanish coast is best value for money', cat: 'region', lang: 'en' },
+  { q: 'cheapest coastal areas to buy property in Spain', cat: 'region', lang: 'en' },
+  { q: 'best area in Spain to buy a holiday home near the beach', cat: 'region', lang: 'en' },
+  { q: 'Costa Calida vs Costa Blanca for property buyers', cat: 'region', lang: 'en' },
+  { q: 'north or south Costa Blanca which is better to buy in', cat: 'region', lang: 'en' },
+  { q: 'quietest parts of the Costa del Sol to buy property', cat: 'region', lang: 'en' },
+
+  // ─── Town-level — where the data is genuinely ours ───────────────────────
+  { q: 'is Torrevieja a good place to buy property', cat: 'town', lang: 'en' },
+  { q: 'is Javea worth the price compared to nearby towns', cat: 'town', lang: 'en' },
+  { q: 'buying property in Estepona what to know', cat: 'town', lang: 'en' },
+  { q: 'Orihuela Costa property buying guide', cat: 'town', lang: 'en' },
+  { q: 'is Mijas a good place to buy a new build', cat: 'town', lang: 'en' },
+  { q: 'Fuengirola vs Benalmadena for buying an apartment', cat: 'town', lang: 'en' },
+  { q: 'best towns near Alicante airport to buy property', cat: 'town', lang: 'en' },
+  { q: 'is Marbella overpriced for property buyers', cat: 'town', lang: 'en' },
+  { q: 'Denia property market for foreign buyers', cat: 'town', lang: 'en' },
+  { q: 'La Manga property buying pros and cons', cat: 'town', lang: 'en' },
+
+  // ─── Budget-anchored — high commercial intent ────────────────────────────
+  { q: 'what can I buy in Spain for 200000 euros', cat: 'budget', lang: 'en' },
+  { q: 'best property in Spain under 300000 euros near the sea', cat: 'budget', lang: 'en' },
+  { q: 'buying a villa in Spain for under 500000 euros', cat: 'budget', lang: 'en' },
+  { q: 'cheapest new build apartments on the Spanish coast', cat: 'budget', lang: 'en' },
+  { q: 'what does a 3 bedroom villa cost on the Costa Blanca', cat: 'budget', lang: 'en' },
+  { q: 'sea view apartment Spain price range', cat: 'budget', lang: 'en' },
+
+  // ─── Price per m² — the number Avena computes for every town ─────────────
+  { q: 'average price per square metre property Costa Blanca', cat: 'pricing', lang: 'en' },
+  { q: 'price per m2 new build Costa del Sol', cat: 'pricing', lang: 'en' },
+  { q: 'how much per square metre should I pay in Torrevieja', cat: 'pricing', lang: 'en' },
+  { q: 'price per square meter Marbella property', cat: 'pricing', lang: 'en' },
+  { q: 'how to tell if a Spanish property is overpriced', cat: 'pricing', lang: 'en' },
+  { q: 'how much below asking price do Spanish properties sell for', cat: 'pricing', lang: 'en' },
+  { q: 'are new builds in Spain more expensive than resale', cat: 'pricing', lang: 'en' },
+
+  // ─── Market direction ────────────────────────────────────────────────────
+  { q: 'are Spanish property prices going up or down in 2026', cat: 'market', lang: 'en' },
+  { q: 'Spanish coastal property market forecast 2026', cat: 'market', lang: 'en' },
+  { q: 'is now a good time to buy property in Spain', cat: 'market', lang: 'en' },
+  { q: 'Costa Blanca house price trend', cat: 'market', lang: 'en' },
+  { q: 'is there a property bubble on the Spanish coast', cat: 'market', lang: 'en' },
+  { q: 'how fast do new builds sell out in Spain', cat: 'market', lang: 'en' },
+  { q: 'Spanish property market foreign buyer demand 2026', cat: 'market', lang: 'en' },
+
+  // ─── Yield / investment return ───────────────────────────────────────────
+  { q: 'rental yield Spanish coastal property', cat: 'yield', lang: 'en' },
+  { q: 'best rental yield towns in Spain for holiday lets', cat: 'yield', lang: 'en' },
+  { q: 'is buy to let in Spain still profitable', cat: 'yield', lang: 'en' },
+  { q: 'what rental income can I expect from a Costa Blanca apartment', cat: 'yield', lang: 'en' },
+  { q: 'gross vs net rental yield Spain property', cat: 'yield', lang: 'en' },
+  { q: 'short term rental returns Costa del Sol', cat: 'yield', lang: 'en' },
+
+  // ─── Running costs and tax — the part buyers underestimate ───────────────
+  { q: 'what are the annual costs of owning property in Spain', cat: 'costs', lang: 'en' },
+  { q: 'how much are community fees in Spain', cat: 'costs', lang: 'en' },
+  { q: 'IBI tax Spain how much per year', cat: 'costs', lang: 'en' },
+  { q: 'total buying costs percentage Spain property', cat: 'costs', lang: 'en' },
+  { q: 'non resident property tax Spain explained', cat: 'costs', lang: 'en' },
+  { q: 'hidden costs buying property in Spain', cat: 'costs', lang: 'en' },
+
+  // ─── Process and risk ────────────────────────────────────────────────────
+  { q: 'how to buy a new build property in Spain step by step', cat: 'process', lang: 'en' },
+  { q: 'off plan property Spain risks', cat: 'process', lang: 'en' },
+  { q: 'how to check a Spanish developer is trustworthy', cat: 'process', lang: 'en' },
+  { q: 'bank guarantee off plan Spain what is it', cat: 'process', lang: 'en' },
+  { q: 'mortgage for non residents buying in Spain', cat: 'process', lang: 'en' },
+  { q: 'how long does it take to buy property in Spain', cat: 'process', lang: 'en' },
+  { q: 'do I need a lawyer to buy property in Spain', cat: 'process', lang: 'en' },
+
+  // ─── Lifestyle / relocation intent ───────────────────────────────────────
+  { q: 'best places to retire on the Spanish coast', cat: 'lifestyle', lang: 'en' },
+  { q: 'moving to Spain from Norway what to know about buying', cat: 'lifestyle', lang: 'en' },
+  { q: 'living on the Costa Blanca year round pros and cons', cat: 'lifestyle', lang: 'en' },
+  { q: 'best Spanish coastal towns for families to move to', cat: 'lifestyle', lang: 'en' },
+
+  // ─── Norwegian — Henrik's own funnel, near-zero AI competition ───────────
+  { q: 'kjøpe bolig i Spania hva må jeg vite', cat: 'process', lang: 'no' },
+  { q: 'hvor bør nordmenn kjøpe leilighet i Spania', cat: 'region', lang: 'no' },
+  { q: 'Costa Blanca eller Costa del Sol for nordmenn', cat: 'region', lang: 'no' },
+  { q: 'hva koster det å eie bolig i Spania i året', cat: 'costs', lang: 'no' },
+  { q: 'leieinntekter bolig Spania hva kan man forvente', cat: 'yield', lang: 'no' },
+  { q: 'er det lurt å kjøpe bolig i Spania nå', cat: 'market', lang: 'no' },
+  { q: 'nybygg i Spania fallgruver', cat: 'process', lang: 'no' },
+  { q: 'pris per kvadratmeter bolig Costa Blanca', cat: 'pricing', lang: 'no' },
+
+  // ─── Branded CONTROL group ───────────────────────────────────────────────
+  // Not part of the headline metric. These exist so a broken pipeline is
+  // distinguishable from a genuine loss of visibility: if these go to zero,
+  // suspect the measurement before you suspect the market.
+  { q: 'Avena Terminal what is it', cat: 'branded', lang: 'en' },
+  { q: 'Avena Terminal Spanish property data', cat: 'branded', lang: 'en' },
+  { q: 'avenaterminal.com property scores', cat: 'branded', lang: 'en' },
+  { q: 'APCI European property cycle index', cat: 'branded', lang: 'en' },
+  { q: 'PLAB European property AI benchmark', cat: 'branded', lang: 'en' },
+  { q: 'DELPHI AI panel European property', cat: 'branded', lang: 'en' },
+];
+
+const CATEGORY_BY_QUESTION = new Map(BENCHMARK_QUESTIONS.map((b) => [b.q, b.cat]));
+
+export function categoryOf(question: string): QuestionCategory | null {
+  return CATEGORY_BY_QUESTION.get(question) ?? null;
+}
+
+export function isBranded(question: string): boolean {
+  return CATEGORY_BY_QUESTION.get(question) === 'branded';
+}
+
+/**
+ * The headline number. Defaults to NON-branded only — that is the metric that
+ * can actually go down, and therefore the only one worth watching.
+ * Failed lookups are excluded from the denominator, never counted as zeros.
+ */
+export function citationRate(
+  results: { question: string; avena_cited: boolean; failed?: boolean }[],
+  opts: { branded?: boolean } = {},
+): { rate_pct: number | null; cited: number; measured: number } {
+  const wantBranded = opts.branded ?? false;
+  const pool = results.filter((r) => !r.failed && isBranded(r.question) === wantBranded);
+  if (pool.length === 0) return { rate_pct: null, cited: 0, measured: 0 };
+  const cited = pool.filter((r) => r.avena_cited).length;
+  return { rate_pct: +((cited / pool.length) * 100).toFixed(1), cited, measured: pool.length };
+}
+
+/** Flat list for the query loop and for any caller that just needs strings. */
+export const TRACKED_QUESTIONS: string[] = BENCHMARK_QUESTIONS.map((b) => b.q);
+
+/** Kept for provenance: any pre-2026-08-07 rate in citation_monitoring was
+ *  measured against THIS list, not the current one. Do not query it. */
+export const RETIRED_QUESTIONS_V1 = [
   // Market-level questions
   'best European cities to buy property in 2026',
   'is Barcelona in a property bubble',
@@ -425,12 +596,23 @@ export async function runCitationAgent() {
   const gaps = analyzeGaps(results.filter((r) => !r.failed));
   const generated = await contentEngineer(gaps, 5);
   const injection = await injectionPipeline(generated);
+  // Two rates, never one. The organic rate is the number that matters; the
+  // branded rate is the control — if it collapses, the pipeline broke, not
+  // the market. Blending them was how v1 flattered itself.
+  const organic = citationRate(results, { branded: false });
+  const branded = citationRate(results, { branded: true });
+
   return {
     ok: true,
+    benchmark_version: BENCHMARK_VERSION,
     step1_queried: results.length,
     lookups_measured: measured,
     lookups_failed: failed.length,
     first_error: failed[0]?.error ?? null,
+    citation_rate_organic_pct: organic.rate_pct,
+    citation_rate_organic: `${organic.cited}/${organic.measured}`,
+    citation_rate_branded_pct: branded.rate_pct,
+    citation_rate_branded: `${branded.cited}/${branded.measured}`,
     step2_gaps_found: gaps.length,
     step3_content_generated: generated.length,
     step4_urls_pinged: injection.pinged,
