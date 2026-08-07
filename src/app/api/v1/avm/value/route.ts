@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
     ok: true,
     avm: result,
     methodology: {
-      summary: 'Town × type median €/m² base with multiplicative location/quality adjustments. Approximates the full hedonic OLS to ±3% RMSE on backtest.',
+      summary: 'Town × type median €/m² base with multiplicative location/quality adjustments. Backtested against the live book: 15.8% median absolute error, in-sample (see /model-stats.json).',
       version: result.model_version,
       methodology_url: 'https://avenaterminal.com/methodology',
       governance_url: 'https://avenaterminal.com/governance',

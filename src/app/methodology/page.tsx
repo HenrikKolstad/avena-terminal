@@ -79,7 +79,7 @@ export default function MethodologyPage() {
           link={{ href: '/api/v1/properties', label: 'Score API →' }} />
 
         <Section id="avm" title="AVM — Automated Valuation Model"
-          body="Town × type median €/m² base with multiplicative hedonic adjustments for size, sea view, beach distance, energy band, amenity. Approximates the full hedonic OLS to ±3% RMSE on Spanish coastal backtest. Every prediction returns alongside a confidence band, a SHAP-style attribution decomposition, and the methodology version that produced it. EBA AVM consultation-compliant by design."
+          body="Town × type median €/m² base with multiplicative hedonic adjustments for size, sea view, beach distance, energy band, amenity. Backtested against every asking price in the live book: median absolute error 15.8%, 60% within ±20%, mean bias +3.7% (in-sample — see /model-stats.json for the caveats). Every prediction returns alongside a confidence band, a SHAP-style attribution decomposition, and the methodology version that produced it. EBA AVM consultation-compliant by design."
           link={{ href: '/api/v1/avm/value', label: 'AVM endpoint →' }} />
 
         <Section id="apci" title="APCI — Avena Property Cycle Index"

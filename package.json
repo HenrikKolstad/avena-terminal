@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "feed": "node parse-feed.js"
+    "feed": "node parse-feed.js",
+    "backtest": "tsx scripts/avm-backtest.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.82.0",

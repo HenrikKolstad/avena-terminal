@@ -24,7 +24,9 @@
  *   3. Confidence: derived from comp sample size + adjustment count.
  *
  * For full hedonic OLS results see /methodology. This runtime model
- * approximates the OLS prediction to within ±3% RMSE on backtest.
+ * is backtested by scripts/avm-backtest.ts against every asking price in the
+ * live book; the measured numbers are written to public/model-stats.json and
+ * are the only accuracy figures the site is allowed to quote.
  */
 
 import { getAllProperties, slugify, avg } from '@/lib/properties';
@@ -158,6 +160,63 @@ function computeAdjustments(inputs: AVMInputs): AVMAdjustment[] {
   return out;
 }
 
+/**
+ * The premium stack above is one-sided: every factor is positive. Applied raw
+ * on top of a town × type MEDIAN, it double-counts — the median already
+ * contains the sea-view, beachfront and golf stock of that town, so adding
+ * +20% for beachfront prices the property above a baseline that was itself set
+ * by beachfront homes. Measured on the live book (scripts/avm-backtest.ts) the
+ * raw stack pushed mean bias to +23% and MAPE from 20.6% to 31.8%.
+ *
+ * The fix is to make the adjustments RELATIVE: divide by the typical premium
+ * stack of the comp pool the median came from, so a property with an average
+ * amenity mix for its town lands on the town median, and only the delta moves
+ * it. Median (not mean) of the pool multipliers keeps a handful of maximally
+ * loaded listings from dragging the normaliser up.
+ */
+function multiplierOf(adjustments: AVMAdjustment[]): number {
+  let m = 1;
+  for (const adj of adjustments) m *= 1 + adj.pct / 100;
+  return m;
+}
+
+function inputsOfProperty(p: Property): AVMInputs {
+  return {
+    town: townOf(p),
+    type: (p.t as AVMInputs['type']) || 'Apartment',
+    built_m2: p.bm,
+    bedrooms: p.bd ?? undefined,
+    beach_km: p.bk ?? null,
+    sea_view: Boolean(p.views?.includes('sea')),
+    golf: Boolean(p.cats?.includes('golf')),
+    frontline: Boolean(p.cats?.includes('frontline')),
+    energy: (p.energy as AVMInputs['energy']) ?? null,
+    pool: (p.pool as AVMInputs['pool']) ?? null,
+  };
+}
+
+/** Typical premium stack of the pool that produced the base pm². */
+function poolBaselineMultiplier(inputs: AVMInputs, properties: Property[], source: AVMResult['base_source']): number {
+  const isVillaSegment = isVillaType(inputs.type);
+  const wantTown = inputs.town.toLowerCase();
+
+  let pool: Property[];
+  if (source === 'town_type_median') {
+    pool = properties.filter((p) => p.pm2 && p.pm2 > 0 && townOf(p).toLowerCase() === wantTown && isVillaType(p.t) === isVillaSegment);
+  } else if (source === 'region_type_median') {
+    const sampleProp = properties.find((p) => townOf(p).toLowerCase() === wantTown);
+    const region = sampleProp ? regionOf(sampleProp) : null;
+    pool = properties.filter((p) => p.pm2 && p.pm2 > 0 && regionOf(p) === region && isVillaType(p.t) === isVillaSegment);
+  } else {
+    pool = properties.filter((p) => p.pm2 && p.pm2 > 0 && isVillaType(p.t) === isVillaSegment);
+  }
+
+  if (pool.length < 3) return 1;
+  const mults = pool.map((p) => multiplierOf(computeAdjustments(inputsOfProperty(p))));
+  const m = median(mults);
+  return m > 0 ? m : 1;
+}
+
 // ─── Comps ────────────────────────────────────────────────────────────────
 
 function selectComps(inputs: AVMInputs, properties: Property[], limit = 5): AVMComp[] {
@@ -218,8 +277,9 @@ export function valueByInputs(inputs: AVMInputs): AVMResult {
   const base = basePm2(inputs, properties);
 
   const adjustments = computeAdjustments(inputs);
-  let multiplier = 1;
-  for (const adj of adjustments) multiplier *= 1 + adj.pct / 100;
+  // Relative, not absolute — see poolBaselineMultiplier().
+  const baseline = poolBaselineMultiplier(inputs, properties, base.source);
+  let multiplier = multiplierOf(adjustments) / baseline;
   multiplier = Math.min(1.55, Math.max(0.7, multiplier));
 
   const predicted_pm2 = Math.round(base.value * multiplier);

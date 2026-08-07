@@ -44,11 +44,16 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
 
+      - name: Re-measure the AVM against the refreshed book
+        # Accuracy figures quoted on the site come from here and nowhere else.
+        # If the model drifts, model-stats.json drifts with it in the same commit.
+        run: npx tsx scripts/avm-backtest.ts
+
       - name: Commit refreshed feed (if changed)
         run: |
           git config user.name "avena-feed-bot"
           git config user.email "feed@avenaterminal.com"
-          git add public/data.json
+          git add public/data.json public/model-stats.json
           if git diff --staged --quiet; then
             echo "No feed changes today."
           else
