@@ -445,10 +445,30 @@ function parseProperty(prop) {
   };
 }
 
+// The feed is ~90MB; a truncated or empty response means a bad night, not an
+// empty market. Retry, then fail hard — never let the caller write a shrunken
+// or stale data.json believing the run succeeded.
+async function downloadFeed(attempts = 3) {
+  let lastErr;
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      const res = await fetch(FEED_URL);
+      if (!res.ok) throw new Error(`feed HTTP ${res.status} ${res.statusText}`);
+      const xml = await res.text();
+      if (xml.length < 1_000_000) throw new Error(`feed too small: ${xml.length} bytes`);
+      return xml;
+    } catch (err) {
+      lastErr = err;
+      console.error(`Feed download attempt ${i}/${attempts} failed: ${err.message}`);
+      if (i < attempts) await new Promise((r) => setTimeout(r, i * 5000));
+    }
+  }
+  throw lastErr;
+}
+
 async function main() {
   console.log('Downloading XML feed...');
-  const res = await fetch(FEED_URL);
-  const xml = await res.text();
+  const xml = await downloadFeed();
   console.log(`Downloaded ${(xml.length / 1024 / 1024).toFixed(1)}MB`);
 
   console.log('Parsing XML...');
@@ -458,6 +478,7 @@ async function main() {
   });
   const data = parser.parse(xml);
 
+  if (!data?.root?.property) throw new Error('feed parsed but contained no <root><property> nodes');
   const properties = Array.isArray(data.root.property) ? data.root.property : [data.root.property];
   console.log(`Found ${properties.length} properties in feed`);
 
@@ -1037,4 +1058,9 @@ async function main() {
   }
 }
 
-main().catch(console.error);
+// Exit non-zero so the nightly Action goes RED instead of reporting success
+// while data.json quietly stays stale.
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
