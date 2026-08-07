@@ -110,16 +110,19 @@ export type CitationResult = {
   avena_cited: boolean;
   competitor_cited: string[];
   date: string;
+  /** True when the lookup itself failed — distinct from "ran, found nothing". */
+  failed?: boolean;
+  error?: string;
 };
 
 /**
- * Query a single question against Perplexity. 8s timeout per request so
+ * Query a single question against Perplexity. 20s timeout per request so
  * a hanging API call can't block the whole batch.
  */
 async function queryOne(question: string, apiKey: string, date: string): Promise<CitationResult> {
   try {
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 8000);
+    const timer = setTimeout(() => ctrl.abort(), 20000);
     const res = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
       headers: {
@@ -135,7 +138,7 @@ async function queryOne(question: string, apiKey: string, date: string): Promise
       signal: ctrl.signal,
     });
     clearTimeout(timer);
-    if (!res.ok) throw new Error(String(res.status));
+    if (!res.ok) throw new Error(`Perplexity HTTP ${res.status}: ${(await res.text()).slice(0, 160)}`);
     const data = await res.json();
     const citations: string[] =
       data.citations ||
@@ -147,8 +150,13 @@ async function queryOne(question: string, apiKey: string, date: string): Promise
       /idealista|kyero|rightmove|zoopla|fotocasa|thinkspain|aplaceinthesun/i.test(c)
     );
     return { question, cited_sources: citations, avena_cited, competitor_cited, date };
-  } catch {
-    return { question, cited_sources: [], avena_cited: false, competitor_cited: [], date };
+  } catch (err) {
+    // A failed lookup is NOT "zero citations". Recording it as a zero is what
+    // made the dashboard read 0.00% for six days while Avena was, as far as
+    // anyone knows, still being cited. Mark it failed and let the caller decide.
+    const reason = err instanceof Error ? err.message : String(err);
+    console.error(`[citation-agent] "${question}" failed: ${reason}`);
+    return { question, cited_sources: [], avena_cited: false, competitor_cited: [], date, failed: true, error: reason };
   }
 }
 
@@ -165,8 +173,10 @@ export async function queryMonitor(): Promise<CitationResult[]> {
   const date = new Date().toISOString().slice(0, 10);
 
   if (!apiKey) {
+    console.error('[citation-agent] PERPLEXITY_API_KEY missing — reporting failure, not zeros');
     return TRACKED_QUESTIONS.map((question) => ({
       question, cited_sources: [], avena_cited: false, competitor_cited: [], date,
+      failed: true, error: 'PERPLEXITY_API_KEY missing',
     }));
   }
 
@@ -182,10 +192,19 @@ export async function queryMonitor(): Promise<CitationResult[]> {
     }
   }
 
-  if (supabase) {
+  const ok = results.filter((r) => !r.failed);
+  const failedCount = results.length - ok.length;
+  if (failedCount > 0) {
+    console.error(`[citation-agent] ${failedCount}/${results.length} lookups failed; first error: ${results.find((r) => r.failed)?.error}`);
+  }
+
+  // Persist ONLY successful lookups. A day where every call failed writes
+  // nothing, so the rollup reports "no data" instead of a false 0% — the
+  // previous behaviour silently overwrote a healthy ~30% citation rate.
+  if (supabase && ok.length > 0) {
     try {
       await supabase.from('citation_monitoring').insert(
-        results.map(r => ({
+        ok.map(r => ({
           question: r.question,
           cited_sources: r.cited_sources,
           avena_cited: r.avena_cited,
@@ -193,7 +212,9 @@ export async function queryMonitor(): Promise<CitationResult[]> {
           date: r.date,
         }))
       );
-    } catch { /* table may not exist yet */ }
+    } catch (e) {
+      console.error('[citation-agent] insert failed:', e instanceof Error ? e.message : e);
+    }
   }
 
   return results;
@@ -382,11 +403,34 @@ export async function citationTracker(): Promise<CitationDelta> {
 /** Orchestrator: runs all 5 steps */
 export async function runCitationAgent() {
   const results = await queryMonitor();
-  const gaps = analyzeGaps(results);
+  const failed = results.filter((r) => r.failed);
+  const measured = results.length - failed.length;
+
+  // Surface measurement health in the response. Reporting "queried 87" while
+  // every lookup failed is how a healthy ~30% citation rate silently became
+  // 0.00% on the dashboard for six days.
+  if (measured === 0) {
+    return {
+      ok: false,
+      status: 'measurement_failed',
+      step1_queried: results.length,
+      lookups_measured: 0,
+      lookups_failed: failed.length,
+      first_error: failed[0]?.error ?? null,
+      note: 'No rows written — a failed lookup is not a zero citation.',
+      ran_at: new Date().toISOString(),
+    };
+  }
+
+  const gaps = analyzeGaps(results.filter((r) => !r.failed));
   const generated = await contentEngineer(gaps, 5);
   const injection = await injectionPipeline(generated);
   return {
+    ok: true,
     step1_queried: results.length,
+    lookups_measured: measured,
+    lookups_failed: failed.length,
+    first_error: failed[0]?.error ?? null,
     step2_gaps_found: gaps.length,
     step3_content_generated: generated.length,
     step4_urls_pinged: injection.pinged,
