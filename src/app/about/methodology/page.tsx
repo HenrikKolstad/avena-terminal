@@ -309,12 +309,14 @@ export default function MethodologyPage() {
             </div>
 
             <p className="max-w-3xl font-light text-base leading-relaxed text-foreground/90">
-              These confidence margins are derived from bootstrap resampling of the hedonic regression
-              residuals. By re-estimating the model 1,000 times on randomly drawn sub-samples of the
-              transaction dataset, we obtain an empirical distribution of predicted scores for each
-              property and report the 90% confidence interval width. Properties in data-rich municipalities
-              (such as Marbella or Torrevieja) tend to have narrow intervals, while listings in smaller
-              towns with few transactions carry wider uncertainty bands.
+              These margins are not bootstrapped. Version 1 of the confidence layer is a deterministic
+              formula, published as such: each score is paired with an adversarial residual driven by
+              comparable-sample depth in the town, distance of the property&rsquo;s price per m&sup2; from its
+              segment, missing inputs, and edge-case archetypes. Properties in data-rich municipalities
+              (Marbella, Torrevieja) carry narrow margins because the comparable set is deep; listings in
+              thin towns carry wide ones. A resampled empirical interval requires an out-of-sample label
+              set we do not yet have &mdash; it arrives with v2, once enough listings have resolved.
+              Until then we would rather publish a transparent formula than an interval we cannot defend.
             </p>
           </div>
         </section>

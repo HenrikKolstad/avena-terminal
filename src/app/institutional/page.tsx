@@ -83,7 +83,7 @@ export default function InstitutionalPage() {
           link={{ href: '/memo', label: 'Generate a memo →' }} />
 
         <Section id="avm" title="AVM — bank-grade in under one second"
-          body="Town × type median €/m² base with multiplicative hedonic adjustments. Approximates the full hedonic OLS to ±3% RMSE on Spanish coastal backtest. Returns predicted value, confidence band, SHAP-style attribution, methodology version. EBA AVM consultation-compliant by design."
+          body="Town × type median €/m² base with multiplicative hedonic adjustments. Backtested against every asking price in the live book: median absolute error 15.8%, 60% within ±20%, mean bias +3.7% (in-sample — see /model-stats.json for the caveats). Returns predicted value, confidence band, SHAP-style attribution, methodology version. EBA AVM consultation-compliant by design."
           link={{ href: '/avm', label: 'Run a valuation →' }} />
 
         <Section id="portfolio" title="Portfolio Risk Simulator — upload your book"

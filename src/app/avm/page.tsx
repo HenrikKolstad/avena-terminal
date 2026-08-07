@@ -40,7 +40,7 @@ export default function AVMPage() {
               Bank-grade Automated Valuation Model. Hedonic OLS approximation calibrated to the live Avena corpus. Returns predicted value with confidence band, five nearest comparable transactions, and a SHAP-style adjustment breakdown so an underwriter can read the model&apos;s reasoning, not just trust the output.
             </p>
             <div className="mt-6 inline-flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-              <span>±3% RMSE backtest</span>
+              <span>15.8% median error · in-sample</span>
               <span>·</span>
               <span>Cite <span className="text-foreground">DOI 10.5281/zenodo.19520064</span></span>
               <span>·</span>

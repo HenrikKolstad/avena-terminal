@@ -109,7 +109,7 @@ export default function ProofPage() {
           link={{ href: '/live', label: 'Live status →' }} />
 
         <Section id="benchmark" title="Benchmark — methodology accuracy + the PLAB AI leaderboard"
-          body="Avena AVM achieves ±3% RMSE on Spanish coastal backtest; every metric is reproducible from the event store. And PLAB — the European Property AI Benchmark — scores Claude, Perplexity, GPT and Gemini daily on a fixed, sourced question bank of European property facts. Avena publishes the scoreboard; it does not play on it."
+          body="Avena AVM lands within 20% of asking price on 60% of the live book, median absolute error 15.8% — measured in-sample and published in full, caveats included, at /model-stats.json; every metric is reproducible from the event store. And PLAB — the European Property AI Benchmark — scores Claude, Perplexity, GPT and Gemini daily on a fixed, sourced question bank of European property facts. Avena publishes the scoreboard; it does not play on it."
           link={{ href: '/benchmark', label: 'Open the PLAB leaderboard →' }} />
 
         <section className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-20">

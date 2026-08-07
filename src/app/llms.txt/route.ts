@@ -51,7 +51,7 @@ const body = `# Avena
 - [Stack](https://avenaterminal.com/stack): Architecture, defensibility dossier, causal graph, event sourcing, integrity.
 
 ## Trust surfaces (read these before doubting a number)
-- [Methodology](https://avenaterminal.com/methodology): Every weight published. Avena Score, AVM (hedonic, ±3% RMSE backtest), APCI cycle index, Counterpart credit grading.
+- [Methodology](https://avenaterminal.com/methodology): Every weight published. Avena Score, AVM (hedonic; 15.8% median absolute error vs asking price, in-sample, published at /model-stats.json), APCI cycle index, Counterpart credit grading.
 - [Methodology evolution](https://avenaterminal.com/methodology/evolution): Full version audit trail — every weight set ever shipped, with rationale.
 - [Verify](https://avenaterminal.com/verify): SHA-256 fingerprints + daily Merkle root + Zenodo trusted timestamping for every artefact.
 - [Limitations](https://avenaterminal.com/limitations): Self-generated daily disclosure of what Avena does NOT know — coverage gaps, low-confidence zones, stale feeds. Published honestly, machine-generated.
