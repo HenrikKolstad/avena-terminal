@@ -20,3 +20,4 @@ audit.js
 generate-pdf*.py
 .env.local.test
 /€*
+out/

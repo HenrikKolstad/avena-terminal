@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-08-07T18:49:00.027Z",
+  "breadth": {
+    "properties": 1981,
+    "towns": 97,
+    "projects": 716,
+    "regions": 4,
+    "coverage": {
+      "price": 1,
+      "price_per_m2": 1,
+      "market_per_m2": 1,
+      "built_area": 1,
+      "terrace_solarium": 1,
+      "beds_baths": 1,
+      "beach_distance": 1,
+      "gps": 1,
+      "energy_rating": 1,
+      "pool": 1,
+      "parking": 1,
+      "completion_status": 1,
+      "developer_track_record": 1,
+      "images": 1,
+      "plot_size": 0.4078748107016658,
+      "views": 0.3033821302372539
+    }
+  },
+  "depth": {
+    "observation_days": 3,
+    "first_observation": "2026-08-05",
+    "latest_observation": "2026-08-07",
+    "refs_observed": 2006,
+    "refs_with_recorded_price_move": 40,
+    "delistings_recorded": 3,
+    "external_confirmed_transactions": 391934,
+    "external_source": "French DVF open data (2023-2024) - external comparator, not Spanish"
+  },
+  "honesty_note": "Observation days counts distinct dates on which prices were re-read from the live feed. It deliberately ignores row counts: tables can hold hundreds of thousands of rows that repeat a single day of information."
+}

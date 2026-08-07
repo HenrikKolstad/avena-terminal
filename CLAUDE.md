@@ -53,6 +53,16 @@ in chat is normal; commit messages and code in English.
   froze 2026-05-24; that was the bug that stopped the moat capturing anything new.**
   Delisting/price-move detection is gated to a recent prior snapshot (≤4 days) +
   ≥50% feed overlap, so a broken feed can't mass-flag phantom sales.
+  **AUDIT 2026-08-07 — row counts in the moat tables LIE. Never quote them.**
+  `score_history` holds 197,813 rows over 102 days (25 Apr–4 Aug) with **zero**
+  price changes across all 1,881 refs; `property_pricing_history` holds 394,000
+  rows over 1,720 refs with **zero** price changes (exactly 4,000/day — a capped
+  write loop re-inserting the same frozen price ~229× per property). Both were
+  writing the dead `properties_registry` snapshot nightly. **The genuine daily
+  series starts 2026-08-05** (the day pricing-history was repointed at the live
+  feed): 3 days, 2,006 refs, 40 real price moves, 3 delistings. Measure depth as
+  DISTINCT PRICES per ref, never as row count. `scripts/capability-stats.ts`
+  does this correctly and refuses to emit zeros.
   `property_transactions` (~380k) is French DVF open data (cols: price_eur,
   transacted_at, price_per_m2_eur — NOT sold_price); it's the home for external
   CONFIRMED transactions (source-tagged), kept distinct from our derived
