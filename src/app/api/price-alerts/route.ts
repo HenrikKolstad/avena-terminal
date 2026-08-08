@@ -1,13 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+/**
+ * Lazily constructed. The previous top-level `createClient(URL!, KEY!)` threw
+ * "supabaseUrl is required" during `next build` page-data collection whenever
+ * the env vars were absent — which is every Vercel PREVIEW deployment and every
+ * local build. Production built fine because prod has the vars, so the failure
+ * only ever showed up as a red X on branch previews. Returning null here keeps
+ * the module importable and turns a build crash into a 503 at request time.
+ */
+function db() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return null;
+  return createClient(url, key);
+}
 
 // GET — fetch all active alerts for the current user (by user_id or email query param)
 export async function GET(req: NextRequest) {
+  const supabase = db();
+  if (!supabase) {
+    return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+  }
+
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('user_id');
@@ -45,6 +60,11 @@ export async function GET(req: NextRequest) {
 
 // POST — create or update an alert for a property
 export async function POST(req: NextRequest) {
+  const supabase = db();
+  if (!supabase) {
+    return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+  }
+
   try {
     const body = await req.json();
     const { user_id, user_email, property_ref, property_name, alert_price } = body;
@@ -112,6 +132,11 @@ export async function POST(req: NextRequest) {
 
 // DELETE — remove an alert by id (or by user_email + property_ref)
 export async function DELETE(req: NextRequest) {
+  const supabase = db();
+  if (!supabase) {
+    return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+  }
+
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');

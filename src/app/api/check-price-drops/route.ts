@@ -3,10 +3,17 @@ import { createClient } from '@supabase/supabase-js';
 
 export const maxDuration = 60;
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+/**
+ * Lazily constructed — a top-level createClient with missing env vars throws
+ * during `next build` page-data collection, which is why every Vercel PREVIEW
+ * deployment went red while production built fine.
+ */
+function db() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return null;
+  return createClient(url, key);
+}
 
 const DROP_THRESHOLD_PCT = 2; // trigger when price drops >= 2%
 const APP_URL = 'https://avenaterminal.com';
@@ -59,6 +66,11 @@ async function sendEmailViaResend(
 }
 
 export async function POST(req: NextRequest) {
+  const supabase = db();
+  if (!supabase) {
+    return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+  }
+
   // Verify cron secret
   const cronSecret = process.env.CRON_SECRET;
   if (cronSecret) {
@@ -187,5 +199,10 @@ export async function POST(req: NextRequest) {
 
 // Allow GET for manual testing (no secret required in dev)
 export async function GET(req: NextRequest) {
+  const supabase = db();
+  if (!supabase) {
+    return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+  }
+
   return POST(req);
 }
