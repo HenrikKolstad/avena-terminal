@@ -40,7 +40,38 @@ const MAX_PRIOR_AGE_DAYS = 4;
 // Never mass-flag delistings if the feed lost more than half its prior refs.
 const MIN_FEED_OVERLAP = 0.5;
 
+// If more than this share of the feed appears to have moved price in one run,
+// something is wrong with the feed — refuse to write rather than pollute the
+// ledger with thousands of phantom moves. Reported loudly in the summary.
+const MAX_MOVE_SHARE = 0.2;
+
 const townOf = (l?: string) => (l || '').split(',')[0].trim() || null;
+
+/**
+ * Every price_snapshots row for one date. PostgREST caps a response at its
+ * max-rows setting, and the book is ~2,000 refs, so a plain select sits one
+ * config change away from silently returning a truncated prior — which would
+ * read as "these refs vanished from the feed" and mass-flag them as sold.
+ */
+async function selectAllPages<T>(columns: string, date: string): Promise<T[]> {
+  if (!supabase) return [];
+  const PAGE = 1000;
+  const MAX_PAGES = 20;
+  const out: T[] = [];
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const { data, error } = await supabase
+      .from('price_snapshots')
+      .select(columns)
+      .eq('snapshot_date', date)
+      .order('ref', { ascending: true })
+      .range(page * PAGE, page * PAGE + PAGE - 1);
+    if (error) throw error;
+    if (!data?.length) break;
+    out.push(...(data as T[]));
+    if (data.length < PAGE) break;
+  }
+  return out;
+}
 
 interface PriorSnap {
   ref: string;
@@ -74,23 +105,31 @@ export async function GET(req: NextRequest) {
   }
   const currentRefs = new Set(feed.map((p) => p.ref as string));
 
-  // ── Prior snapshot: the most recent date we've already stored ──────────────
+  // ── Prior snapshot: the most recent date we stored BEFORE today ────────────
+  // Deliberately `.lt(today)`, not the global max. The old code took the max
+  // date and then blanked `prior` whenever that max was today — so the instant
+  // anything had already written a row for today (a re-run, a manual kick),
+  // the whole diff was skipped and the run banked a snapshot while observing
+  // nothing. Yesterday's snapshot is still yesterday's snapshot; look it up.
   const { data: maxRow } = await supabase
     .from('price_snapshots')
     .select('snapshot_date')
+    .lt('snapshot_date', today)
     .order('snapshot_date', { ascending: false })
     .limit(1);
   const priorDate: string | null = maxRow?.[0]?.snapshot_date ?? null;
 
-  let prior: PriorSnap[] = [];
-  if (priorDate && priorDate !== today) {
-    const { data } = await supabase
-      .from('price_snapshots')
-      .select('ref, price, pm2, mm2, region, type, town')
-      .eq('snapshot_date', priorDate);
-    prior = (data ?? []) as PriorSnap[];
-  }
+  const prior: PriorSnap[] = priorDate
+    ? ((await selectAllPages<PriorSnap>('ref, price, pm2, mm2, region, type, town', priorDate)) ?? [])
+    : [];
   const priorByRef = new Map(prior.map((r) => [r.ref, r]));
+
+  // Today's rows, if some earlier run already wrote them. These are real
+  // observations too: when a re-run sees a price that differs from what we
+  // banked this morning, that is a move we watched happen, and the old code
+  // overwrote it into the snapshot without ever logging the event.
+  const todayRows = await selectAllPages<{ ref: string; price: number | null }>('ref, price', today);
+  const todayByRef = new Map((todayRows ?? []).map((r) => [r.ref, r]));
 
   const priorAgeDays = priorDate
     ? Math.round((Date.parse(today) - Date.parse(priorDate)) / 86_400_000)
@@ -114,34 +153,52 @@ export async function GET(req: NextRequest) {
     country: p.country || 'ES',
   }));
   let snapshotted = 0;
+  const errors: string[] = [];
   for (let i = 0; i < snapRows.length; i += 500) {
+    const chunk = snapRows.slice(i, i + 500);
     const { error } = await supabase
       .from('price_snapshots')
-      .upsert(snapRows.slice(i, i + 500), { onConflict: 'ref,snapshot_date', ignoreDuplicates: false });
-    if (!error) snapshotted += Math.min(500, snapRows.length - i);
+      .upsert(chunk, { onConflict: 'ref,snapshot_date', ignoreDuplicates: false });
+    // A swallowed write error here is the single most expensive bug available
+    // to this route: it looks exactly like "nothing changed today".
+    if (error) errors.push(`snapshot: ${error.message}`);
+    else snapshotted += chunk.length;
   }
 
   // ── 2. Price-move events → property_pricing_history (append-only) ───────────
+  // Compare against the LAST PRICE WE OBSERVED for this ref: today's stored
+  // row if an earlier run already banked one, otherwise the prior date's.
+  // Diffing only against the prior date meant every mid-day change was written
+  // straight into the snapshot with no event row behind it — which is why the
+  // table holds 394k 'listed' rows and not one 'reduced' or 'increased'.
   let priceMoves = 0;
-  if (trustPrior) {
-    const inserts: Array<{ avn_prop_id: string; price_eur: number; source_portal: string; status: string }> = [];
-    for (const p of feed) {
-      const prev = priorByRef.get(p.ref as string);
-      if (!prev || prev.price == null) continue;
-      const now = Math.round(p.pf);
-      if (Math.abs(now - prev.price) < 1) continue;
-      inserts.push({
-        avn_prop_id: p.ref as string,
-        price_eur: now,
-        source_portal: p.source_portal || 'redsp',
-        status: now < prev.price ? 'reduced' : 'increased',
-      });
-    }
+  let movesSkipped: string | null = null;
+  const inserts: Array<{ avn_prop_id: string; price_eur: number; source_portal: string; status: string }> = [];
+  for (const p of feed) {
+    const sameDay = todayByRef.get(p.ref as string);
+    // Today's own row needs no date gate — it is this calendar day's
+    // observation. Falling back to the prior date does, hence trustPrior.
+    const observed = sameDay?.price != null
+      ? Number(sameDay.price)
+      : (trustPrior ? priorByRef.get(p.ref as string)?.price ?? null : null);
+    if (observed == null) continue;
+    const now = Math.round(p.pf);
+    if (Math.abs(now - observed) < 1) continue;
+    inserts.push({
+      avn_prop_id: p.ref as string,
+      price_eur: now,
+      source_portal: p.source_portal || 'redsp',
+      status: now < observed ? 'reduced' : 'increased',
+    });
+  }
+  if (inserts.length > feed.length * MAX_MOVE_SHARE) {
+    movesSkipped = `${inserts.length} of ${feed.length} refs appear to have moved (> ${MAX_MOVE_SHARE * 100}%) — refusing to write, feed is probably wrong`;
+  } else {
     for (let i = 0; i < inserts.length; i += 500) {
-      const { error } = await supabase
-        .from('property_pricing_history')
-        .insert(inserts.slice(i, i + 500));
-      if (!error) priceMoves += Math.min(500, inserts.length - i);
+      const chunk = inserts.slice(i, i + 500);
+      const { error } = await supabase.from('property_pricing_history').insert(chunk);
+      if (error) errors.push(`price_moves: ${error.message}`);
+      else priceMoves += chunk.length;
     }
   }
 
@@ -161,10 +218,12 @@ export async function GET(req: NextRequest) {
       last_seen_date: priorDate,
     }));
     for (let i = 0; i < soldRows.length; i += 500) {
+      const chunk = soldRows.slice(i, i + 500);
       const { error } = await supabase
         .from('sold_properties')
-        .upsert(soldRows.slice(i, i + 500), { onConflict: 'ref', ignoreDuplicates: true });
-      if (!error) delisted += Math.min(500, soldRows.length - i);
+        .upsert(chunk, { onConflict: 'ref', ignoreDuplicates: true });
+      if (error) errors.push(`delisted: ${error.message}`);
+      else delisted += chunk.length;
     }
   }
 
@@ -172,12 +231,17 @@ export async function GET(req: NextRequest) {
     feed: feed.length,
     snapshotted,
     price_moves: priceMoves,
+    moves_detected: inserts.length,
+    moves_skipped: movesSkipped,
     delisted,
     prior_date: priorDate,
     prior_age_days: priorAgeDays === Infinity ? null : priorAgeDays,
     trusted_prior: trustPrior,
     overlap: Number(overlap.toFixed(3)),
+    errors: errors.length ? errors : null,
   };
-  await finishCronLog(log, 'success', summary);
-  return NextResponse.json({ ok: true, ...summary });
+  // Report a failed write as a failure. Anything that turns a broken night
+  // into a clean-looking zero is how this pipeline goes quiet unnoticed.
+  await finishCronLog(log, errors.length ? 'error' : 'success', summary);
+  return NextResponse.json({ ok: errors.length === 0, ...summary });
 }
