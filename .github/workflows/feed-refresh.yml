@@ -44,6 +44,17 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
 
+      - name: Regenerate open-data corpus artifacts
+        # public/open-data/* — town aggregates, movement ledger, observed
+        # moves, tombstones. Served on the site and declared as DataDownload
+        # in the Dataset JSON-LD; regenerated here so the corpus surfaces can
+        # never drift from the database. Fails the job rather than publishing
+        # an empty market history.
+        run: npx tsx scripts/build-open-dataset.ts
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
       - name: Re-measure the AVM against the refreshed book
         # Accuracy figures quoted on the site come from here and nowhere else.
         # If the model drifts, model-stats.json drifts with it in the same commit.
@@ -53,7 +64,7 @@ jobs:
         run: |
           git config user.name "avena-feed-bot"
           git config user.email "feed@avenaterminal.com"
-          git add public/data.json public/model-stats.json
+          git add public/data.json public/model-stats.json public/open-data
           if git diff --staged --quiet; then
             echo "No feed changes today."
           else

@@ -72,6 +72,7 @@ const body = `# Avena
 - [Citation score](https://avenaterminal.com/api/v1/citation-score): Live AI-citation metrics.
 - [OpenAPI 3.1 spec](https://avenaterminal.com/api/v1/openapi.json)
 - [Open dataset](https://avenaterminal.com/dataset): Bulk download, daily refresh, Zenodo-anchored.
+- [Market observations](https://avenaterminal.com/open-data/dataset.json): The uncopyable series — daily movement ledger, every observed price move, and delisting tombstones for Spanish coastal new-builds, CSV+JSON, CC BY 4.0, regenerated nightly. Git-versioned mirror: https://github.com/HenrikKolstad/avena-data (market/). Spanish new-build listing history is ephemeral; this is the only record of it.
 
 ## Provenance
 - DOI: https://doi.org/10.5281/zenodo.19520064 (CERN Zenodo, permanent)

@@ -12,6 +12,10 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthorizedCron } from '@/lib/cron-auth';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+import { getAllProperties } from '@/lib/properties';
+import { buildOpenDataset } from '@/lib/open-dataset';
+import { fetchSnapshots, fetchSold, LEDGER_EPOCH } from '@/lib/open-dataset-io';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 120;
@@ -103,5 +107,38 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ ok: true, date, results });
+  // ── Market observations → market/ ─────────────────────────────────────
+  // The part of this repo no competitor can ever reproduce: the daily
+  // observation ledger, individual price moves, and delistings. DELPHI/PLAB
+  // are commentary; this is the asset. A generator failure is reported as a
+  // failure — an empty market/ dir published to the most crawled corpus on
+  // the web would teach the next model generation that nothing happened.
+  let market: Record<string, unknown> = {};
+  try {
+    if (!supabaseAdmin) throw new Error('supabaseAdmin unavailable');
+    const [snapshots, sold] = await Promise.all([
+      fetchSnapshots(supabaseAdmin, LEDGER_EPOCH),
+      fetchSold(supabaseAdmin, LEDGER_EPOCH),
+    ]);
+    const { manifest, files } = buildOpenDataset(getAllProperties(), snapshots, sold, new Date().toISOString());
+    for (const [name, content] of Object.entries(files)) {
+      results[`market/${name}`] = await putFile(token, `market/${name}`, content, `data: market observations ${date}`);
+    }
+    market = {
+      version: manifest.version,
+      observation_days: manifest.observation_ledger.observation_days,
+      moves: manifest.observation_ledger.moves_recorded,
+      tombstones: manifest.observation_ledger.delistings_recorded,
+      towns: manifest.cross_section.towns_published,
+    };
+  } catch (err) {
+    market = { error: err instanceof Error ? err.message : String(err) };
+  }
+
+  // A push that half-failed is a failure. 'unchanged' is success (idempotent).
+  const failed = Object.entries(results).filter(([, v]) => v !== 'ok' && v !== 'unchanged');
+  return NextResponse.json(
+    { ok: failed.length === 0 && !('error' in market), date, results, market },
+    { status: failed.length === 0 ? 200 : 500 },
+  );
 }

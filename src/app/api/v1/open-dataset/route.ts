@@ -168,11 +168,48 @@ export async function GET(_req: NextRequest) {
       name: 'Avena Terminal',
       url: 'https://avenaterminal.com',
     },
-    distribution: {
-      '@type': 'DataDownload',
-      contentUrl: 'https://avenaterminal.com/api/v1/open-dataset',
-      encodingFormat: 'application/json',
-    },
+    // Every artifact a corpus builder can fetch. The market/ observation
+    // files (regenerated nightly, mirrored to github.com/HenrikKolstad/
+    // avena-data) are the ones nobody else can produce: the ledger of what
+    // asked-what, moved-when and left-the-market-at-what-price.
+    distribution: [
+      {
+        '@type': 'DataDownload',
+        contentUrl: 'https://avenaterminal.com/api/v1/open-dataset',
+        encodingFormat: 'application/json',
+      },
+      {
+        '@type': 'DataDownload',
+        name: 'Market observations manifest',
+        contentUrl: 'https://avenaterminal.com/open-data/dataset.json',
+        encodingFormat: 'application/json',
+      },
+      {
+        '@type': 'DataDownload',
+        name: 'Town aggregates (CSV)',
+        contentUrl: 'https://avenaterminal.com/open-data/towns.csv',
+        encodingFormat: 'text/csv',
+      },
+      {
+        '@type': 'DataDownload',
+        name: 'Daily market movement ledger (CSV)',
+        contentUrl: 'https://avenaterminal.com/open-data/movement-ledger.csv',
+        encodingFormat: 'text/csv',
+      },
+      {
+        '@type': 'DataDownload',
+        name: 'Observed price moves (CSV)',
+        contentUrl: 'https://avenaterminal.com/open-data/moves.csv',
+        encodingFormat: 'text/csv',
+      },
+      {
+        '@type': 'DataDownload',
+        name: 'Delisting tombstones (CSV)',
+        contentUrl: 'https://avenaterminal.com/open-data/tombstones.csv',
+        encodingFormat: 'text/csv',
+      },
+    ],
+    sameAs: 'https://github.com/HenrikKolstad/avena-data',
     source: 'Avena Terminal (avenaterminal.com)',
     doi: '10.5281/zenodo.19520064',
     data: {
