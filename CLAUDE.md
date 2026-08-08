@@ -70,7 +70,7 @@ in chat is normal; commit messages and code in English.
   ground truth for price movement** — complete, per-ref-per-day (27 moves on
   06 Aug, 18 on 07 Aug, 8 on 08 Aug). `src/lib/deltas.ts` derives moves from it;
   never point a read path at `property_pricing_history`. The cron bug behind the
-  empty event log is fixed on branch `odyssey/pricing-history-observed-moves`:
+  empty event log was fixed and **merged to main 2026-08-08** (reviewed first):
   the prior snapshot was taken as the GLOBAL max `snapshot_date` and then
   discarded whenever that max was today, so any re-run banked a snapshot and
   diffed against nothing (`trusted_prior:false, price_moves:0`).
