@@ -125,12 +125,31 @@ export async function GET(req: NextRequest) {
       recorded_at: new Date().toISOString(),
     }));
 
-  // Batch upsert in chunks of 500
+  // Batch upsert in chunks of 500.
+  //
+  // NOTE: this has never actually written a row. onConflict:'ref' needs a
+  // unique index on ref alone and price_snapshots is keyed (ref, snapshot_date)
+  // — so PostgREST rejects every chunk. The error was discarded and the
+  // response still reported snapshotUpserts.length as "snapshotsUpdated",
+  // which is how it stayed invisible. Report what was really written and
+  // surface the error rather than converting a failure into a number.
+  //
+  // Deliberately NOT switching the conflict target here: price_snapshots is
+  // owned by the pricing-history cron, which writes the enriched row
+  // (pm2/mm2/region/type/town). Making this route write a thinner row on the
+  // same key would degrade the moat's own table.
+  let snapshotsUpdated = 0;
+  let snapshotError: string | null = null;
   for (let i = 0; i < snapshotUpserts.length; i += 500) {
     const chunk = snapshotUpserts.slice(i, i + 500);
-    await supabase
+    const { error } = await supabase
       .from('price_snapshots')
       .upsert(chunk, { onConflict: 'ref' });
+    if (error) {
+      snapshotError = error.message;
+      break;
+    }
+    snapshotsUpdated += chunk.length;
   }
 
   return NextResponse.json({
@@ -138,6 +157,8 @@ export async function GET(req: NextRequest) {
     eventsCreated,
     totalEvents: events.length,
     totalProperties: props.length,
-    snapshotsUpdated: snapshotUpserts.length,
+    snapshotsUpdated,
+    snapshotAttempted: snapshotUpserts.length,
+    snapshotError,
   });
 }

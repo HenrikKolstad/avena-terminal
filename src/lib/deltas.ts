@@ -37,58 +37,103 @@ export interface EngineDeltas {
 
 const daysAgo = (n: number) => new Date(Date.now() - n * 86_400_000).toISOString().slice(0, 10);
 
+interface SnapRow {
+  ref: string;
+  price: number | null;
+  snapshot_date: string;
+}
+
 /**
- * Real price movements from the last `windowDays` days.
- * "to" is the live feed price (authoritative); "from" is the earliest price
- * we snapshotted for that ref inside the window — so a move only appears
- * when we actually observed both sides of it.
+ * Every snapshot row on or after `since`, paginated.
+ *
+ * PostgREST caps a single response at its max-rows setting (1000 by default),
+ * and the window is ~2,000 refs x N days, so an unpaginated select would
+ * silently return a truncated slice and we would under-report moves. Ordered
+ * by (ref, snapshot_date) so the pages are stable across requests.
+ */
+async function fetchSnapshotWindow(since: string): Promise<SnapRow[]> {
+  if (!supabase) return [];
+  const PAGE = 1000;
+  const MAX_PAGES = 40; // ~40k rows — far above any real window; a runaway guard.
+  const out: SnapRow[] = [];
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const { data, error } = await supabase
+      .from('price_snapshots')
+      .select('ref, price, snapshot_date')
+      .gte('snapshot_date', since)
+      .order('ref', { ascending: true })
+      .order('snapshot_date', { ascending: true })
+      .range(page * PAGE, page * PAGE + PAGE - 1);
+    if (error) throw error;
+    if (!data?.length) break;
+    out.push(...(data as SnapRow[]));
+    if (data.length < PAGE) break;
+  }
+  return out;
+}
+
+/**
+ * Real price movements from the last `windowDays` days, derived from
+ * price_snapshots — our own daily record of what each ref was priced at.
+ *
+ * This used to read the change events in property_pricing_history. That table
+ * is not a usable source: it holds 394k rows and every single one is status
+ * 'listed' — not one 'reduced' or 'increased' has ever been written, so this
+ * function always returned [] and the "What moved this week" section on /deals
+ * has never once rendered. (Root cause is in the pricing-history cron, fixed
+ * separately.) price_snapshots is the ground truth either way: it is the thing
+ * we actually captured, so a move here is a move we can prove we observed.
+ *
+ * "from" is the price held before the most recent change inside the window,
+ * "to" is the latest price we snapshotted, and "date" is the day the change
+ * was first recorded. Refs that have left the feed are excluded — a sold-out
+ * unit is a delisting, not a price move.
  */
 export async function getRecentPriceMoves(windowDays = 7, limit = 6): Promise<PriceMove[]> {
   if (!supabase) return [];
   try {
-    const since = daysAgo(windowDays);
-
-    // Change events written by the cron (small set — only actual moves).
-    const { data: events } = await supabase
-      .from('property_pricing_history')
-      .select('avn_prop_id, recorded_at, status')
-      .gte('recorded_at', since)
-      .in('status', ['reduced', 'increased'])
-      .order('recorded_at', { ascending: false })
-      .limit(400);
-    if (!events?.length) return [];
+    const rows = await fetchSnapshotWindow(daysAgo(windowDays));
+    if (!rows.length) return [];
 
     const byRef = new Map(getAllProperties().filter((p) => p.ref && p.pf > 0).map((p) => [p.ref as string, p]));
-    // Latest event per ref, only refs still in the live feed.
-    const latestEvent = new Map<string, string>();
-    for (const e of events) {
-      if (!byRef.has(e.avn_prop_id)) continue;
-      if (!latestEvent.has(e.avn_prop_id)) latestEvent.set(e.avn_prop_id, String(e.recorded_at).slice(0, 10));
-    }
-    if (latestEvent.size === 0) return [];
 
-    // Earliest snapshotted price per ref inside the window = the "from" side.
-    const refs = [...latestEvent.keys()].slice(0, 200);
-    const { data: snaps } = await supabase
-      .from('price_snapshots')
-      .select('ref, price, snapshot_date')
-      .in('ref', refs)
-      .gte('snapshot_date', daysAgo(windowDays + 1))
-      .order('snapshot_date', { ascending: true });
-
-    const fromByRef = new Map<string, number>();
-    for (const s of snaps ?? []) {
-      if (!fromByRef.has(s.ref) && s.price != null) fromByRef.set(s.ref, Number(s.price));
+    const series = new Map<string, SnapRow[]>();
+    for (const r of rows) {
+      if (!byRef.has(r.ref) || r.price == null) continue;
+      const list = series.get(r.ref);
+      if (list) list.push(r);
+      else series.set(r.ref, [r]);
     }
 
     const moves: PriceMove[] = [];
-    for (const [ref, date] of latestEvent) {
+    for (const [ref, list] of series) {
+      if (list.length < 2) continue; // one observation is not a move
+      list.sort((a, b) => a.snapshot_date.localeCompare(b.snapshot_date));
+
+      // Walk back to the most recent day the price actually changed.
+      let changeAt = -1;
+      for (let i = list.length - 1; i > 0; i--) {
+        if (Math.round(Number(list[i].price)) !== Math.round(Number(list[i - 1].price))) {
+          changeAt = i;
+          break;
+        }
+      }
+      if (changeAt < 0) continue; // flat all window — never fabricate a move
+
+      const from = Math.round(Number(list[changeAt - 1].price));
+      const to = Math.round(Number(list[list.length - 1].price));
+      if (!from || Math.abs(to - from) < 1) continue;
+
       const p = byRef.get(ref)!;
-      const from = fromByRef.get(ref);
-      const to = Math.round(p.pf);
-      if (!from || Math.abs(to - from) < 1) continue; // never fabricate a move
-      moves.push({ ref, town: (p.l || '').split(',')[0].trim(), from: Math.round(from), to, date });
+      moves.push({
+        ref,
+        town: (p.l || '').split(',')[0].trim(),
+        from,
+        to,
+        date: String(list[changeAt].snapshot_date).slice(0, 10),
+      });
     }
+
     // Biggest relative moves first — that's what buyers and crawlers care about.
     moves.sort((a, b) => Math.abs((b.to - b.from) / b.from) - Math.abs((a.to - a.from) / a.from));
     return moves.slice(0, limit);
