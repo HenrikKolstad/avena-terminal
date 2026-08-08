@@ -63,6 +63,20 @@ in chat is normal; commit messages and code in English.
   feed): 3 days, 2,006 refs, 40 real price moves, 3 delistings. Measure depth as
   DISTINCT PRICES per ref, never as row count. `scripts/capability-stats.ts`
   does this correctly and refuses to emit zeros.
+  **AUDIT 2026-08-08 — `property_pricing_history` has never held a move event.**
+  All 394k rows are status `'listed'`; not one `'reduced'`/`'increased'` exists,
+  so the "40 real price moves" above (and any move count anywhere) comes from
+  diffing `price_snapshots`, NOT from that table. **`price_snapshots` is the
+  ground truth for price movement** — complete, per-ref-per-day (27 moves on
+  06 Aug, 18 on 07 Aug, 8 on 08 Aug). `src/lib/deltas.ts` derives moves from it;
+  never point a read path at `property_pricing_history`. The cron bug behind the
+  empty event log is fixed on branch `odyssey/pricing-history-observed-moves`:
+  the prior snapshot was taken as the GLOBAL max `snapshot_date` and then
+  discarded whenever that max was today, so any re-run banked a snapshot and
+  diffed against nothing (`trusted_prior:false, price_moves:0`).
+  Every write in that route also did `if (!error) count += chunk` — a failed
+  insert was indistinguishable from no data. That shape is the recurring bug
+  here; grep for it before trusting any pipeline zero.
   `property_transactions` (~380k) is French DVF open data (cols: price_eur,
   transacted_at, price_per_m2_eur — NOT sold_price); it's the home for external
   CONFIRMED transactions (source-tagged), kept distinct from our derived
