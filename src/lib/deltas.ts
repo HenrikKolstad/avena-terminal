@@ -10,6 +10,7 @@
  */
 
 import { supabase } from './supabase';
+import { supabaseAdmin } from './supabase-admin';
 import { getAllProperties } from './properties';
 
 export interface PriceMove {
@@ -229,11 +230,15 @@ export interface EngineTruth {
  * within a fraction of a percent on a table that only ever grows by appends.
  */
 async function countOf(table: string): Promise<number | null> {
-  if (!supabase) return null;
-  const exact = await supabase.from(table).select('*', { count: 'exact', head: true });
+  // Service-role first: the anon role carries a 3s statement timeout, which a
+  // ~400k-row scan blows. The admin client has no such cap, so it returns the
+  // TRUE count rather than a planner estimate that rounds the number up.
+  const client = supabaseAdmin ?? supabase;
+  if (!client) return null;
+  const exact = await client.from(table).select('*', { count: 'exact', head: true });
   if (!exact.error && exact.count != null) return exact.count;
   console.warn(`[engine] exact count failed for ${table}: ${exact.error?.message ?? 'null count'} — falling back to planner estimate`);
-  const planned = await supabase.from(table).select('*', { count: 'planned', head: true });
+  const planned = await client.from(table).select('*', { count: 'planned', head: true });
   if (!planned.error && planned.count != null) return planned.count;
   console.error(`[engine] no count available for ${table}`);
   return null;
