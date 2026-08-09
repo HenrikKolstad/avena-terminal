@@ -19,6 +19,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { track } from '@vercel/analytics';
+import { trackEvent } from '@/lib/tracking';
 
 interface Card {
   propertyId: string; slug: string; name: string; location: string;
@@ -293,6 +294,10 @@ export function AvenaConcierge() {
       if (!res.ok) throw new Error(String(res.status));
       setLeadSent(true); setLeadMode(null);
       t('concierge_lead_captured', { kind: leadMode ?? 'unknown' });
+      // Same conversion as the enquiry form — a lead captured through the
+      // Concierge is worth exactly as much, and an ad platform that only sees
+      // one of the two paths will misprice every keyword that leads here.
+      trackEvent('Contact', { source: 'concierge', kind: leadMode ?? 'unknown' });
       setMessages((m) => [...m, { role: 'assistant', text: `Thank you, ${form.name.split(' ')[0]}. Our advisor will reach you ${form.method === 'WhatsApp' ? 'on WhatsApp' : 'by email'} shortly — usually within a few hours.` }]);
     } catch {
       setFailed(true); t('concierge_error');

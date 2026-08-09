@@ -8,6 +8,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import { trackEvent } from '@/lib/tracking';
 
 const BUDGETS = ['< €200k', '€200–350k', '€350–500k', '€500k–1m', '€1m+'];
 const REGIONS = ['Costa Blanca', 'Costa Cálida', 'Costa del Sol', 'Other / not sure'];
@@ -48,7 +49,14 @@ export function EnquireForm() {
         }),
       });
       const j = await res.json();
-      if (res.ok && j.ok) setState('sent');
+      if (res.ok && j.ok) {
+        setState('sent');
+        // THE conversion. Every ad platform grades traffic on this one event;
+        // without it a Search campaign cannot tell a browsing click from a
+        // buying one, and will happily spend a month optimising for the wrong
+        // one. Fired after confirmed success only — never on submit.
+        trackEvent('Contact', { property_ref: propertyRef || undefined });
+      }
       else {
         setState('error');
         setErrMsg(j.error === 'valid_email_required' ? 'Please check your email address.' : 'Something went wrong — please try again or use WhatsApp below.');

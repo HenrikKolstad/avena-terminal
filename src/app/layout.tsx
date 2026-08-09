@@ -6,6 +6,7 @@ import { getStructuredData } from "./structured-data";
 import { Analytics } from "@vercel/analytics/next";
 import { TikTokPixel } from "@/components/TikTokPixel";
 import { MetaPixel } from "@/components/MetaPixel";
+import { GoogleAdsTag } from "@/components/GoogleAdsTag";
 import { WhatsAppButton } from "@/components/v2/WhatsAppButton";
 import { ExitIntent } from "@/components/v2/ExitIntent";
 import { KeyboardShortcuts } from "@/components/v2/KeyboardShortcuts";
@@ -103,6 +104,7 @@ export default function RootLayout({
         <Analytics />
         <TikTokPixel />
         <MetaPixel />
+        <GoogleAdsTag />
       </body>
     </html>
   );

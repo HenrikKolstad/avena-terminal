@@ -38,6 +38,19 @@ const META_EVENT: Record<TrackEvent, string> = {
 
 type FBQ = (cmd: string, event: string, props?: Record<string, unknown>) => void;
 
+type GTAG = (cmd: string, target: string, props?: Record<string, unknown>) => void;
+
+/**
+ * Which of our events count as a Google Ads conversion. Only the enquiry does:
+ * Search campaigns bid on queries that produce LEADS, and reporting page views
+ * or clicks as conversions teaches the algorithm to buy traffic that browses
+ * rather than traffic that enquires.
+ */
+const GOOGLE_CONVERSION: Partial<Record<TrackEvent, true>> = {
+  Contact: true,
+  ClickButton: true,
+};
+
 type TTQ = {
   track: (event: string, props?: Record<string, unknown>) => void;
   identify: (props: Record<string, unknown>) => void;
@@ -59,6 +72,19 @@ export function trackEvent(event: TrackEvent, props?: Record<string, unknown>): 
     fbq?.('track', META_EVENT[event] ?? event, props);
   } catch {
     /* swallow — tracking should never break the app */
+  }
+
+  if (GOOGLE_CONVERSION[event]) {
+    const adsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
+    const label = process.env.NEXT_PUBLIC_GOOGLE_ADS_LEAD_LABEL;
+    const gtag = (window as unknown as { gtag?: GTAG }).gtag;
+    try {
+      if (gtag && adsId && label) {
+        gtag('event', 'conversion', { send_to: `${adsId}/${label}`, ...props });
+      }
+    } catch {
+      /* swallow — tracking should never break the app */
+    }
   }
 }
 
