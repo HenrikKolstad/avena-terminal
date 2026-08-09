@@ -40,14 +40,18 @@ cannot run an experiment, only a stunt.
 
 ## 3. EXPERIMENTS — changes with a read-out date
 
-No experiment can be read out yet: there is no Search Console connection, so
-no impressions, clicks, positions or index coverage are visible to Odyssey.
-This table stays empty and honest until O-3 is unblocked. Do not fill it with
-proxies.
+Search Console is connected as of 2026-08-09 (`gsc_daily`, `gsc_pages`, 90
+days backfilled to 2026-05-10). Experiments are now possible. Rules: one
+meaningful change at a time, a read-out DATE fixed in advance, and the result
+recorded honestly — "no detectable effect" is a real finding.
+
+Weekly baseline before any experiment: impressions have sat between 430 and
+660 per week for three months, clicks between 1 and 10. Flat. Any claimed
+effect must clear that noise band to mean anything.
 
 | started | hypothesis | change | metric | read-out | result |
 |---|---|---|---|---|---|
-| — | — | — | — | — | — |
+| 2026-08-05 | Removing the site-wide canonical lets sub-pages re-index, lifting impressions | canonical + crawl-tree fixes | weekly impressions vs the 430–660 band | 2026-09-02 (4 weeks) | pending |
 
 ## 4. BASELINES — what the numbers were, so drift is detectable
 
@@ -59,7 +63,20 @@ proxies.
 | Observation ledger | 5 days, 2,027 units, 53 moves, 21 tombstones | 2026-08-09 | `public/open-data/dataset.json` |
 | Live book | 1,996 listings, 97 towns | 2026-08-09 | `public/data.json` |
 | Sitemap | 2,640 `<loc>` | 2026-08-09 | `/sitemap.xml` |
-| GSC baseline to beat | 79 clicks / 9.5k impressions per 3 months | 2026-08-05 | Henrik's screenshot — NOT machine-readable |
+| Search impressions, last 28d | 1,906 (prior 28d: 2,087 — flat, -9%) | 2026-08-07 | `gsc_daily` |
+| Search clicks, last 28d | 21 (prior 28d: 22) | 2026-08-07 | `gsc_daily` |
+| Average position | 13.5 (prior 28d: 12.4) | 2026-08-07 | `gsc_daily` |
+| Weekly impressions noise band | 430–660/week for 3 months | 2026-05-10 → 2026-08-07 | `gsc_daily` |
+| Indexed pages with impressions | 492, of which 186 carry pre-transliteration accent slugs | 2026-08-07 | `gsc_pages` |
+| /compare share | 293 of 492 pages · 64% of impressions · 20 of 21 clicks | 2026-08-07 | `gsc_pages` |
+| /no + Norway | 0 impressions (launched 2026-08-06, 3 days into window) | 2026-08-07 | `gsc_daily` |
+
+**Correction, 2026-08-09:** an earlier reading of "traffic has halved
+(1,986 vs 4,068)" was wrong. The ad-hoc query moved the start date back 56
+days while leaving the end date fixed, comparing a 28-day window against a
+56-day one. The real figures are in the rows above: flat. Recorded here
+because a wrong baseline would have made every future experiment read as a
+recovery.
 
 ## 5. BLOCKED — needs Henrik
 
