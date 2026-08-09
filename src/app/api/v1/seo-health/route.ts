@@ -139,10 +139,19 @@ export async function GET(req: NextRequest) {
     ];
 
     const batch = urls.slice(0, 50);
-    await pingIndexNow(batch);
+    // Report what was ACCEPTED, not what was attempted. `batch.length`
+    // regardless of outcome is how a rejected key reads as 50 successful
+    // submissions forever.
+    const ping = await pingIndexNow(batch);
 
     return Response.json(
-      { ...payload, indexnow_pinged: batch.length },
+      {
+        ...payload,
+        indexnow_submitted: ping.submitted,
+        indexnow_attempted: batch.length,
+        indexnow_ok: ping.ok,
+        ...(ping.error ? { indexnow_error: ping.error } : {}),
+      },
       { headers: CORS_HEADERS },
     );
   }
