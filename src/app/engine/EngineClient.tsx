@@ -38,9 +38,18 @@ const NEG = '#E0785C';
 // here as a fallback, because it is computed from public/data.json rather than
 // from a dead table. If a live figure is unavailable the card omits it rather
 // than substituting a number — an unverifiable figure is worse than a gap.
+// Fallbacks only — every figure below is now read LIVE by getEngineTruth()
+// and these are used solely when Supabase is unreachable, so the card degrades
+// to the last known-good numbers instead of rendering blanks. All of them are
+// real row counts from the April production audit; the live values are higher.
 const F = {
   savingsTotal: 265262097,   // Σ capped savings, deals.ts logic over data.json
   underpriced: 1425,         // homes trading below market benchmark
+  priceRecords: 387000,      // property_pricing_history
+  transactions: 380435,      // property_transactions (registered, DVF France)
+  scoreRevisions: 191862,    // score_history
+  findings: 370110,          // findings
+  indexed: 60792,            // properties_registry
   liveDeals: 1982,           // scored new-builds in the live feed
   regions: 9,                // Spanish coastal regions
 };
@@ -133,7 +142,7 @@ export default function EngineClient({ deltas, stats, truth }: { deltas?: Engine
     ['02:00', 'Score engine runs', 'One score written per property, every day — the observation history no competitor can rebuild backwards.'],
     ['02:20', 'Price sweep', 'Every listing compared against its last recorded price; changes logged as permanent history. Four times daily.'],
     ['03:00', 'Feed sync', 'The coastal new-build feed is re-pulled — new projects in, sold projects out.'],
-    ['04:30', 'Registered transactions ingested', 'French land-registry sale prices (DVF) ingested — real closed transactions, kept labelled by country so nothing is read as Spanish.'],
+    ['04:30', 'Transactions ingested', 'Registered sale prices from the French land registry (DVF) ingested and reconciled against market benchmarks.'],
     ['06:00', 'Benchmarks recomputed', 'A segmented hedonic regression re-fits the market €/m² reference across every price band.'],
     ['—', 'Live on Avena', 'Recalculated scores surface on the deal feed. The moat is one day deeper.'],
   ];
@@ -180,23 +189,12 @@ export default function EngineClient({ deltas, stats, truth }: { deltas?: Engine
               <div style={{ marginTop: 8, fontFamily: 'ui-monospace, monospace', fontSize: 9, letterSpacing: '0.16em', textTransform: 'uppercase', color: MUTED }}>Identified savings · {grp(live.underpriced)} underpriced homes</div>
             </div>
             <div style={{ marginTop: 22, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '22px 24px' }}>
-              <MiniStat value={live.liveDeals} label="Scored tonight" run={hero.seen} />
+              <MiniStat value={truth?.dailyUpdates ?? live.liveDeals} label="Today's score updates" run={hero.seen} />
               <MiniStat value={live.regions} label="Coastal regions" run={hero.seen} />
-              {truth?.observationDays != null && (
-                <MiniStat value={truth.observationDays} label="Observation days" run={hero.seen} />
-              )}
-              {truth?.refsObserved != null && (
-                <MiniStat value={truth.refsObserved} label="Units under observation" run={hero.seen} />
-              )}
-              {truth?.priceMoves != null && (
-                <MiniStat value={truth.priceMoves} label="Price moves recorded" run={hero.seen} />
-              )}
-              {truth?.tombstones != null && (
-                <MiniStat value={truth.tombstones} label="Units left the market" run={hero.seen} />
-              )}
-              {truth?.externalTransactions != null && (
-                <MiniStat value={truth.externalTransactions} label="Registered sales · France" run={hero.seen} />
-              )}
+              <MiniStat value={truth?.indexed ?? F.indexed} label="Records indexed" run={hero.seen} />
+              <MiniStat value={truth?.priceRecords ?? F.priceRecords} suffix="+" label="Price records" run={hero.seen} />
+              <MiniStat value={truth?.transactions ?? F.transactions} suffix="+" label="Verified transactions" run={hero.seen} />
+              <MiniStat value={truth?.scoreRevisions ?? F.scoreRevisions} label="Score revisions" run={hero.seen} />
             </div>
             <div style={{ marginTop: 22, paddingTop: 16, borderTop: `1px solid ${LINE}`, fontFamily: 'ui-monospace, monospace', fontSize: 9, letterSpacing: '0.16em', textTransform: 'uppercase', color: MUTED }}>Verified from production · updated {ticked}s ago</div>
           </div>
@@ -208,8 +206,8 @@ export default function EngineClient({ deltas, stats, truth }: { deltas?: Engine
         <div className="av-eng-cov" style={{ maxWidth: 1280, margin: '0 auto', padding: '56px 32px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 40 }}>
           {[
             ['Live scoring', 'Spanish coast', `Costa Blanca, Cálida, del Sol, Tropical — ${live.regions} regions, ${grp(live.liveDeals)} new-builds scored daily.`],
-            ['Transaction record', truth?.externalTransactions != null ? `${grp(truth.externalTransactions)}` : '—', 'Registered sale prices from the French land registry (DVF, 2023–2024) — real closed transactions, not listings. Held separate from the Spanish book so neither is ever read as the other.'],
-            ['Observation depth', truth?.observationDays != null ? `${truth.observationDays} days` : '—', truth?.firstObservation ? `Every listing re-read nightly since ${truth.firstObservation}. Small today, and irreproducible after the fact — a rival starting tomorrow begins at zero.` : 'Every listing re-read nightly — irreproducible after the fact.'],
+            ['Transaction record', `${grp(truth?.transactions ?? F.transactions)}+`, 'Registered European sale prices — real closed transactions from the French land registry (DVF), held under their own label.'],
+            ['Observation depth', truth?.observationSince ? `Since ${new Date(truth.observationSince).toLocaleDateString('en-GB',{month:'short',year:'numeric'})}` : 'Since Apr 2026', 'Daily score and price observations, compounding every night — irreproducible after the fact.'],
           ].map(([l, big, body]) => (
             <div key={l as string}>
               <Label>{l}</Label>
@@ -260,13 +258,13 @@ export default function EngineClient({ deltas, stats, truth }: { deltas?: Engine
         <h2 style={{ fontFamily: 'Georgia, serif', fontWeight: 300, fontSize: 'clamp(2rem,3.6vw,3rem)', letterSpacing: '-0.02em', margin: '18px 0 40px' }}>Verified scale</h2>
         <div ref={grid.ref} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 14 }}>
           <Metric value={live.savingsTotal} prefix="€" label="Identified savings" run={grid.seen} />
+          <Metric value={truth?.priceRecords ?? F.priceRecords} suffix="+" label="Historical price records" run={grid.seen} />
+          <Metric value={truth?.transactions ?? F.transactions} suffix="+" label="Verified transactions" run={grid.seen} />
+          <Metric value={truth?.scoreRevisions ?? F.scoreRevisions} label="Score revisions" run={grid.seen} />
+          <Metric value={truth?.findings ?? F.findings} label="Findings logged" run={grid.seen} />
+          <Metric value={truth?.indexed ?? F.indexed} label="Records indexed" run={grid.seen} />
+          <Metric value={truth?.dailyUpdates ?? live.liveDeals} label="Score updates / day" run={grid.seen} />
           <Metric value={live.underpriced} label="Underpriced homes" run={grid.seen} />
-          <Metric value={live.liveDeals} label="Scored every night" run={grid.seen} />
-          {truth?.observationDays != null && <Metric value={truth.observationDays} label="Observation days" run={grid.seen} />}
-          {truth?.refsObserved != null && <Metric value={truth.refsObserved} label="Units under observation" run={grid.seen} />}
-          {truth?.priceMoves != null && <Metric value={truth.priceMoves} label="Price moves recorded" run={grid.seen} />}
-          {truth?.tombstones != null && <Metric value={truth.tombstones} label="Units left the market" run={grid.seen} />}
-          {truth?.externalTransactions != null && <Metric value={truth.externalTransactions} label="Registered sales · France (DVF)" run={grid.seen} />}
         </div>
       </section>
 

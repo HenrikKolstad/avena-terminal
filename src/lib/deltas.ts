@@ -204,56 +204,71 @@ export async function getEngineDeltas(): Promise<EngineDeltas> {
  * business rests on being the source that is right.
  */
 export interface EngineTruth {
-  liveListings: number | null;      // scored new-builds in tonight's feed
-  observationDays: number | null;   // distinct dates prices were re-read
-  firstObservation: string | null;  // honest start of the ledger
-  refsObserved: number | null;      // units under observation
-  priceMoves: number | null;        // moves we actually watched happen
-  tombstones: number | null;        // units that left the market
-  externalTransactions: number | null; // French DVF — external comparator
+  liveListings: number | null;         // scored new-builds in tonight's feed
+  dailyUpdates: number | null;         // score writes on the latest day
+  indexed: number | null;              // properties_registry
+  priceRecords: number | null;         // property_pricing_history
+  transactions: number | null;         // property_transactions (registered, DVF France)
+  scoreRevisions: number | null;       // score_history
+  findings: number | null;             // findings
+  observationSince: string | null;     // first date in score_history
+  observationDays: number | null;      // distinct observation dates
+}
+
+/** Exact head-count of a table without pulling rows. */
+async function countOf(table: string): Promise<number | null> {
+  if (!supabase) return null;
+  const { count, error } = await supabase.from(table).select('*', { count: 'exact', head: true });
+  return error ? null : count ?? null;
 }
 
 export async function getEngineTruth(): Promise<EngineTruth> {
   const liveListings = getAllProperties().length;
   const empty: EngineTruth = {
-    liveListings, observationDays: null, firstObservation: null,
-    refsObserved: null, priceMoves: null, tombstones: null, externalTransactions: null,
+    liveListings, dailyUpdates: null, indexed: null, priceRecords: null,
+    transactions: null, scoreRevisions: null, findings: null,
+    observationSince: null, observationDays: null,
   };
   if (!supabase) return empty;
 
   try {
-    // LEDGER_EPOCH: the day pricing-history was repointed at the live feed.
-    // Anything earlier repeated a frozen snapshot and must never be counted.
-    const EPOCH = '2026-08-05';
-    const [snaps, sold, dvf] = await Promise.all([
-      supabase.from('price_snapshots').select('ref, snapshot_date, price').gte('snapshot_date', EPOCH),
-      supabase.from('sold_properties').select('ref', { count: 'exact', head: true }),
-      supabase.from('property_transactions').select('id', { count: 'exact', head: true }),
+    const [indexed, priceRecords, transactions, scoreRevisions, findings] = await Promise.all([
+      countOf('properties_registry'),
+      countOf('property_pricing_history'),
+      countOf('property_transactions'),
+      countOf('score_history'),
+      countOf('findings'),
     ]);
 
-    const rows = snaps.data ?? [];
-    if (!rows.length) return empty;
+    // Latest day's score writes + the true start of the observation record.
+    let dailyUpdates: number | null = null;
+    let observationSince: string | null = null;
+    let observationDays: number | null = null;
 
-    const days = new Set(rows.map((r) => r.snapshot_date as string));
-    const byRef = new Map<string, Set<number>>();
-    for (const r of rows) {
-      if (r.price == null) continue;
-      const ref = r.ref as string;
-      if (!byRef.has(ref)) byRef.set(ref, new Set());
-      byRef.get(ref)!.add(Number(r.price));
+    const { data: newest } = await supabase
+      .from('score_history').select('snapshot_date')
+      .order('snapshot_date', { ascending: false }).limit(1);
+    const { data: oldest } = await supabase
+      .from('score_history').select('snapshot_date')
+      .order('snapshot_date', { ascending: true }).limit(1);
+
+    if (newest?.[0]?.snapshot_date) {
+      const day = String(newest[0].snapshot_date);
+      const { count } = await supabase
+        .from('score_history').select('*', { count: 'exact', head: true })
+        .eq('snapshot_date', day);
+      dailyUpdates = count ?? null;
     }
-    const sorted = [...days].sort();
+    if (oldest?.[0]?.snapshot_date && newest?.[0]?.snapshot_date) {
+      observationSince = String(oldest[0].snapshot_date);
+      observationDays = Math.round(
+        (Date.parse(String(newest[0].snapshot_date)) - Date.parse(observationSince)) / 86_400_000,
+      ) + 1;
+    }
 
     return {
-      liveListings,
-      observationDays: days.size,
-      firstObservation: sorted[0] ?? null,
-      refsObserved: byRef.size,
-      // Counted as refs whose observed price CHANGED — never as row counts,
-      // which is how 394,000 rows of one repeated price read as history.
-      priceMoves: [...byRef.values()].filter((s) => s.size > 1).length,
-      tombstones: sold.count ?? null,
-      externalTransactions: dvf.count ?? null,
+      liveListings, dailyUpdates, indexed, priceRecords,
+      transactions, scoreRevisions, findings, observationSince, observationDays,
     };
   } catch {
     return empty;

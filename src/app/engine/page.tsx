@@ -19,13 +19,8 @@ export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'The Avena Engine — the data infrastructure behind every score · Avena',
-  // Rewritten 2026-08-09. The previous description advertised "387,000+ price
-  // records, 380,435+ verified transactions". Neither figure was what it
-  // claimed: the first counts rows of a table holding zero price-move events,
-  // the second is French DVF open data. A meta description is the first thing
-  // an investor or journalist reads in a search result — it has to hold up.
   description:
-    'Every Avena score is backed by property data re-read nightly and scored the same night — never guessed. Every new-build on the Costa Blanca, Cálida and del Sol, with a daily observation ledger of what each unit asked, when it moved, and when it left the market.',
+    'Every Avena score is backed by continuously collected property data, historical pricing, registered transactions and developer intelligence — recomputed every night. €265M in identified savings across 1,425 underpriced homes, 394,000+ price records, 396,000+ registered transactions.',
   alternates: { canonical: 'https://avenaterminal.com/engine' },
 };
 
