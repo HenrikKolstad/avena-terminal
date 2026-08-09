@@ -44,32 +44,75 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
 
-      - name: Regenerate open-data corpus artifacts
-        # public/open-data/* — town aggregates, movement ledger, observed
-        # moves, tombstones. Served on the site and declared as DataDownload
-        # in the Dataset JSON-LD; regenerated here so the corpus surfaces can
-        # never drift from the database. Fails the job rather than publishing
-        # an empty market history.
-        run: npx tsx scripts/build-open-dataset.ts
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      # ---------------------------------------------------------------------
+      # Everything below parse-feed is ENRICHMENT. A day of feed history is
+      # unbackfillable; an enrichment artifact can be rebuilt tomorrow. So no
+      # enrichment step is allowed to stop the feed from being committed —
+      # they run with continue-on-error and are re-raised by the final gate,
+      # AFTER the feed is safely on main. (2026-08-08/09: the corpus step
+      # exited 1 on missing Supabase secrets and took the whole nightly
+      # refresh down with it, discarding two days of successfully parsed feed.)
+      # ---------------------------------------------------------------------
 
       - name: Re-measure the AVM against the refreshed book
         # Accuracy figures quoted on the site come from here and nowhere else.
         # If the model drifts, model-stats.json drifts with it in the same commit.
+        id: avm
+        continue-on-error: true
         run: npx tsx scripts/avm-backtest.ts
 
       - name: Commit refreshed feed (if changed)
+        # The irreplaceable step. Depends on parse-feed only.
         run: |
           git config user.name "avena-feed-bot"
           git config user.email "feed@avenaterminal.com"
-          git add public/data.json public/model-stats.json public/open-data
+          git add public/data.json public/model-stats.json
           if git diff --staged --quiet; then
             echo "No feed changes today."
           else
             COUNT=$(node -e "console.log(require('./public/data.json').length)")
             git commit -m "chore(feed): nightly RedSP refresh — ${COUNT} listings [skip ci]"
+            git pull --rebase origin main
             git push
             echo "Pushed refreshed feed (${COUNT} listings)."
           fi
+
+      - name: Regenerate open-data corpus artifacts
+        # public/open-data/* — town aggregates, movement ledger, observed
+        # moves, tombstones. Served on the site and declared as DataDownload
+        # in the Dataset JSON-LD; regenerated here so the corpus surfaces can
+        # never drift from the database. Refuses to run without Supabase
+        # credentials rather than publishing an empty market history — that
+        # refusal is correct, and the final gate turns the run red for it.
+        id: corpus
+        continue-on-error: true
+        run: npx tsx scripts/build-open-dataset.ts
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+      - name: Commit corpus artifacts (if changed)
+        if: steps.corpus.outcome == 'success'
+        run: |
+          git config user.name "avena-feed-bot"
+          git config user.email "feed@avenaterminal.com"
+          git add public/open-data
+          if git diff --staged --quiet; then
+            echo "No corpus changes today."
+          else
+            git commit -m "chore(corpus): nightly open-data rebuild [skip ci]"
+            git pull --rebase origin main
+            git push
+            echo "Pushed corpus artifacts."
+          fi
+
+      - name: Re-raise enrichment failures
+        # The feed is committed by now, so failing here loses nothing but
+        # still shows Henrik a red run. A silently-green enrichment failure
+        # is the bug shape this whole repo keeps getting bitten by.
+        if: steps.avm.outcome != 'success' || steps.corpus.outcome != 'success'
+        run: |
+          echo "avm-backtest: ${{ steps.avm.outcome }}"
+          echo "open-dataset: ${{ steps.corpus.outcome }}"
+          echo "The feed itself was committed; the step(s) above still need fixing."
+          exit 1
