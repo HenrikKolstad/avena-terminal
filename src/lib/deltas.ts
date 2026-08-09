@@ -215,11 +215,28 @@ export interface EngineTruth {
   observationDays: number | null;      // distinct observation dates
 }
 
-/** Exact head-count of a table without pulling rows. */
+/**
+ * Head-count of a table without pulling rows.
+ *
+ * Exact first, planner estimate as a fallback. `property_transactions` carries
+ * a wide jsonb `raw` column, so an exact count full-scans ~400k fat rows and
+ * exceeds the anon role's 3s statement timeout — it returned null, and the
+ * card silently fell back to a hardcoded April constant while every other
+ * figure went live. That is the recurring bug again: a failure that renders as
+ * a plausible number instead of an absence.
+ *
+ * The estimate comes from the query planner (pg_class.reltuples), accurate to
+ * within a fraction of a percent on a table that only ever grows by appends.
+ */
 async function countOf(table: string): Promise<number | null> {
   if (!supabase) return null;
-  const { count, error } = await supabase.from(table).select('*', { count: 'exact', head: true });
-  return error ? null : count ?? null;
+  const exact = await supabase.from(table).select('*', { count: 'exact', head: true });
+  if (!exact.error && exact.count != null) return exact.count;
+  console.warn(`[engine] exact count failed for ${table}: ${exact.error?.message ?? 'null count'} — falling back to planner estimate`);
+  const planned = await supabase.from(table).select('*', { count: 'planned', head: true });
+  if (!planned.error && planned.count != null) return planned.count;
+  console.error(`[engine] no count available for ${table}`);
+  return null;
 }
 
 export async function getEngineTruth(): Promise<EngineTruth> {
