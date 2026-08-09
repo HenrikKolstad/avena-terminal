@@ -10,7 +10,12 @@ name: Nightly feed refresh
 on:
   schedule:
     - cron: '37 1 * * *'   # 01:37 UTC daily
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      gsc_backfill_days:
+        description: 'Search Console days to backfill (1 = yesterday only)'
+        required: false
+        default: '1'
 
 permissions:
   contents: write
@@ -77,6 +82,18 @@ jobs:
             echo "Pushed refreshed feed (${COUNT} listings)."
           fi
 
+      - name: Capture Search Console visibility
+        # The measurement half of SEO. Search Console retains only 16 months,
+        # so anything an experiment reads out against in 2028 must be captured
+        # now. Enrichment: never allowed to block the feed commit.
+        id: gsc
+        continue-on-error: true
+        run: npx tsx scripts/gsc-snapshot.ts --backfill ${{ inputs.gsc_backfill_days || '1' }}
+        env:
+          GOOGLE_SEARCH_CONSOLE_KEY: ${{ secrets.GOOGLE_SEARCH_CONSOLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
       - name: Regenerate open-data corpus artifacts
         # public/open-data/* — town aggregates, movement ledger, observed
         # moves, tombstones. Served on the site and declared as DataDownload
@@ -110,9 +127,10 @@ jobs:
         # The feed is committed by now, so failing here loses nothing but
         # still shows Henrik a red run. A silently-green enrichment failure
         # is the bug shape this whole repo keeps getting bitten by.
-        if: steps.avm.outcome != 'success' || steps.corpus.outcome != 'success'
+        if: steps.avm.outcome != 'success' || steps.corpus.outcome != 'success' || steps.gsc.outcome != 'success'
         run: |
           echo "avm-backtest: ${{ steps.avm.outcome }}"
           echo "open-dataset: ${{ steps.corpus.outcome }}"
+          echo "gsc-snapshot: ${{ steps.gsc.outcome }}"
           echo "The feed itself was committed; the step(s) above still need fixing."
           exit 1
