@@ -31,6 +31,13 @@ import { pingIndexNow } from '@/lib/indexnow';
  */
 export const BENCHMARK_VERSION = 'qb-v2';
 
+/**
+ * First date measured with qb-v2. Rates before this were measured against the
+ * branded-heavy qb-v1 list — a different ruler, not a different market — so
+ * the published series starts here rather than splicing the two together.
+ */
+export const BENCHMARK_EPOCH = '2026-08-07';
+
 export type QuestionCategory =
   | 'region' | 'town' | 'budget' | 'pricing' | 'market'
   | 'yield' | 'costs' | 'process' | 'lifestyle' | 'branded';
