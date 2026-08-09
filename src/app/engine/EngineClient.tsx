@@ -133,7 +133,7 @@ export default function EngineClient({ deltas, stats, truth }: { deltas?: Engine
     ['02:00', 'Score engine runs', 'One score written per property, every day — the observation history no competitor can rebuild backwards.'],
     ['02:20', 'Price sweep', 'Every listing compared against its last recorded price; changes logged as permanent history. Four times daily.'],
     ['03:00', 'Feed sync', 'The coastal new-build feed is re-pulled — new projects in, sold projects out.'],
-    ['04:30', 'External data ingested', 'French DVF registered transactions ingested as an independent method check — kept separate from Spanish figures.'],
+    ['04:30', 'Registered transactions ingested', 'French land-registry sale prices (DVF) ingested — real closed transactions, kept labelled by country so nothing is read as Spanish.'],
     ['06:00', 'Benchmarks recomputed', 'A segmented hedonic regression re-fits the market €/m² reference across every price band.'],
     ['—', 'Live on Avena', 'Recalculated scores surface on the deal feed. The moat is one day deeper.'],
   ];
@@ -194,6 +194,9 @@ export default function EngineClient({ deltas, stats, truth }: { deltas?: Engine
               {truth?.tombstones != null && (
                 <MiniStat value={truth.tombstones} label="Units left the market" run={hero.seen} />
               )}
+              {truth?.externalTransactions != null && (
+                <MiniStat value={truth.externalTransactions} label="Registered sales · France" run={hero.seen} />
+              )}
             </div>
             <div style={{ marginTop: 22, paddingTop: 16, borderTop: `1px solid ${LINE}`, fontFamily: 'ui-monospace, monospace', fontSize: 9, letterSpacing: '0.16em', textTransform: 'uppercase', color: MUTED }}>Verified from production · updated {ticked}s ago</div>
           </div>
@@ -205,7 +208,7 @@ export default function EngineClient({ deltas, stats, truth }: { deltas?: Engine
         <div className="av-eng-cov" style={{ maxWidth: 1280, margin: '0 auto', padding: '56px 32px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 40 }}>
           {[
             ['Live scoring', 'Spanish coast', `Costa Blanca, Cálida, del Sol, Tropical — ${live.regions} regions, ${grp(live.liveDeals)} new-builds scored daily.`],
-            ['External comparator', truth?.externalTransactions != null ? `${grp(truth.externalTransactions)}` : '—', 'Registered French transactions (DVF open data, 2023–2024) — held separately as a method check, never blended into Spanish figures.'],
+            ['Transaction record', truth?.externalTransactions != null ? `${grp(truth.externalTransactions)}` : '—', 'Registered sale prices from the French land registry (DVF, 2023–2024) — real closed transactions, not listings. Held separate from the Spanish book so neither is ever read as the other.'],
             ['Observation depth', truth?.observationDays != null ? `${truth.observationDays} days` : '—', truth?.firstObservation ? `Every listing re-read nightly since ${truth.firstObservation}. Small today, and irreproducible after the fact — a rival starting tomorrow begins at zero.` : 'Every listing re-read nightly — irreproducible after the fact.'],
           ].map(([l, big, body]) => (
             <div key={l as string}>
@@ -263,7 +266,7 @@ export default function EngineClient({ deltas, stats, truth }: { deltas?: Engine
           {truth?.refsObserved != null && <Metric value={truth.refsObserved} label="Units under observation" run={grid.seen} />}
           {truth?.priceMoves != null && <Metric value={truth.priceMoves} label="Price moves recorded" run={grid.seen} />}
           {truth?.tombstones != null && <Metric value={truth.tombstones} label="Units left the market" run={grid.seen} />}
-          {truth?.externalTransactions != null && <Metric value={truth.externalTransactions} label="French DVF comparator" run={grid.seen} />}
+          {truth?.externalTransactions != null && <Metric value={truth.externalTransactions} label="Registered sales · France (DVF)" run={grid.seen} />}
         </div>
       </section>
 
