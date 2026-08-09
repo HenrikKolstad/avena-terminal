@@ -11,7 +11,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
-import type { EngineDeltas, PriceMove } from '@/lib/deltas';
+import type { EngineDeltas, PriceMove, EngineTruth } from '@/lib/deltas';
 import type { EngineStats } from '@/lib/deals';
 
 const GOLD = 'hsl(var(--av-primary))';
@@ -23,19 +23,25 @@ const SURFACE = 'hsl(var(--av-surface))';
 const POS = '#5FB87A';
 const NEG = '#E0785C';
 
-// ── Verified figures ─────────────────────────────────────────────────────────
-// Deal math (savings / underpriced) computed with the exact deals.ts logic
-// (DISPLAY_CAP_PCT=35) over public/data.json. DB figures from the prod audit.
+// ── Fallback figures ─────────────────────────────────────────────────────────
+// AUDIT 2026-08-09: this block used to hold ten hardcoded numbers copied from a
+// one-time April audit, rendered as "verified from production". Four months on,
+// several were not just stale but false in ways that would fail due diligence:
+//   1,881 "today's score updates"  → the frozen properties_registry count
+//   387,000 "price records"        → property_pricing_history, which holds ZERO
+//                                    move events; every row is status 'listed'
+//   380,435 "verified transactions, reconciled against market benchmarks"
+//                                  → French DVF open data, reconciled with nothing
+//   191,862 "score revisions"      → a frozen snapshot rewritten nightly
+//   "Observation depth: since Apr 2026" → the real ledger starts 2026-08-05
+// Everything now comes live from getEngineTruth(). Only the deal math survives
+// here as a fallback, because it is computed from public/data.json rather than
+// from a dead table. If a live figure is unavailable the card omits it rather
+// than substituting a number — an unverifiable figure is worse than a gap.
 const F = {
-  savingsTotal: 265262097,   // Σ capped savings across underpriced homes
+  savingsTotal: 265262097,   // Σ capped savings, deals.ts logic over data.json
   underpriced: 1425,         // homes trading below market benchmark
-  priceRecords: 387000,      // property_pricing_history
-  transactions: 380435,      // property_transactions (verified)
-  scoreRevisions: 191862,    // score_history
-  findings: 370110,          // findings
-  indexed: 60792,            // properties_registry
   liveDeals: 1982,           // scored new-builds in the live feed
-  dailyUpdates: 1881,        // score writes / day
   regions: 9,                // Spanish coastal regions
 };
 
@@ -102,7 +108,7 @@ function Metric({ value, prefix = '', suffix = '', label, run }: { value: number
   );
 }
 
-export default function EngineClient({ deltas, stats }: { deltas?: EngineDeltas; stats?: EngineStats }) {
+export default function EngineClient({ deltas, stats, truth }: { deltas?: EngineDeltas; stats?: EngineStats; truth?: EngineTruth }) {
   const hero = useInView<HTMLDivElement>();
   const grid = useInView<HTMLDivElement>();
   const [ticked, setTicked] = useState(0);
@@ -127,7 +133,7 @@ export default function EngineClient({ deltas, stats }: { deltas?: EngineDeltas;
     ['02:00', 'Score engine runs', 'One score written per property, every day — the observation history no competitor can rebuild backwards.'],
     ['02:20', 'Price sweep', 'Every listing compared against its last recorded price; changes logged as permanent history. Four times daily.'],
     ['03:00', 'Feed sync', 'The coastal new-build feed is re-pulled — new projects in, sold projects out.'],
-    ['04:30', 'Transactions ingested', 'Verified transaction records ingested and reconciled against market benchmarks.'],
+    ['04:30', 'External data ingested', 'French DVF registered transactions ingested as an independent method check — kept separate from Spanish figures.'],
     ['06:00', 'Benchmarks recomputed', 'A segmented hedonic regression re-fits the market €/m² reference across every price band.'],
     ['—', 'Live on Avena', 'Recalculated scores surface on the deal feed. The moat is one day deeper.'],
   ];
@@ -174,12 +180,20 @@ export default function EngineClient({ deltas, stats }: { deltas?: EngineDeltas;
               <div style={{ marginTop: 8, fontFamily: 'ui-monospace, monospace', fontSize: 9, letterSpacing: '0.16em', textTransform: 'uppercase', color: MUTED }}>Identified savings · {grp(live.underpriced)} underpriced homes</div>
             </div>
             <div style={{ marginTop: 22, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '22px 24px' }}>
-              <MiniStat value={F.dailyUpdates} label="Today's score updates" run={hero.seen} />
+              <MiniStat value={live.liveDeals} label="Scored tonight" run={hero.seen} />
               <MiniStat value={live.regions} label="Coastal regions" run={hero.seen} />
-              <MiniStat value={F.indexed} label="Records indexed" run={hero.seen} />
-              <MiniStat value={F.priceRecords} suffix="+" label="Price records" run={hero.seen} />
-              <MiniStat value={F.transactions} suffix="+" label="Verified transactions" run={hero.seen} />
-              <MiniStat value={F.scoreRevisions} label="Score revisions" run={hero.seen} />
+              {truth?.observationDays != null && (
+                <MiniStat value={truth.observationDays} label="Observation days" run={hero.seen} />
+              )}
+              {truth?.refsObserved != null && (
+                <MiniStat value={truth.refsObserved} label="Units under observation" run={hero.seen} />
+              )}
+              {truth?.priceMoves != null && (
+                <MiniStat value={truth.priceMoves} label="Price moves recorded" run={hero.seen} />
+              )}
+              {truth?.tombstones != null && (
+                <MiniStat value={truth.tombstones} label="Units left the market" run={hero.seen} />
+              )}
             </div>
             <div style={{ marginTop: 22, paddingTop: 16, borderTop: `1px solid ${LINE}`, fontFamily: 'ui-monospace, monospace', fontSize: 9, letterSpacing: '0.16em', textTransform: 'uppercase', color: MUTED }}>Verified from production · updated {ticked}s ago</div>
           </div>
@@ -191,8 +205,8 @@ export default function EngineClient({ deltas, stats }: { deltas?: EngineDeltas;
         <div className="av-eng-cov" style={{ maxWidth: 1280, margin: '0 auto', padding: '56px 32px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 40 }}>
           {[
             ['Live scoring', 'Spanish coast', `Costa Blanca, Cálida, del Sol, Tropical — ${live.regions} regions, ${grp(live.liveDeals)} new-builds scored daily.`],
-            ['Transaction record', `${grp(F.transactions)}+`, 'Verified European transactions reconciled against market benchmarks.'],
-            ['Observation depth', 'Since Apr 2026', 'Daily score and price observations, compounding every night — irreproducible after the fact.'],
+            ['External comparator', truth?.externalTransactions != null ? `${grp(truth.externalTransactions)}` : '—', 'Registered French transactions (DVF open data, 2023–2024) — held separately as a method check, never blended into Spanish figures.'],
+            ['Observation depth', truth?.observationDays != null ? `${truth.observationDays} days` : '—', truth?.firstObservation ? `Every listing re-read nightly since ${truth.firstObservation}. Small today, and irreproducible after the fact — a rival starting tomorrow begins at zero.` : 'Every listing re-read nightly — irreproducible after the fact.'],
           ].map(([l, big, body]) => (
             <div key={l as string}>
               <Label>{l}</Label>
@@ -243,13 +257,13 @@ export default function EngineClient({ deltas, stats }: { deltas?: EngineDeltas;
         <h2 style={{ fontFamily: 'Georgia, serif', fontWeight: 300, fontSize: 'clamp(2rem,3.6vw,3rem)', letterSpacing: '-0.02em', margin: '18px 0 40px' }}>Verified scale</h2>
         <div ref={grid.ref} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 14 }}>
           <Metric value={live.savingsTotal} prefix="€" label="Identified savings" run={grid.seen} />
-          <Metric value={F.priceRecords} suffix="+" label="Historical price records" run={grid.seen} />
-          <Metric value={F.transactions} suffix="+" label="Verified transactions" run={grid.seen} />
-          <Metric value={F.scoreRevisions} label="Score revisions" run={grid.seen} />
-          <Metric value={F.findings} label="Findings logged" run={grid.seen} />
-          <Metric value={F.indexed} label="Records indexed" run={grid.seen} />
-          <Metric value={F.dailyUpdates} label="Score updates / day" run={grid.seen} />
           <Metric value={live.underpriced} label="Underpriced homes" run={grid.seen} />
+          <Metric value={live.liveDeals} label="Scored every night" run={grid.seen} />
+          {truth?.observationDays != null && <Metric value={truth.observationDays} label="Observation days" run={grid.seen} />}
+          {truth?.refsObserved != null && <Metric value={truth.refsObserved} label="Units under observation" run={grid.seen} />}
+          {truth?.priceMoves != null && <Metric value={truth.priceMoves} label="Price moves recorded" run={grid.seen} />}
+          {truth?.tombstones != null && <Metric value={truth.tombstones} label="Units left the market" run={grid.seen} />}
+          {truth?.externalTransactions != null && <Metric value={truth.externalTransactions} label="French DVF comparator" run={grid.seen} />}
         </div>
       </section>
 

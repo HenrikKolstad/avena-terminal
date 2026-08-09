@@ -177,3 +177,85 @@ export async function getEngineDeltas(): Promise<EngineDeltas> {
   const [moves, sold] = await Promise.all([getRecentPriceMoves(), getRecentSellouts()]);
   return { moves, sellouts: sold.sellouts, selloutCount30d: sold.count, medianExitPm2: sold.medianExitPm2 };
 }
+
+/**
+ * ─── Live engine figures (2026-08-09) ─────────────────────────────────────
+ *
+ * The /engine status card previously rendered a hardcoded block copied out of
+ * a one-time April audit. It had not moved in four months, and by August
+ * several of its numbers were not merely stale but wrong in a way that would
+ * not survive an investor's due diligence:
+ *
+ *   "1,881 today's score updates"  — the frozen properties_registry count;
+ *                                    the live book is 1,996.
+ *   "387,000+ price records"       — property_pricing_history, which contains
+ *                                    ZERO price-move events. Every row is
+ *                                    status 'listed'.
+ *   "380,435+ verified transactions, reconciled against market benchmarks"
+ *                                  — French DVF open data. French, not
+ *                                    Spanish, and reconciled against nothing.
+ *   "191,862 score revisions"      — score_history, which repeated a frozen
+ *                                    snapshot nightly until 2026-08-05.
+ *   "Observation depth: since Apr 2026" — the genuine ledger starts 08-05.
+ *
+ * Everything below is read live and labelled as what it actually is. Numbers
+ * that cannot be verified are omitted rather than estimated: a page that
+ * overstates is worth less than one that under-claims, because the whole
+ * business rests on being the source that is right.
+ */
+export interface EngineTruth {
+  liveListings: number | null;      // scored new-builds in tonight's feed
+  observationDays: number | null;   // distinct dates prices were re-read
+  firstObservation: string | null;  // honest start of the ledger
+  refsObserved: number | null;      // units under observation
+  priceMoves: number | null;        // moves we actually watched happen
+  tombstones: number | null;        // units that left the market
+  externalTransactions: number | null; // French DVF — external comparator
+}
+
+export async function getEngineTruth(): Promise<EngineTruth> {
+  const liveListings = getAllProperties().length;
+  const empty: EngineTruth = {
+    liveListings, observationDays: null, firstObservation: null,
+    refsObserved: null, priceMoves: null, tombstones: null, externalTransactions: null,
+  };
+  if (!supabase) return empty;
+
+  try {
+    // LEDGER_EPOCH: the day pricing-history was repointed at the live feed.
+    // Anything earlier repeated a frozen snapshot and must never be counted.
+    const EPOCH = '2026-08-05';
+    const [snaps, sold, dvf] = await Promise.all([
+      supabase.from('price_snapshots').select('ref, snapshot_date, price').gte('snapshot_date', EPOCH),
+      supabase.from('sold_properties').select('ref', { count: 'exact', head: true }),
+      supabase.from('property_transactions').select('id', { count: 'exact', head: true }),
+    ]);
+
+    const rows = snaps.data ?? [];
+    if (!rows.length) return empty;
+
+    const days = new Set(rows.map((r) => r.snapshot_date as string));
+    const byRef = new Map<string, Set<number>>();
+    for (const r of rows) {
+      if (r.price == null) continue;
+      const ref = r.ref as string;
+      if (!byRef.has(ref)) byRef.set(ref, new Set());
+      byRef.get(ref)!.add(Number(r.price));
+    }
+    const sorted = [...days].sort();
+
+    return {
+      liveListings,
+      observationDays: days.size,
+      firstObservation: sorted[0] ?? null,
+      refsObserved: byRef.size,
+      // Counted as refs whose observed price CHANGED — never as row counts,
+      // which is how 394,000 rows of one repeated price read as history.
+      priceMoves: [...byRef.values()].filter((s) => s.size > 1).length,
+      tombstones: sold.count ?? null,
+      externalTransactions: dvf.count ?? null,
+    };
+  } catch {
+    return empty;
+  }
+}
