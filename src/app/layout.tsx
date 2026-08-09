@@ -5,6 +5,7 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import { getStructuredData } from "./structured-data";
 import { Analytics } from "@vercel/analytics/next";
 import { TikTokPixel } from "@/components/TikTokPixel";
+import { MetaPixel } from "@/components/MetaPixel";
 import { WhatsAppButton } from "@/components/v2/WhatsAppButton";
 import { ExitIntent } from "@/components/v2/ExitIntent";
 import { KeyboardShortcuts } from "@/components/v2/KeyboardShortcuts";
@@ -101,6 +102,7 @@ export default function RootLayout({
         </LanguageProvider>
         <Analytics />
         <TikTokPixel />
+        <MetaPixel />
       </body>
     </html>
   );

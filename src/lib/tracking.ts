@@ -1,5 +1,5 @@
 /**
- * Unified event tracking — fires to TikTok Pixel + Vercel Analytics.
+ * Unified event tracking — fires to TikTok Pixel + Meta Pixel + Vercel Analytics.
  * Safe to call server-side (no-op). Safe to call before pixel loads (queued).
  *
  * Standard TikTok events:
@@ -18,6 +18,26 @@ export type TrackEvent =
   | 'Contact'
   | 'Search';
 
+/**
+ * Meta equivalents for our event names. Meta's optimiser only learns from
+ * events it recognises, and under the Special Ad Category rules for housing
+ * (Europe, 2026) manual age/gender/interest targeting is unavailable — so
+ * conversion optimisation is the ONLY targeting mechanism left. A 'Lead' event
+ * that never fires means the campaign can never learn who buys.
+ */
+const META_EVENT: Record<TrackEvent, string> = {
+  ViewContent: 'ViewContent',
+  ClickButton: 'Lead',              // enquiry CTA — the money action
+  InitiateCheckout: 'InitiateCheckout',
+  CompleteRegistration: 'CompleteRegistration',
+  CompletePayment: 'Purchase',
+  Subscribe: 'Subscribe',
+  Contact: 'Lead',                  // enquiry submitted — the conversion
+  Search: 'Search',
+};
+
+type FBQ = (cmd: string, event: string, props?: Record<string, unknown>) => void;
+
 type TTQ = {
   track: (event: string, props?: Record<string, unknown>) => void;
   identify: (props: Record<string, unknown>) => void;
@@ -26,9 +46,17 @@ type TTQ = {
 
 export function trackEvent(event: TrackEvent, props?: Record<string, unknown>): void {
   if (typeof window === 'undefined') return;
+
   const ttq = (window as unknown as { ttq?: TTQ }).ttq;
   try {
     ttq?.track(event, props);
+  } catch {
+    /* swallow — tracking should never break the app */
+  }
+
+  const fbq = (window as unknown as { fbq?: FBQ }).fbq;
+  try {
+    fbq?.('track', META_EVENT[event] ?? event, props);
   } catch {
     /* swallow — tracking should never break the app */
   }
