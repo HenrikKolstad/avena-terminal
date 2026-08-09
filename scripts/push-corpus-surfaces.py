@@ -81,14 +81,19 @@ git history at https://github.com/HenrikKolstad/avena-data (market/).
 
 
 def push_hf(manifest):
-    token = os.environ.get("HF_TOKEN")
-    if not token:
-        sys.exit("REFUSING HF push: HF_TOKEN not set. The dataset stays frozen at "
-                 "2026-04-11 until this runs — that is worse than absent, say so in the brief.")
     try:
-        from huggingface_hub import HfApi
+        from huggingface_hub import HfApi, get_token
     except ImportError:
         sys.exit("pip3 install huggingface_hub first.")
+    # Prefer the token huggingface-cli stored in ~/.cache/huggingface/token.
+    # Passing a secret as an env var on the command line writes it to
+    # ~/.zsh_history in plain text and leaves it visible in `ps` — so the
+    # stored-credential path is the default and HF_TOKEN is the fallback.
+    token = get_token() or os.environ.get("HF_TOKEN")
+    if not token:
+        sys.exit("REFUSING HF push: no token. Run `huggingface-cli login` (paste is masked, "
+                 "nothing is written to shell history), then re-run this script. The dataset "
+                 "stays frozen at 2026-04-11 until this runs — worse than absent.")
     api = HfApi(token=token)
     repo = "AVENATERMINAL/spain-new-build-properties-2026"
     ops = [(os.path.join(DATA_DIR, f), f"data/{f}") for f in FILES]
