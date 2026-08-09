@@ -35,7 +35,8 @@ cannot run an experiment, only a stunt.
 |---|---|---|---|---|
 | O-1 | `if (!error) count += chunk` in 6 places: `scribe/route.ts:48`, `eu-anomalies.ts:127`, `eu-stats-feeds.ts:663`, `eu-validation.ts:281`, `dvf-ingest` | real instances of the recurring shape | `score_history` healthy (1990 refs, no gaps) so not actively losing rows | high |
 | O-2 | `<html lang="en">` on the three `/no` pages while serving Norwegian | verified 2026-08-09 | per-route fix needs route-group root layouts (huge diff) or a dynamic root layout (kills static generation) | low — hreflang, the signal that matters, is already correct |
-| O-3 | No Search Console data anywhere in the repo | `grep` for searchconsole/webmasters returns nothing | needs Google API credentials from Henrik | **blocking** — see BLOCKED |
+| O-5 | 186 of 492 indexed pages carry pre-transliteration accent slugs (`marbella-m-laga`, `j-vea-x-bia`); they hold 15 of 21 total clicks | `gsc_pages` 2026-08-07 | 301 shims already redirect old→new; need to confirm Google is consolidating rather than serving both | high |
+| O-6 | `/compare` is 293 of 492 indexed pages, 64% of impressions, 20 of 21 clicks | `gsc_pages` 2026-08-07 | not a defect — the highest-leverage surface on the site, and the least examined | high |
 | O-4 | Zenodo deposit frozen at 2026-04-11 | `zenodo.org/api/records/19520064` | publication is permanent; deliberately saved for a quarterly citable version | deliberate |
 
 ## 3. EXPERIMENTS — changes with a read-out date
@@ -82,7 +83,7 @@ recovery.
 
 | what | why it matters | what is needed |
 |---|---|---|
-| Search Console API access | Odyssey does SEO blind. It cannot see impressions, clicks, queries, positions or index coverage, so it cannot tell whether any change worked. This is the single largest gap in the whole charter. | A Google Cloud service account with the Search Console API enabled, added as a *full* user on the `avenaterminal.com` domain property, its JSON key in Vercel + GitHub Actions as `GOOGLE_SEARCH_CONSOLE_KEY`. |
+| `GOOGLE_SEARCH_CONSOLE_KEY` in Vercel | The GitHub Actions secret is set, so the nightly capture works. Vercel does not have it, so no runtime route can read GSC. Only needed if a live surface should show it. | Paste the same service-account JSON into Vercel env vars. Low priority. |
 | `actions:write` on the repo token | Odyssey got 403 dispatching a workflow, so it cannot re-run a failed nightly job itself — it can only report and wait a day. | Add the scope to the token it runs with. |
 | `HF_TOKEN` in CI | Hugging Face refresh is manual today; it was frozen on April data for four months before 2026-08-09. | Store the token as a repo secret so the nightly job can push it. |
 
@@ -96,3 +97,4 @@ recovery.
 | 2026-08-08 | `property_pricing_history` never logged a move | prior snapshot taken as global max date; fixed and merged |
 | 2026-08-08 | every branch preview build red for days | four routes built Supabase clients at module top level with `process.env.X!` |
 | 2026-08-07 | site claimed "±3% RMSE" with no backtest in existence | measured; exposed a real model bug; 31.8% → 21.3% MAPE |
+| 2026-08-09 | O-3: no Search Console access — Odyssey was optimising blind | connected; `gsc_daily`/`gsc_pages` backfilled 90 days to 2026-05-10, captured nightly |
