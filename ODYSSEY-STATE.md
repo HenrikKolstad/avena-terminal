@@ -35,7 +35,8 @@ cannot run an experiment, only a stunt.
 
 | # | what | evidence | why deferred | priority |
 |---|---|---|---|---|
-| O-12 | 2026-08-10 traffic spike unexplained: 295 visitors vs a ~40/day baseline, `/property/[ref]/one-pager` 310 route views, GNU/Linux 35% of a 91%-desktop mix, Singapore 32% + Brazil 13%, Norway 6%, and **0 leads** (08-09 produced 2 leads on ~40 visitors) | Vercel Analytics 2026-08-10 22:32 CEST; `leads` table by day; Vercel Logs 22:33 | **Read as a scraper at 22:35 and that was wrong** — see the correction below. Two measurements still disagree and neither has been reconciled: Analytics says Singapore/Linux, the logs sample says Mac/Stockholm. **Do not count 08-10 as a traffic or ads baseline either way** — 0 leads on 295 visitors means it is not comparable to a normal day. | high |
+| O-12 | ~~2026-08-10 traffic spike unexplained~~ **CLOSED same day — AhrefsBot.** Kept one live question: are model crawlers (GPTBot, ClaudeBot, PerplexityBot, CCBot) actually reaching us at all? The invitation is in `robots.ts`; nobody has ever checked the logs for an acceptance. Until that is answered, the whole corpus-seeding programme is unmeasured — not failing, unmeasured. | Vercel Logs 2026-08-10 22:42; `src/app/robots.ts:116` | needs a log query by user-agent over a full week, which nothing currently does | high |
+| ~~O-12-old~~ | 2026-08-10 traffic spike unexplained: 295 visitors vs a ~40/day baseline, `/property/[ref]/one-pager` 310 route views, GNU/Linux 35% of a 91%-desktop mix, Singapore 32% + Brazil 13%, Norway 6%, and **0 leads** (08-09 produced 2 leads on ~40 visitors) | Vercel Analytics 2026-08-10 22:32 CEST; `leads` table by day; Vercel Logs 22:33 | **Read as a scraper at 22:35 and that was wrong** — see the correction below. Two measurements still disagree and neither has been reconciled: Analytics says Singapore/Linux, the logs sample says Mac/Stockholm. **Do not count 08-10 as a traffic or ads baseline either way** — 0 leads on 295 visitors means it is not comparable to a normal day. | high |
 | O-7 | `price_snapshots` rows for 2026-08-06..08-09 are a UNION of two books, not snapshots. 08-08 holds 1,996 rows = 1,981 (07 Aug book) ∪ 1,990 (08 Aug book). | proven by diffing the data.json blobs against the stored row counts | the cause is fixed as of `1f0a130`, but the already-polluted historical rows need a careful reconciliation. Deleting/rewriting existing rows is the branch-only category — needs its own day and a written plan. | high |
 | O-8 | 6 phantom delistings: SP1644, N9519, N9260, N8205, SP1625, SP1080 were tombstoned 08-07, resurrected into the 08-08 snapshot by the stale run, then "left" again on 08-09 | `sold_properties` vs `price_snapshots`; cron_logs 08-09 reported `delisted:6` while writing 0 rows | the tombstones themselves are CORRECT (last_seen 08-07 is right); only the phantom re-detection was wrong, and that path is now fixed. No data to repair. Kept here so the same refs are not re-investigated. | low |
 | O-9 | citation-measure ran only 68 of ~435 qb-v2 questions on 2026-08-10 (Aug 7 ran 420). Branded control ran 6, not 15. `/api/v1/citation-score` publishes `avena_rate_pct: 4.41` from that thin sample as if comparable to the 420-question run. | `citation_measurements` 2026-08-10 vs 2026-08-07 | needs the cause established before touching a published number — do not guess at a budget/quota story | high |
@@ -59,11 +60,20 @@ Flat. Any claimed effect must clear that noise band to mean anything.
 | started | hypothesis | change | metric | read-out | result |
 |---|---|---|---|---|---|
 | 2026-08-05 | Removing the site-wide canonical lets sub-pages re-index, lifting impressions | canonical + crawl-tree fixes | weekly impressions vs the 430–660 band | 2026-09-02 (4 weeks) | pending |
-| 2026-08-10 | A bulk ingest of the one-pagers raises the organic citation rate — the whole point of the corpus-seeding work since April | NOT a change we made: an external agent crawled 310 one-pagers on 08-10 | organic citation rate (qb-v2, non-branded) vs the 6.19% full-run baseline | 2026-09-07 (4 weeks) | pending — needs a FULL question run to compare against, so O-9 must be fixed first or this reads as noise |
+| 2026-08-10 | ~~A bulk ingest of the one-pagers raises the organic citation rate~~ | ~~an external agent crawled 310 one-pagers~~ | — | — | **WITHDRAWN same day, before it could mislead.** The crawler was AhrefsBot, which builds a backlink index for an SEO tool and feeds no language model. The premise was wrong, so the experiment could only ever have produced a false negative: a flat citation rate on 09-07 would have read as "corpus seeding does not work" when no model crawler ever visited. See O-12. |
 
 The 2026-08-10 row is an observation, not a shipped change — recorded as an
 experiment anyway because it has a testable consequence and a date. Whether it
 means anything at all depends on O-12, which is NOT settled.
+
+**Resolved 2026-08-10 22:42:** AhrefsBot, from Paris — and it is invited by
+name in `src/app/robots.ts:116`. Nothing was stolen and nothing is broken. The
+one thing worth carrying forward is a distinction that was blurred all
+evening: **an SEO index crawler is not a model crawler.** Ahrefs, Semrush and
+DotBot build backlink indexes for subscription tools. GPTBot, ClaudeBot,
+PerplexityBot and CCBot are the ones whose visits could plausibly move a
+citation rate. Only the second group is evidence about the corpus work, and
+none of them appeared on 08-10.
 
 **Correction, 2026-08-10 22:40 (same day):** the spike was called a scraper on
 the strength of route shape, OS mix and geography. Reading an actual request
