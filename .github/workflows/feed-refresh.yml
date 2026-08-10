@@ -162,15 +162,32 @@ jobs:
           echo "Price moves and delistings for ${EXPECTED} were NOT captured."
           exit 1
 
+      - name: Publish change answers from the observation ledger
+        # Runs AFTER the capture step on purpose: it reads price_snapshots, so
+        # running it first would publish yesterday's ledger as today's answer.
+        #
+        # These are the questions no other source in Spain can answer — the
+        # portals publish current asking prices, not changes, and the official
+        # series are quarterly and months in arrears. The script refuses to
+        # publish when the evidence is below threshold rather than emitting a
+        # confident zero, so a quiet market simply means nothing is written.
+        id: answers
+        continue-on-error: true
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npx tsx scripts/generate-change-answers.ts
+
       - name: Re-raise enrichment failures
         # The feed is committed by now, so failing here loses nothing but
         # still shows Henrik a red run. A silently-green enrichment failure
         # is the bug shape this whole repo keeps getting bitten by.
-        if: steps.avm.outcome != 'success' || steps.corpus.outcome != 'success' || steps.gsc.outcome != 'success' || steps.capture.outcome != 'success'
+        if: steps.avm.outcome != 'success' || steps.corpus.outcome != 'success' || steps.gsc.outcome != 'success' || steps.capture.outcome != 'success' || steps.answers.outcome != 'success'
         run: |
           echo "avm-backtest: ${{ steps.avm.outcome }}"
           echo "open-dataset: ${{ steps.corpus.outcome }}"
           echo "gsc-snapshot: ${{ steps.gsc.outcome }}"
           echo "move-capture: ${{ steps.capture.outcome }}"
+          echo "change-answers: ${{ steps.answers.outcome }}"
           echo "The feed itself was committed; the step(s) above still need fixing."
           exit 1

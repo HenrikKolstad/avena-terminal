@@ -14,6 +14,7 @@ import { DataFreshness } from '@/components/v2/DataFreshness';
 import { RecordPropertyView } from '@/components/v2/RecordPropertyView';
 import { ShareButtons } from '@/components/v2/ShareButtons';
 import { ScoreDeltaBadge } from '@/components/v2/ScoreDeltaBadge';
+import { getObservationRecord, observationSentence, longDate } from '@/lib/observations';
 
 function findProperty(ref: string): Property | null {
   return getAllProperties().find((p) => p.ref === ref) ?? null;
@@ -81,6 +82,10 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
   if (!property) notFound();
 
   const p = property;
+  // The observed price ledger for this unit. Fails soft to null — a page must
+  // never 500 because the ledger read failed, and it must never imply a flat
+  // price we did not actually observe.
+  const obs = await getObservationRecord(p.ref ?? '');
   const pm2 = p.bm > 0 ? Math.round(p.pf / p.bm) : null;
   const townSlug = slugify(p.l);
   const marketPm2 = p.mm2 && pm2 ? Math.round(p.mm2) : null;
@@ -234,6 +239,45 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                 {p.s === 'ready' ? 'Ready to move in' : p.s === 'under-construction' ? 'Under construction' : 'Off-plan'}
                 {p.c ? ` · Completion ${p.c}` : ''}
               </p>
+
+              {/*
+                Observed price record. This is the only claim on the page that
+                no other source in Spain can make: portals publish the current
+                price, nobody publishes the change, because the feed keeps no
+                memory. Written as a dated, self-attributing sentence rather
+                than a chart, because a sentence is what gets quoted.
+              */}
+              {obs && (
+                <div
+                  className="rounded-sm border px-4 py-3 mb-8 max-w-full"
+                  style={{
+                    background: 'hsl(var(--av-surface) / 0.35)',
+                    borderColor: 'hsl(var(--av-border) / 0.5)',
+                  }}
+                >
+                  <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-1.5">
+                    Observed price record
+                  </div>
+                  <p className="text-[13px] leading-relaxed text-foreground/85">
+                    {observationSentence(obs)}
+                  </p>
+                  {obs.changes.length > 0 && (
+                    <ul className="mt-2 space-y-0.5">
+                      {obs.changes.map((c) => (
+                        <li key={c.date} className="font-mono text-[11px] text-muted-foreground tabular">
+                          {longDate(c.date)} · €{c.from.toLocaleString()} → €{c.to.toLocaleString()}{' '}
+                          <span style={{ color: c.to < c.from ? 'hsl(var(--av-primary))' : undefined }}>
+                            ({c.pct > 0 ? '+' : ''}{c.pct.toFixed(1)}%)
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground/70">
+                    Source: Avena daily capture · {longDate(obs.firstSeen)} – {longDate(obs.lastSeen)}
+                  </p>
+                </div>
+              )}
 
               {p._sc != null && (
                 <div
