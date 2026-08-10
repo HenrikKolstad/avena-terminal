@@ -447,9 +447,32 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                   </div>
                 </div>
               </div>
-              <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/70">
-                Gross yield estimate · Net yield with full cost breakdown in Terminal
-              </p>
+              {/* The assumptions behind the number. Added 2026-08-10: the yield
+                  was displayed prominently while the occupancy it rests on was
+                  invisible, so a reader could not tell whether 3% assumed a full
+                  season or a fortnight. A figure a buyer cannot interrogate is
+                  worth less than a smaller one they can. */}
+              <div className="mt-4 rounded-sm border p-4" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-2">
+                  What this assumes
+                </p>
+                <p className="text-sm font-light leading-relaxed text-muted-foreground">
+                  <span className="text-foreground">{p._yield.weeks} rental weeks a year</span>{' '}
+                  ({p._yield.weeks * 7} nights, {Math.round((p._yield.weeks * 7 / 365) * 100)}% annual
+                  occupancy) at €{Math.round(p._yield.rate).toLocaleString()}/night. Short-term letting
+                  rates and occupancy for {p.l.split(',')[0].trim()} are sourced from{' '}
+                  {p._yield.src}; a 20% new-build premium is applied to the nightly rate.
+                  Summer alone is roughly 11 weeks, so this figure assumes the shoulder season
+                  lets as well.
+                </p>
+                <p className="mt-3 text-sm font-light leading-relaxed text-muted-foreground">
+                  Gross yield is before costs. Net yield deducts 10% vacancy, 15% management,
+                  community fees, insurance, IBI and 19% non-resident tax — the full breakdown
+                  is in Terminal. Every figure here is an estimate from market data, not a
+                  guaranteed return, and a tourist licence is required to let short-term in
+                  most municipalities.
+                </p>
+              </div>
             </section>
           )}
 

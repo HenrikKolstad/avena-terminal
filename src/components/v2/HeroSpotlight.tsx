@@ -94,7 +94,10 @@ export function HeroSpotlight() {
             { k: 'Price', v: `€${fmt(top.pf)}` },
             { k: 'Market', v: `€${fmt(marketPrice)}` },
             { k: 'Saved', v: `€${fmt(saved)}`, gold: true },
-            { k: 'Yield', v: yieldGross ? `${yieldGross.toFixed(1)}%` : '—' },
+            // 'Est.' matters: this is a modelled figure resting on a town-level
+            // occupancy assumption, not an observed return. The full assumption
+            // set is disclosed on the property page.
+            { k: 'Est. yield', v: yieldGross ? `${yieldGross.toFixed(1)}%` : '—' },
           ].map(s => (
             <div key={s.k} className="min-w-0">
               <div className="font-mono text-[8px] uppercase tracking-[0.24em] text-muted-foreground mb-1">{s.k}</div>
