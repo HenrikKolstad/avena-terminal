@@ -75,7 +75,49 @@ const TRAINING_ALLOW: string[] = [
 // invited into /admin/ and the billing/auth/cron API surface.
 const STANDARD_DISALLOW = ['/admin/', '/api/stripe/', '/api/auth/', '/api/cron/', '/api/email-capture', '/api/email/'];
 
+/**
+ * Crawl-budget reclamation for bulk TRAINING crawlers.
+ *
+ * Measured 2026-08-04..10 over 100,000 logged requests, not assumed:
+ *
+ *   crawler              total   /_next/image   /enquire   wasted
+ *   meta-externalagent   5,862      1,415          224      28%
+ *   GPTBot               4,130        706          367      26%
+ *   Amazonbot            3,241        318          585      28%
+ *
+ * Roughly a quarter of every bulk crawler's budget went to resized images and
+ * to ONE contact form fetched hundreds of times because it is linked from
+ * every property page. Meanwhile GPTBot reached 982 of 1,999 properties in its
+ * pass — half the book never got seen at all.
+ *
+ * Crawl budget is finite per host, so this is not about saving bandwidth. It
+ * is about what the same number of requests is spent ON. Closing two paths
+ * moves ~25% of the budget from bytes that cannot be quoted to pages that can.
+ *
+ * Deliberately NOT applied to:
+ *  - Search engines (Googlebot, Bingbot, Applebot…) — image indexing is a real
+ *    channel for them and `sitemap-images.xml` exists to feed it.
+ *  - Live-retrieval agents (ChatGPT-User, OAI-SearchBot, PerplexityBot) — those
+ *    requests are a PERSON waiting on an answer, and ChatGPT-User is currently
+ *    the only model-side traffic that behaves like a channel (18–46 every day
+ *    for seven days). Never degrade the answer a real user is reading to save
+ *    budget for a crawler. OAI-SearchBot spent 5% on images; there is nothing
+ *    to reclaim there anyway.
+ *
+ * Longest-match wins in robots.txt, so these beat the `Allow: /` above.
+ */
+const TRAINING_DISALLOW = [...STANDARD_DISALLOW, '/_next/image', '/enquire'];
+
 export default function robots(): MetadataRoute.Robots {
+  // Bulk training crawlers: the ones measured burning ~25% of their budget on
+  // images and the enquiry form. Everything else keeps STANDARD_DISALLOW.
+  const BULK_TRAINING = new Set([
+    'GPTBot', 'ClaudeBot', 'anthropic-ai', 'CCBot', 'cohere-ai',
+    'Amazonbot', 'Bytespider', 'TikTokSpider', 'Meta-ExternalAgent',
+    'FacebookBot', 'Google-Extended', 'Applebot-Extended', 'xAI-Grok',
+    'Diffbot',
+  ]);
+
   const namedBots: Array<{ userAgent: string; allow: string | string[] }> = [
       // Reasoning / search bots
       { userAgent: 'PerplexityBot',        allow: BROAD_ALLOW },
@@ -105,6 +147,9 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: 'FacebookBot',          allow: BROAD_ALLOW },
       { userAgent: 'Meta-ExternalAgent',   allow: BROAD_ALLOW },
       { userAgent: 'Bytespider',           allow: BROAD_ALLOW },
+      // Seen 1,070 times in the 2026-08-04..10 window without ever having been
+      // named here — it was falling through to the `*` group.
+      { userAgent: 'TikTokSpider',         allow: BROAD_ALLOW },
 
       // Training / research
       { userAgent: 'CCBot',                allow: TRAINING_ALLOW },
@@ -131,7 +176,10 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       { userAgent: '*', allow: '/', disallow: STANDARD_DISALLOW },
-      ...namedBots.map((r) => ({ ...r, disallow: STANDARD_DISALLOW })),
+      ...namedBots.map((r) => ({
+        ...r,
+        disallow: BULK_TRAINING.has(r.userAgent) ? TRAINING_DISALLOW : STANDARD_DISALLOW,
+      })),
     ],
     // sitemap-news.xml removed 2026-08-05: Google News sitemaps are for
     // actual news articles; declaring tool pages as "news" with a rolling
