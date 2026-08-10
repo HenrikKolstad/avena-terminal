@@ -919,9 +919,26 @@ async function main() {
   const today_sd = new Date().toISOString().slice(0, 10);
   try {
     const currentRefs = new Set(unique.map(p => p.ref).filter(Boolean));
-    const soldProps = Object.values(prevPropsByRef).filter(p => p.ref && !currentRefs.has(p.ref));
+    const prevRefs = Object.values(prevPropsByRef).filter(p => p.ref);
+    const soldProps = prevRefs.filter(p => !currentRefs.has(p.ref));
 
-    if (soldProps.length > 0) {
+    // A partial feed looks exactly like a wave of sales. The pricing-history
+    // cron refuses to flag delistings when the feed has lost more than half
+    // its prior refs; this writer — which reaches the same table, unchunked
+    // and earlier — had no such guard, so one short download could have
+    // stamped thousands of live units as absorbed. sold_properties is the
+    // one table in this project that cannot be reconstructed from anywhere,
+    // so it gets the stricter reading: bail out and say so.
+    const overlap = prevRefs.length
+      ? prevRefs.filter(p => currentRefs.has(p.ref)).length / prevRefs.length
+      : 1;
+    if (prevRefs.length > 0 && overlap < 0.5) {
+      console.error(
+        `⚠️  SOLD DETECTION ABORTED: only ${(overlap * 100).toFixed(1)}% of the ` +
+        `${prevRefs.length} previous refs are in this feed (${currentRefs.size}). ` +
+        `That is a broken feed, not ${soldProps.length} sales — refusing to write.`
+      );
+    } else if (soldProps.length > 0) {
       console.log(`\n🏠 SOLD DETECTION: ${soldProps.length} properties gone from feed`);
 
       const sbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -999,6 +1016,25 @@ async function main() {
 
   fs.writeFileSync(OUTPUT, JSON.stringify(unique, null, 0));
   console.log(`Wrote ${OUTPUT} (${(fs.statSync(OUTPUT).size / 1024).toFixed(0)}KB)`);
+
+  // --- FEED GENERATION STAMP ---
+  // data.json carries no generation date of its own, so a consumer holding a
+  // deployed copy cannot tell today's book from yesterday's. That ambiguity
+  // corrupted price_snapshots: the Vercel pricing-history cron fires at 02:20
+  // UTC, this workflow's commit lands hours later (03:29–10:23 observed), so
+  // the cron banked YESTERDAY's book under today's date. Because snapshot
+  // writes are upserts that never retract a ref, each date became the UNION of
+  // the stale book and the fresh one (2026-08-08: 1981 ∪ 1990 = 1996 rows),
+  // and refs the stale run resurrected read as fresh delistings the next day.
+  // The stamp lets a consumer refuse to observe a book it cannot date to today.
+  const META = 'public/feed-meta.json';
+  fs.writeFileSync(META, JSON.stringify({
+    generated_at: new Date().toISOString(),
+    generated_date: today,
+    listings: unique.length,
+    source: 'redsp',
+  }, null, 2));
+  console.log(`Wrote ${META} (generated_date=${today}, ${unique.length} listings)`);
 
   // --- DISCOUNT SANITY CAP REPORT ---
   // Replicate initProperty cap logic inline (parse-feed is plain JS, not TS)

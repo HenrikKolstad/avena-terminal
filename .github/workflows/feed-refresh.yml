@@ -71,7 +71,7 @@ jobs:
         run: |
           git config user.name "avena-feed-bot"
           git config user.email "feed@avenaterminal.com"
-          git add public/data.json public/model-stats.json
+          git add public/data.json public/model-stats.json public/feed-meta.json
           if git diff --staged --quiet; then
             echo "No feed changes today."
           else
@@ -123,14 +123,52 @@ jobs:
             echo "Pushed corpus artifacts."
           fi
 
+      - name: Capture price moves against the book we just published
+        # The move-event ledger (property_pricing_history) is written only by
+        # the pricing-history route, which reads the DEPLOYED data.json. Its
+        # 02:20 UTC schedule is a guess at when this workflow lands — and the
+        # guess has been wrong every night (commits observed 03:29–10:23), so
+        # the route has only ever seen yesterday's book and has reported
+        # moves_detected: 0 on every single run since it was fixed.
+        #
+        # So stop guessing: poll until the route reports the generation date
+        # of the book we just pushed. That is a direct assertion that the
+        # deploy landed AND the capture ran against it — not a sleep.
+        id: capture
+        continue-on-error: true
+        run: |
+          EXPECTED=$(node -e "console.log(require('./public/feed-meta.json').generated_date)")
+          echo "Waiting for the deploy to serve the ${EXPECTED} book..."
+          for i in $(seq 1 30); do
+            BODY=$(curl -sS -m 60 -H 'x-vercel-cron: 1' \
+              https://avenaterminal.com/api/cron/pricing-history || echo '{}')
+            GOT=$(node -e "try{console.log(JSON.parse(process.argv[1]).feed_generated_date||'')}catch{console.log('')}" "$BODY")
+            if [ "$GOT" = "$EXPECTED" ]; then
+              echo "Captured against ${EXPECTED}: $BODY"
+              node -e '
+                const r = JSON.parse(process.argv[1]);
+                if (r.errors) { console.error("Capture reported errors:", JSON.stringify(r.errors)); process.exit(1); }
+                if (!r.snapshotted) { console.error("Capture wrote 0 snapshots on a live feed — that is a lost day."); process.exit(1); }
+                console.log(`OK — snapshotted=${r.snapshotted} moves=${r.price_moves} delisted=${r.delisted}`);
+              ' "$BODY"
+              exit $?
+            fi
+            echo "  attempt $i: route is serving '${GOT:-unknown}', want '${EXPECTED}' — waiting 30s"
+            sleep 30
+          done
+          echo "Deploy never served the ${EXPECTED} book within 15 minutes."
+          echo "Price moves and delistings for ${EXPECTED} were NOT captured."
+          exit 1
+
       - name: Re-raise enrichment failures
         # The feed is committed by now, so failing here loses nothing but
         # still shows Henrik a red run. A silently-green enrichment failure
         # is the bug shape this whole repo keeps getting bitten by.
-        if: steps.avm.outcome != 'success' || steps.corpus.outcome != 'success' || steps.gsc.outcome != 'success'
+        if: steps.avm.outcome != 'success' || steps.corpus.outcome != 'success' || steps.gsc.outcome != 'success' || steps.capture.outcome != 'success'
         run: |
           echo "avm-backtest: ${{ steps.avm.outcome }}"
           echo "open-dataset: ${{ steps.corpus.outcome }}"
           echo "gsc-snapshot: ${{ steps.gsc.outcome }}"
+          echo "move-capture: ${{ steps.capture.outcome }}"
           echo "The feed itself was committed; the step(s) above still need fixing."
           exit 1

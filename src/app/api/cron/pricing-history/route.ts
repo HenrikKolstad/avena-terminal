@@ -31,6 +31,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { startCronLog, finishCronLog } from '@/lib/cron-log';
 import { supabase } from '@/lib/supabase';
 import { getAllProperties } from '@/lib/properties';
+import { getFeedGeneratedDate } from '@/lib/feed-meta';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 120;
@@ -104,6 +105,32 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: false, reason: 'empty feed' });
   }
   const currentRefs = new Set(feed.map((p) => p.ref as string));
+
+  // ── Is this book actually today's? ─────────────────────────────────────────
+  // This route runs on Vercel at 02:20 UTC and reads the DEPLOYED data.json.
+  // The nightly refresh is scheduled for 01:37 but GitHub Actions has landed
+  // it as late as 10:23, and a Vercel build follows. So the 02:20 run has been
+  // systematically holding YESTERDAY's book, and banking it under today's date
+  // did three things, all bad: it duplicated an observation that never
+  // happened, it resurrected refs that had already left the feed (upserts add,
+  // they never retract — so each date became the union of both books:
+  // 2026-08-08 held 1,981 ∪ 1,990 = 1,996 rows), and those resurrected refs
+  // then read as fresh delistings the following day (6 phantoms on 08-09).
+  //
+  // Refuse. An honest gap is recoverable; a fabricated observation is not, and
+  // the workflow calls this route again once the real book is deployed.
+  // An absent stamp means "unknown", and unknown must never block the capture.
+  const feedDate = getFeedGeneratedDate();
+  if (feedDate !== null && feedDate < today) {
+    const stale = {
+      reason: 'stale feed — deployed book predates today',
+      feed_generated_date: feedDate,
+      today,
+      feed: feed.length,
+    };
+    await finishCronLog(log, 'skipped', stale);
+    return NextResponse.json({ ok: true, skipped: true, ...stale });
+  }
 
   // ── Prior snapshot: the most recent date we stored BEFORE today ────────────
   // Deliberately `.lt(today)`, not the global max. The old code took the max
@@ -219,16 +246,28 @@ export async function GET(req: NextRequest) {
     }));
     for (let i = 0; i < soldRows.length; i += 500) {
       const chunk = soldRows.slice(i, i + 500);
-      const { error } = await supabase
+      // Count what was actually inserted, not what was offered. With
+      // ignoreDuplicates (ON CONFLICT DO NOTHING) a chunk of refs that are
+      // already tombstoned inserts nothing and returns no error, so
+      // `delisted += chunk.length` reported writes that never happened —
+      // on 2026-08-09 it claimed 6 delistings while writing zero rows, and
+      // the number agreed with a real count often enough to look trustworthy.
+      // RETURNING yields only genuinely inserted rows.
+      const { data: inserted, error } = await supabase
         .from('sold_properties')
-        .upsert(chunk, { onConflict: 'ref', ignoreDuplicates: true });
+        .upsert(chunk, { onConflict: 'ref', ignoreDuplicates: true })
+        .select('ref');
       if (error) errors.push(`delisted: ${error.message}`);
-      else delisted += chunk.length;
+      else delisted += inserted?.length ?? 0;
     }
   }
 
   const summary = {
     feed: feed.length,
+    // The day the book this run observed was generated. The workflow polls
+    // this to confirm the capture ran against the book it just published,
+    // rather than trusting a wall-clock guess about when the deploy landed.
+    feed_generated_date: feedDate,
     snapshotted,
     price_moves: priceMoves,
     moves_detected: inserts.length,
