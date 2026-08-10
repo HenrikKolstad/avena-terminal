@@ -65,9 +65,10 @@ export interface Property {
 }
 
 export interface YieldResult {
-  gross: number;
-  net: number;
-  annual: number;
+  gross: number;        // gross yield %, before any costs
+  net: number;          // net yield %, after vacancy/management/fees/IBI/tax
+  annual: number;       // gross annual rental income, EUR
+  netAnnual: number;    // net annual income after the same deductions, EUR
   rate: number;
   weeks: number;
   src: string;

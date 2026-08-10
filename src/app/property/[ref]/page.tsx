@@ -429,6 +429,9 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                   <div className="font-serif text-3xl sm:text-4xl md:text-5xl font-light text-primary tabular">
                     {p._yield.gross.toFixed(1)}%
                   </div>
+                  <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                    Net {p._yield.net.toFixed(1)}%
+                  </div>
                 </div>
                 <div className="p-6 text-center" style={{ background: 'hsl(var(--av-background))' }}>
                   <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-3">
@@ -436,6 +439,9 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                   </div>
                   <div className="font-serif text-2xl sm:text-3xl md:text-5xl font-light text-foreground tabular break-words" style={{ overflowWrap: 'anywhere' }}>
                     €{Math.round(p._yield.annual).toLocaleString()}
+                  </div>
+                  <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                    Net €{Math.round(p._yield.netAnnual).toLocaleString()}
                   </div>
                 </div>
                 <div className="p-6 text-center" style={{ background: 'hsl(var(--av-background))' }}>

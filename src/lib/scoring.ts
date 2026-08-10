@@ -258,7 +258,19 @@ export function calcYield(d: Property): YieldResult {
   const netIncome = netBeforeTax - tax;
   const net = +(netIncome / avgP * 100).toFixed(1);
 
-  return { gross, net, annual: Math.round(annual), rate: Math.round(rate), weeks: baseWk, src };
+  // netIncome was computed and discarded — the net PERCENTAGE was returned but
+  // the euro figure behind it was not, so no surface could show a buyer what
+  // they would actually keep. Returning both means the disclosed percentage and
+  // the displayed amount can never drift apart.
+  return {
+    gross,
+    net,
+    annual: Math.round(annual),
+    netAnnual: Math.round(netIncome),
+    rate: Math.round(rate),
+    weeks: baseWk,
+    src,
+  };
 }
 
 // Hard cap on displayed discount percentage — luxury market allows wider swings; 40 is a generous backstop
