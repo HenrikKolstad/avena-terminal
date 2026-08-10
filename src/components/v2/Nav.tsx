@@ -113,19 +113,30 @@ export function Nav() {
             <span className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
             Join 37 already using Avena
           </span>
+          {/* Auth / status. The Enquire CTA that used to sit immediately to the
+              right was removed 2026-08-10: a bare "PRO" beside a bordered
+              button read as one control, so a paid member's status looked like
+              the way to subscribe. PRO is now a bordered badge — clearly a
+              state, not an action — and Sign in stays a plain text link. */}
+          {user && isPaid ? (
+            <span
+              className="hidden items-center gap-2 rounded-sm border px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.3em] lg:inline-flex"
+              style={{
+                borderColor: 'hsl(var(--av-primary) / 0.45)',
+                color: 'hsl(var(--av-primary) / 0.92)',
+                background: 'hsl(var(--av-primary) / 0.06)',
+              }}
+              title="Private Client — active"
+            >
+              <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
+              Pro
+            </span>
+          ) : null}
           <Link
             href="/login"
             className="hidden font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground transition-colors hover:text-foreground lg:inline"
           >
-            {user ? (isPaid ? 'PRO' : 'Account') : 'Sign in'}
-          </Link>
-          <Link
-            href="/enquire"
-            className="group hidden items-center gap-3 border px-6 py-2.5 font-mono text-[10px] uppercase tracking-[0.35em] transition-colors lg:inline-flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
-            style={{ borderColor: 'hsl(var(--av-primary) / 0.45)', color: 'hsl(var(--av-primary) / 0.92)' }}
-          >
-            Enquire
-            <span className="transition group-hover:translate-x-0.5">→</span>
+            {user ? (isPaid ? 'Account' : 'Account') : 'Sign in'}
           </Link>
 
           {/* Mobile menu toggle */}
