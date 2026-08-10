@@ -13,9 +13,9 @@ on:
   workflow_dispatch:
     inputs:
       gsc_backfill_days:
-        description: 'Search Console days to backfill (1 = yesterday only)'
+        description: 'Search Console days to backfill (rolling window; 7 = the last week)'
         required: false
-        default: '1'
+        default: '7'
 
 permissions:
   contents: write
@@ -88,7 +88,9 @@ jobs:
         # now. Enrichment: never allowed to block the feed commit.
         id: gsc
         continue-on-error: true
-        run: npx tsx scripts/gsc-snapshot.ts --backfill ${{ inputs.gsc_backfill_days || '1' }}
+        # On a schedule `inputs` is empty, so this fallback — not the input
+        # default above — is what runs every night. Both say 7 deliberately.
+        run: npx tsx scripts/gsc-snapshot.ts --backfill ${{ inputs.gsc_backfill_days || '7' }}
         env:
           GOOGLE_SEARCH_CONSOLE_KEY: ${{ secrets.GOOGLE_SEARCH_CONSOLE_KEY }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}

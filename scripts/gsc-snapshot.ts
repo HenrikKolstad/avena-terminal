@@ -25,7 +25,14 @@ if (!url || !key) {
 const db = createClient(url, key, { auth: { persistSession: false } });
 
 const backfillArg = process.argv.indexOf('--backfill');
-const BACKFILL_DAYS = backfillArg > -1 ? Number(process.argv[backfillArg + 1]) : 1;
+// Default to a rolling week, not a single day. Search Console's lag is not a
+// fixed 2 days — on 2026-08-10 the run asked for 2026-08-08 alone, got nothing
+// and exited 1. The hole was permanent: the next night asks for 08-09, so
+// 08-08 would never have been requested again. A window re-requests every
+// recent day nightly, and because the writes are upserts keyed on date, a day
+// that arrives late simply fills itself in. Google also restates recent days,
+// which the same re-fetch picks up.
+const BACKFILL_DAYS = backfillArg > -1 ? Number(process.argv[backfillArg + 1]) : 7;
 
 async function main() {
   const end = latestUsableDate();
@@ -34,8 +41,12 @@ async function main() {
   // ── Daily totals ────────────────────────────────────────────────────────
   const daily = await searchAnalytics({ startDate: start, endDate: end, dimensions: ['date'] });
   if (!daily.length) {
-    console.error(`gsc-snapshot: no rows for ${start}..${end}. Search Console lags ~2 days; ` +
-      'if this persists for more than 3 days, treat it as a real failure, not a quiet zero.');
+    // An empty WINDOW is unambiguous: a single missing day is ordinary lag,
+    // but a whole week of nothing means auth, property or quota — a real
+    // failure. Still never a zero row: refusing to write beats inventing.
+    console.error(`gsc-snapshot: no rows in the whole ${BACKFILL_DAYS}-day window ` +
+      `${start}..${end}. That is not Search Console lag — check the service ` +
+      'account, the property URL and quota. Refusing to write a zero.');
     process.exit(1);
   }
   const dailyRows = daily.map((r) => ({
