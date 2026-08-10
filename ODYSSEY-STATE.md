@@ -35,6 +35,7 @@ cannot run an experiment, only a stunt.
 
 | # | what | evidence | why deferred | priority |
 |---|---|---|---|---|
+| O-12 | 2026-08-10 traffic spike is a crawl, not visitors: 295 visitors vs a ~40/day baseline, `/property/[ref]/one-pager` hit 310 times, GNU/Linux 35% of a 91%-desktop mix, Singapore 32% + Brazil 13%, Norway 6%, and **0 leads** (08-09 produced 2 leads on ~40 visitors) | Vercel Analytics 2026-08-10 22:32 CEST; `leads` table by day | the crawler's identity is not established — Vercel Logs holds the user-agent and has not been read. That decides everything: a declared AI crawler is the intended outcome of the corpus work, an undeclared scraper is the book being copied. **Do not count 08-10 as a traffic or ads baseline** — it will make every later week read as a collapse. | high |
 | O-7 | `price_snapshots` rows for 2026-08-06..08-09 are a UNION of two books, not snapshots. 08-08 holds 1,996 rows = 1,981 (07 Aug book) ∪ 1,990 (08 Aug book). | proven by diffing the data.json blobs against the stored row counts | the cause is fixed as of `1f0a130`, but the already-polluted historical rows need a careful reconciliation. Deleting/rewriting existing rows is the branch-only category — needs its own day and a written plan. | high |
 | O-8 | 6 phantom delistings: SP1644, N9519, N9260, N8205, SP1625, SP1080 were tombstoned 08-07, resurrected into the 08-08 snapshot by the stale run, then "left" again on 08-09 | `sold_properties` vs `price_snapshots`; cron_logs 08-09 reported `delisted:6` while writing 0 rows | the tombstones themselves are CORRECT (last_seen 08-07 is right); only the phantom re-detection was wrong, and that path is now fixed. No data to repair. Kept here so the same refs are not re-investigated. | low |
 | O-9 | citation-measure ran only 68 of ~435 qb-v2 questions on 2026-08-10 (Aug 7 ran 420). Branded control ran 6, not 15. `/api/v1/citation-score` publishes `avena_rate_pct: 4.41` from that thin sample as if comparable to the 420-question run. | `citation_measurements` 2026-08-10 vs 2026-08-07 | needs the cause established before touching a published number — do not guess at a budget/quota story | high |
@@ -58,10 +59,13 @@ Flat. Any claimed effect must clear that noise band to mean anything.
 | started | hypothesis | change | metric | read-out | result |
 |---|---|---|---|---|---|
 | 2026-08-05 | Removing the site-wide canonical lets sub-pages re-index, lifting impressions | canonical + crawl-tree fixes | weekly impressions vs the 430–660 band | 2026-09-02 (4 weeks) | pending |
+| 2026-08-10 | A bulk ingest of the one-pagers raises the organic citation rate — the whole point of the corpus-seeding work since April | NOT a change we made: an external agent crawled 310 one-pagers on 08-10 | organic citation rate (qb-v2, non-branded) vs the 6.19% full-run baseline | 2026-09-07 (4 weeks) | pending — needs a FULL question run to compare against, so O-9 must be fixed first or this reads as noise |
 
-No experiment started 2026-08-10: the day's work was pipeline integrity, and
-nothing shipped that a searcher or crawler can see. Recorded deliberately —
-an empty row is more honest than dressing a bug fix as an SEO experiment.
+The 2026-08-10 row is an observation, not a shipped change — recorded as an
+experiment anyway because it has a testable consequence and a date. Identify
+the crawler before drawing any conclusion: a declared AI crawler (GPTBot,
+ClaudeBot, PerplexityBot) is the intended outcome, an undeclared datacenter
+scraper is someone copying the book. Not yet established — see O-12.
 
 ## 4. BASELINES — what the numbers were, so drift is detectable
 
