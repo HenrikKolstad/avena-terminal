@@ -1,108 +1,167 @@
 /**
- * CineHero (2026-07-20) — the cinematic homepage hero.
+ * CineHero — rebuilt 2026-08-11 to Henrik's approved redesign (the "Xavia"
+ * mock, implemented pixel-faithful). One screen + two bars:
  *
- * Henrik's dusk-villa photograph with the pool-water treatment that
- * earned its keep in the Lovable study: an SVG turbulence displacement
- * applied to a duplicate of the image, masked to the lower half, plus
- * drifting caustics. The upper image stays still; the water below it
- * breathes. Pure CSS/SVG — no WebGL, nothing to glitch.
+ *   hero (left column: eyebrow / two-line serif h1 with gold-gradient italic /
+ *   paragraph / two CTAs / stats row) → credential bar (4 columns, thin gold
+ *   left borders) → coordinate strip.
+ *
+ * Deliberate deviations from the mock, both cleared with Henrik in chat:
+ *  - Wordmark and score stay AVENA, not XAVIA. The citation moat, the
+ *    investor brief and every AI corpus seeded since April carry the name
+ *    Avena; the front page cannot fork the brand. (Nav renders the wordmark.)
+ *  - The background photo is the existing hero.jpg until he supplies the
+ *    mock's image — drop a replacement at public/mare/hero.jpg and nothing
+ *    else needs to change.
+ *
+ * Motion is restrained per the spec: hover transitions only, no slow-zoom,
+ * no entrance animation. The overlay gradients are the spec's oklch values.
+ * The h1 gradient is scoped to this heading alone — the flat-gold rule for
+ * MARE buttons still stands everywhere else.
  */
 
 import Link from 'next/link';
 
 const HERO_SRC = '/mare/hero.jpg';
 
+const CREDENTIALS: Array<{ name: string; caption: string; href?: string }> = [
+  // Every claim log-backed (crawler_hits + the 2026-08-04..10 audit).
+  { name: 'RICS', caption: 'Official Tech Partner 2026', href: 'https://www.rics.org' },
+  { name: 'Perplexity', caption: 'Cited Property Intelligence Source' },
+  { name: 'ChatGPT', caption: 'Reads Avena Daily' },
+  { name: 'OpenAI · Anthropic · Meta', caption: 'In Training Corpora' },
+];
+
+const STATS: Array<{ value: string; label: string }> = [
+  { value: '0–100', label: 'Avena Score' },
+  { value: '3', label: 'Coastlines covered' },
+  { value: 'Daily', label: 'Re-scored deals' },
+];
+
 export function CineHero() {
   return (
-    <section className="relative min-h-[100svh] w-full overflow-hidden">
-      {/* Base photograph (still) */}
-      <div className="absolute inset-0 av-slow-zoom">
+    <section className="relative flex min-h-[100svh] w-full flex-col overflow-hidden">
+      {/* Background photograph — inline sizes because Tailwind's base
+          img { height: auto } beats the h-full utility (learned 2026-08-11:
+          the hero was 234px tall on phones for months). */}
+      <div className="absolute inset-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={HERO_SRC} alt="Cliffside seafront villa at golden hour on the Spanish coast" className="h-full w-full object-cover" style={{ height: '100%', width: '100%', objectFit: 'cover' }} width={1920} height={1200} />
+        <img
+          src={HERO_SRC}
+          alt="Clifftop villa at golden hour on the Spanish coast"
+          width={1920}
+          height={1200}
+          style={{ height: '100%', width: '100%', objectFit: 'cover' }}
+        />
       </div>
 
-      {/* Cinematic scrims */}
-      <div className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(180deg, hsl(var(--av-background) / 0.72) 0%, hsl(var(--av-background) / 0.08) 38%, hsl(var(--av-background)) 100%)' }} />
-      <div className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(90deg, hsl(var(--av-background) / 0.62) 0%, transparent 55%, hsl(var(--av-background) / 0.25) 100%)' }} />
+      {/* Left-to-right dark veil, then a bottom fade into the page background —
+          the spec's oklch stops, verbatim. */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            'linear-gradient(to right, oklch(0.12 0.015 55 / 0.92) 0%, oklch(0.12 0.015 55 / 0.72) 42%, oklch(0.12 0.015 55 / 0.15) 72%, transparent 100%)',
+        }}
+      />
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-64"
+        style={{ background: 'linear-gradient(to top, hsl(var(--av-background)), transparent)' }}
+      />
 
-      {/* Copy */}
-      <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1500px] flex-col justify-end px-5 pb-44 pt-24 sm:px-8 sm:pb-28 lg:px-12">
-        <div className="av-fade-up max-w-3xl">
-          <div className="mb-6 flex items-center gap-4">
+      {/* ── Hero column ───────────────────────────────────────────────── */}
+      <div className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-1 flex-col justify-center px-5 pt-28 pb-10 sm:px-8 lg:px-12">
+        <div className="max-w-2xl">
+          <div className="mb-7 flex items-center gap-4">
             <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
-            <span className="font-mono text-[10px] uppercase tracking-[0.5em] text-gold">
-              Live deals · scored daily · Avena Score 0–100
+            <span className="font-mono text-[10px] font-light uppercase tracking-[0.28em] text-gold">
+              Live deals · Scored daily
             </span>
           </div>
 
-          <h1 className="font-serif font-light leading-[1.02] tracking-[-0.02em] text-foreground" style={{ fontSize: 'clamp(2.4rem, 6vw, 4.5rem)' }}>
+          <h1 className="font-serif font-light leading-[1.04] tracking-[-0.01em] text-foreground" style={{ fontSize: 'clamp(2.6rem, 5.4vw, 4.6rem)' }}>
             Find the coastal homes
             <br />
-            <em className="italic" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>the market hasn&apos;t priced in.</em>
+            <em
+              className="italic"
+              style={{
+                background: 'linear-gradient(92deg, oklch(0.84 0.13 84), oklch(0.9 0.07 88))',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                color: 'transparent',
+              }}
+            >
+              the market hasn&apos;t priced in.
+            </em>
           </h1>
 
-          <p className="mt-7 max-w-xl font-serif text-base font-light leading-relaxed text-foreground/85 md:text-lg">
-            Every new-build on the Costa Blanca, Cálida and del Sol, scored on discount-to-market, yield, and developer quality. The underpriced ones, surfaced first — with the data to prove it.
+          <p className="mt-7 max-w-xl text-[15px] font-light leading-relaxed" style={{ color: 'hsl(var(--av-foreground) / 0.78)' }}>
+            Every new-build on the Costa Blanca, Cálida and del Sol — scored on
+            discount-to-market, yield and developer quality. The underpriced ones
+            surface first, with the data to prove it.
           </p>
 
-          {/* Credentials — Henrik's approved marque design (2026-08-11):
-              serif name on the LEFT, gold mono descriptor on the RIGHT
-              (wrapping to two lines), faint border with a gold base edge.
-              No dots, no internal divider.
-
-              Every AI claim is backed by our own crawler ledger
-              (crawler_hits) and the 2026-08-04..10 log audit: Perplexity
-              cites us, ChatGPT-User fetches pages daily to answer live
-              questions, and the four named labs' training crawlers ingest
-              the book weekly. Wording stays within what the logs prove. */}
-          {/* Phone: no boxes — four quiet mono lines behind a gold rule.
-              Desktop keeps the bordered marques. */}
-          <div className="mt-6 flex flex-col gap-1.5 border-l pl-4 sm:hidden" style={{ borderColor: 'hsl(var(--av-primary) / 0.6)' }}>
-            <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-foreground/80">RICS <span style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>· Official Tech Partner 2026</span></p>
-            <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-foreground/80">Perplexity <span style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>· Cited Source</span></p>
-            <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-foreground/80">ChatGPT <span style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>· Reads Avena Daily</span></p>
-            <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-foreground/80">OpenAI · Anthropic · Meta · Amazon <span style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>· Training Corpora</span></p>
-          </div>
-
-          <div className="mt-7 hidden flex-col items-start gap-3 sm:flex">
-            <div className="flex flex-wrap items-stretch gap-3">
-              <a href="https://www.rics.org" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 border border-b-2 px-3.5 py-2 backdrop-blur-[2px] transition-colors hover:border-primary sm:gap-5 sm:px-5 sm:py-3" style={{ background: 'hsl(20 15% 4% / 0.72)', borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
-                <span className="font-serif text-sm tracking-[0.1em] text-foreground sm:text-lg sm:tracking-[0.14em]">RICS</span>
-                <span className="max-w-[150px] font-mono text-[7.5px] uppercase leading-[1.6] tracking-[0.16em] sm:max-w-[180px] sm:text-[9px] sm:tracking-[0.22em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Official Tech Partner 2026</span>
-              </a>
-              <div className="inline-flex items-center gap-3 border border-b-2 px-3.5 py-2 backdrop-blur-[2px] transition-colors hover:border-primary sm:gap-5 sm:px-5 sm:py-3" style={{ background: 'hsl(20 15% 4% / 0.72)', borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
-                <span className="font-serif text-sm tracking-[0.1em] text-foreground sm:text-lg sm:tracking-[0.14em]">Perplexity</span>
-                <span className="max-w-[170px] font-mono text-[7.5px] uppercase leading-[1.6] tracking-[0.16em] sm:max-w-[200px] sm:text-[9px] sm:tracking-[0.22em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Cited Property Intelligence Source</span>
-              </div>
-            </div>
-            <div className="flex flex-wrap items-stretch gap-3">
-              <div className="inline-flex items-center gap-3 border border-b-2 px-3.5 py-2 backdrop-blur-[2px] transition-colors hover:border-primary sm:gap-5 sm:px-5 sm:py-3" style={{ background: 'hsl(20 15% 4% / 0.72)', borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
-                <span className="font-serif text-sm tracking-[0.1em] text-foreground sm:text-lg sm:tracking-[0.14em]">ChatGPT</span>
-                <span className="max-w-[150px] font-mono text-[7.5px] uppercase leading-[1.6] tracking-[0.16em] sm:max-w-[180px] sm:text-[9px] sm:tracking-[0.22em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Reads Avena Daily</span>
-              </div>
-              <div className="inline-flex items-center gap-3 border border-b-2 px-3.5 py-2 backdrop-blur-[2px] transition-colors hover:border-primary sm:gap-5 sm:px-5 sm:py-3" style={{ background: 'hsl(20 15% 4% / 0.72)', borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
-                <span className="font-serif text-sm tracking-[0.1em] text-foreground sm:text-lg sm:tracking-[0.14em]">OpenAI · Anthropic · Meta · Amazon</span>
-                <span className="max-w-[140px] font-mono text-[7.5px] uppercase leading-[1.6] tracking-[0.16em] sm:max-w-[160px] sm:text-[9px] sm:tracking-[0.22em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>In Training Corpora</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-8 flex flex-wrap items-center gap-6">
-            <a href="#rankings" className="group inline-flex items-center gap-4 px-8 py-3.5 font-mono text-[11px] uppercase tracking-[0.35em] text-primary-foreground transition hover:-translate-y-0.5" style={{ background: 'hsl(var(--av-primary) / 0.9)' }}>
+          {/* Exactly two CTAs */}
+          <div className="mt-9 flex flex-wrap items-center gap-8">
+            <a
+              href="#rankings"
+              className="group inline-flex items-center gap-4 px-7 py-3.5 font-mono text-[11px] uppercase tracking-[0.28em] text-primary-foreground transition hover:-translate-y-0.5"
+              style={{ background: 'hsl(var(--av-primary) / 0.9)' }}
+            >
               See this week&apos;s deals
-              <span className="transition group-hover:translate-x-1">→</span>
+              <span className="transition-transform group-hover:translate-x-1">→</span>
             </a>
-            <Link href="/enquire" className="group inline-flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.35em] text-foreground/85 transition-colors hover:text-gold">
-              <span className="h-px w-6 transition-all group-hover:w-10" style={{ background: 'hsl(var(--av-primary))' }} />
+            <Link
+              href="/enquire"
+              className="group inline-flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.28em] text-foreground/85 transition-colors hover:text-gold"
+            >
+              <span className="h-px w-8 transition-all group-hover:w-12" style={{ background: 'hsl(var(--av-primary))' }} />
               Enquire
             </Link>
+          </div>
+
+          {/* Stats row above a top border */}
+          <div className="mt-12 flex max-w-xl gap-12 border-t pt-6 sm:gap-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+            {STATS.map((s) => (
+              <div key={s.label}>
+                <div className="font-serif text-2xl font-light sm:text-3xl" style={{ color: 'oklch(0.9 0.07 88)' }}>
+                  {s.value}
+                </div>
+                <div className="mt-1.5 font-mono text-[9px] uppercase tracking-[0.28em] text-muted-foreground">
+                  {s.label}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Coordinate strip */}
-      <div className="absolute inset-x-0 bottom-0 z-10 border-t backdrop-blur-sm" style={{ borderColor: 'hsl(var(--av-foreground) / 0.1)', background: 'hsl(var(--av-background) / 0.4)' }}>
-        <div className="mx-auto flex max-w-[1500px] items-center justify-between px-5 py-4 font-mono text-[10px] uppercase tracking-[0.35em] text-foreground/60 sm:px-8 lg:px-12">
+      {/* ── Credential bar: 4 columns, thin gold left borders ─────────── */}
+      <div className="relative z-10 mx-auto w-full max-w-[1500px] px-5 pb-8 sm:px-8 lg:px-12">
+        <div className="grid grid-cols-1 gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+          {CREDENTIALS.map((cred) => {
+            const inner = (
+              <div className="border-l pl-5" style={{ borderColor: 'hsl(var(--av-primary) / 0.55)' }}>
+                <div className="font-serif text-lg font-light text-foreground">{cred.name}</div>
+                <div className="mt-1 font-mono text-[9px] uppercase leading-[1.8] tracking-[0.28em]" style={{ color: 'hsl(var(--av-primary) / 0.9)' }}>
+                  {cred.caption}
+                </div>
+              </div>
+            );
+            return cred.href ? (
+              <a key={cred.name} href={cred.href} target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-80">
+                {inner}
+              </a>
+            ) : (
+              <div key={cred.name}>{inner}</div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── Coordinate strip ──────────────────────────────────────────── */}
+      <div className="relative z-10 border-t" style={{ borderColor: 'hsl(var(--av-foreground) / 0.1)' }}>
+        <div className="mx-auto flex max-w-[1500px] items-center justify-between px-5 py-4 font-mono text-[10px] uppercase tracking-[0.28em] text-foreground/60 sm:px-8 lg:px-12">
           <span className="hidden md:inline">38°47′ N · 0°10′ E</span>
           <a href="#rankings" className="transition-colors hover:text-gold">Scroll ↓</a>
           <span className="hidden md:inline">MMXXVI · Est. 2026</span>
