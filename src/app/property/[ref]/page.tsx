@@ -85,7 +85,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
   // The observed price ledger for this unit. Fails soft to null — a page must
   // never 500 because the ledger read failed, and it must never imply a flat
   // price we did not actually observe.
-  const obs = await getObservationRecord(p.ref ?? '');
+  const obs = await getObservationRecord(p.ref ?? '', p.bm);
   const pm2 = p.bm > 0 ? Math.round(p.pf / p.bm) : null;
   const townSlug = slugify(p.l);
   const marketPm2 = p.mm2 && pm2 ? Math.round(p.mm2) : null;
@@ -265,7 +265,10 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                     <ul className="mt-2 space-y-0.5">
                       {obs.changes.map((c) => (
                         <li key={c.date} className="font-mono text-[11px] text-muted-foreground tabular">
-                          {c.spanned ? `${longDate(c.fromDate)} – ${longDate(c.date)}` : longDate(c.date)} · €{c.from.toLocaleString()} → €{c.to.toLocaleString()}{' '}
+                          {c.spanned ? `${longDate(c.fromDate)} – ${longDate(c.date)}` : longDate(c.date)} ·{' '}
+                          {c.unitMix
+                            ? `unit ${c.unitMix.fromM2} m² → ${c.unitMix.toM2} m² · €${c.from.toLocaleString()} → €${c.to.toLocaleString()}`
+                            : `€${c.from.toLocaleString()} → €${c.to.toLocaleString()}`}{' '}
                           <span style={{ color: c.to < c.from ? 'hsl(var(--av-primary))' : undefined }}>
                             ({c.pct > 0 ? '+' : ''}{c.pct.toFixed(1)}%)
                           </span>

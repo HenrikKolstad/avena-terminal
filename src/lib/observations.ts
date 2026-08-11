@@ -24,6 +24,13 @@
  */
 import { supabase } from './supabase';
 import { supabaseAdmin } from './supabase-admin';
+// The verified 2026-04-08 book (ref -> [entry_price, built_m2]), extracted
+// from git commit b665f3a — the same commit whose fingerprint proved the
+// April snapshot's provenance. Used to tell a TRUE reprice apart from a
+// unit-mix change across the April→August gap: N8895 "fell 56%" only
+// because a 278 m² unit gave way to a 121 m² one at near-identical €/m².
+// Classified across the whole book: 639 true reprices, 24 unit-mix.
+import aprilAnchor from './april-anchor.json';
 
 /**
  * The start of the DAILY series: from here the book is captured every night.
@@ -65,7 +72,12 @@ export interface ObservationRecord {
    * April→August): the movement is real, its date is not known — render as
    * "between fromDate and date", never as an event on `date`.
    */
-  changes: Array<{ date: string; fromDate: string; from: number; to: number; pct: number; spanned: boolean }>;
+  changes: Array<{
+    date: string; fromDate: string; from: number; to: number; pct: number; spanned: boolean;
+    /** Set on spanned changes where the advertised unit's m² moved >5% — the
+     *  price delta is a unit swap (absorption), not a reprice. */
+    unitMix?: { fromM2: number; toM2: number };
+  }>;
   /** Latest observed price. */
   current: number;
 }
@@ -82,7 +94,7 @@ export interface ObservationRecord {
  * renders nothing in that case. Never throws: a page must not 500 because a
  * ledger read failed.
  */
-export async function getObservationRecord(ref: string): Promise<ObservationRecord | null> {
+export async function getObservationRecord(ref: string, currentM2?: number | null): Promise<ObservationRecord | null> {
   const db = supabaseAdmin ?? supabase;
   if (!db || !ref) return null;
 
@@ -116,13 +128,25 @@ export async function getObservationRecord(ref: string): Promise<ObservationReco
       const to = points[i].price;
       if (from > 0 && to !== from) {
         const gapDays = (Date.parse(points[i].date) - Date.parse(points[i - 1].date)) / 86_400_000;
+        const spanned = gapDays > 4;
+        // Only gap-spanning changes can be classified: the anchor holds the
+        // April m², and `currentM2` is today's. Daily reprices are same-unit
+        // by construction (the feed re-lists, it does not re-plan overnight).
+        let unitMix: { fromM2: number; toM2: number } | undefined;
+        if (spanned && currentM2) {
+          const a = (aprilAnchor as unknown as Record<string, [number, number]>)[ref];
+          if (a && a[1] > 0 && Math.abs(currentM2 - a[1]) / a[1] > 0.05) {
+            unitMix = { fromM2: a[1], toM2: currentM2 };
+          }
+        }
         changes.push({
           date: points[i].date,
           fromDate: points[i - 1].date,
           from,
           to,
           pct: ((to - from) / from) * 100,
-          spanned: gapDays > 4,
+          spanned,
+          ...(unitMix ? { unitMix } : {}),
         });
       }
     }
@@ -238,12 +262,23 @@ export function observationSentence(rec: ObservationRecord): string {
   }
 
   const last = rec.changes[rec.changes.length - 1];
-  const dir = last.to < last.from ? 'reduced' : 'increased';
-  const pct = Math.abs(last.pct).toFixed(1);
-  // A spanned change is real but undated inside the gap — say so.
   const when = last.spanned
     ? `between ${longDate(last.fromDate)} and ${longDate(last.date)}`
     : `on ${longDate(last.date)}`;
+
+  // A unit swap is not a reprice, and calling it one would be the lie this
+  // module exists to avoid. Say what actually happened — the advertised unit
+  // changed — and give the €/m² comparison, which is the honest continuity.
+  if (last.unitMix) {
+    const pm2From = Math.round(last.from / last.unitMix.fromM2);
+    const pm2To = Math.round(last.to / last.unitMix.toM2);
+    return `Observed by Avena: the advertised unit changed ${when} — ` +
+      `${last.unitMix.fromM2} m² at €${last.from.toLocaleString()} (€${pm2From.toLocaleString()}/m²) ` +
+      `to ${last.unitMix.toM2} m² at €${last.to.toLocaleString()} (€${pm2To.toLocaleString()}/m²), ${span}.`;
+  }
+
+  const dir = last.to < last.from ? 'reduced' : 'increased';
+  const pct = Math.abs(last.pct).toFixed(1);
   return `Observed by Avena: ${dir} ${pct}% from €${last.from.toLocaleString()} to ` +
     `€${last.to.toLocaleString()} ${when}, ${span}.`;
 }
