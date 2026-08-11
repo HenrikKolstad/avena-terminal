@@ -62,9 +62,22 @@ function extractFiltersLocally(query: string): ExtractedFilters {
     if (q.includes(t)) { type = t === 'flat' ? 'Apartment' : t[0].toUpperCase() + t.slice(1); break; }
   }
 
+  // Place matching: the fixed costa list first, then every town actually in
+  // the book (locations like "Orihuela Costa" live in p.l, and the region
+  // filter downstream matches against p.l substrings). Longest match wins so
+  // "orihuela costa" beats "orihuela".
   let region: string | null = null;
   for (const r of ['costa blanca', 'costa del sol', 'costa calida', 'costa cálida', 'alicante', 'murcia', 'malaga', 'málaga', 'almeria', 'almería']) {
     if (q.includes(r)) { region = r.replace(/(^|\s)\w/g, (c) => c.toUpperCase()); break; }
+  }
+  if (!region) {
+    const towns = new Set<string>();
+    for (const p of getAllProperties()) {
+      const t = (p.l ?? '').split(',')[0].trim().toLowerCase();
+      if (t.length >= 4) towns.add(t);
+    }
+    const hit = [...towns].filter((t) => q.includes(t)).sort((a, b) => b.length - a.length)[0];
+    if (hit) region = hit;
   }
 
   const KNOWN = ['beach', 'frontline', 'golf', 'sea view', 'sea', 'pool', 'airbnb', 'investment',
