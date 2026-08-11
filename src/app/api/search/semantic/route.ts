@@ -29,15 +29,64 @@ export function OPTIONS() {
   return NextResponse.json(null, { headers: CORS });
 }
 
-export async function POST(req: NextRequest) {
-  try {
-    const { query } = await req.json();
-    if (!query || typeof query !== 'string') {
-      return NextResponse.json({ error: 'Missing query' }, { status: 400, headers: CORS });
-    }
+/**
+ * Rule-based filter extraction — the fallback when the LLM is unavailable.
+ *
+ * Added 2026-08-11 after search went down IN FRONT OF HENRIK with the raw
+ * provider error on screen: "Your credit balance is too low to access the
+ * Anthropic API", 400, request id and all. Two failures in one: search had a
+ * hard dependency on a prepaid third-party balance, and the provider's error
+ * text leaked to the buyer surface.
+ *
+ * This extractor covers the head of real query traffic (price cap, beds,
+ * type, costa, beach, yield/score intents, amenity keywords). The LLM still
+ * runs first when it can — it reads oblique phrasing better — but its absence
+ * now degrades search quality, not search availability.
+ */
+function extractFiltersLocally(query: string): ExtractedFilters {
+  const q = query.toLowerCase();
 
-    // Step 1: Extract structured filters via Claude Haiku
-    const extraction = await client.messages.create({
+  // "under 350k", "below €1.2m", "max 400000", "for 350 000 euros"
+  let maxPrice: number | null = null;
+  const price = q.replace(/[€,]/g, '').match(/(?:under|below|max|budget|up to|for)\s*(\d+(?:[.\s]\d{3})*(?:\.\d+)?)\s*(k|m)?/);
+  if (price) {
+    const base = parseFloat(price[1].replace(/\s/g, ''));
+    maxPrice = price[2] === 'm' ? base * 1_000_000 : price[2] === 'k' ? base * 1_000 : base;
+    if (maxPrice < 1000) maxPrice = null; // "under 3 bed" style false positives
+  }
+
+  const beds = q.match(/(\d+)\s*(?:\+\s*)?(?:bed|beds|bedroom|bedrooms|br|soverom)/);
+
+  let type: string | null = null;
+  for (const t of ['villa', 'penthouse', 'apartment', 'townhouse', 'bungalow', 'duplex', 'flat']) {
+    if (q.includes(t)) { type = t === 'flat' ? 'Apartment' : t[0].toUpperCase() + t.slice(1); break; }
+  }
+
+  let region: string | null = null;
+  for (const r of ['costa blanca', 'costa del sol', 'costa calida', 'costa cálida', 'alicante', 'murcia', 'malaga', 'málaga', 'almeria', 'almería']) {
+    if (q.includes(r)) { region = r.replace(/(^|\s)\w/g, (c) => c.toUpperCase()); break; }
+  }
+
+  const KNOWN = ['beach', 'frontline', 'golf', 'sea view', 'sea', 'pool', 'airbnb', 'investment',
+    'yield', 'modern', 'ready', 'luxury', 'garden', 'mountain'];
+  const keywords = KNOWN.filter((k) => q.includes(k));
+
+  return {
+    maxPrice,
+    minBeds: beds ? parseInt(beds[1], 10) : null,
+    region,
+    type,
+    maxBeach: /near (?:the )?beach|beachfront|frontline|walking distance/.test(q) ? 2 : null,
+    minScore: /high score|top rated|best rated/.test(q) ? 70 : null,
+    minYield: /high yield|good yield|rental income|investment/.test(q) ? 5 : null,
+    keywords,
+  };
+}
+
+
+/** LLM filter extraction — throws on any failure so the caller can fall back. */
+async function extractViaLLM(query: string): Promise<ExtractedFilters> {
+  const extraction = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 512,
       messages: [
@@ -66,14 +115,28 @@ Examples:
       ],
     });
 
-    const text = extraction.content[0].type === 'text' ? extraction.content[0].text : '';
-    // Extract JSON from response (handle markdown code blocks)
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      return NextResponse.json({ error: 'Failed to parse filters' }, { status: 500, headers: CORS });
+  const text = extraction.content[0].type === 'text' ? extraction.content[0].text : '';
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) throw new Error('unparseable extraction');
+  return JSON.parse(jsonMatch[0]) as ExtractedFilters;
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const { query } = await req.json();
+    if (!query || typeof query !== 'string') {
+      return NextResponse.json({ error: 'Missing query' }, { status: 400, headers: CORS });
     }
 
-    const filters: ExtractedFilters = JSON.parse(jsonMatch[0]);
+    // Step 1: Extract structured filters — LLM first, local rules on ANY
+    // failure (no key, no credits, timeout, unparseable output). The LLM
+    // reads oblique phrasing better; the rules keep search alive without it.
+    let filters: ExtractedFilters;
+    try {
+      filters = await extractViaLLM(query);
+    } catch {
+      filters = extractFiltersLocally(query);
+    }
 
     // Step 2: Load all properties
     const all = getAllProperties();
@@ -199,7 +262,8 @@ Examples:
     );
   } catch (err: unknown) {
     console.error('Semantic search error:', err);
-    const message = err instanceof Error ? err.message : 'Unknown error';
-    return NextResponse.json({ error: message }, { status: 500, headers: CORS });
+    // Never leak provider error text (billing messages, request ids) to the
+    // buyer surface — that is exactly what happened on 2026-08-11.
+    return NextResponse.json({ error: 'Search is temporarily unavailable. Please try again.' }, { status: 500, headers: CORS });
   }
 }
