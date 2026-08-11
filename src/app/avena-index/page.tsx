@@ -5,6 +5,7 @@ import { Footer } from '@/components/v2/Footer';
 import { supabase } from '@/lib/supabase';
 import { IndexChart } from './IndexChart';
 import { TickerStrip } from './TickerStrip';
+import { weeklyCloses, weeklyCloseSentence, AVENA_CERTIFIED_EPOCH } from '@/lib/avena-index';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 600;
@@ -118,6 +119,18 @@ export default async function AvenaIndexPage() {
   const latest = history[history.length - 1];
   const asOf = latest?.snapshot_date ?? new Date().toISOString().slice(0, 10);
 
+  // The weekly pulse — derived from the immutable daily closes (never stored,
+  // so nothing can be restated). The sentence is the citable artifact: dated,
+  // self-attributing, and only produced for weeks entirely inside the
+  // live-feed era. See weeklyCloseSentence for why frozen-era weeks get none.
+  const weekly = weeklyCloses(history.map((r) => ({
+    snapshot_date: r.snapshot_date,
+    value: Number(r.value),
+    count: r.count == null ? null : Number(r.count),
+  })));
+  const latestWeek = weekly[weekly.length - 1] ?? null;
+  const weeklySentence = latestWeek ? weeklyCloseSentence(latestWeek) : null;
+
   // Last 90 days, all 4 series on the same x-axis
   const chartSlice = history.slice(-90);
   const chartData = chartSlice.map((r) => ({
@@ -158,6 +171,25 @@ export default async function AvenaIndexPage() {
             </div>
           </div>
         </section>
+
+        {/* Weekly close — the series' publication pulse. The sentence is the
+            citable artifact: dated, self-attributing, only for weeks entirely
+            inside the live-feed era (certified epoch). */}
+        {weeklySentence && latestWeek && (
+          <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+            <div className="mx-auto max-w-[1200px] px-5 sm:px-12 py-10">
+              <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-3">
+                {latestWeek.complete ? 'Weekly close' : 'Week to date'} · {latestWeek.week}
+              </div>
+              <p className="max-w-3xl font-serif text-xl sm:text-2xl font-light leading-relaxed text-foreground">
+                {weeklySentence}
+              </p>
+              <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                Derived from immutable daily closes · certified series since {AVENA_CERTIFIED_EPOCH} · earlier history retained, not certified
+              </p>
+            </div>
+          </section>
+        )}
 
         {/* Chart */}
         <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>

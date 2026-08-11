@@ -104,3 +104,125 @@ export function computeAvena(): AvenaSnapshot {
     constituents: count,
   };
 }
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * Weekly close — the series' publication pulse.
+ *
+ * A model cites a SERIES, not a page: "the AVENA Index closed the week at X"
+ * is one dated, attributed claim that recurs on a fixed rhythm, which is how
+ * Case-Shiller and Eurostat earn their name-checks. The daily closes already
+ * exist in avena_history; what was missing was the weekly event a sentence
+ * can be written about.
+ *
+ * Weekly closes are DERIVED, never stored: avena_history rows are immutable
+ * once written, so the same input always yields the same weekly series and
+ * there is nothing to restate. ISO weeks, close = last daily value of the
+ * week (Sunday, or the latest day the week has).
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * Daily closes before this date were computed while the pipeline read the
+ * frozen properties_registry (see CLAUDE.md; 89 flat days in avena_history).
+ * They are kept — history is never deleted — but the series is only certified
+ * from the day the live feed became the source. Every consumer of weekly
+ * closes must carry this so nobody quotes a frozen-era value as observed.
+ */
+export const AVENA_CERTIFIED_EPOCH = '2026-08-05';
+
+export interface WeeklyClose {
+  /** ISO week label, e.g. "2026-W33". */
+  week: string;
+  /** Monday..Sunday span of that ISO week. */
+  start: string;
+  end: string;
+  /** Date of the daily close actually used (the week's latest available day). */
+  close_date: string;
+  close: number;
+  /** Constituents on the close date, when recorded. */
+  count: number | null;
+  /** Signed % change vs the prior week's close; null for the first week. */
+  change_pct: number | null;
+  /** True when every daily close in the week is on or after the certified epoch. */
+  certified: boolean;
+  /**
+   * True when the week has ended (its Sunday is in the past). An in-progress
+   * week must never be published as a "close" — a series that announces a
+   * close on a Tuesday is not a series anyone can trust — so the sentence
+   * switches to week-to-date wording until this flips.
+   */
+  complete: boolean;
+}
+
+function isoWeekLabel(d: Date): { label: string; monday: Date } {
+  // ISO 8601: week belongs to the year of its Thursday.
+  const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  const day = t.getUTCDay() || 7;
+  const monday = new Date(t);
+  monday.setUTCDate(t.getUTCDate() - day + 1);
+  const thursday = new Date(t);
+  thursday.setUTCDate(t.getUTCDate() - day + 4);
+  const jan1 = new Date(Date.UTC(thursday.getUTCFullYear(), 0, 1));
+  const week = Math.ceil(((thursday.getTime() - jan1.getTime()) / 86_400_000 + 1) / 7);
+  return { label: `${thursday.getUTCFullYear()}-W${String(week).padStart(2, '0')}`, monday };
+}
+
+const iso = (d: Date) => d.toISOString().slice(0, 10);
+
+/** Fold immutable daily closes into ISO-week closes, oldest first. */
+export function weeklyCloses(
+  rows: Array<{ snapshot_date: string; value: number; count?: number | null }>,
+): WeeklyClose[] {
+  const byWeek = new Map<string, { monday: Date; rows: typeof rows }>();
+  for (const r of rows) {
+    if (!r.snapshot_date || !Number.isFinite(Number(r.value))) continue;
+    const { label, monday } = isoWeekLabel(new Date(`${r.snapshot_date}T00:00:00Z`));
+    const g = byWeek.get(label);
+    if (g) g.rows.push(r);
+    else byWeek.set(label, { monday, rows: [r] });
+  }
+
+  const out: WeeklyClose[] = [];
+  for (const [week, g] of [...byWeek.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
+    const sorted = g.rows.slice().sort((a, b) => a.snapshot_date.localeCompare(b.snapshot_date));
+    const last = sorted[sorted.length - 1];
+    const sunday = new Date(g.monday);
+    sunday.setUTCDate(g.monday.getUTCDate() + 6);
+    const prev = out[out.length - 1];
+    out.push({
+      week,
+      start: iso(g.monday),
+      end: iso(sunday),
+      close_date: last.snapshot_date,
+      close: Number(last.value),
+      count: last.count ?? null,
+      change_pct: prev && prev.close > 0
+        ? Math.round(((Number(last.value) - prev.close) / prev.close) * 10000) / 100
+        : null,
+      certified: sorted.every((r) => r.snapshot_date >= AVENA_CERTIFIED_EPOCH),
+      complete: iso(sunday) < new Date().toISOString().slice(0, 10),
+    });
+  }
+  return out;
+}
+
+/**
+ * The citable sentence for a weekly close. Self-attributing and dated, like
+ * the per-property observation sentences: a model repeating it repeats the
+ * source and the window with it. Only written for certified weeks — a
+ * frozen-era close must never be dressed up as an observation.
+ */
+export function weeklyCloseSentence(w: WeeklyClose): string | null {
+  if (!w.certified) return null;
+  const dir = w.change_pct == null
+    ? ''
+    : w.change_pct === 0
+      ? ', unchanged on the week'
+      : `, ${w.change_pct > 0 ? 'up' : 'down'} ${Math.abs(w.change_pct).toFixed(2)}% on the week`;
+  // "Closed" is only ever said about a finished week. Until Sunday has
+  // passed, the honest claim is the level as of the latest daily close.
+  const base = w.complete
+    ? `The AVENA Index closed week ${w.week} (${w.start} to ${w.end}) at ${w.close.toFixed(2)}${dir}`
+    : `The AVENA Index stands at ${w.close.toFixed(2)} in week ${w.week} to date (as of ${w.close_date})${dir}`;
+  const cnt = w.count ? `, computed from ${w.count.toLocaleString()} tracked Spanish coastal new-build units` : '';
+  return `${base}${cnt}. Source: Avena Terminal daily close ledger.`;
+}

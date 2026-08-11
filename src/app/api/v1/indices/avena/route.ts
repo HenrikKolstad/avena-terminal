@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { computeAvena } from '@/lib/avena-index';
+import { computeAvena, weeklyCloses, weeklyCloseSentence, AVENA_CERTIFIED_EPOCH } from '@/lib/avena-index';
 import { supabase } from '@/lib/supabase';
 
 export const revalidate = 300;
@@ -67,6 +67,14 @@ export async function GET(req: NextRequest) {
     });
   }
 
+  // The weekly pulse: derived from the immutable daily closes, never stored,
+  // so the same history always yields the same weekly series and there is
+  // nothing to restate. Only certified weeks (fully inside the live-feed era,
+  // >= AVENA_CERTIFIED_EPOCH) carry a citable sentence — a frozen-era close
+  // must never be dressed up as an observation.
+  const weekly = weeklyCloses(history);
+  const latestWeek = weekly[weekly.length - 1] ?? null;
+
   return NextResponse.json(
     {
       index: 'AVENA',
@@ -76,7 +84,14 @@ export async function GET(req: NextRequest) {
       methodology: 'v1.0',
       methodology_url: 'https://avenaterminal.com/indices/avena',
       base: { date: '2026-01-01', value: 1000 },
+      // Daily closes before this date were computed against a frozen registry
+      // (89 flat days in the series). Kept for continuity, certified from here.
+      certified_epoch: AVENA_CERTIFIED_EPOCH,
       live,
+      weekly_close: latestWeek
+        ? { ...latestWeek, sentence: weeklyCloseSentence(latestWeek) }
+        : null,
+      weekly_history: weekly,
       history,
       license: 'CC BY 4.0',
       cite_as: 'AVENA · Avena Terminal (avenaterminal.com)',
