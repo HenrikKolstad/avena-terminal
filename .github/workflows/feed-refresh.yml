@@ -151,7 +151,17 @@ jobs:
                 const r = JSON.parse(process.argv[1]);
                 if (r.errors) { console.error("Capture reported errors:", JSON.stringify(r.errors)); process.exit(1); }
                 if (!r.snapshotted) { console.error("Capture wrote 0 snapshots on a live feed — that is a lost day."); process.exit(1); }
-                console.log(`OK — snapshotted=${r.snapshotted} moves=${r.price_moves} delisted=${r.delisted}`);
+                // A quiet market is legitimate; a blind diff is not, and the
+                // two are indistinguishable from price_moves alone. On
+                // 2026-08-11 the run reported moves_detected: 0 across a day
+                // holding 13 real reprices, because the diff had no baseline
+                // to compare against. Assert the baseline exists, not that
+                // moves were found.
+                if (r.trusted_prior && !r.moves_baseline_refs) {
+                  console.error("Capture had a trusted prior but 0 refs to diff against — the move ledger is blind, not quiet.");
+                  process.exit(1);
+                }
+                console.log(`OK — snapshotted=${r.snapshotted} moves=${r.price_moves} baseline=${r.moves_baseline_refs} delisted=${r.delisted}`);
               ' "$BODY"
               exit $?
             fi

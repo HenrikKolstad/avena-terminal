@@ -193,30 +193,67 @@ export async function GET(req: NextRequest) {
   }
 
   // ── 2. Price-move events → property_pricing_history (append-only) ───────────
-  // Compare against the LAST PRICE WE OBSERVED for this ref: today's stored
-  // row if an earlier run already banked one, otherwise the prior date's.
-  // Diffing only against the prior date meant every mid-day change was written
-  // straight into the snapshot with no event row behind it — which is why the
-  // table holds 394k 'listed' rows and not one 'reduced' or 'increased'.
+  // The baseline is the OLDEST price we can still trust for this ref, not the
+  // newest. Preferring today's stored row looked right — it catches a mid-day
+  // move — but it silently guaranteed zero moves forever, because this route
+  // is never the first writer of today's snapshot: parse-feed.js banks
+  // price_snapshots itself (parse-feed.js:1003) before it even commits the
+  // book, minutes before the workflow polls this route. So today's row always
+  // existed already, always held exactly the prices in the feed we are
+  // holding, and every comparison was a value against itself.
+  //
+  // Measured 2026-08-11: 13 refs genuinely repriced between the 08-10 and
+  // 08-11 books (N9738 +45.6%, N8455 -9.2%, N9399 -9.5%, …) and the run
+  // reported moves_detected: 0 — a confident zero over a real market day.
+  //
+  // Prefer the prior date; fall back to today's banked row only when there is
+  // no trusted prior, which is the one case where it is the oldest thing we
+  // have. baselineRefs is reported so that a future zero is interpretable:
+  // zero moves against 1,999 baselines is a quiet market, zero moves against
+  // zero baselines is this bug again.
   let priceMoves = 0;
   let movesSkipped: string | null = null;
+  let baselineRefs = 0;
   const inserts: Array<{ avn_prop_id: string; price_eur: number; source_portal: string; status: string }> = [];
   for (const p of feed) {
-    const sameDay = todayByRef.get(p.ref as string);
-    // Today's own row needs no date gate — it is this calendar day's
-    // observation. Falling back to the prior date does, hence trustPrior.
-    const observed = sameDay?.price != null
-      ? Number(sameDay.price)
-      : (trustPrior ? priorByRef.get(p.ref as string)?.price ?? null : null);
+    const priorPrice = trustPrior ? priorByRef.get(p.ref as string)?.price ?? null : null;
+    const sameDayPrice = todayByRef.get(p.ref as string)?.price ?? null;
+    const observed = priorPrice ?? sameDayPrice;
     if (observed == null) continue;
+    baselineRefs++;
     const now = Math.round(p.pf);
-    if (Math.abs(now - observed) < 1) continue;
+    if (Math.abs(now - Number(observed)) < 1) continue;
     inserts.push({
       avn_prop_id: p.ref as string,
       price_eur: now,
       source_portal: p.source_portal || 'redsp',
-      status: now < observed ? 'reduced' : 'increased',
+      status: now < Number(observed) ? 'reduced' : 'increased',
     });
+  }
+
+  // This route is idempotent by contract and gets re-run by hand, by the
+  // workflow poll loop, and by the daily senses. An append-only table has no
+  // unique key to lean on, so dedupe explicitly: an identical (ref, price)
+  // event already recorded today is the same observation, not a new one.
+  const movesDetected = inserts.length;
+  let movesAlreadyLogged = 0;
+  if (inserts.length) {
+    const { data: loggedToday, error: dedupeErr } = await supabase
+      .from('property_pricing_history')
+      .select('avn_prop_id, price_eur')
+      .gte('recorded_at', `${today}T00:00:00Z`);
+    // Never silently fall through to writing duplicates: if we cannot read
+    // what is already there, we cannot claim these are new observations.
+    if (dedupeErr) {
+      errors.push(`price_moves dedupe: ${dedupeErr.message}`);
+      inserts.length = 0;
+    } else {
+      const seen = new Set((loggedToday ?? []).map((r) => `${r.avn_prop_id}:${Math.round(Number(r.price_eur))}`));
+      const fresh = inserts.filter((r) => !seen.has(`${r.avn_prop_id}:${r.price_eur}`));
+      movesAlreadyLogged = inserts.length - fresh.length;
+      inserts.length = 0;
+      inserts.push(...fresh);
+    }
   }
   if (inserts.length > feed.length * MAX_MOVE_SHARE) {
     movesSkipped = `${inserts.length} of ${feed.length} refs appear to have moved (> ${MAX_MOVE_SHARE * 100}%) — refusing to write, feed is probably wrong`;
@@ -270,7 +307,14 @@ export async function GET(req: NextRequest) {
     feed_generated_date: feedDate,
     snapshotted,
     price_moves: priceMoves,
-    moves_detected: inserts.length,
+    moves_detected: movesDetected,
+    // Already recorded by an earlier run today — a re-run finding only these
+    // is correct and idempotent, not a missed capture.
+    moves_already_logged: movesAlreadyLogged,
+    // How many refs we had any usable baseline for. price_moves: 0 means
+    // "the market was quiet" only if this is large; if it is 0 while
+    // trusted_prior is true, the diff is blind and the zero is a lie.
+    moves_baseline_refs: baselineRefs,
     moves_skipped: movesSkipped,
     delisted,
     prior_date: priorDate,
