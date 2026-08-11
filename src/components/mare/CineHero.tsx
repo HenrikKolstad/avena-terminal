@@ -61,7 +61,7 @@ export function CineHero() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'linear-gradient(to right, oklch(0.12 0.015 55 / 0.92) 0%, oklch(0.12 0.015 55 / 0.72) 42%, oklch(0.12 0.015 55 / 0.15) 72%, transparent 100%)',
+            'linear-gradient(to right, oklch(0.11 0.015 55 / 0.96) 0%, oklch(0.11 0.015 55 / 0.88) 28%, oklch(0.11 0.015 55 / 0.62) 52%, oklch(0.11 0.015 55 / 0.24) 72%, oklch(0.11 0.015 55 / 0.06) 86%, transparent 96%)',
         }}
       />
       <div
