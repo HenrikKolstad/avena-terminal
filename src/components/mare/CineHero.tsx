@@ -124,7 +124,7 @@ export function CineHero() {
           <div className="mt-12 flex max-w-xl gap-12 border-t pt-6 sm:gap-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
             {STATS.map((s) => (
               <div key={s.label}>
-                <div className="font-serif text-2xl font-light sm:text-3xl" style={{ color: 'oklch(0.9 0.07 88)' }}>
+                <div className="whitespace-nowrap font-serif text-2xl font-light sm:text-3xl" style={{ color: 'oklch(0.9 0.07 88)' }}>
                   {s.value}
                 </div>
                 <div className="mt-1.5 font-mono text-[9px] uppercase tracking-[0.28em] text-muted-foreground">
