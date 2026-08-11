@@ -70,7 +70,7 @@ export function CineHero() {
       />
 
       {/* ── Hero column ───────────────────────────────────────────────── */}
-      <div className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-1 flex-col justify-center px-5 pt-28 pb-10 sm:px-8 lg:px-12">
+      <div className="relative z-10 flex w-full flex-1 flex-col justify-center px-5 pt-28 pb-10 sm:px-8 lg:px-14">
         <div className="max-w-2xl">
           <div className="mb-7 flex items-center gap-4">
             <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
@@ -137,7 +137,7 @@ export function CineHero() {
       </div>
 
       {/* ── Credential bar: 4 columns, thin gold left borders ─────────── */}
-      <div className="relative z-10 mx-auto w-full max-w-[1500px] px-5 pb-8 sm:px-8 lg:px-12">
+      <div className="relative z-10 w-full px-5 pb-8 sm:px-8 lg:px-14">
         <div className="grid grid-cols-1 gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
           {CREDENTIALS.map((cred) => {
             const inner = (
@@ -161,7 +161,7 @@ export function CineHero() {
 
       {/* ── Coordinate strip ──────────────────────────────────────────── */}
       <div className="relative z-10 border-t" style={{ borderColor: 'hsl(var(--av-foreground) / 0.1)' }}>
-        <div className="mx-auto flex max-w-[1500px] items-center justify-between px-5 py-4 font-mono text-[10px] uppercase tracking-[0.28em] text-foreground/60 sm:px-8 lg:px-12">
+        <div className="flex items-center justify-between px-5 py-4 font-mono text-[10px] uppercase tracking-[0.28em] text-foreground/60 sm:px-8 lg:px-14">
           <span className="hidden md:inline">38°47′ N · 0°10′ E</span>
           <a href="#rankings" className="transition-colors hover:text-gold">Scroll ↓</a>
           <span className="hidden md:inline">MMXXVI · Est. 2026</span>
