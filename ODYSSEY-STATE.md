@@ -25,32 +25,52 @@ cannot run an experiment, only a stunt.
 
 | shipped | what | how to verify | verified |
 |---|---|---|---|
-| 2026-08-10 | `1f0a130` feed generation stamp + stale-book gate on pricing-history | **02:20 UTC run must now report `skipped:true, feed_generated_date:<yesterday>` instead of banking a snapshot.** Then the workflow's capture step must drive a second run reporting `feed_generated_date:<today>`. Check `cron_logs` for both. | happy path verified 2026-08-10 (route returned `feed_generated_date:2026-08-10`, proceeded, snapshotted 1999). **Stale path untested — first real test is the 02:20 run on 08-11.** |
-| 2026-08-10 | `1f0a130` workflow capture step polls until the deploy serves today's book | tonight's run must show a "Capture price moves" step that succeeds, and `property_pricing_history` must finally gain a `reduced`/`increased` row on a day the market moves | pending — first live test 2026-08-11 |
-| 2026-08-10 | `1f0a130` `delisted` counts rows actually inserted | a run reporting `delisted:N` must be matched by N new `sold_properties` rows | pending — needs a day with a real delisting |
-| 2026-08-10 | `1f0a130` parse-feed sold-detection overlap guard | only fires on a broken feed; verify by reading the step log on a normal night (should be silent) | pending |
-| 2026-08-10 | `7e19292` GSC rolling 7-day backfill | tonight's run requests 08-04..08-10; `gsc_daily` must gain 08-08 and 08-09 | pending — first live test 2026-08-11 |
+| 2026-08-11 | `7478108` move diff baselined on the prior date, not today's row | tomorrow's capture must report `moves_baseline_refs` ≈ feed size. Zero there while `trusted_prior:true` means the diff went blind again | **VERIFIED same day** — live run reports `moves_detected:13, moves_baseline_refs:1999`, exactly the 13 reprices hand-diffed from the two books |
+| 2026-08-11 | `59c140d` dedupe read scoped to the refs being deduped | must not reappear as `statement timeout` in `errors` | **VERIFIED same day** — EXPLAIN ANALYZE Index Scan 3.8ms; live run `errors:null` |
+| 2026-08-11 | `779ac67` FK rejection named as `moves_ledger_blocked`, kept out of `errors` | tonight's nightly capture step must stay GREEN while the summary still names the block. If the run goes red, the classification is wrong | pending — first live test 2026-08-12 |
+| 2026-08-11 | `779ac67` workflow asserts `moves_baseline_refs>0` when `trusted_prior` | should be silent on a healthy night; it is the guard that would have caught today's bug | pending — first live test 2026-08-12 |
+| 2026-08-11 | branch `odyssey/move-ledger-fk` (NOT merged) | if Henrik applies it: `price_moves` must equal `moves_detected` and `moves_ledger_blocked` must go null | pending Henrik |
+
+**Yesterday's five items, resolved:**
+- `1f0a130` stale-feed gate — **VERIFIED, and the stale path finally fired.**
+  02:20 skipped with `feed_generated_date:2026-08-10`; the workflow polled
+  four more times (03:22:49 → 03:24:22, all skipped) and at 03:24:54 got
+  `2026-08-11` and captured 1,999. Working exactly as designed.
+- `1f0a130` workflow capture step — **structurally verified, goal REFUTED.**
+  The step ran and succeeded, but its stated purpose ("`property_pricing_history`
+  must finally gain a `reduced`/`increased` row") did not happen on a day
+  holding 13 real moves. Root cause found and it was not the workflow — see O-19.
+- `1f0a130` `delisted` counts rows actually inserted — **VERIFIED.** SP1540 left
+  the book; `parse-feed.js` tombstoned it at 03:22:31; the route then reported
+  `delisted:0` because it inserted 0 rows. Under the old code that would have
+  claimed 1. The count is now honest in the direction that used to lie.
+- `1f0a130` parse-feed sold-detection overlap guard — verified silent on a
+  normal night (overlap 0.999).
+- `7e19292` GSC rolling 7-day backfill — **VERIFIED.** `gsc_daily` gained
+  2026-08-08 (71 impressions), a day Google published late and the old
+  single-day capture would have lost forever. 08-09 not yet published by
+  Google, which is the normal 2–3 day lag.
 
 ## 2. OPEN — found, not yet fixed
 
 | # | what | evidence | why deferred | priority |
 |---|---|---|---|---|
-| O-12 | ~~Are model crawlers reaching us at all?~~ **ANSWERED 2026-08-10 — yes, daily.** GPTBot 423, Amazonbot 598, meta-externalagent 185, Bytespider 37, ChatGPT-User 31, TikTokSpider 11 in a 12h window. Full breakdown in `out/CRAWLER-REPORT-2026-08-10.md`. Two live questions remain, below. | Vercel log export, 13,620 requests, 11:07–23:06 CEST | — | closed |
-| O-17 | **The 2026-04-08 rows in `price_snapshots` have unverified provenance.** One row per ref, 1,881 of them — exactly the frozen `properties_registry` count. 688 refs show ≥2 distinct prices when it is included, but only 48 within the trustworthy 08-05.. window. | `price_snapshots`; CLAUDE.md on the registry freeze | deliberately EXCLUDED everywhere (`LEDGER_START` in `src/lib/observations.ts`). An April→August delta would be our most impressive-looking evidence and might be an artefact of the registry bug — the worst possible thing to publish while in doubt. Establish provenance before using it; it would roughly 14× the pages carrying a visible price change. | high |
-| O-18 | **Nothing captures crawler logs automatically.** The whole 2026-08-10 picture came from a hand export inside Vercel's ~1-day retention window, and two experiments now due 2026-08-25 need the same data to read out. | this session | a permanent crawler ledger (middleware → Supabase) was designed and deliberately not built — it runs on every request and is not a change to make at midnight. Until it exists, the read-outs depend on Henrik exporting by hand on the day. | high |
-| O-16 | **ClaudeBot went quiet after 08-06.** 1,901 requests on 08-04, 109 on 08-05, 472 on 08-06, then 2/3/0/0. It was the only crawler to fetch `/sitemap-ai.xml`, `/sitemap-images.xml` and `/sitemap-news.xml` — it used the AI sitemap built for it, then stopped. | 7-day export 2026-08-04..10 | may simply be its cycle (every crawler here bursts weekly), in which case it is due back. Do not act until a second week shows whether it returns — one absence is not a trend. | medium |
-| O-13 | **PerplexityBot made 1 request all day** — to `/press`. It holds the most generous allow-list in `robots.ts` (every `/api/v1/*` surface opened by name) and is the crawler the whole citation strategy is aimed at. The most-courted bot is the least present. | crawler report 2026-08-10 | cause unknown and must not be guessed at. Not a robots.txt problem — the rules are permissive. Could be crawl budget, could be that Perplexity fetches via a different agent, could be that we are simply not linked from anywhere it crawls. | high |
-| O-14 | **~28% of all traffic is machines that return nothing**: AwarioBot 2,849 requests (21%, incl. 578 hits on `/enquire`) and Lightpanda/1.0 915 requests (a headless browser carrying no bot marker). Neither feeds a model, a search index or a buyer. | crawler report 2026-08-10 | a `Disallow` or crawl-delay is the obvious move, but robots.txt changes are a live SEO signal and this is not urgent — it costs compute, not correctness | medium |
-| O-15 | **Vercel Analytics figures for 2026-08-10 are mostly machines** — 295 "visitors", 310 one-pager route views, 0 leads. The 50% of requests with no bot marker in the UA is not 50% humans: it contains Lightpanda, HeadlessChrome and a Firefox/121.0 block, executing largely in gru1 (São Paulo) and bom1 (Mumbai). | crawler report 2026-08-10 | the real human number is unknown, and no method currently separates them. **Never quote 08-10 as a traffic or ads baseline.** | high |
-| ~~O-12-old~~ | 2026-08-10 traffic spike unexplained: 295 visitors vs a ~40/day baseline, `/property/[ref]/one-pager` 310 route views, GNU/Linux 35% of a 91%-desktop mix, Singapore 32% + Brazil 13%, Norway 6%, and **0 leads** (08-09 produced 2 leads on ~40 visitors) | Vercel Analytics 2026-08-10 22:32 CEST; `leads` table by day; Vercel Logs 22:33 | **Read as a scraper at 22:35 and that was wrong** — see the correction below. Two measurements still disagree and neither has been reconciled: Analytics says Singapore/Linux, the logs sample says Mac/Stockholm. **Do not count 08-10 as a traffic or ads baseline either way** — 0 leads on 295 visitors means it is not comparable to a normal day. | high |
-| O-7 | `price_snapshots` rows for 2026-08-06..08-09 are a UNION of two books, not snapshots. 08-08 holds 1,996 rows = 1,981 (07 Aug book) ∪ 1,990 (08 Aug book). | proven by diffing the data.json blobs against the stored row counts | the cause is fixed as of `1f0a130`, but the already-polluted historical rows need a careful reconciliation. Deleting/rewriting existing rows is the branch-only category — needs its own day and a written plan. | high |
-| O-8 | 6 phantom delistings: SP1644, N9519, N9260, N8205, SP1625, SP1080 were tombstoned 08-07, resurrected into the 08-08 snapshot by the stale run, then "left" again on 08-09 | `sold_properties` vs `price_snapshots`; cron_logs 08-09 reported `delisted:6` while writing 0 rows | the tombstones themselves are CORRECT (last_seen 08-07 is right); only the phantom re-detection was wrong, and that path is now fixed. No data to repair. Kept here so the same refs are not re-investigated. | low |
-| O-9 | citation-measure ran only 68 of ~435 qb-v2 questions on 2026-08-10 (Aug 7 ran 420). Branded control ran 6, not 15. `/api/v1/citation-score` publishes `avena_rate_pct: 4.41` from that thin sample as if comparable to the 420-question run. | `citation_measurements` 2026-08-10 vs 2026-08-07 | needs the cause established before touching a published number — do not guess at a budget/quota story | high |
-| O-10 | `citation_measurements` still contains the fabricated-zero rows from the Perplexity 401 incident (08-02..08-06, 87 questions each, 0.00%) and two 0-question rows (08-08, 08-09) | table read | cannot distinguish "asked 87, genuinely 0 hits" from "asked 87, all lookups failed" from this table alone; the rolling-7d read path appears to skip them but that needs reading, not assuming. Never delete data. | medium |
-| O-1 | `if (!error) count += chunk` in 5 more places: `scribe/route.ts:48`, `eu-anomalies.ts:127`, `eu-stats-feeds.ts:663`, `eu-validation.ts:281`, `dvf-ingest` | real instances of the recurring shape | `score_history` healthy so not actively losing rows; the pricing-history instance (the one that mattered) is fixed | high |
+| O-19 | **`property_pricing_history` cannot accept ANY live ref.** `avn_prop_id` has a FK to `properties_registry(avn_prop_id) ON DELETE CASCADE`; that registry froze 2026-05-24 in a different key space — 60,792 rows, and **zero** of the 1,999 live refs appear in it. This is the deepest reason the table holds 394k `'listed'` rows and not one `'reduced'`/`'increased'`: the diff bug fixed today was standing in front of a wall. The CASCADE is a second hazard — cleaning the dead registry would delete the whole pricing history. | measured 2026-08-11; live run rejected all 13 moves on `property_pricing_history_avn_prop_id_fkey` | migration written and pushed to branch `odyssey/move-ledger-fk`; altering a constraint needs Henrik. **Nothing user-facing is blocked** — `price_snapshots` holds all 13 moves and is what `deltas.ts` reads. | high — BLOCKED |
+| O-20 | **Two independent writers of `price_snapshots` and `sold_properties`, with no coordination.** `parse-feed.js:1003` banks both from inside the GitHub runner before it even commits the book; the Vercel route banks them again minutes later. Today that ordering is what blinded the move diff. It works now, but the coupling is invisible from either file. | `parse-feed.js:962,1003`; write timestamps 03:22:31 vs 03:24:54 | not urgent — the route is now correct regardless of who wrote first — but the next person to change either side will not know the other exists. Wants a comment at both ends at minimum. | medium |
+| O-21 | **`sold_properties.last_seen_date` is stamped "today", not the date last actually seen.** SP1540 left the 08-11 book and was tombstoned with `last_seen_date: 2026-08-11`, but its last appearance was the 08-10 book. Every parse-feed tombstone is a day late. The route's own path uses `priorDate` and is correct; the two disagree. | SP1540 row vs `price_snapshots` | one-day provenance error in the absorption ledger — the moat's most defensible artifact. Worth fixing properly rather than at the end of a long session, and it needs a decision on whether to correct the existing tombstones. | high |
+| O-17 | **The 2026-04-08 rows in `price_snapshots` have unverified provenance.** One row per ref, 1,881 of them — exactly the frozen `properties_registry` count. 688 refs show ≥2 distinct prices when it is included, but only 48 within the trustworthy 08-05.. window. | `price_snapshots`; CLAUDE.md on the registry freeze | deliberately EXCLUDED everywhere (`LEDGER_START` in `src/lib/observations.ts`). An April→August delta would be our most impressive-looking evidence and might be an artefact of the registry bug — the worst possible thing to publish while in doubt. **O-19 makes this more likely to be an artefact, not less: the registry is exactly the frozen thing those rows smell of.** | high |
+| O-18 | **Nothing captures crawler logs automatically.** The whole 2026-08-10 picture came from a hand export inside Vercel's ~1-day retention window, and two experiments due 2026-08-25 need the same data to read out. | 2026-08-10 session | a permanent crawler ledger (middleware → Supabase) was designed and deliberately not built — it runs on every request. Until it exists, the read-outs depend on Henrik exporting by hand on the day. | high |
+| O-13 | **PerplexityBot made 31 requests in 7 days** — the crawler the whole citation strategy is aimed at, holding the most generous allow-list in `robots.ts`. The most-courted bot is the least present. | 7-day crawler export | cause unknown and must not be guessed at. Not a robots.txt problem — the rules are permissive. | high |
+| O-9 | citation-measure ran only 68 of ~435 qb-v2 questions on 2026-08-10 (Aug 7 ran 420). Branded control ran 6, not 15. `/api/v1/citation-score` publishes `avena_rate_pct: 4.41` from that thin sample as if comparable to the 420-question run. | `citation_measurements` | needs the cause established before touching a published number — do not guess at a budget/quota story. **Next citation day is Wed 2026-08-12** — check it there. | high |
 | O-5 | 186 of 492 indexed pages carry pre-transliteration accent slugs (`marbella-m-laga`, `j-vea-x-bia`); they hold 15 of 21 total clicks | `gsc_pages` 2026-08-07 | 301 shims already redirect old→new; need to confirm Google is consolidating rather than serving both | high |
 | O-6 | `/compare` is 293 of 492 indexed pages, 64% of impressions, 20 of 21 clicks | `gsc_pages` 2026-08-07 | not a defect — the highest-leverage surface on the site, and the least examined | high |
-| O-11 | corpus mirrors lag the site by a day: site v2026-08-10, `avena-data/market/` v2026-08-09, Hugging Face last modified 2026-08-09 | checked all three 2026-08-10 | mirroring is a manual `scripts/push-corpus-surfaces.py` run; automating it needs `HF_TOKEN` in CI (see BLOCKED) | medium |
+| O-7 | `price_snapshots` rows for 2026-08-06..08-09 are a UNION of two books, not snapshots. 08-08 holds 1,996 rows = 1,981 ∪ 1,990. | proven by diffing the data.json blobs against stored row counts | cause fixed as of `1f0a130` (confirmed today: 08-11 has exactly 1,999 rows from a single write). The already-polluted historical rows still need a careful reconciliation — branch-only, needs its own day. | high |
+| O-16 | **ClaudeBot went quiet after 08-06.** 1,901 requests on 08-04, then 2/3/0/0. It was the only crawler to fetch `/sitemap-ai.xml`. | 7-day export 2026-08-04..10 | may simply be its weekly cycle. Do not act until a second week shows whether it returns — one absence is not a trend. **Due back ~08-11..12; check the next export.** | medium |
+| O-14 | **~28% of traffic is machines that return nothing**: AwarioBot 20,664/7d (20.7%) and Lightpanda carrying no bot marker. | crawler report | a `Disallow` is the obvious move, but robots.txt changes are a live SEO signal and this costs compute, not correctness | medium |
+| O-15 | **Vercel Analytics figures for 2026-08-10 are mostly machines** — 295 "visitors", 0 leads. | crawler report 2026-08-10 | the real human number is unknown and no method currently separates them. **Never quote 08-10 as a traffic or ads baseline.** | high |
+| O-10 | `citation_measurements` still contains the fabricated-zero rows from the Perplexity 401 incident (08-02..08-06) and two 0-question rows (08-08, 08-09) | table read | cannot distinguish "asked 87, genuinely 0 hits" from "all lookups failed" from this table alone. Never delete data. | medium |
+| O-1 | `if (!error) count += chunk` in 5 more places: `scribe/route.ts:48`, `eu-anomalies.ts:127`, `eu-stats-feeds.ts:663`, `eu-validation.ts:281`, `dvf-ingest` | real instances of the recurring shape | `score_history` healthy so not actively losing rows; the pricing-history instance (the one that mattered) is fixed | high |
+| O-11 | corpus mirrors lag the site by a day: site v2026-08-11, `avena-data/market/` v2026-08-10 | checked all three 2026-08-11 | mirroring is a manual `scripts/push-corpus-surfaces.py` run; automating it needs `HF_TOKEN` in CI (see BLOCKED) | medium |
 | O-2 | `<html lang="en">` on the three `/no` pages while serving Norwegian | verified 2026-08-09 | per-route fix needs route-group root layouts (huge diff) or a dynamic root layout (kills static generation) | low — hreflang, the signal that matters, is already correct |
 | O-4 | Zenodo deposit frozen at 2026-04-11 | `zenodo.org/api/records/19520064` | publication is permanent; deliberately saved for a quarterly citable version | deliberate |
 
@@ -66,92 +86,69 @@ Flat. Any claimed effect must clear that noise band to mean anything.
 | started | hypothesis | change | metric | read-out | result |
 |---|---|---|---|---|---|
 | 2026-08-05 | Removing the site-wide canonical lets sub-pages re-index, lifting impressions | canonical + crawl-tree fixes | weekly impressions vs the 430–660 band | 2026-09-02 (4 weeks) | pending |
-| 2026-08-11 | Closing `/_next/image` and `/enquire` to bulk training crawlers moves ~25% of their budget onto content, so more of the 1,999-property book gets seen per pass | `4e96d3e` robots.txt, 14 bulk crawlers only | distinct properties fetched per crawler per pass, from a log export | 2026-08-25 (2 weeks — needs 2+ passes per crawler, and they burst roughly weekly) | pending |
-| 2026-08-11 | A dated, self-attributing observation sentence on every property page raises the ORGANIC citation rate, because it is the one claim on the site no other source can corroborate | `f665245` observed price record | organic citation rate (qb-v2, non-branded) vs the 6.19% full-run baseline | 2026-09-08 (4 weeks) | pending — needs O-9 fixed first or a thin question run reads as noise |
-| 2026-08-11 | A change-first `sitemap-ai.xml` with true `lastmod` gets changed properties recrawled sooner than unchanged ones | `f665245` | time between an observed price change and the next crawler hit on that ref, from log exports | 2026-08-25 (2 weeks) | pending — needs a log export cadence; nothing captures this automatically yet |
-| 2026-08-10 | ~~A bulk ingest of the one-pagers raises the organic citation rate~~ | ~~an external agent crawled 310 one-pagers~~ | — | — | **WITHDRAWN same day, before it could mislead.** The crawler was AhrefsBot, which builds a backlink index for an SEO tool and feeds no language model. The premise was wrong, so the experiment could only ever have produced a false negative: a flat citation rate on 09-07 would have read as "corpus seeding does not work" when no model crawler ever visited. See O-12. |
+| 2026-08-11 | Closing `/_next/image` and `/enquire` to bulk training crawlers moves ~25% of their budget onto content | `4e96d3e` robots.txt, 14 bulk crawlers only | distinct properties fetched per crawler per pass, from a log export | 2026-08-25 (2 weeks) | pending — needs O-18 |
+| 2026-08-11 | A dated, self-attributing observation sentence on every property page raises the ORGANIC citation rate | `f665245` observed price record | organic citation rate (qb-v2, non-branded) vs the 6.19% full-run baseline | 2026-09-08 (4 weeks) | pending — needs O-9 fixed first or a thin run reads as noise |
+| 2026-08-11 | A change-first `sitemap-ai.xml` with true `lastmod` gets changed properties recrawled sooner than unchanged ones | `f665245` | time between an observed price change and the next crawler hit on that ref | 2026-08-25 (2 weeks) | pending — needs O-18 |
 
-The 2026-08-10 row is an observation, not a shipped change — recorded as an
-experiment anyway because it has a testable consequence and a date. Whether it
-means anything at all depends on O-12, which is NOT settled.
-
-**Resolved 2026-08-10 22:42:** AhrefsBot, from Paris — and it is invited by
-name in `src/app/robots.ts:116`. Nothing was stolen and nothing is broken. The
-one thing worth carrying forward is a distinction that was blurred all
-evening: **an SEO index crawler is not a model crawler.** Ahrefs, Semrush and
-DotBot build backlink indexes for subscription tools. GPTBot, ClaudeBot,
-PerplexityBot and CCBot are the ones whose visits could plausibly move a
-citation rate. Only the second group is evidence about the corpus work, and
-none of them appeared on 08-10.
-
-**Correction, 2026-08-10 22:40 (same day):** the spike was called a scraper on
-the strength of route shape, OS mix and geography. Reading an actual request
-disproved it for that sample. `GET /property/N9363` carried `Prefetch: Yes`,
-the `_rsc` search param and `nxtPref`, referer `https://avenaterminal.com/`,
-a Macintosh user-agent, received in Stockholm. That is Next.js link
-prefetching from our own homepage — a real browser, not a harvester. It also
-explains the "parallel threads" tell: five properties inside one second is the
-homepage prefetching five links, and the repeated 304s on `/enquire` are the
-CTA being prefetched.
-
-What remains genuinely unexplained: Analytics reports Singapore 32% and
-GNU/Linux 35%, and prefetch requests do not reach the client-side analytics
-beacon at all — so the 310 one-pager ROUTE VIEWS cannot be explained away by
-what the logs just showed. Server logs and Analytics are measuring different
-things here and have not been reconciled. Resolve that before either the
-scraper story or the crawler-ingest story is written down as fact.
+No new experiment today. Today's work was pipeline correctness, which is not
+an SEO change and does not get a row — recording it as one would be exactly
+the manufactured-progress this file exists to prevent.
 
 ## 4. BASELINES — what the numbers were, so drift is detectable
 
 | metric | value | as of | source |
 |---|---|---|---|
-| AVM median absolute error | 15.78% (in-sample) | 2026-08-10 | `public/model-stats.json` — was 15.81%; moved with the new book, not with a code change |
+| AVM median absolute error | 15.78% (in-sample) | 2026-08-11 | `public/model-stats.json` — unchanged from 08-10 |
+| Live book | 1,999 listings | 2026-08-11 | `public/data.json` |
+| Sitemap | 2,649 `<loc>`, valid XML | 2026-08-11 | `/sitemap.xml` |
+| Corpus version | site v2026-08-11 · avena-data v2026-08-10 (lags, O-11) | 2026-08-11 | all surfaces |
+| **Real price moves by day** | 27 (08-06), 18 (08-07), 8 (08-08), 0 (08-09), 0 (08-10), **13 (08-11)** | 2026-08-11 | `price_snapshots`, diffed; the 08-09/08-10 zeros confirmed real by diffing the data.json blobs |
+| Snapshot rows by day | 1,990 → 1,999, one write per day since 08-11 | 2026-08-11 | `price_snapshots` — 08-11 is the first day written by a single capture (1,999 rows, no union) |
+| Delistings | SP1540 on 08-11 (1 new ref N9227 arrived) | 2026-08-11 | `sold_properties` |
+| Move events ever logged | **0** — structurally impossible, O-19 | 2026-08-11 | `property_pricing_history` |
 | Citation rate, organic (qb-v2) | 4.41% (3/68) — thin sample, see O-9 | 2026-08-10 | `citation_measurements` |
-| Citation rate, branded control | 83.33% (5/6) — thin sample, see O-9 | 2026-08-10 | `citation_measurements` |
 | Citation rate, organic — last full run | 6.19% (26/420) | 2026-08-07 | `citation_measurements` |
 | Citation rate, branded — last full run | 20.00% (3/15) | 2026-08-07 | `citation_measurements` |
 | Observation ledger | 6 days, 2,030 units, 53 moves, 21 tombstones | 2026-08-10 | `public/open-data/dataset.json` |
-| Real price moves by day | 27 (08-06), 18 (08-07), 8 (08-08), 0 (08-09), 0 (08-10) | 2026-08-10 | `price_snapshots`; the two zeros confirmed real by diffing the data.json blobs |
-| **Model-crawler share of all traffic** | **20.1%** (20,125 of 100,000 requests) | 2026-08-04..10 | Vercel log export, `scripts/crawler-log-report.py` |
+| **Model-crawler share of all traffic** | **20.1%** (20,125 of 100,000 requests) | 2026-08-04..10 | Vercel log export |
 | Model crawlers, 7-day totals | meta-externalagent 5,862 · GPTBot 4,130 · Amazonbot 3,241 · ClaudeBot 2,487 · Bytespider 1,950 · OAI-SearchBot 1,147 · TikTokSpider 1,070 · ChatGPT-User 206 · PerplexityBot 31 · xAI 1 | 2026-08-04..10 | same |
-| **ChatGPT-User, live retrieval** | **18–46/day, every one of 7 days** (28, 36, 28, 18, 24, 46, 26) | 2026-08-04..10 | same — the only model line that is a channel rather than an event |
-| Ingest pattern | one lab at a time, roughly weekly, in a single burst: ClaudeBot 1,901 on 08-04 · meta 4,460 on 08-08 · Bytespider 1,049 on 08-09 · GPTBot 4,117 on 08-10 (2/day the six days before) | 2026-08-04..10 | same — a quiet day for one crawler is its cycle, not a decline |
-| Non-model load | AwarioBot 20,664 (20.7%, larger than any single AI crawler) · 36.9% no-bot-UA, topped by 11,735 Chrome/Linux out of sin1 — datacentre, not buyers | 2026-08-04..10 | same |
-| Live book | 1,999 listings, 69 towns published (k>=5) | 2026-08-10 | `public/data.json` |
-| Sitemap | 2,649 `<loc>` | 2026-08-10 | `/sitemap.xml` |
+| **ChatGPT-User, live retrieval** | **18–46/day, every one of 7 days** | 2026-08-04..10 | same — the only model line that is a channel rather than an event |
+| Daily impressions, 08-04..08-08 | 57, 55, 44, 61, 71 | 2026-08-11 | `gsc_daily` |
 | Search impressions, last 28d | 1,906 (prior 28d: 2,087 — flat, -9%) | 2026-08-07 | `gsc_daily` |
 | Search clicks, last 28d | 21 (prior 28d: 22) | 2026-08-07 | `gsc_daily` |
-| Daily impressions, 08-01..08-07 | 59, 71, 63, 57, 55, 44, 61 | 2026-08-07 | `gsc_daily` — no deviation across the reported industry volatility window |
-| `gsc_daily` latest row | 2026-08-07 (08-08 pending Google) | 2026-08-10 | `gsc_daily` |
+| `gsc_daily` latest row | 2026-08-08 (08-09 pending Google) | 2026-08-11 | `gsc_daily` |
 | Indexed pages with impressions | 492, of which 186 carry pre-transliteration accent slugs | 2026-08-07 | `gsc_pages` |
 | /compare share | 293 of 492 pages · 64% of impressions · 20 of 21 clicks | 2026-08-07 | `gsc_pages` |
 
-**Correction, 2026-08-09 (kept):** an earlier reading of "traffic has halved
-(1,986 vs 4,068)" was wrong — the query moved the start date back 56 days
-while leaving the end fixed, comparing 28 days against 56. Real figures above:
-flat. Kept because a wrong baseline would make every future experiment read
-as a recovery.
+**Correction, 2026-08-09 (kept):** an earlier reading of "traffic has halved"
+was wrong — the query compared 28 days against 56. Real figures above: flat.
+Kept because a wrong baseline would make every future experiment read as a
+recovery.
 
 ## 5. BLOCKED — needs Henrik
 
 | what | why it matters | what is needed |
 |---|---|---|
+| **Branch `odyssey/move-ledger-fk`** | `property_pricing_history` cannot record a single live price move — an FK to a registry that froze in May rejects all 1,999 live refs (O-19). The route now detects moves correctly and watches them get rejected. The CASCADE on that FK also means cleaning the dead registry would delete the entire 394k-row history. | Review and merge the branch, then apply the migration to Supabase. One `ALTER TABLE ... DROP CONSTRAINT` plus an index. Nothing user-facing depends on it — `price_snapshots` already holds every move — so this is about reviving the event log, not about a live defect. |
 | `HF_TOKEN` in CI | Corpus mirrors are a manual script, so the site is a day ahead of `avena-data` and Hugging Face every day (O-11). Corpus filters resolve conflicts by cross-source agreement, so disagreeing surfaces actively weaken the claim. | Store the HF write token as a repo secret so the nightly job can push all three surfaces together. |
-| `actions:write` on the repo token | Odyssey got 403 dispatching a workflow, so it cannot re-run a failed nightly job itself — it can only report and wait a day. Today's run failed on GSC and could not be re-run. | Add the scope to the token it runs with. |
-| `GOOGLE_SEARCH_CONSOLE_KEY` in Vercel | The GitHub Actions secret is set, so the nightly capture works. Vercel does not have it, so no runtime route can read GSC. Only needed if a live surface should show it. | Paste the same service-account JSON into Vercel env vars. Low priority. |
+| `actions:write` on the repo token | Odyssey got 403 dispatching a workflow, so it cannot re-run a failed nightly job itself — it can only report and wait a day. | Add the scope to the token it runs with. |
+| `GOOGLE_SEARCH_CONSOLE_KEY` in Vercel | The GitHub Actions secret is set, so nightly capture works. Vercel does not have it, so no runtime route can read GSC. Only needed if a live surface should show it. | Paste the same service-account JSON into Vercel env vars. Low priority. |
 
 ## 6. CLOSED — resolved, kept so the same ground is not re-dug
 
 | closed | what | outcome |
 |---|---|---|
+| 2026-08-11 | move diff compared today's price against itself, guaranteeing `moves_detected:0` forever | `7478108` — baseline is the prior date; `moves_baseline_refs` makes a future zero interpretable |
+| 2026-08-11 | dedupe read seq-scanned 394k rows and hit `statement timeout` | `59c140d` — predicate leads with the refs being deduped; Index Scan 3.8ms |
+| 2026-08-11 | the FK rejection would have turned the nightly red every night | `779ac67` — named as `moves_ledger_blocked`, kept out of `errors`, checked on the live error string so it self-heals when the constraint drops |
+| 2026-08-11 | stale-feed gate untested on the stale path | fired correctly at 02:20; workflow polled to 03:24:54 and captured against the right book |
+| 2026-08-11 | GSC capture lost any day Google published late | `7e19292` verified — picked up 08-08 |
 | 2026-08-10 | pricing-history banked yesterday's book as today's snapshot | `1f0a130` — feed generation stamp + stale gate + workflow-driven capture |
-| 2026-08-10 | `delisted` counted rows offered, not rows written (reported 6, wrote 0) | `1f0a130` — counts RETURNING rows |
-| 2026-08-10 | parse-feed sold detection had no feed-overlap guard | `1f0a130` — the >=50% guard the route already had |
-| 2026-08-10 | GSC capture lost any day Google published late | `7e19292` — rolling 7-day window; the refusal-to-write-zero kept |
-| 2026-08-10 | `52a7217` feed-before-enrichment held under a real failure: GSC failed, feed `a0a297c` and corpus `dec278a` still committed, run went red at the gate | verified, working as designed |
-| 2026-08-09 | citation rate published fabricated zeros + blended branded control | `9171dce`; organic and branded now separate (unmeasured-day path still untested — see VERIFY) |
-| 2026-08-09 | `pingIndexNow` swallowed every error in an empty catch | returns a result; failures are logged and visible |
-| 2026-08-08 | `property_pricing_history` never logged a move | prior snapshot taken as global max date; fixed and merged — but note the table was STILL empty, because the route never saw a fresh book until `1f0a130` |
+| 2026-08-10 | `delisted` counted rows offered, not rows written | `1f0a130` — verified honest on SP1540 |
+| 2026-08-10 | parse-feed sold detection had no feed-overlap guard | `1f0a130` |
+| 2026-08-09 | citation rate published fabricated zeros + blended branded control | `9171dce` |
+| 2026-08-09 | `pingIndexNow` swallowed every error in an empty catch | returns a result; failures logged |
+| 2026-08-08 | `property_pricing_history` never logged a move — believed fixed | **that diagnosis was incomplete.** The prior-snapshot bug was real, but the table was ALSO structurally unwritable (O-19). Reopened and understood properly on 08-11. |
 | 2026-08-08 | every branch preview build red for days | four routes built Supabase clients at module top level with `process.env.X!` |
 | 2026-08-07 | site claimed "±3% RMSE" with no backtest in existence | measured; exposed a real model bug; 31.8% → 21.3% MAPE |
-| 2026-08-09 | O-3: no Search Console access — Odyssey was optimising blind | connected; `gsc_daily`/`gsc_pages` backfilled 90 days to 2026-05-10, captured nightly |
+| 2026-08-09 | O-3: no Search Console access | connected; `gsc_daily`/`gsc_pages` backfilled 90 days, captured nightly |
