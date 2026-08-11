@@ -51,7 +51,7 @@ export function CineHero() {
           alt="Clifftop villa at golden hour on the Spanish coast"
           width={1920}
           height={1280}
-          style={{ height: '100%', width: '100%', objectFit: 'cover', objectPosition: 'center 38%' }}
+          style={{ height: '100%', width: '100%', objectFit: 'cover', objectPosition: 'center 62%' }}
         />
       </div>
 
