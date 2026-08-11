@@ -39,20 +39,15 @@ export function WhatsAppButton() {
         visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3 pointer-events-none'
       }`}
       style={{
-        background: 'hsl(var(--av-background) / 0.92)',
-        border: '1px solid hsl(var(--av-border-strong))',
-        backdropFilter: 'blur(8px)',
-        boxShadow: 'var(--av-shadow-elevated)',
-        padding: '10px 16px 10px 10px',
+        // Native WhatsApp treatment (2026-08-11, Henrik: "fet og forseggjort,
+        // native logo og farge") — brand green, white glyph, green glow.
+        background: '#25D366',
+        boxShadow: '0 10px 30px rgb(37 211 102 / 0.4), inset 0 1px 0 rgb(255 255 255 / 0.25)',
+        padding: '12px 20px 12px 14px',
       }}
     >
-      <span
-        className="flex h-10 w-10 items-center justify-center rounded-full text-primary-foreground transition-transform group-hover:scale-105"
-        style={{ background: 'var(--av-gradient-gold)' }}
-      >
-        <WhatsAppIcon className="h-5 w-5" />
-      </span>
-      <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-foreground hidden sm:inline-block pr-1">
+      <WhatsAppIcon className="h-6 w-6 text-white transition-transform group-hover:scale-110" />
+      <span className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-white hidden sm:inline-block pr-1">
         Chat with Avena
       </span>
     </a>
