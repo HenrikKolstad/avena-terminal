@@ -57,21 +57,21 @@ export function CineHero() {
               the book weekly. Wording stays within what the logs prove. */}
           <div className="mt-7 flex flex-col items-start gap-3">
             <div className="flex flex-wrap items-stretch gap-3">
-              <a href="https://www.rics.org" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-5 border border-b-2 px-5 py-3 transition-colors hover:border-primary" style={{ borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
+              <a href="https://www.rics.org" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-5 border border-b-2 px-5 py-3 backdrop-blur-[2px] transition-colors hover:border-primary" style={{ background: 'hsl(20 15% 4% / 0.72)', borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
                 <span className="font-serif text-base tracking-[0.14em] text-foreground sm:text-lg">RICS</span>
                 <span className="max-w-[180px] font-mono text-[8px] uppercase leading-[1.7] tracking-[0.22em] sm:text-[9px]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Official Tech Partner 2026</span>
               </a>
-              <div className="inline-flex items-center gap-5 border border-b-2 px-5 py-3 transition-colors hover:border-primary" style={{ borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
+              <div className="inline-flex items-center gap-5 border border-b-2 px-5 py-3 backdrop-blur-[2px] transition-colors hover:border-primary" style={{ background: 'hsl(20 15% 4% / 0.72)', borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
                 <span className="font-serif text-base tracking-[0.14em] text-foreground sm:text-lg">Perplexity</span>
                 <span className="max-w-[200px] font-mono text-[8px] uppercase leading-[1.7] tracking-[0.22em] sm:text-[9px]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Cited Property Intelligence Source</span>
               </div>
             </div>
             <div className="flex flex-wrap items-stretch gap-3">
-              <div className="inline-flex items-center gap-5 border border-b-2 px-5 py-3 transition-colors hover:border-primary" style={{ borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
+              <div className="inline-flex items-center gap-5 border border-b-2 px-5 py-3 backdrop-blur-[2px] transition-colors hover:border-primary" style={{ background: 'hsl(20 15% 4% / 0.72)', borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
                 <span className="font-serif text-base tracking-[0.14em] text-foreground sm:text-lg">ChatGPT</span>
                 <span className="max-w-[180px] font-mono text-[8px] uppercase leading-[1.7] tracking-[0.22em] sm:text-[9px]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Reads Avena Daily</span>
               </div>
-              <div className="inline-flex items-center gap-5 border border-b-2 px-5 py-3 transition-colors hover:border-primary" style={{ borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
+              <div className="inline-flex items-center gap-5 border border-b-2 px-5 py-3 backdrop-blur-[2px] transition-colors hover:border-primary" style={{ background: 'hsl(20 15% 4% / 0.72)', borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
                 <span className="font-serif text-base tracking-[0.14em] text-foreground sm:text-lg">OpenAI · Anthropic · Meta · Amazon</span>
                 <span className="max-w-[160px] font-mono text-[8px] uppercase leading-[1.7] tracking-[0.22em] sm:text-[9px]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>In Training Corpora</span>
               </div>
