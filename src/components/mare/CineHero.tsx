@@ -18,7 +18,7 @@ export function CineHero() {
       {/* Base photograph (still) */}
       <div className="absolute inset-0 av-slow-zoom">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={HERO_SRC} alt="Cliffside seafront villa at golden hour on the Spanish coast" className="h-full w-full object-cover" width={1920} height={1200} />
+        <img src={HERO_SRC} alt="Cliffside seafront villa at golden hour on the Spanish coast" className="h-full w-full object-cover" style={{ height: '100%', width: '100%', objectFit: 'cover' }} width={1920} height={1200} />
       </div>
 
       {/* Cinematic scrims */}
@@ -26,7 +26,7 @@ export function CineHero() {
       <div className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(90deg, hsl(var(--av-background) / 0.62) 0%, transparent 55%, hsl(var(--av-background) / 0.25) 100%)' }} />
 
       {/* Copy */}
-      <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1500px] flex-col justify-end px-5 pb-28 pt-24 sm:px-8 lg:px-12 md:pb-28">
+      <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1500px] flex-col justify-end px-5 pb-44 pt-24 sm:px-8 sm:pb-28 lg:px-12">
         <div className="av-fade-up max-w-3xl">
           <div className="mb-6 flex items-center gap-4">
             <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
