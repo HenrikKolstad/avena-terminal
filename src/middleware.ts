@@ -74,9 +74,17 @@ function classify(ua: string): string | null {
   return null; // unnamed bots are not ledger-worthy; the log export covers them
 }
 
+// Asset requests carry no crawl-behaviour signal we act on — except
+// /_next/image, which IS the budget-waste metric, and is not caught here
+// because its path has no file extension.
+const ASSET = /\.(?:png|jpe?g|webp|avif|ico|css|js|map|woff2?|ttf|svg|txt)$/i;
+
 export function middleware(req: NextRequest, event: NextFetchEvent) {
   try {
     if (process.env.CRAWLER_LEDGER_DISABLED === '1') return NextResponse.next();
+
+    const path = req.nextUrl.pathname;
+    if (ASSET.test(path)) return NextResponse.next();
 
     const ua = req.headers.get('user-agent') ?? '';
     const crawler = classify(ua);
@@ -101,11 +109,17 @@ export function middleware(req: NextRequest, event: NextFetchEvent) {
         },
         body: JSON.stringify({
           crawler,
-          path: req.nextUrl.pathname.slice(0, 500),
+          path: path.slice(0, 500),
           ua: ua.slice(0, 300),
         }),
       }).catch(() => { /* rule 1: never in the way */ }),
     );
+
+    // Trace header on BOT responses only: proves the ledger saw the request
+    // without adding anything to human responses. Also how prod is verified.
+    const res = NextResponse.next();
+    res.headers.set('x-crawler-ledger', crawler);
+    return res;
   } catch {
     /* rule 1: never in the way */
   }
@@ -113,8 +127,11 @@ export function middleware(req: NextRequest, event: NextFetchEvent) {
 }
 
 export const config = {
-  // Static assets excluded: hits there are CDN-served and tell us nothing
-  // about crawl behaviour we act on. /_next/image IS included — it is the
+  // Deliberately simple: the first version used an extension-filtering regex
+  // (`.*\.(?:png|...)$` inside the lookahead) that Next's path-to-regexp
+  // matcher compiled without error and then matched NOTHING — the middleware
+  // never ran and the failure was silent. Asset filtering lives in code now,
+  // where it is plain RegExp. /_next/image stays included — it is the
   // budget-waste signal the robots change of 2026-08-11 is measured by.
-  matcher: ['/((?!_next/static|favicon\\.ico|.*\\.(?:png|jpg|jpeg|webp|avif|ico|css|js|woff2?)$).*)'],
+  matcher: ['/((?!_next/static|favicon.ico).*)'],
 };
