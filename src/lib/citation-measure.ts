@@ -157,7 +157,11 @@ export async function loadMeasurements(limit = 30): Promise<DailyMeasurement[]> 
       .gt('questions_asked', 0)
       // qb-v1 rates are a different ruler; splicing them onto the qb-v2 series
       // would make a change of measuring stick look like a change in the market.
-      .gte('date', BENCHMARK_EPOCH)
+      // Strictly AFTER the epoch: the epoch day itself (2026-08-07) carried the
+      // FINAL qb-v1 run — 420 questions banked hours before the v2 deploy — so
+      // `gte` quietly pooled 26 v1 hits into every published v2 rate
+      // ((26+3)/(420+68) ≈ 5.9%, a number measured against no ruler at all).
+      .gt('date', BENCHMARK_EPOCH)
       .order('date', { ascending: false })
       .limit(limit);
     if (error || !data) return [];
