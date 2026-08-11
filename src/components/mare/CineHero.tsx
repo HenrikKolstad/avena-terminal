@@ -45,45 +45,36 @@ export function CineHero() {
             Every new-build on the Costa Blanca, Cálida and del Sol, scored on discount-to-market, yield, and developer quality. The underpriced ones, surfaced first — with the data to prove it.
           </p>
 
-          {/* Credentials — matched thin-gold marques, stacked */}
+          {/* Credentials — Henrik's approved marque design (2026-08-11):
+              serif name on the LEFT, gold mono descriptor on the RIGHT
+              (wrapping to two lines), faint border with a gold base edge.
+              No dots, no internal divider.
+
+              Every AI claim is backed by our own crawler ledger
+              (crawler_hits) and the 2026-08-04..10 log audit: Perplexity
+              cites us, ChatGPT-User fetches pages daily to answer live
+              questions, and the four named labs' training crawlers ingest
+              the book weekly. Wording stays within what the logs prove. */}
           <div className="mt-7 flex flex-col items-start gap-3">
-            <a href="https://www.rics.org" target="_blank" rel="noopener noreferrer" className="inline-flex items-center border transition-colors hover:border-primary" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>
-              <span className="border-r px-3 py-2 font-serif text-sm tracking-[0.12em] text-foreground sm:px-4 sm:py-2.5 sm:text-base sm:tracking-[0.18em]" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>RICS</span>
-              <span className="flex items-center gap-2 px-3 py-2 sm:gap-2.5 sm:px-4 sm:py-2.5">
-                <span className="h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
-                <span className="font-mono text-[8px] uppercase tracking-[0.13em] whitespace-nowrap sm:text-[9px] sm:tracking-[0.35em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Official Tech Partner · 2026</span>
-              </span>
-            </a>
-            {/* AI-distribution marques. Every claim here is backed by our own
-                crawler ledger (crawler_hits) and the 2026-08-04..10 log audit:
-                Perplexity cites us, ChatGPT-User fetches pages daily to answer
-                live questions, and the four named labs' training crawlers
-                (GPTBot, ClaudeBot, meta-externalagent, Amazonbot) ingest the
-                book weekly. Wording stays within what the logs prove —
-                "read" and "in training corpora", never "powers" or
-                "official". */}
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="inline-flex items-center border transition-colors hover:border-primary" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>
-                <span className="flex items-center gap-2.5 border-r px-4 py-2.5" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>
-                  <span className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
-                  <span className="font-mono text-[8px] uppercase tracking-[0.13em] whitespace-nowrap sm:text-[9px] sm:tracking-[0.35em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Cited by</span>
-                </span>
-                <span className="px-3 py-2 font-serif text-sm tracking-[0.12em] text-foreground sm:px-4 sm:py-2.5 sm:text-base sm:tracking-[0.18em]">Perplexity</span>
-              </div>
-              <div className="inline-flex items-center border transition-colors hover:border-primary" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>
-                <span className="flex items-center gap-2.5 border-r px-4 py-2.5" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>
-                  <span className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
-                  <span className="font-mono text-[8px] uppercase tracking-[0.13em] whitespace-nowrap sm:text-[9px] sm:tracking-[0.35em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Read daily by</span>
-                </span>
-                <span className="px-3 py-2 font-serif text-sm tracking-[0.12em] text-foreground sm:px-4 sm:py-2.5 sm:text-base sm:tracking-[0.18em]">ChatGPT</span>
+            <div className="flex flex-wrap items-stretch gap-3">
+              <a href="https://www.rics.org" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-5 border border-b-2 px-5 py-3 transition-colors hover:border-primary" style={{ borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
+                <span className="font-serif text-base tracking-[0.14em] text-foreground sm:text-lg">RICS</span>
+                <span className="max-w-[180px] font-mono text-[8px] uppercase leading-[1.7] tracking-[0.22em] sm:text-[9px]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Official Tech Partner 2026</span>
+              </a>
+              <div className="inline-flex items-center gap-5 border border-b-2 px-5 py-3 transition-colors hover:border-primary" style={{ borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
+                <span className="font-serif text-base tracking-[0.14em] text-foreground sm:text-lg">Perplexity</span>
+                <span className="max-w-[200px] font-mono text-[8px] uppercase leading-[1.7] tracking-[0.22em] sm:text-[9px]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Cited Property Intelligence Source</span>
               </div>
             </div>
-            <div className="inline-flex items-center border transition-colors hover:border-primary" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>
-              <span className="flex items-center gap-2.5 border-r px-4 py-2.5" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>
-                <span className="h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
-                <span className="font-mono text-[8px] uppercase tracking-[0.13em] whitespace-nowrap sm:text-[9px] sm:tracking-[0.35em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>In training corpora</span>
-              </span>
-              <span className="px-3 py-2 font-serif text-sm tracking-[0.12em] text-foreground sm:px-4 sm:py-2.5 sm:text-base sm:tracking-[0.18em]">OpenAI · Anthropic · Meta · Amazon</span>
+            <div className="flex flex-wrap items-stretch gap-3">
+              <div className="inline-flex items-center gap-5 border border-b-2 px-5 py-3 transition-colors hover:border-primary" style={{ borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
+                <span className="font-serif text-base tracking-[0.14em] text-foreground sm:text-lg">ChatGPT</span>
+                <span className="max-w-[180px] font-mono text-[8px] uppercase leading-[1.7] tracking-[0.22em] sm:text-[9px]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Reads Avena Daily</span>
+              </div>
+              <div className="inline-flex items-center gap-5 border border-b-2 px-5 py-3 transition-colors hover:border-primary" style={{ borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
+                <span className="font-serif text-base tracking-[0.14em] text-foreground sm:text-lg">OpenAI · Anthropic · Meta · Amazon</span>
+                <span className="max-w-[160px] font-mono text-[8px] uppercase leading-[1.7] tracking-[0.22em] sm:text-[9px]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>In Training Corpora</span>
+              </div>
             </div>
           </div>
 
