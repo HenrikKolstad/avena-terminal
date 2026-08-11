@@ -136,9 +136,18 @@ export function Nav() {
               Pro
             </span>
           ) : null}
+          {/* Ghost-button treatment (2026-08-11): as plain muted text this sat
+              directly over the new hero's bright sunset sky and disappeared.
+              Thin gold border + dark glass backdrop keeps it legible on any
+              photograph without shouting. */}
           <Link
             href="/login"
-            className="hidden font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground transition-colors hover:text-foreground lg:inline"
+            className="hidden items-center rounded-sm border px-3.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.3em] backdrop-blur-[2px] transition-colors hover:border-primary hover:text-gold lg:inline-flex"
+            style={{
+              borderColor: 'hsl(var(--av-primary) / 0.45)',
+              background: 'hsl(20 15% 6% / 0.55)',
+              color: 'hsl(var(--av-foreground) / 0.9)',
+            }}
           >
             {user ? (isPaid ? 'Account' : 'Account') : 'Sign in'}
           </Link>
