@@ -213,6 +213,7 @@ export async function GET(req: NextRequest) {
   // zero baselines is this bug again.
   let priceMoves = 0;
   let movesSkipped: string | null = null;
+  let movesLedgerBlocked: string | null = null;
   let baselineRefs = 0;
   const inserts: Array<{ avn_prop_id: string; price_eur: number; source_portal: string; status: string }> = [];
   for (const p of feed) {
@@ -268,8 +269,33 @@ export async function GET(req: NextRequest) {
     for (let i = 0; i < inserts.length; i += 500) {
       const chunk = inserts.slice(i, i + 500);
       const { error } = await supabase.from('property_pricing_history').insert(chunk);
-      if (error) errors.push(`price_moves: ${error.message}`);
-      else priceMoves += chunk.length;
+      if (!error) {
+        priceMoves += chunk.length;
+        continue;
+      }
+      // property_pricing_history.avn_prop_id carries a FOREIGN KEY to
+      // properties_registry(avn_prop_id) ON DELETE CASCADE. That registry
+      // froze on 2026-05-24 and is keyed in a different space entirely:
+      // 60,792 rows, and ZERO of the 1,999 live RedSP refs appear in it. So
+      // the table cannot accept a row for any property currently on the
+      // market — which is the real reason it has never held one single
+      // 'reduced' or 'increased' event, underneath the diff bug that was
+      // masking it. Dropping the constraint is a schema change and sits on
+      // branch odyssey/move-ledger-fk awaiting Henrik.
+      //
+      // Detected, named, and reported — never silently zeroed. It is kept
+      // out of `errors` deliberately: the nightly capture is HEALTHY (every
+      // one of these moves is in price_snapshots, which is the ground truth
+      // deltas.ts reads), and turning the run red every night for a filed,
+      // approval-blocked schema issue would train the one alarm that matters
+      // to be ignored. The moment the FK is dropped this insert simply
+      // succeeds — the check is on the live error, not a hardcoded guess.
+      if (error.message.includes('property_pricing_history_avn_prop_id_fkey')) {
+        movesLedgerBlocked =
+          'FK to the frozen properties_registry rejects every live ref — see branch odyssey/move-ledger-fk';
+        break;
+      }
+      errors.push(`price_moves: ${error.message}`);
     }
   }
 
@@ -323,6 +349,9 @@ export async function GET(req: NextRequest) {
     // trusted_prior is true, the diff is blind and the zero is a lie.
     moves_baseline_refs: baselineRefs,
     moves_skipped: movesSkipped,
+    // A known structural block on the legacy event table, not a capture
+    // failure: the moves themselves are in price_snapshots either way.
+    moves_ledger_blocked: movesLedgerBlocked,
     delisted,
     prior_date: priorDate,
     prior_age_days: priorAgeDays === Infinity ? null : priorAgeDays,
