@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 export default function PropertyGallery({ images, alt }: { images: string[]; alt: string }) {
   const [idx, setIdx] = useState(0);
@@ -28,8 +29,20 @@ export default function PropertyGallery({ images, alt }: { images: string[]; alt
           borderColor: 'hsl(var(--av-border) / 0.6)',
         }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={images[idx]} alt={alt} className="w-full h-full object-cover" />
+        {/* next/image (2026-08-11): the feed CDN serves 150-400KB full-size
+            JPEGs; phones were downloading megabytes per gallery. Vercel now
+            transcodes to AVIF/WebP sized to the actual viewport. Explicit
+            width/height + 100% styles keep the layout byte-identical. */}
+        <Image
+          src={images[idx]}
+          alt={alt}
+          width={1200}
+          height={900}
+          sizes="(max-width: 1024px) 100vw, 66vw"
+          priority={idx === 0}
+          className="w-full h-full object-cover"
+          style={{ width: '100%', height: '100%' }}
+        />
         {images.length > 1 && (
           <>
             <button
@@ -81,8 +94,7 @@ export default function PropertyGallery({ images, alt }: { images: string[]; alt
                 opacity: idx === i ? 1 : 0.55,
               }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={img} alt="" className="w-full h-full object-cover" />
+              <Image src={img} alt="" width={128} height={88} sizes="64px" className="w-full h-full object-cover" style={{ width: '100%', height: '100%' }} />
             </button>
           ))}
         </div>

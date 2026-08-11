@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Search, Loader2 } from 'lucide-react';
+import Image from 'next/image';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 
@@ -232,11 +233,14 @@ export default function SemanticSearchPage() {
                 >
                   <div className="aspect-[16/10] overflow-hidden" style={{ background: 'hsl(var(--av-surface))' }}>
                     {r.image ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img
+                      <Image
                         src={r.image}
                         alt={r.project}
+                        width={640}
+                        height={400}
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        style={{ width: '100%', height: '100%' }}
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center font-mono text-[9px] uppercase tracking-[0.3em] text-foreground/30">

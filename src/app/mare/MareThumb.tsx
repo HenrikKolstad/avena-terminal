@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 
 /**
@@ -28,14 +29,21 @@ export function MareThumb({ src, alt }: { src: string | null; alt: string }) {
     );
   }
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
+    // next/image (2026-08-11): full-size feed JPEGs were shipped raw to
+    // phones. Optimization on; the pre-hydration dead-image check keeps
+    // working — next/image renders a real <img>, so ref/complete/
+    // naturalWidth behave exactly as before.
+    <Image
       ref={ref}
       src={src}
       alt={alt}
+      width={800}
+      height={560}
+      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
       loading="lazy"
       onError={() => setFailed(true)}
       className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
+      style={{ width: '100%', height: '100%' }}
     />
   );
 }
