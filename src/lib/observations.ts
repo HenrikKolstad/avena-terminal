@@ -26,15 +26,24 @@ import { supabase } from './supabase';
 import { supabaseAdmin } from './supabase-admin';
 
 /**
- * The trustworthy start of the ledger. `price_snapshots` also holds a single
- * 2026-04-08 row per ref, but the pricing-history cron wrote from the frozen
- * `properties_registry` until 2026-08-05, so anything before that date has
- * unverified provenance. An April→August delta would LOOK like our most
- * impressive evidence and might be an artefact of the bug — exactly the kind
- * of number that must not be published while it is in doubt. Excluded until
- * provenance is established (Odyssey O-17).
+ * The start of the DAILY series: from here the book is captured every night.
  */
 export const LEDGER_START = '2026-08-05';
+
+/**
+ * The first observation. The 2026-04-08 rows were excluded for three months
+ * as unverified (O-17: written during the frozen-registry era). PROVEN
+ * 2026-08-11: git commit b665f3a, authored 2026-04-08 19:22, contains that
+ * day's full 1,881-listing book, and its ref:price fingerprint (count, sum,
+ * md5) matches the database rows byte for byte. The snapshot is the real
+ * April feed, witnessed independently by git history.
+ *
+ * The honesty constraint that survives: between 2026-04-08 and LEDGER_START
+ * there are no observations. For a unit that differs across that gap we know
+ * THAT it moved, never WHEN — every consumer must render those as a range
+ * ("between 8 April and 5 August"), never as a dated event.
+ */
+export const FIRST_OBSERVATION = '2026-04-08';
 
 export interface PriceObservation {
   date: string;  // YYYY-MM-DD
@@ -50,8 +59,13 @@ export interface ObservationRecord {
   lastSeen: string;
   /** Number of days on which we captured this unit. */
   days: number;
-  /** Price changes, oldest first. Empty when the price never moved. */
-  changes: Array<{ date: string; from: number; to: number; pct: number }>;
+  /**
+   * Price changes, oldest first. Empty when the price never moved.
+   * `spanned` marks a change observed across a gap in the series (notably
+   * April→August): the movement is real, its date is not known — render as
+   * "between fromDate and date", never as an event on `date`.
+   */
+  changes: Array<{ date: string; fromDate: string; from: number; to: number; pct: number; spanned: boolean }>;
   /** Latest observed price. */
   current: number;
 }
@@ -77,7 +91,7 @@ export async function getObservationRecord(ref: string): Promise<ObservationReco
       .from('price_snapshots')
       .select('price, snapshot_date')
       .eq('ref', ref)
-      .gte('snapshot_date', LEDGER_START)
+      .gte('snapshot_date', FIRST_OBSERVATION)
       .order('snapshot_date', { ascending: true })
       .limit(400);
 
@@ -101,7 +115,15 @@ export async function getObservationRecord(ref: string): Promise<ObservationReco
       const from = points[i - 1].price;
       const to = points[i].price;
       if (from > 0 && to !== from) {
-        changes.push({ date: points[i].date, from, to, pct: ((to - from) / from) * 100 });
+        const gapDays = (Date.parse(points[i].date) - Date.parse(points[i - 1].date)) / 86_400_000;
+        changes.push({
+          date: points[i].date,
+          fromDate: points[i - 1].date,
+          from,
+          to,
+          pct: ((to - from) / from) * 100,
+          spanned: gapDays > 4,
+        });
       }
     }
 
@@ -205,9 +227,11 @@ export function longDate(iso: string): string {
  * so a model repeating it repeats the source with it.
  */
 export function observationSentence(rec: ObservationRecord): string {
+  // "checks", not "daily checks": the series is daily from LEDGER_START but
+  // anchored by a single verified observation on 2026-04-08.
   const span = rec.days === 1
     ? `on ${longDate(rec.firstSeen)}`
-    : `across ${rec.days} daily checks since ${longDate(rec.firstSeen)}`;
+    : `across ${rec.days} checks since ${longDate(rec.firstSeen)}`;
 
   if (!rec.changes.length) {
     return `Observed by Avena at €${rec.current.toLocaleString()}, unchanged ${span}.`;
@@ -216,6 +240,10 @@ export function observationSentence(rec: ObservationRecord): string {
   const last = rec.changes[rec.changes.length - 1];
   const dir = last.to < last.from ? 'reduced' : 'increased';
   const pct = Math.abs(last.pct).toFixed(1);
+  // A spanned change is real but undated inside the gap — say so.
+  const when = last.spanned
+    ? `between ${longDate(last.fromDate)} and ${longDate(last.date)}`
+    : `on ${longDate(last.date)}`;
   return `Observed by Avena: ${dir} ${pct}% from €${last.from.toLocaleString()} to ` +
-    `€${last.to.toLocaleString()} on ${longDate(last.date)}, ${span}.`;
+    `€${last.to.toLocaleString()} ${when}, ${span}.`;
 }

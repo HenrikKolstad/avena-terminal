@@ -265,7 +265,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                     <ul className="mt-2 space-y-0.5">
                       {obs.changes.map((c) => (
                         <li key={c.date} className="font-mono text-[11px] text-muted-foreground tabular">
-                          {longDate(c.date)} · €{c.from.toLocaleString()} → €{c.to.toLocaleString()}{' '}
+                          {c.spanned ? `${longDate(c.fromDate)} – ${longDate(c.date)}` : longDate(c.date)} · €{c.from.toLocaleString()} → €{c.to.toLocaleString()}{' '}
                           <span style={{ color: c.to < c.from ? 'hsl(var(--av-primary))' : undefined }}>
                             ({c.pct > 0 ? '+' : ''}{c.pct.toFixed(1)}%)
                           </span>
