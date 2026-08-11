@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse, NextFetchEvent } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * Crawler ledger (O-18) — observation only, nothing more.
@@ -12,11 +12,12 @@ import { NextRequest, NextResponse, NextFetchEvent } from 'next/server';
  *
  * Design constraints, in order of importance:
  *
- *  1. NEVER in the way. The write is fire-and-forget via `event.waitUntil`;
- *     the response does not wait for it. Every path is wrapped so a Supabase
- *     outage, a bad env, or a bug here degrades to "no row written", never to
- *     a slow or failed page. The crawlers finally arriving is the one thing
- *     this project must not jeopardise.
+ *  1. NEVER in the way. The write is awaited with a hard 1.5s abort — see
+ *     the note at the call site for why fire-and-forget was abandoned. Every
+ *     path is wrapped so a Supabase outage, a bad env, or a bug here degrades
+ *     to "no row written", never to a failed page — and a slow Supabase costs
+ *     a bot at most 1.5s, never a hang. The crawlers finally arriving is the
+ *     one thing this project must not jeopardise.
  *  2. Humans are not logged. The UA regex gate is the first statement; a
  *     normal visitor costs one failed regex test and nothing else. No
  *     cookies, no fingerprinting, no personal data — bots only.
@@ -79,7 +80,7 @@ function classify(ua: string): string | null {
 // because its path has no file extension.
 const ASSET = /\.(?:png|jpe?g|webp|avif|ico|css|js|map|woff2?|ttf|svg|txt)$/i;
 
-export function middleware(req: NextRequest, event: NextFetchEvent) {
+export function middleware(req: NextRequest) {
   try {
     if (process.env.CRAWLER_LEDGER_DISABLED === '1') return NextResponse.next();
 
@@ -94,36 +95,47 @@ export function middleware(req: NextRequest, event: NextFetchEvent) {
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!url || !key) return NextResponse.next();
 
-    // Fire-and-forget: the page never waits for the ledger. A failed insert
-    // is a missing row, not a failed request — and deliberately NOT retried,
-    // because a retry storm during a Supabase incident would be this file
-    // violating its own first rule.
-    event.waitUntil(
-      fetch(`${url}/rest/v1/crawler_hits`, {
-        method: 'POST',
-        headers: {
-          apikey: key,
-          authorization: `Bearer ${key}`,
-          'content-type': 'application/json',
-          prefer: 'return=minimal',
-        },
-        body: JSON.stringify({
-          crawler,
-          path: path.slice(0, 500),
-          ua: ua.slice(0, 300),
-        }),
-      }).catch(() => { /* rule 1: never in the way */ }),
-    );
-
-    // Trace header on BOT responses only: proves the ledger saw the request
-    // without adding anything to human responses. Also how prod is verified.
-    const res = NextResponse.next();
-    res.headers.set('x-crawler-ledger', crawler);
-    return res;
+    // Awaited, not fire-and-forget — a deliberate reversal. The first
+    // version used event.waitUntil and the promise was silently dropped
+    // under the deprecated middleware convention: header set, no row ever
+    // written, nothing failed loudly. This path only runs for BOTS, so the
+    // ~50-150ms is added to crawler requests exclusively; humans exited at
+    // the classify() gate above. The 1,500ms AbortController is rule 1 in
+    // mechanism form: a slow Supabase costs a bot at most 1.5s, never hangs
+    // a crawl. Failures are still not retried.
+    return fetchAndTrace(url, key, crawler, path, ua);
   } catch {
     /* rule 1: never in the way */
   }
   return NextResponse.next();
+}
+
+async function fetchAndTrace(url: string, key: string, crawler: string, path: string, ua: string) {
+  let status = 'err';
+  try {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 1500);
+    const r = await fetch(`${url}/rest/v1/crawler_hits`, {
+      method: 'POST',
+      headers: {
+        apikey: key,
+        authorization: `Bearer ${key}`,
+        'content-type': 'application/json',
+        prefer: 'return=minimal',
+      },
+      body: JSON.stringify({ crawler, path: path.slice(0, 500), ua: ua.slice(0, 300) }),
+      signal: ctl.signal,
+    });
+    clearTimeout(timer);
+    status = String(r.status);
+  } catch {
+    /* rule 1 */
+  }
+  // Trace header on BOT responses only, now carrying the REST status so a
+  // silent write failure is observable from a single curl.
+  const res = NextResponse.next();
+  res.headers.set('x-crawler-ledger', `${crawler};${status}`);
+  return res;
 }
 
 export const config = {
