@@ -14,7 +14,7 @@ const HERO_SRC = '/mare/hero.jpg';
 
 export function CineHero() {
   return (
-    <section className="relative h-[100svh] min-h-[680px] w-full overflow-hidden">
+    <section className="relative min-h-[100svh] w-full overflow-hidden">
       {/* Base photograph (still) */}
       <div className="absolute inset-0 av-slow-zoom">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -26,7 +26,7 @@ export function CineHero() {
       <div className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(90deg, hsl(var(--av-background) / 0.62) 0%, transparent 55%, hsl(var(--av-background) / 0.25) 100%)' }} />
 
       {/* Copy */}
-      <div className="relative z-10 mx-auto flex h-full max-w-[1500px] flex-col justify-end px-5 pb-24 pt-28 sm:px-8 lg:px-12 md:pb-28">
+      <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1500px] flex-col justify-end px-5 pb-28 pt-24 sm:px-8 lg:px-12 md:pb-28">
         <div className="av-fade-up max-w-3xl">
           <div className="mb-6 flex items-center gap-4">
             <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
@@ -55,25 +55,34 @@ export function CineHero() {
               cites us, ChatGPT-User fetches pages daily to answer live
               questions, and the four named labs' training crawlers ingest
               the book weekly. Wording stays within what the logs prove. */}
-          <div className="mt-7 flex flex-col items-start gap-3">
+          {/* Phone: no boxes — four quiet mono lines behind a gold rule.
+              Desktop keeps the bordered marques. */}
+          <div className="mt-6 flex flex-col gap-1.5 border-l pl-4 sm:hidden" style={{ borderColor: 'hsl(var(--av-primary) / 0.6)' }}>
+            <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-foreground/80">RICS <span style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>· Official Tech Partner 2026</span></p>
+            <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-foreground/80">Perplexity <span style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>· Cited Source</span></p>
+            <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-foreground/80">ChatGPT <span style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>· Reads Avena Daily</span></p>
+            <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-foreground/80">OpenAI · Anthropic · Meta · Amazon <span style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>· Training Corpora</span></p>
+          </div>
+
+          <div className="mt-7 hidden flex-col items-start gap-3 sm:flex">
             <div className="flex flex-wrap items-stretch gap-3">
-              <a href="https://www.rics.org" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-5 border border-b-2 px-5 py-3 backdrop-blur-[2px] transition-colors hover:border-primary" style={{ background: 'hsl(20 15% 4% / 0.72)', borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
-                <span className="font-serif text-base tracking-[0.14em] text-foreground sm:text-lg">RICS</span>
-                <span className="max-w-[180px] font-mono text-[8px] uppercase leading-[1.7] tracking-[0.22em] sm:text-[9px]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Official Tech Partner 2026</span>
+              <a href="https://www.rics.org" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 border border-b-2 px-3.5 py-2 backdrop-blur-[2px] transition-colors hover:border-primary sm:gap-5 sm:px-5 sm:py-3" style={{ background: 'hsl(20 15% 4% / 0.72)', borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
+                <span className="font-serif text-sm tracking-[0.1em] text-foreground sm:text-lg sm:tracking-[0.14em]">RICS</span>
+                <span className="max-w-[150px] font-mono text-[7.5px] uppercase leading-[1.6] tracking-[0.16em] sm:max-w-[180px] sm:text-[9px] sm:tracking-[0.22em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Official Tech Partner 2026</span>
               </a>
-              <div className="inline-flex items-center gap-5 border border-b-2 px-5 py-3 backdrop-blur-[2px] transition-colors hover:border-primary" style={{ background: 'hsl(20 15% 4% / 0.72)', borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
-                <span className="font-serif text-base tracking-[0.14em] text-foreground sm:text-lg">Perplexity</span>
-                <span className="max-w-[200px] font-mono text-[8px] uppercase leading-[1.7] tracking-[0.22em] sm:text-[9px]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Cited Property Intelligence Source</span>
+              <div className="inline-flex items-center gap-3 border border-b-2 px-3.5 py-2 backdrop-blur-[2px] transition-colors hover:border-primary sm:gap-5 sm:px-5 sm:py-3" style={{ background: 'hsl(20 15% 4% / 0.72)', borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
+                <span className="font-serif text-sm tracking-[0.1em] text-foreground sm:text-lg sm:tracking-[0.14em]">Perplexity</span>
+                <span className="max-w-[170px] font-mono text-[7.5px] uppercase leading-[1.6] tracking-[0.16em] sm:max-w-[200px] sm:text-[9px] sm:tracking-[0.22em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Cited Property Intelligence Source</span>
               </div>
             </div>
             <div className="flex flex-wrap items-stretch gap-3">
-              <div className="inline-flex items-center gap-5 border border-b-2 px-5 py-3 backdrop-blur-[2px] transition-colors hover:border-primary" style={{ background: 'hsl(20 15% 4% / 0.72)', borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
-                <span className="font-serif text-base tracking-[0.14em] text-foreground sm:text-lg">ChatGPT</span>
-                <span className="max-w-[180px] font-mono text-[8px] uppercase leading-[1.7] tracking-[0.22em] sm:text-[9px]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Reads Avena Daily</span>
+              <div className="inline-flex items-center gap-3 border border-b-2 px-3.5 py-2 backdrop-blur-[2px] transition-colors hover:border-primary sm:gap-5 sm:px-5 sm:py-3" style={{ background: 'hsl(20 15% 4% / 0.72)', borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
+                <span className="font-serif text-sm tracking-[0.1em] text-foreground sm:text-lg sm:tracking-[0.14em]">ChatGPT</span>
+                <span className="max-w-[150px] font-mono text-[7.5px] uppercase leading-[1.6] tracking-[0.16em] sm:max-w-[180px] sm:text-[9px] sm:tracking-[0.22em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>Reads Avena Daily</span>
               </div>
-              <div className="inline-flex items-center gap-5 border border-b-2 px-5 py-3 backdrop-blur-[2px] transition-colors hover:border-primary" style={{ background: 'hsl(20 15% 4% / 0.72)', borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
-                <span className="font-serif text-base tracking-[0.14em] text-foreground sm:text-lg">OpenAI · Anthropic · Meta · Amazon</span>
-                <span className="max-w-[160px] font-mono text-[8px] uppercase leading-[1.7] tracking-[0.22em] sm:text-[9px]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>In Training Corpora</span>
+              <div className="inline-flex items-center gap-3 border border-b-2 px-3.5 py-2 backdrop-blur-[2px] transition-colors hover:border-primary sm:gap-5 sm:px-5 sm:py-3" style={{ background: 'hsl(20 15% 4% / 0.72)', borderColor: 'hsl(var(--av-primary) / 0.25)', borderBottomColor: 'hsl(var(--av-primary) / 0.75)' }}>
+                <span className="font-serif text-sm tracking-[0.1em] text-foreground sm:text-lg sm:tracking-[0.14em]">OpenAI · Anthropic · Meta · Amazon</span>
+                <span className="max-w-[140px] font-mono text-[7.5px] uppercase leading-[1.6] tracking-[0.16em] sm:max-w-[160px] sm:text-[9px] sm:tracking-[0.22em]" style={{ color: 'hsl(var(--av-primary) / 0.92)' }}>In Training Corpora</span>
               </div>
             </div>
           </div>
