@@ -124,7 +124,10 @@ export default function SemanticSearchPage() {
             </p>
 
             {/* Search bar */}
-            <div
+            {/* A real form so Enter and mobile keyboards' "go" submit natively,
+                instead of depending on a keydown listener. */}
+            <form
+              onSubmit={(e) => { e.preventDefault(); handleSearch(); }}
               className="mx-auto mt-9 flex max-w-2xl items-center gap-3 border px-5 py-4"
               style={{ background: 'hsl(var(--av-surface) / 0.5)', borderColor: 'hsl(var(--av-primary) / 0.35)' }}
             >
@@ -133,19 +136,18 @@ export default function SemanticSearchPage() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 placeholder="Ref (SP1518) or e.g. 3-bed villa near beach under €350k"
                 className="flex-1 bg-transparent font-serif text-sm font-light text-foreground outline-none placeholder:text-foreground/35 sm:text-base"
               />
               <button
-                onClick={handleSearch}
+                type="submit"
                 disabled={loading || !query.trim()}
                 className="shrink-0 px-6 py-2.5 font-mono text-[10px] uppercase tracking-[0.3em] text-primary-foreground transition hover:-translate-y-0.5 disabled:opacity-40"
                 style={{ background: 'hsl(var(--av-primary) / 0.9)' }}
               >
                 {loading ? <Loader2 size={14} className="animate-spin" /> : 'Search'}
               </button>
-            </div>
+            </form>
 
             {/* Suggestions */}
             {!data && !loading && (
