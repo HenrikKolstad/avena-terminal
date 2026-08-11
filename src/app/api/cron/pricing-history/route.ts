@@ -238,9 +238,16 @@ export async function GET(req: NextRequest) {
   const movesDetected = inserts.length;
   let movesAlreadyLogged = 0;
   if (inserts.length) {
+    // Scoped to the refs actually being inserted, not to the whole day. The
+    // table's only usable index is (avn_prop_id, recorded_at DESC), so a
+    // date-only filter cannot use it and seq-scans 394k rows — that query
+    // died on `statement timeout` in production on 2026-08-11. Leading with
+    // the refs makes the read proportional to the moves we found (13 today),
+    // not to the size of the history.
     const { data: loggedToday, error: dedupeErr } = await supabase
       .from('property_pricing_history')
       .select('avn_prop_id, price_eur')
+      .in('avn_prop_id', inserts.map((r) => r.avn_prop_id))
       .gte('recorded_at', `${today}T00:00:00Z`);
     // Never silently fall through to writing duplicates: if we cannot read
     // what is already there, we cannot claim these are new observations.
