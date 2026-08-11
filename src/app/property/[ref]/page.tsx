@@ -269,9 +269,12 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                           {c.unitMix
                             ? `unit ${c.unitMix.fromM2} m² → ${c.unitMix.toM2} m² · €${c.from.toLocaleString()} → €${c.to.toLocaleString()}`
                             : `€${c.from.toLocaleString()} → €${c.to.toLocaleString()}`}{' '}
-                          <span style={{ color: c.to < c.from ? 'hsl(var(--av-primary))' : undefined }}>
-                            ({c.pct > 0 ? '+' : ''}{c.pct.toFixed(1)}%)
-                          </span>
+                          {/* A % on a unit swap compares two different flats — omit it. */}
+                          {!c.unitMix && (
+                            <span style={{ color: c.to < c.from ? 'hsl(var(--av-primary))' : undefined }}>
+                              ({c.pct > 0 ? '+' : ''}{c.pct.toFixed(1)}%)
+                            </span>
+                          )}
                         </li>
                       ))}
                     </ul>
