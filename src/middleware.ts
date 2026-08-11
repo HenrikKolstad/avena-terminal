@@ -122,6 +122,12 @@ async function fetchAndTrace(url: string, key: string, crawler: string, path: st
         authorization: `Bearer ${key}`,
         'content-type': 'application/json',
         prefer: 'return=minimal',
+        // This project's PostgREST default schema is 'api' (which is empty);
+        // supabase-js works because it always sends the profile header for
+        // 'public'. A raw fetch must say it explicitly — without it the
+        // insert 404s as 'api.crawler_hits'. Content-Profile is the POST
+        // variant of Accept-Profile.
+        'content-profile': 'public',
       },
       body: JSON.stringify({ crawler, path: path.slice(0, 500), ua: ua.slice(0, 300) }),
       signal: ctl.signal,
