@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Search, Loader2, ArrowLeft } from 'lucide-react';
 interface SearchResult {
@@ -41,9 +42,20 @@ export default function SemanticSearchPage() {
   const [data, setData] = useState<SearchResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const router = useRouter();
+
   const handleSearch = async () => {
     const q = query.trim();
     if (!q || loading) return;
+
+    // Reference lookup: "SP1518" or "N7745" (any case, optional whitespace)
+    // goes straight to the property page instead of burning a semantic-search
+    // call on an exact identifier. Unknown refs land on the real 404.
+    const ref = q.replace(/\s+/g, '').toUpperCase();
+    if (/^(?:SP|N)\d{3,5}$/.test(ref)) {
+      router.push(`/property/${ref}`);
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -126,7 +138,7 @@ export default function SemanticSearchPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            placeholder="e.g. 3-bed villa near beach under €350k with sea views"
+            placeholder="Ref (SP1518) or e.g. 3-bed villa near beach under €350k"
             className="flex-1 bg-transparent text-white text-sm outline-none placeholder:text-gray-600"
           />
           <button

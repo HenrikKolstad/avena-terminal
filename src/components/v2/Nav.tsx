@@ -16,6 +16,10 @@ import { useAuth } from '@/context/AuthContext';
 interface NavItem { label: string; href: string; live?: boolean }
 
 const NAV: NavItem[] = [
+  // Search was an orphan page — built, working, linked from nowhere. Added
+  // here 2026-08-11 on Henrik's ask for a ref search bar; the search page now
+  // routes "SP1518"-style refs straight to the property dossier.
+  { label: 'Search',       href: '/search' },
   { label: 'Deals',        href: '/deals', live: true },
   { label: 'Regions',      href: '/regions' },
   { label: 'Avena Engine', href: '/engine' },
