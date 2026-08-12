@@ -4,13 +4,17 @@ import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
-// Log MCP call for "Cited by AI" counter + agent tracking
-async function logMcpCall(userAgent: string | null, agentId: string | null) {
+// Log MCP call for "Cited by AI" counter + agent tracking.
+// `tool` is the JSON-RPC method (and tool name for tools/call) so the ledger
+// records WHAT agents ask, not just that they asked — the query stream is
+// its own dataset.
+async function logMcpCall(userAgent: string | null, agentId: string | null, tool: string | null) {
   try {
     if (supabase) {
       await supabase.from('mcp_calls').insert({
         user_agent: userAgent || 'unknown',
         agent_id: agentId || null,
+        tool: tool || null,
         called_at: new Date().toISOString(),
       });
 
@@ -25,9 +29,15 @@ async function logMcpCall(userAgent: string | null, agentId: string | null) {
 // Stateless MCP transport — each request is self-contained
 // No session management needed for read-only property data
 async function handleMcpRequest(req: Request): Promise<Response> {
-  // Log the call (non-blocking)
+  // Log the call (non-blocking). Body is read from a clone so the transport
+  // still receives the untouched request stream.
   const agentId = req.headers.get('x-avena-agent-id');
-  logMcpCall(req.headers.get('user-agent'), agentId);
+  let tool: string | null = null;
+  try {
+    const body = await req.clone().json();
+    tool = body?.method === 'tools/call' ? `tools/call:${body?.params?.name ?? '?'}` : (body?.method ?? null);
+  } catch { /* non-JSON body — log without tool */ }
+  logMcpCall(req.headers.get('user-agent'), agentId, tool);
 
   const server = createAvenaServer();
 
@@ -58,9 +68,9 @@ export async function GET() {
   return new Response(
     JSON.stringify({
       name: 'avena-terminal',
-      version: '1.1.0',
-      description: "Avena Terminal MCP Server — Live scored data for 1,881 new build properties in Spain. Search, filter, analyze, estimate ROI, compare alternatives, and assess market timing.",
-      tools: ['search_properties', 'get_property', 'get_market_stats', 'get_top_deals', 'estimate_roi', 'compare_alternatives', 'market_timing'],
+      version: '1.2.0',
+      description: "Avena Terminal MCP Server — Live scored data for Spanish coastal new-builds PLUS the observation ledger no portal keeps: per-property asking-price history, observed repricings, delistings with final prices, and the AVENA Index. Search, filter, analyze, estimate ROI, and ask about price CHANGE, not just state.",
+      tools: ['search_properties', 'get_property', 'get_market_stats', 'get_top_deals', 'estimate_roi', 'compare_alternatives', 'market_timing', 'get_price_history', 'get_recent_price_moves', 'get_delistings', 'get_avena_index'],
       documentation: 'https://avenaterminal.com/mcp-server',
       source: 'https://avenaterminal.com',
     }),

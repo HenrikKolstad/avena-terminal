@@ -2,6 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, avg, slugify } from '@/lib/properties';
 import { Property } from '@/lib/types';
+import { registerLedgerTools } from '@/mcp/ledger-tools';
 
 // Fixed exchange rates (approximate) — British + Scandinavian buyers = 80% of audience
 const FX = { EUR: 1, GBP: 0.85, NOK: 11.2, SEK: 11.5, DKK: 7.45, USD: 1.08, CHF: 0.97 };
@@ -497,6 +498,10 @@ export function createAvenaServer() {
       };
     },
   );
+
+  // Tools 8–11: the observation ledger — price history, moves, delistings,
+  // AVENA index. The data that exists nowhere but here.
+  registerLedgerTools(server);
 
   return server;
 }
