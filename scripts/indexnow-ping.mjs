@@ -25,10 +25,15 @@ const KEY = '4f84907ad33847609c8245f3f3b44908'; // public by protocol design; se
 
 const book = JSON.parse(readFileSync(new URL('../public/data.json', import.meta.url)));
 
+// Mirrors src/lib/properties.ts slugify — town slugs are the FULL location
+// ("Estepona, Málaga" → estepona-malaga), not just the town word.
+const slugify = (s) => s
+  .normalize('NFD').replace(/[̀-ͯ]/g, '')
+  .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
 const towns = new Set();
 for (const p of book) {
-  const town = (p.l || '').split(',')[0].trim();
-  if (town) towns.add(town.toLowerCase().replace(/\s+/g, '-').normalize('NFD').replace(/[̀-ͯ]/g, ''));
+  if (p.l) towns.add(slugify(p.l));
 }
 
 const urls = [
