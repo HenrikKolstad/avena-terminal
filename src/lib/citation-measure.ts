@@ -13,7 +13,7 @@
  */
 
 import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
-import { isBranded, BENCHMARK_EPOCH } from '@/lib/citation-agent';
+import { isBranded, BENCHMARK_EPOCH, BENCHMARK_QUESTIONS } from '@/lib/citation-agent';
 
 export interface DailyMeasurement {
   date: string;
@@ -27,6 +27,31 @@ export interface DailyMeasurement {
   branded_rate: number | null; // null when the control was not asked
   competitor_share: Record<string, number>;
   top_gap_question: string | null;
+  /**
+   * How many questions the bank INTENDED to ask, against which the counts above
+   * are the achieved coverage. Null on rows written before this was recorded.
+   *
+   * citation-agent deliberately persists only successful lookups, so a failed
+   * lookup never becomes a fabricated zero. The cost of that correct choice is
+   * that the rollup reads citation_monitoring and cannot see what is missing:
+   * on 2026-08-12, 29 of 74 lookups failed and the day stored questions_asked:42
+   * — indistinguishable from a bank that simply has 42 questions. The rate was
+   * then published as 4.76% next to a 4.41% (3/68) baseline measured on a
+   * different, larger subset. Recording the intended size makes a partial run
+   * self-describing, so no read path can mistake 62% coverage for a whole day.
+   */
+  bank_organic: number | null;
+  bank_branded: number | null;
+}
+
+/**
+ * A run is comparable to another only if it actually asked the whole bank.
+ * Unknown coverage (pre-2026-08-12 rows) is NOT treated as complete — an
+ * unproven claim of completeness is the thing this field exists to prevent.
+ */
+export function isCompleteRun(m: DailyMeasurement): boolean {
+  if (m.bank_organic === null || m.bank_branded === null) return false;
+  return m.questions_asked === m.bank_organic && m.branded_questions === m.bank_branded;
 }
 
 const COMPETITOR_PATTERNS: Record<string, RegExp> = {
@@ -105,6 +130,11 @@ export async function rollupDay(dateStr?: string): Promise<DailyMeasurement | nu
 
   const top_gap_question = gaps[0]?.question ?? null;
 
+  // Measured against what the bank was designed to ask, not against how many
+  // rows happened to arrive. This is the only place both numbers are known.
+  const bank_branded = BENCHMARK_QUESTIONS.filter((b) => isBranded(b.q)).length;
+  const bank_organic = BENCHMARK_QUESTIONS.length - bank_branded;
+
   return {
     date,
     questions_asked,
@@ -115,6 +145,8 @@ export async function rollupDay(dateStr?: string): Promise<DailyMeasurement | nu
     branded_rate,
     competitor_share,
     top_gap_question,
+    bank_organic,
+    bank_branded,
   };
 }
 
@@ -135,6 +167,8 @@ export async function persistMeasurement(m: DailyMeasurement): Promise<boolean> 
           branded_rate: m.branded_rate,
           competitor_share: m.competitor_share,
           top_gap_question: m.top_gap_question,
+          bank_organic: m.bank_organic,
+          bank_branded: m.bank_branded,
         },
         { onConflict: 'date' }
       );
@@ -177,6 +211,11 @@ export async function loadMeasurements(limit = 30): Promise<DailyMeasurement[]> 
         : Number(r.branded_rate),
       competitor_share: (r.competitor_share as Record<string, number>) ?? {},
       top_gap_question: r.top_gap_question ?? null,
+      // `?? null` and never `?? questions_asked`: a row with no recorded bank
+      // size has UNKNOWN coverage, and defaulting it to "exactly what arrived"
+      // would manufacture the completeness this field exists to prove.
+      bank_organic: r.bank_organic ?? null,
+      bank_branded: r.bank_branded ?? null,
     }));
   } catch {
     return [];
