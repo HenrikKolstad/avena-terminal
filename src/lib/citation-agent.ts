@@ -296,26 +296,47 @@ export type CitationResult = {
 /**
  * Query a single question against Perplexity. 20s timeout per request so
  * a hanging API call can't block the whole batch.
+ *
+ * 429s are retried with backoff (2026-08-12). Diagnosed live, not guessed:
+ * five parallel sonar calls from this key produced two instant
+ * `request_rate_limit_exceeded` rejections, and the 08-12 run lost 29 of 74
+ * questions exactly this way — the balance was fine ($7.72), auth was fine,
+ * the tier's request rate was the whole story. A 429 is explicitly retryable
+ * and does NOT count as a failed measurement unless retries are exhausted;
+ * every other failure mode still fails fast and loud.
  */
 async function queryOne(question: string, apiKey: string, date: string): Promise<CitationResult> {
   try {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 20000);
-    const res = await fetch('https://api.perplexity.ai/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'sonar',
-        messages: [{ role: 'user', content: question }],
-        return_citations: true,
-        return_related_questions: false,
-      }),
-      signal: ctrl.signal,
-    });
-    clearTimeout(timer);
+    let res: Response | null = null;
+    for (let attempt = 0; attempt < 4; attempt++) {
+      if (attempt > 0) {
+        // Exponential-ish backoff; Retry-After wins when the API provides it.
+        const retryAfter = Number(res?.headers.get('retry-after'));
+        const wait = Number.isFinite(retryAfter) && retryAfter > 0
+          ? Math.min(retryAfter * 1000, 15_000)
+          : [2_000, 5_000, 10_000][attempt - 1];
+        await new Promise((r) => setTimeout(r, wait));
+      }
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 20000);
+      res = await fetch('https://api.perplexity.ai/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'sonar',
+          messages: [{ role: 'user', content: question }],
+          return_citations: true,
+          return_related_questions: false,
+        }),
+        signal: ctrl.signal,
+      });
+      clearTimeout(timer);
+      if (res.status !== 429) break;
+    }
+    if (!res) throw new Error('Perplexity: no response');
     if (!res.ok) throw new Error(`Perplexity HTTP ${res.status}: ${(await res.text()).slice(0, 160)}`);
     const data = await res.json();
     const citations: string[] =
@@ -358,15 +379,18 @@ export async function queryMonitor(): Promise<CitationResult[]> {
     }));
   }
 
-  const BATCH = 5;
+  // BATCH was 5 with 250ms gaps; measured on 2026-08-12 that pattern trips
+  // the key's request-rate limit ~40% of the time. Two concurrent with a
+  // longer gap stays under it, and the 429 retry above catches the stragglers.
+  const BATCH = 2;
   const results: CitationResult[] = [];
   for (let i = 0; i < TRACKED_QUESTIONS.length; i += BATCH) {
     const slice = TRACKED_QUESTIONS.slice(i, i + BATCH);
     const batchResults = await Promise.all(slice.map((q) => queryOne(q, apiKey, date)));
     results.push(...batchResults);
-    // 250ms between batches — politeness toward Perplexity rate limits
+    // 1.5s between batches — measured, not guessed politeness (see BATCH note).
     if (i + BATCH < TRACKED_QUESTIONS.length) {
-      await new Promise((r) => setTimeout(r, 250));
+      await new Promise((r) => setTimeout(r, 1500));
     }
   }
 
