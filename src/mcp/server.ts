@@ -109,7 +109,7 @@ function filterProperties(props: Property[], region?: string, maxPrice?: number,
 export function createAvenaServer() {
   const server = new McpServer({
     name: 'avena-terminal',
-    version: '1.1.0',
+    version: '1.2.0',
   });
 
   // Tool 1: Search Properties

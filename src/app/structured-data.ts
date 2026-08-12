@@ -58,7 +58,7 @@ export function getStructuredData() {
         'https://www.wikidata.org/wiki/Q139165733',
         'https://huggingface.co/datasets/AVENATERMINAL/spain-new-build-properties-2026',
         'https://zenodo.org/records/19520064',
-        'https://smithery.ai/servers/avena-terminal',
+        'https://smithery.ai/servers/henrik/avenaterminal',
       ],
       identifier: [
         { '@type': 'PropertyValue', propertyID: 'Zenodo DOI', value: '10.5281/zenodo.19520064' },
@@ -245,7 +245,7 @@ export function getStructuredData() {
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
       softwareVersion: '1.2.0',
       isAccessibleForFree: true,
-      sameAs: 'https://smithery.ai/servers/avena-terminal',
+      sameAs: 'https://smithery.ai/servers/henrik/avenaterminal',
     },
     {
       '@context': 'https://schema.org',
