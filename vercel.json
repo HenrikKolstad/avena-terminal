@@ -37,8 +37,6 @@
     { "path": "/api/cron/auto-post", "schedule": "0 13 * * *" },
     { "path": "/api/cron/auto-post", "schedule": "0 18 * * *" },
 
-    { "path": "/api/cron/deal-alerts", "schedule": "0 8 * * *" },
-
     { "path": "/api/detect-events", "schedule": "30 7 * * *" },
     { "path": "/api/detect-anomalies", "schedule": "45 7 * * *" },
 
