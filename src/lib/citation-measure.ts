@@ -72,12 +72,21 @@ export async function rollupDay(dateStr?: string): Promise<DailyMeasurement | nu
   if (!supabase) return null;
   const date = dateStr ?? new Date().toISOString().slice(0, 10);
 
-  const { data, error } = await supabase
+  const { data: raw, error } = await supabase
     .from('citation_monitoring')
-    .select('question, cited_sources, avena_cited, competitor_cited')
-    .eq('date', date);
+    .select('id, question, cited_sources, avena_cited, competitor_cited')
+    .eq('date', date)
+    .order('id', { ascending: true });
 
-  if (error || !data) return null;
+  if (error || !raw) return null;
+
+  // Idempotent against re-runs (2026-08-12): a recovery run after a partial
+  // morning left the same question twice in the raw table, and a row count
+  // silently became 110 asked from a 68-question bank. One row per question,
+  // the LATEST lookup wins — re-measuring a day must converge, not compound.
+  const byQuestion = new Map<string, (typeof raw)[number]>();
+  for (const row of raw) byQuestion.set(row.question as string, row);
+  const data = [...byQuestion.values()];
 
   // NOT MEASURED is not MEASURED ZERO. Agent Atlas runs Mon/Wed/Fri, so four
   // days a week there are no raw rows for the date. Returning a 0.00% row here
