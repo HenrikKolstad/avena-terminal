@@ -116,6 +116,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // ─── Answer layer (AEO) — exact-match questions for retrieval engines ─
     ['/answers',          'weekly',  0.85],
+    // Statistics hub — nightly-fresh quotable stats (Rabbit Book play 5,
+    // added 2026-08-12 with Henrik's build-all greenlight; additive line)
+    ['/statistics',       'daily',   0.9],
 
     // ─── Deals — standalone conversion page (restored 2026-06-24) ─────────
     ['/deals',            'daily',   0.95],
