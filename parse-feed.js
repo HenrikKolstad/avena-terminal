@@ -446,24 +446,63 @@ function parseProperty(prop) {
 }
 
 // The feed is ~90MB; a truncated or empty response means a bad night, not an
-// empty market. Retry, then fail hard — never let the caller write a shrunken
-// or stale data.json believing the run succeeded.
-async function downloadFeed(attempts = 3) {
+// empty market. Never let the caller write a shrunken or stale data.json
+// believing the run succeeded.
+//
+// WAIT for the feed rather than sampling it. RedSP regenerates overnight on a
+// schedule that drifts: the book was complete by 03:22 UTC on 2026-08-11 but
+// not until 05:15 on 2026-08-12. GitHub dispatches this workflow 1.5-2h after
+// its 01:37 cron, so the job routinely starts while the source is still being
+// written and is served a ~12KB stub. Three retries inside 15 seconds cannot
+// ride that out: on 2026-08-12 it failed the run at step 1, and because every
+// downstream step depends on it, that cost a full day of snapshots, price
+// moves and delistings — the one loss this pipeline can never backfill.
+//
+// Short retries absorb a network blip; a steady poll rides out a regeneration
+// window. The 1MB floor and the hard throw at the end are unchanged — waiting
+// longer must never become accepting less.
+const FEED_MIN_BYTES = 1_000_000;
+const FEED_WAIT_MINUTES = Number(process.env.FEED_WAIT_MINUTES || 120);
+
+async function downloadFeed() {
+  const startedAt = Date.now();
+  const deadline = startedAt + FEED_WAIT_MINUTES * 60_000;
+  let attempt = 0;
   let lastErr;
-  for (let i = 1; i <= attempts; i++) {
+
+  while (true) {
+    attempt++;
     try {
       const res = await fetch(FEED_URL);
       if (!res.ok) throw new Error(`feed HTTP ${res.status} ${res.statusText}`);
       const xml = await res.text();
-      if (xml.length < 1_000_000) throw new Error(`feed too small: ${xml.length} bytes`);
+      if (xml.length < FEED_MIN_BYTES) throw new Error(`feed too small: ${xml.length} bytes`);
+      if (attempt > 1) {
+        const waited = Math.round((Date.now() - startedAt) / 60_000);
+        // Logged so the regeneration window becomes visible over time — the
+        // evidence for ever retuning the schedule has to come from somewhere.
+        console.log(`Feed complete on attempt ${attempt} after waiting ${waited}min.`);
+      }
       return xml;
     } catch (err) {
       lastErr = err;
-      console.error(`Feed download attempt ${i}/${attempts} failed: ${err.message}`);
-      if (i < attempts) await new Promise((r) => setTimeout(r, i * 5000));
+      const remaining = deadline - Date.now();
+      if (remaining <= 0) break;
+      // Quick retries first for a transient blip, then settle into a 5-minute
+      // poll so a two-hour wait costs ~24 tiny requests, not a busy loop.
+      const wait = Math.min(attempt <= 3 ? attempt * 5_000 : 300_000, remaining);
+      console.error(
+        `Feed attempt ${attempt} failed: ${err.message} — retrying in ${Math.round(wait / 1000)}s ` +
+        `(${Math.round(remaining / 60_000)}min of budget left)`
+      );
+      await new Promise((r) => setTimeout(r, wait));
     }
   }
-  throw lastErr;
+
+  throw new Error(
+    `feed never reached ${FEED_MIN_BYTES} bytes within ${FEED_WAIT_MINUTES}min ` +
+    `(${attempt} attempts) — last error: ${lastErr.message}`
+  );
 }
 
 async function main() {
