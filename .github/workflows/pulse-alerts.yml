@@ -1,0 +1,30 @@
+name: Market Pulse same-day alerts
+
+# The other half of the 2026-08-12 outreach promise: subscribers hear about
+# repricings in their towns the day they happen. Fires daily 06:10 UTC —
+# after the 02:20 UTC snapshot write, alongside European breakfast.
+# The script itself skips Mondays (the weekly edition covers that morning)
+# and stays silent for any subscriber whose towns saw no movement.
+
+on:
+  schedule:
+    - cron: '10 6 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  alert:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Send same-day alerts
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        run: python3 scripts/pulse/send_alerts.py
