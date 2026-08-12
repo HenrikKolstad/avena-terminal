@@ -116,6 +116,11 @@ export default function robots(): MetadataRoute.Robots {
     'Amazonbot', 'Bytespider', 'TikTokSpider', 'Meta-ExternalAgent',
     'FacebookBot', 'Google-Extended', 'Applebot-Extended', 'xAI-Grok',
     'Diffbot',
+    // 2026-08-12 log audit: 7,510 requests in 12h (39% of ALL traffic),
+    // including 1,156 fetches of /enquire. Mention-monitoring value survives
+    // at any crawl volume; the contact form and resized images can never be
+    // a "mention". Henrik's explicit yes same day.
+    'AwarioBot',
   ]);
 
   const namedBots: Array<{ userAgent: string; allow: string | string[] }> = [
