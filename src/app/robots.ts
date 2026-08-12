@@ -188,6 +188,9 @@ export default function robots(): MetadataRoute.Robots {
       'https://avenaterminal.com/sitemap.xml',
       'https://avenaterminal.com/sitemap-images.xml',
       'https://avenaterminal.com/sitemap-ai.xml',
+      // Differential sitemap: the 30-day observed-change frontier. Announced
+      // 2026-08-12 with Henrik's explicit yes — additive line only.
+      'https://avenaterminal.com/sitemap-frontier.xml',
     ],
     host: 'https://avenaterminal.com',
   };
