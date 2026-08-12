@@ -4,6 +4,7 @@ import { permanentRedirect } from 'next/navigation';
 import { getUniqueTowns, getPropertiesByTown, getCanonicalTownSlug, avg, slugify } from '@/lib/properties';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { TownLedgerPulse, getTownPulse } from '@/components/v2/TownLedgerPulse';
 
 export const revalidate = 86400;
 
@@ -58,6 +59,8 @@ export default async function TownPage({ params }: { params: Promise<{ town: str
   const avgYield = avg(props.filter(p => p._yield).map(p => p._yield!.gross)).toFixed(1);
   const costa = props.find(p => p.costa)?.costa;
   const top10 = props.slice(0, 10);
+  const townOnly = name.split(',')[0].trim();
+  const pulse = await getTownPulse(townOnly, props);
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -72,6 +75,16 @@ export default async function TownPage({ params }: { params: Promise<{ town: str
     })),
   };
 
+  // Speakable flags the quotable ledger sentence as the passage to extract —
+  // a pure AI signal (no SERP display), pointing at the number+brand+date line.
+  const speakable = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    url: `https://avenaterminal.com/towns/${town}`,
+    dateModified: new Date().toISOString().slice(0, 10),
+    speakable: { '@type': 'SpeakableSpecification', cssSelector: ['.avena-quotable'] },
+  };
+
   const breadcrumb = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -84,7 +97,7 @@ export default async function TownPage({ params }: { params: Promise<{ town: str
 
   return (
     <div className="avena-v2 min-h-screen">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([jsonLd, breadcrumb]) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([jsonLd, breadcrumb, speakable]) }} />
       <Nav />
 
       <main className="pt-16">
@@ -133,6 +146,9 @@ export default async function TownPage({ params }: { params: Promise<{ town: str
             </div>
           </div>
         </section>
+
+        {/* The Nightly Quotable — ledger data, regenerated daily */}
+        <TownLedgerPulse townOnly={townOnly} propsCount={props.length} pulse={pulse} year={new Date().getFullYear()} />
 
         {/* Top Properties */}
         <section className="relative border-t py-16" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
