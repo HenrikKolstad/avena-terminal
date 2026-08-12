@@ -1,0 +1,34 @@
+name: Market Pulse weekly delivery
+
+# The Monday promise from the 2026-08-12 outreach: "your edition lands in
+# your inbox as a PDF every Monday at 08:00 CET." Cron fires 05:45 UTC so
+# generation and send comfortably beat 08:00 CET (06:00 UTC in summer,
+# 07:00 in winter — early beats late for a newspaper).
+#
+# Idempotent by design: pulse_deliveries has UNIQUE (subscriber,
+# edition_date), and the script skips already-delivered rows — a manual
+# re-run after a red Monday fills gaps without double-sending.
+
+on:
+  schedule:
+    - cron: '45 5 * * 1'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  deliver:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install reportlab
+      - name: Generate and send editions
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        run: python3 scripts/pulse/generate_editions.py
