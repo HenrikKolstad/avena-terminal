@@ -25,31 +25,56 @@ cannot run an experiment, only a stunt.
 
 | shipped | what | how to verify | verified |
 |---|---|---|---|
-| 2026-08-13 | `f7dbc83` **per-attempt `AbortSignal.timeout` on the feed download** + `timeout-minutes: 150` on the step | **THE read of tomorrow.** The nightly must complete step 1 without me. Three legible outcomes: (a) clean success on attempt 1; (b) `Feed attempt N failed: feed attempt hung — no complete response in 10min` followed by a later success — that means the hang recurred AND the retry loop rode it out, which is the whole point; (c) the run dies at ~150min having logged ≥12 attempts, which says the endpoint is refusing this runner specifically and the problem is network-path, not timing. Record which | pending — first live test 2026-08-14 |
+| 2026-08-13 | `714b9ab` **log the short feed body, not just its length** | **THE read of tomorrow, and the only one that matters.** If the nightly fails at step 1 again, attempt 1 now prints `feed too small: N bytes [content-type \| server \| cf-ray present] body: <first 300 chars>`. **Read that string before touching anything.** It decides everything: a WAF/rate-limit page → the runner's egress is blocked and the job must move off GitHub-hosted runners or go through a proxy; an auth/permission notice → FEED_URL needs a credential; a valid but empty `<root/>` → RedSP really is publishing an empty catalogue and the 1MB floor is correctly refusing it. Do NOT guess a fix before reading it — guessing is what produced this morning's wrong diagnosis | pending — first live test 2026-08-14 |
+| 2026-08-13 | `f7dbc83` per-attempt `AbortSignal.timeout` + `timeout-minutes: 150` | **Shipped on a wrong diagnosis — see the correction below.** It is insurance against an unbounded fetch, not a fix for anything observed. Nothing to verify: on a healthy night it never fires. Do not credit it if tomorrow goes green | n/a — insurance, not a fix |
 | 2026-08-13 | `63f405b` citation forecast + trend honesty (`estimated_weeks_to_dominance`, `trend7d`, day-over-day across complete runs only) | already verified live post-deploy: `/api/v1/crawler-report` returns `estimated_weeks_to_dominance: null`, `rolling_7d_trend_pct_pts: null`, `estimate_basis: "only one week of measurement exists…"` (was `152` and `0`). `/api/v1/citation-score` now carries `complete:true, bank_organic:68` on both rows; `/citation-moat` renders "no prior 7d measured" | **VERIFIED same day** |
 | 2026-08-13 | `355def7` recovered book (2,000 listings, generated_date 2026-08-13) | already verified: capture ran against it — `snapshotted:2000, price_moves:5, moves_baseline_refs:1998, trusted_prior:true, prior_date:2026-08-12, overlap:0.997, delisted:6, errors:null`. `price_snapshots` holds 2,000 rows / 2,000 distinct refs for 08-13, one clean write | **VERIFIED same day** |
 | 2026-08-12 | `2416532` **Market Pulse delivery engine** — `scripts/pulse/generate_editions.py` + `.github/workflows/pulse-weekly.yml` (cron Mon 05:45 UTC). Henrik sent 30 cold outreach emails selling a €500/mo weekly PDF ("first edition arrives Monday 08:00 CET"). Subscribers in `pulse_subscribers`; deliveries in `pulse_deliveries` with UNIQUE(subscriber, edition_date) so re-runs fill gaps, never double-send. Sends via Resend from pulse@avenaterminal.com. Gotcha: api.resend.com sits behind Cloudflare and 403s (error 1010) any default `Python-urllib` UA — the script sends `avena-pulse/1.0` | Monday 2026-08-17 05:45 UTC is the first scheduled fire. Verify the Actions run went green and `pulse_deliveries` has a row per active subscriber for 2026-08-17. End-to-end already verified manually 08-12 (subscriber #1, resend 18bd97c7). **If a Stripe payment lands, a subscriber row (email + towns) MUST be added before Monday.** Same-day reprice alerts are promised in the outreach; `pulse-alerts.yml` exists (`ba1fd94`) but has never been observed firing — check it Monday too | pending — first cron fire 2026-08-17 |
 | 2026-08-12 | `24db855` `bank_organic`/`bank_branded` + `isCompleteRun()` | **VERIFIED.** Both live rows read 68/68 + 6/6. And as of today the function finally has a caller (`63f405b`), which was the missing half — see closed O-22 | **VERIFIED 2026-08-13** |
 
-**Yesterday's headline fix did NOT hold — state it plainly.** `78a493b` (wait up
-to 120min for the feed instead of 3 tries in 15s) was necessary and is still
-right, but it did not save tonight. The nightly (run 31665196372, 03:51 UTC)
-wedged on step 1 for 107 minutes and was still wedged when I found it. The
-budget could not fire: node's `fetch` has no default timeout and the deadline
-is only consulted inside the `catch`, so a socket that never completes never
-throws and the loop never reaches attempt 2. The premise of `78a493b` was also
-wrong tonight — the feed was not mid-regeneration. It served 94,113,951 bytes,
-well-formed, closing `</root>`, 2,168 `<property>` elements, in 5.05s to this
-container at 05:38 while the runner hung on it. I could not cancel the run (see
-BLOCKED: the PAT is gone), so it sat until GitHub killed it. Today's book and
-capture were recovered by hand, as on 08-12. **Two consecutive nights the
-nightly has failed at step 1 for two DIFFERENT reasons. Treat step 1 as the
-least trustworthy thing in the system until it survives a week unattended.**
+### CORRECTION — I got this morning's diagnosis wrong, and shipped on it
+
+Read this before trusting anything else about the feed. **Yesterday's
+`78a493b` retry loop WORKED.** It did exactly what it was built to do.
+
+What I did: at 05:39 I saw the nightly's step 1 still `in_progress` after 107
+minutes and the feed serving a complete 94MB to this container in 5s. GitHub
+will not return logs for an in-progress job, so I reasoned from the outside,
+concluded node's `fetch` had hung on a dead socket with no timeout, and shipped
+`f7dbc83` on that theory. **It was wrong.** The run ended at 05:52:10 — exactly
+120m01s, the budget expiring on schedule — and the log showed 28 clean attempts,
+one every five minutes, each returning a ~12.1KB body. Nothing hung. I had
+13 minutes of waiting between me and the evidence, and I did not wait.
+
+**What is actually wrong — and it is worse.** The source refuses this client:
+- Attempt 25 at **05:38:02** received 12,163 bytes. In that same minute I pulled
+  the complete **94,113,951**-byte feed from the same URL. Simultaneous, opposite
+  results. So this is client-dependent, **not a time window.**
+- The short body never grew across two hours: 12,036–12,213 bytes, ±100. A file
+  being written grows. A generated notice page does not.
+- Reproduced from here after the fact: node `fetch` (the identical code path)
+  pulled the full 87.5M chars three times in a row. It is the runner, not node.
+
+**So the premise of `78a493b` — "the source is mid-regeneration, wait it out" —
+is false, and no amount of extra waiting will ever fix this.** That reframes
+both failed nights: 08-12 and 08-13 are almost certainly the SAME cause, not two
+different ones. And it explains why 08-12's manual re-runs at 08:22 and 09:00
+succeeded — different runner, different egress IP, not a later hour.
+
+**What I shipped instead (`714b9ab`):** log the body. Two hours of retries
+produced zero evidence about the cause because the one thing never logged was
+what came back. That is now fixed, and tomorrow's attempt 1 will name it.
+
+**Lesson, recorded so it binds tomorrow:** I diagnosed a running job from its
+symptoms rather than its logs, and shipped a fix for a failure mode that had not
+occurred. If the evidence is minutes away, wait for it. Today's book and capture
+were recovered by hand, as on 08-12 — that part held.
 
 ## 2. OPEN — found, not yet fixed
 
 | # | what | evidence | why deferred | priority |
 |---|---|---|---|---|
+| O-27 | **RedSP serves the GitHub runner a ~12.1KB stub while serving other clients the full 94MB.** Two consecutive nightlies (08-12, 08-13) died at step 1 on this, ~28 attempts each. Almost certainly ONE cause across both nights, not two. Manual re-runs from a different runner succeeded on 08-12, which points at egress IP / WAF rather than timing | run 31665196372 log: 28 attempts, 12,036–12,213 bytes, never growing; attempt 25 at 05:38:02 got 12,163 bytes in the same minute this container got 94,113,951 | **cannot be fixed until the stub body is read** — `714b9ab` ships exactly that. Guessing at a UA spoof or a proxy today would repeat this morning's mistake. If tomorrow names a WAF/rate-limit, the real options are a self-hosted runner, a proxy, or asking RedSP to allow-list; all need Henrik | **CRITICAL** |
 | O-25 | **The GitHub PAT is not durable, so I cannot self-recover.** Henrik + Fable provisioned a fine-grained PAT on 08-12 and stored it at `~/.config/odyssey/github-token`. That path is inside an ephemeral container that no longer exists. Today I could not cancel the wedged run or re-dispatch the workflow; the MCP GitHub integration 403s on `actions:write` (`cancel_workflow_run` → "Resource not accessible by integration") | today, live | needs Henrik to choose a durable home for it. Everything else about today's recovery worked without it, but "wait ~6h for GitHub to kill a hung job" is not a recovery strategy | high |
 | O-24 | **Every enrichment step is downstream of the one step that keeps breaking.** corpus rebuild, GSC capture and the move capture are all `continue-on-error`, which protects the feed commit from them — but not them from the feed. Step 1 wedges and all four are simply never reached. That is why the corpus has lagged the book two days running | 08-12 and 08-13 nightlies both died at step 1; corpus stuck at v2026-08-12 | the root cause (the hang) is fixed today, so this may stop mattering. If the corpus lags again after a green nightly, split it into its own scheduled workflow that reads Supabase directly and does not depend on the feed run at all | high |
 | O-26 | **Audit the rest of `/api/v1/*` for invented constants.** `crawler-report`'s `Math.max(0.5, trend)` was found by reading one file. There are ~20 v1 endpoints, all carrying the same `cite_as` DOI line, and none has been read with this specific question in mind: which published numbers are computed from a constant chosen in the file rather than from a measurement? | `63f405b` found one; the class is unaudited | it is a reading job, not a fix job, and today's budget went to the pipeline. But this is priority-2 work by the ranking — a published claim not backed by the code — and should be a whole day's focus | high |
@@ -126,6 +151,7 @@ recovery.
 
 | what | why it matters | what is needed |
 |---|---|---|
+| **RedSP may be blocking GitHub's runners** (O-27) | Two nights running, the nightly got a 12.1KB stub on every attempt while the same feed served 94MB elsewhere in the same minute. Both days of capture were recovered by hand; a day I am not here to recover is gone permanently. **Do not act on this yet** — tomorrow's log will name the cause. Flagged now so it is not a surprise if the answer is "RedSP must allow-list us". | Nothing today. If tomorrow's log says WAF/rate-limit: either ask RedSP to allow-list GitHub Actions egress, or approve moving the feed step to a runner with a stable IP. |
 | **A durable home for the GitHub PAT** (O-25) | The PAT provisioned 08-12 lived at `~/.config/odyssey/github-token` inside a container that is now gone. Today the nightly wedged and I could not cancel it or re-dispatch the workflow — the MCP GitHub integration 403s on `actions:write`. I recovered the day by hand instead, which works but is slower and depends on me being awake. | Either (a) grant the MCP GitHub app Actions read/write on this repo, or (b) tell me a path that persists across sessions and put the PAT there. (a) is cleaner — nothing to rotate by hand. |
 | `HF_TOKEN` in CI | Corpus mirroring is a manual script. Site and `avena-data` agree, but Hugging Face cannot be verified from here at all. Corpus filters resolve conflicts by cross-source agreement, so unproven agreement actively weakens the claim. | Store the HF write token as a repo secret so the nightly pushes all three surfaces together. |
 | Bing Webmaster Tools claim | The IndexNow experiment shows a real early signal (OAI-SearchBot 2 → 248 hits) but I can only see the crawl side. Bing's indexation coverage — the thing that actually determines whether ChatGPT can retrieve us — is invisible without the property claimed. | Claim avenaterminal.com in Bing Webmaster Tools. Also unlocks confirming the IndexNow key is accepted rather than silently ignored. |
@@ -135,7 +161,8 @@ recovery.
 
 | closed | what | outcome |
 |---|---|---|
-| 2026-08-13 | the feed download could hang forever, making yesterday's 120-minute wait budget unenforceable — the deadline lives in a `catch` a hung socket never reaches | `f7dbc83` — per-attempt `AbortSignal.timeout` (10min, ~40x the honest 5s download), signal passed to `fetch` so the body stream aborts too; `timeout-minutes: 150` on the step so a future wedge dies at a known hour instead of GitHub's silent 6h. 1MB floor and hard throw untouched |
+| 2026-08-13 | a short feed body was logged only as a byte count, so two hours of retries produced no evidence about the cause | `714b9ab` — the first 300 chars plus content-type/server/cf-ray now travel with the error. Truncated and whitespace-collapsed; the feed URL is public |
+| 2026-08-13 | an unbounded `fetch` could wedge a run until GitHub's silent 6h default | `f7dbc83` — per-attempt `AbortSignal.timeout` (10min) + `timeout-minutes: 150`. **Closed as insurance, NOT as a fix: it was shipped on a wrong diagnosis and addressed a failure mode that had not occurred.** See the correction in section 1 |
 | 2026-08-13 | `/api/v1/crawler-report` published `estimated_weeks_to_dominance: 152` under a DOI `cite_as` line, computed as `ceil((80 − 4.4) / 0.5)` where 0.5 was an invented floor and the trend it floored was a fabricated zero | `63f405b` — floor removed; the projection is emitted only from a real prior week with a positive measured trend, else `null` plus an `estimate_basis` sentence. `currentHitRate` returns `number \| null` for rate and trend. Verified live |
 | ~~O-22~~ | **CLOSED 2026-08-13.** `isCompleteRun()` shipped 08-12 with no caller anywhere, so a partial run would still have published as comparable | `63f405b` — `/api/v1/citation-score` computes day-over-day across complete runs only and publishes `complete` + `bank_organic` with every rate. Shipped on a day when both live rows are complete, making it a provable no-op on every published number — hardening, not a number change |
 | 2026-08-13 | 2026-08-13's book and capture, lost by the wedged nightly | `355def7` — regenerated, pushed, capture hand-driven: 2,000 snapshots, 5 moves, 6 delistings, `errors:null`, `overlap:0.997` |
