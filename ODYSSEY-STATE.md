@@ -70,6 +70,19 @@ symptoms rather than its logs, and shipped a fix for a failure mode that had not
 occurred. If the evidence is minutes away, wait for it. Today's book and capture
 were recovered by hand, as on 08-12 — that part held.
 
+### FABLE 2026-08-13 (overnight): Press Desk shipped — do not duplicate
+The Source-Request Desk (journalist query radar) is LIVE: Resend inbound webhook
+at `/api/pressdesk/inbound` (Svix-verified, 401 on unsigned — tested), matcher
+requires geo+property keyword pairs, matched queries forward to Henrik with a
+live ledger stat bank, logged in `pressdesk_matches` (UNIQUE email_id).
+**Hard rule encoded in the route: the system NEVER answers a journalist —
+Henrik is the only trigger** (auto-response at agent speed is the HARO-killer
+spam pattern). Remaining activation: Henrik copies the .resend.app receiving
+address (dashboard-only) + subscribes it to Source of Sources. Also note:
+`pulse-alerts.yml` HAS now been observed firing — first scheduled run
+2026-08-13 07:47 UTC, success, 1 alert sent (closes your Monday check early).
+IndexNow first scheduled run 05:18 UTC, 200, 2,106 URLs.
+
 ## 2. OPEN — found, not yet fixed
 
 | # | what | evidence | why deferred | priority |
