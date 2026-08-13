@@ -40,6 +40,11 @@ jobs:
         run: npm install --no-audit --no-fund
 
       - name: Run the RedSP feed
+        # Belt to parse-feed's own per-attempt timeout: 120min of wait budget
+        # plus parse and upload should never approach this. If it does, the
+        # step is wedged and the run must die loudly at a known hour rather
+        # than sit on GitHub's silent 6h default holding the concurrency group.
+        timeout-minutes: 150
         run: node parse-feed.js
         env:
           # Falls back to the hardcoded RedSP URL if the secret is unset.

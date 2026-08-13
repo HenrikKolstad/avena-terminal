@@ -463,6 +463,15 @@ function parseProperty(prop) {
 // longer must never become accepting less.
 const FEED_MIN_BYTES = 1_000_000;
 const FEED_WAIT_MINUTES = Number(process.env.FEED_WAIT_MINUTES || 120);
+// Per-ATTEMPT ceiling. Without it the wait budget above is unenforceable:
+// node's fetch has no default timeout, so a connection the server accepts but
+// never finishes leaves us blocked inside the try{} forever. The deadline is
+// only consulted in the catch, which a hung request never reaches — the budget
+// exists but cannot fire. That is what happened on 2026-08-13: the feed served
+// a complete 94MB in 5s to every other client while the runner sat on one dead
+// socket for 107 minutes and the retry loop never got a second attempt.
+// 10min is ~40x the honest download time, so this only ever kills a hang.
+const FEED_ATTEMPT_TIMEOUT_MS = Number(process.env.FEED_ATTEMPT_TIMEOUT_MS || 600_000);
 
 async function downloadFeed() {
   const startedAt = Date.now();
@@ -473,7 +482,12 @@ async function downloadFeed() {
   while (true) {
     attempt++;
     try {
-      const res = await fetch(FEED_URL);
+      // Bound the whole attempt, headers AND body: passing the signal to fetch
+      // aborts the response stream too, so a stall mid-download also throws
+      // instead of hanging.
+      const res = await fetch(FEED_URL, {
+        signal: AbortSignal.timeout(FEED_ATTEMPT_TIMEOUT_MS),
+      });
       if (!res.ok) throw new Error(`feed HTTP ${res.status} ${res.statusText}`);
       const xml = await res.text();
       if (xml.length < FEED_MIN_BYTES) throw new Error(`feed too small: ${xml.length} bytes`);
@@ -485,14 +499,19 @@ async function downloadFeed() {
       }
       return xml;
     } catch (err) {
-      lastErr = err;
+      // Name the hang so the log says what happened rather than "The operation
+      // was aborted" — this is the failure mode the budget is here to survive.
+      lastErr =
+        err?.name === 'TimeoutError'
+          ? new Error(`feed attempt hung — no complete response in ${Math.round(FEED_ATTEMPT_TIMEOUT_MS / 60_000)}min`)
+          : err;
       const remaining = deadline - Date.now();
       if (remaining <= 0) break;
       // Quick retries first for a transient blip, then settle into a 5-minute
       // poll so a two-hour wait costs ~24 tiny requests, not a busy loop.
       const wait = Math.min(attempt <= 3 ? attempt * 5_000 : 300_000, remaining);
       console.error(
-        `Feed attempt ${attempt} failed: ${err.message} — retrying in ${Math.round(wait / 1000)}s ` +
+        `Feed attempt ${attempt} failed: ${lastErr.message} — retrying in ${Math.round(wait / 1000)}s ` +
         `(${Math.round(remaining / 60_000)}min of budget left)`
       );
       await new Promise((r) => setTimeout(r, wait));
