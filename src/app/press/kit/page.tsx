@@ -3,8 +3,13 @@ import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { getAllProperties, getUniqueTowns } from '@/lib/properties';
 
 export const revalidate = 86400;
+
+// Live counts — this page must never carry a frozen inventory number.
+const N_LISTINGS = getAllProperties().length;
+const N_TOWNS = getUniqueTowns().length;
 
 export const metadata: Metadata = {
   title: 'Media Kit — Journalist Fact Pack | Avena Terminal',
@@ -20,95 +25,78 @@ export const metadata: Metadata = {
 };
 
 const BOILERPLATE_SHORT =
-  'Avena Terminal is an open-data European property intelligence platform. It scores 1,881 Spanish new-builds daily, tracks 10 EU markets with 60+ macro indicators, and publishes an open canonical identifier standard (AVN_PROP_ID). Everything is CC BY 4.0. Based in Trøndelag, Norway, founded 2026 by Henrik Kolstad.';
+  `Avena Terminal is an open-data intelligence platform for Spanish coastal new-build property. It observes ${N_LISTINGS.toLocaleString()} listings across ${N_TOWNS} coastal towns nightly and keeps what listing portals delete: every asking-price change with its date, and every delisting with the final price it held. Data is CC BY 4.0. Founded April 2026 by Henrik Kolstad, Norway.`;
 
 const BOILERPLATE_LONG =
-  'Avena Terminal is the Bloomberg-style terminal for European property data. Depth: 1,881 Spanish new-build properties scored daily via hedonic regression and 130+ features per property. Breadth: 10 EU markets, 30 cities in a live bubble-risk index, 60+ macro indicators from ECB, Eurostat, OECD, and national banks. Products include a public Prediction Ledger, five composite indices (APCI/APYI/APLI/APRI/APSI), a 7-tool Model Context Protocol server for AI agents, a SPARQL endpoint, and an open canonical identifier standard (AVN_PROP_ID v1.0). All data and methodology are openly licensed (CC BY 4.0, DOI 10.5281/zenodo.19520064) and published to Zenodo, Wikidata (Q139165733), and Hugging Face. Founded 2026 by Norwegian carpenter and tech founder Henrik Kolstad, based in Trøndelag. Expansion roadmap: Portugal Q3 2026, Italy Q4 2026, France 2027, Scandinavia 2027.';
+  `Avena Terminal is a nightly observation ledger for the Spanish coastal new-build market. Every one of ${N_LISTINGS.toLocaleString()} tracked listings across ${N_TOWNS} coastal towns is observed each night; every asking-price change is recorded with its date, and every delisting is archived with the final asking price it held — history that listing portals routinely delete and that cannot be reconstructed by anyone starting later. On top of the ledger sit the AVENA Index (a daily composite of coastal new-build asking prices, DOI 10.5281/zenodo.19520064), a weekly Market Pulse briefing, a public statistics hub regenerated nightly, an 11-tool Model Context Protocol server for AI agents, and an open canonical identifier standard (AVN_PROP_ID). Data and methodology are openly licensed (CC BY 4.0) and published to Zenodo and Wikidata (Q139165733). Founded April 2026 by Henrik Kolstad, a Norwegian solo founder with a decade in property development. Avena's figures are ingested nightly by AI crawlers from OpenAI, Anthropic, Meta and Amazon, measured in the platform's own server logs.`;
 
 const FACTS = [
   { label: 'Founded', value: 'April 2026' },
   { label: 'Founder', value: 'Henrik Kolstad (solo founder)' },
-  { label: 'Headquarters', value: 'Trøndelag, Norway' },
-  { label: 'Team size', value: '1 human + 24 autonomous AI agents' },
-  { label: 'Scored properties', value: '1,881 Spanish new-builds' },
-  { label: 'EU markets tracked', value: '10 countries, 30 cities' },
-  { label: 'Macro indicators', value: '60+ (ECB, Eurostat, OECD, national banks)' },
-  { label: 'Composite indices', value: 'APCI, APYI, APLI, APRI, APSI' },
-  { label: 'Public API endpoints', value: '208+' },
-  { label: 'MCP server tools', value: '7 (search, score, yield, comp, ROI, alternatives, timing)' },
+  { label: 'Headquarters', value: 'Norway' },
+  { label: 'Team size', value: '1 human — the rest is automation' },
+  { label: 'Tracked listings', value: `${N_LISTINGS.toLocaleString()} Spanish coastal new-builds, observed nightly` },
+  { label: 'Coastal towns', value: `${N_TOWNS}` },
+  { label: 'Observation ledger', value: 'Every price change dated · every delisting archived with final ask' },
+  { label: 'AVENA Index', value: 'Daily composite · base 1000 on 1 Jan 2026' },
+  { label: 'MCP server tools', value: '11 (agent access to the full ledger)' },
   { label: 'DOI', value: '10.5281/zenodo.19520064' },
   { label: 'Wikidata entity', value: 'Q139165733' },
   { label: 'License', value: 'CC BY 4.0 (everything open)' },
-  { label: 'Cited by', value: 'Perplexity, ChatGPT, Claude (verified April 2026)' },
+  { label: 'AI ingestion', value: 'OpenAI, Anthropic, Meta & Amazon crawlers, nightly — measured in server logs' },
 ];
 
 const QUOTES = [
   {
     quote:
-      'I built Avena because when I help clients buy property in Spain, I kept wishing for a tool that didn\u2019t exist. Nobody was going to build it, so I did — evenings and weekends, for a year.',
+      'The portals show today\u2019s price and delete yesterday\u2019s. We keep the record \u2014 and it cannot be reconstructed by anyone starting today.',
     attribution: 'Henrik Kolstad, founder, Avena Terminal',
-    context: 'On why the platform exists',
+    context: 'On the observation ledger',
   },
   {
     quote:
-      'Avena doesn\u2019t replace ChatGPT or Perplexity. It replaces their stale knowledge of one specific vertical — European property — with live, scored, verifiable data. The best answer for a Spanish property question is your general AI calling Avena as a tool.',
+      'Every figure is a recorded observation with a date, never an estimate. A week with no price changes prints as exactly that \u2014 the stability is itself the finding.',
     attribution: 'Henrik Kolstad, founder, Avena Terminal',
-    context: 'On positioning vs general AI',
+    context: 'On methodology',
   },
   {
     quote:
-      'Most property data is stale noise. We expand one market at a time, fully verified, because the alternative is the same noisy-unreliable experience everyone already has with portal data. We\u2019d rather be right in one country than wrong in twenty.',
+      'Our data is already read every week by OpenAI, Anthropic, Meta and Amazon \u2014 their systems ingest our figures nightly, measured in our own server logs. When the world\u2019s AI assistants answer questions about Spanish property, the numbers increasingly come from us.',
     attribution: 'Henrik Kolstad, founder, Avena Terminal',
-    context: 'On expansion strategy',
-  },
-  {
-    quote:
-      'An AI agent on our platform polls Perplexity every morning to see whether we\u2019re cited. If we\u2019re not, another agent drafts a page that answers the missing question. By the next week, we are cited. It\u2019s a closed-loop feedback system.',
-    attribution: 'Henrik Kolstad, founder, Avena Terminal',
-    context: 'On the citation-moat feedback loop',
+    context: 'On AI systems as readers',
   },
 ];
 
 const ANGLES = [
   {
-    headline: 'The carpenter who built a Bloomberg Terminal for property',
+    headline: 'The price history Spanish property portals delete \u2014 one Norwegian keeps it',
     pitch:
-      'Solo Norwegian founder, working as a carpenter by day, built one of Europe\u2019s most technical property data platforms from his kitchen in Trøndelag. 24 autonomous AI agents, 208 public API endpoints, no funding, no team.',
-    angle: 'Founder-hero, distrikts-story, tech against all odds',
+      `Listing portals show today\u2019s asking price and erase yesterday\u2019s. Avena Terminal observes ${N_LISTINGS.toLocaleString()} Spanish coastal new-builds nightly and archives every repricing with its date and every delisting with the final price it held \u2014 market evidence that cannot be reconstructed by anyone who starts recording later.`,
+    angle: 'Property / data / accountability',
   },
   {
-    headline: 'Norwegian-built AI platform is being cited by ChatGPT and Perplexity',
+    headline: 'AI\u2019s Spanish property numbers increasingly come from one solo founder',
     pitch:
-      'As of April 2026, multiple major AI systems cite Avena Terminal when answering European property questions. Verified by publicly-viewable AI responses. The platform\u2019s open-data positioning is working — it\u2019s becoming the source, not a competitor.',
-    angle: 'Tech / AI, emerging Norwegian tech win, international recognition',
+      'Crawlers from OpenAI, Anthropic, Meta and Amazon ingest Avena Terminal\u2019s figures nightly \u2014 measured in the platform\u2019s own server logs. As AI assistants become the first stop for property questions, where their numbers come from becomes a story in itself.',
+    angle: 'Tech / AI / media',
   },
   {
     headline: 'The open-data play that wants to be the ISBN of property',
     pitch:
-      'Avena\u2019s AVN_PROP_ID is a canonical identifier system for European property — like ISBNs for books or tickers for stocks. Published as an open CC BY 4.0 standard with a 10-year resolvability commitment. If it gets adopted, it becomes foundational infrastructure.',
+      'Avena\u2019s AVN_PROP_ID is a canonical identifier system for property \u2014 like ISBNs for books or tickers for stocks. Published as an open CC BY 4.0 standard. If it gets adopted, it becomes foundational infrastructure.',
     angle: 'Tech / standards / public infrastructure',
   },
   {
-    headline: 'How a Norwegian is helping Nordic buyers avoid millions in bad Spanish property deals',
+    headline: 'No funding, no team: one person and an automated nightly machine',
     pitch:
-      'Real case study: Avena flagged two La Finca villas as undervalued by 15%. A Norwegian buyer acted. One month later the developer re-priced comparables up by €100k each. Unrealised gain: ~€300k per unit. The platform was built to prevent the inverse — buyers overpaying in Spain.',
-    angle: 'Consumer / practical / local-reader value',
-  },
-  {
-    headline: 'Bipolar, carpenter, and tech founder — meet the neurodivergent builder behind Avena',
-    pitch:
-      'Henrik Kolstad is open about managing bipolar 2 while building at a pace that would exhaust most neurotypical founders. The story of Avena is partly the story of how hypomanic build bursts became a competitive advantage — 24 AI agents shipped in six weeks of evenings.',
-    angle: 'Human interest / mental health / founder psychology',
-    note: 'Only run this angle with founder\u2019s explicit OK for each outlet.',
+      'A Norwegian solo founder runs nightly observation of the Spanish coastal new-build market \u2014 a daily index, weekly market briefings, and agent-accessible APIs \u2014 with no employees and no outside funding. The entire operation is one human plus automation.',
+    angle: 'Founder story / solo builder',
   },
 ];
 
 const BRAND = [
-  { asset: 'Wordmark (SVG)', url: '/brand/avena-wordmark.svg' },
-  { asset: 'Monogram A (SVG)', url: '/brand/avena-monogram.svg' },
   { asset: 'OpenGraph image', url: '/opengraph-image' },
-  { asset: 'Color palette (HSL)', url: '/brand/palette.txt' },
-  { asset: 'Full brand doc', url: '/brand' },
+  { asset: 'Full brand doc — wordmark, palette, usage', url: '/brand' },
 ];
 
 export default function MediaKitPage() {
@@ -149,10 +137,10 @@ export default function MediaKitPage() {
               assets. Free to use with attribution. Copy any block and paste.
               For interview requests or photo sessions, contact{' '}
               <a
-                href="mailto:henrik@xaviaestate.com?subject=Press%20inquiry%20%E2%80%94%20Avena%20Terminal"
+                href="mailto:henrik@avenaterminal.com?subject=Press%20inquiry%20%E2%80%94%20Avena%20Terminal"
                 className="text-primary hover:text-gold"
               >
-                henrik@xaviaestate.com
+                henrik@avenaterminal.com
               </a>
               .
             </p>
@@ -251,8 +239,8 @@ export default function MediaKitPage() {
               Five story <span className="italic text-gold">angles</span>.
             </h2>
             <p className="text-muted-foreground font-light leading-relaxed mb-6 max-w-3xl">
-              Angles ready to pitch to your editor. Each has been pre-vetted for factual
-              accuracy and is supported by the data + quotes above.
+              Angles ready to pitch to your editor. Each angle is supported by the facts and quotes above; every number
+              traces to the observation ledger.
             </p>
             <div className="space-y-3">
               {ANGLES.map((a) => (
@@ -268,11 +256,6 @@ export default function MediaKitPage() {
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground font-light leading-relaxed">{a.pitch}</p>
-                  {a.note && (
-                    <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.22em] text-warning" style={{ color: 'hsl(var(--av-warning))' }}>
-                      ⚠ {a.note}
-                    </p>
-                  )}
                 </div>
               ))}
             </div>
@@ -317,11 +300,11 @@ export default function MediaKitPage() {
               Want an <span className="italic text-gold">interview</span>?
             </h2>
             <p className="text-muted-foreground font-light mb-8 max-w-lg mx-auto">
-              Henrik answers press email within 4 hours (Norwegian business hours, 24h worst-case). Video interviews, in-person in Trøndelag or Spain, quotes on deadline.
+              Henrik answers press email within hours on business days, 24h worst-case. Video interviews, in-person in Norway or Spain, quotes on deadline.
             </p>
             <div className="flex flex-wrap gap-3 justify-center">
               <a
-                href="mailto:henrik@xaviaestate.com?subject=Press%20interview%20request%20%E2%80%94%20Avena%20Terminal"
+                href="mailto:henrik@avenaterminal.com?subject=Press%20interview%20request%20%E2%80%94%20Avena%20Terminal"
                 className="group inline-flex items-center gap-3 rounded-sm px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
                 style={{ background: 'var(--av-gradient-gold)' }}
               >

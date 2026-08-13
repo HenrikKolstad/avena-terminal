@@ -119,7 +119,7 @@ export default function EmbargoPage() {
                 'Developer health stress score deltas',
                 'Quotable expert commentary from Henrik Kolstad',
                 'Custom dataset pulls for your investigation',
-                'Email support within 4 hours',
+                'Email support within hours on business days',
                 'Free usage — no fee for verified outlets',
               ].map(f => (
                 <li key={f} className="flex items-start gap-3 text-base text-foreground/90 font-light">
@@ -156,7 +156,7 @@ export default function EmbargoPage() {
                 <p className="font-serif text-2xl text-foreground mb-2">Request received.</p>
                 <p className="text-muted-foreground font-light">We review within 24 hours and reply to your outlet email.</p>
                 <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-                  Questions: <a href="mailto:henrik@xaviaestate.com" className="text-primary hover:opacity-80">henrik@xaviaestate.com</a>
+                  Questions: <a href="mailto:henrik@avenaterminal.com" className="text-primary hover:opacity-80">henrik@avenaterminal.com</a>
                 </p>
               </div>
             ) : (
@@ -228,7 +228,7 @@ export default function EmbargoPage() {
                 )}
 
                 <p className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground/70">
-                  <Lock size={10} /> Your email is only used to verify your outlet. Not stored anywhere else.
+                  <Lock size={10} /> Your email is stored solely to verify your outlet and issue your key. Never shared or sold.
                 </p>
               </form>
             )}
