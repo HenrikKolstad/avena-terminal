@@ -465,12 +465,18 @@ const FEED_MIN_BYTES = 1_000_000;
 const FEED_WAIT_MINUTES = Number(process.env.FEED_WAIT_MINUTES || 120);
 // Per-ATTEMPT ceiling. Without it the wait budget above is unenforceable:
 // node's fetch has no default timeout, so a connection the server accepts but
-// never finishes leaves us blocked inside the try{} forever. The deadline is
-// only consulted in the catch, which a hung request never reaches — the budget
-// exists but cannot fire. That is what happened on 2026-08-13: the feed served
-// a complete 94MB in 5s to every other client while the runner sat on one dead
-// socket for 107 minutes and the retry loop never got a second attempt.
-// 10min is ~40x the honest download time, so this only ever kills a hang.
+// never finishes leaves us blocked inside the try{} forever — the deadline is
+// only consulted in the catch, which a hung request never reaches.
+//
+// CORRECTION 2026-08-13: this was shipped on the belief that such a hang had
+// just happened. It had not. The job log (run 31665196372) shows 28 clean
+// attempts over the full 120 minutes, every one returning a ~12.1KB stub, and
+// the budget expiring exactly on time. The retry loop was working perfectly;
+// the source was refusing this client. So this timeout fixed nothing that was
+// broken that night. It stays because the latent risk is real and unbounded —
+// a fetch with no timeout can wedge a run until GitHub's silent 6h default —
+// but it is insurance, not the cure, and it must not be remembered as the cure.
+// 10min is ~40x the honest download time, so it only ever kills a true hang.
 const FEED_ATTEMPT_TIMEOUT_MS = Number(process.env.FEED_ATTEMPT_TIMEOUT_MS || 600_000);
 
 async function downloadFeed() {
@@ -490,7 +496,29 @@ async function downloadFeed() {
       });
       if (!res.ok) throw new Error(`feed HTTP ${res.status} ${res.statusText}`);
       const xml = await res.text();
-      if (xml.length < FEED_MIN_BYTES) throw new Error(`feed too small: ${xml.length} bytes`);
+      if (xml.length < FEED_MIN_BYTES) {
+        // Say WHAT the short body was, not just how long it was.
+        //
+        // 2026-08-13: the nightly burned all 28 attempts over two full hours on
+        // "feed too small: ~12,100 bytes" and that message could not answer the
+        // only question that mattered — is the source regenerating, or is it
+        // refusing US? It was the second: at 05:38:02 the runner got 12,163
+        // bytes while a container elsewhere pulled the complete 94MB from the
+        // same URL in the same minute. A regenerating file would also have
+        // GROWN across two hours; this one hovered at 12.1KB +/- 100 bytes for
+        // the whole window, which is the shape of a generated notice page, not
+        // a partial download. The body would have said so on attempt 1.
+        //
+        // Truncated hard and newline-stripped so a stub can never flood the
+        // log, and the URL is public — nothing secret transits here.
+        const preview = xml.replace(/\s+/g, ' ').trim().slice(0, 300);
+        const server = [
+          res.headers.get('content-type'),
+          res.headers.get('server'),
+          res.headers.get('cf-ray') ? 'cf-ray present' : null,
+        ].filter(Boolean).join(' | ');
+        throw new Error(`feed too small: ${xml.length} bytes [${server}] body: ${preview}`);
+      }
       if (attempt > 1) {
         const waited = Math.round((Date.now() - startedAt) / 60_000);
         // Logged so the regeneration window becomes visible over time — the
