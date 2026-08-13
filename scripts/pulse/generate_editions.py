@@ -241,12 +241,23 @@ def render_edition(path, subscriber_name, towns, moves, delist):
             c.setFillColor(FAINT); c.setFont('Courier', 7)
             c.drawString(M, yy, 'REF                      DATE         FROM           TO             CHANGE')
             yy -= 14
+            has_big = False
             for ref, f, t, d, pct in sorted(tmoves, key=lambda m: m[3])[:14]:
                 ref_cell(M, yy, ref)
                 c.setFillColor(INK); c.drawString(M + 112, yy, f'{d}   €{f:>9,}     €{t:>9,}')
                 c.setFillColor(GOLD if t > f else RED)
-                c.drawString(M + 372, yy, f'{"+" if pct > 0 else ""}{pct}%')
+                big = abs(pct) >= 20
+                if big:
+                    has_big = True
+                c.drawString(M + 372, yy, f'{"+" if pct > 0 else ""}{pct}%' + (' ‡' if big else ''))
                 yy -= 15
+            if has_big:
+                # Honesty note: a 20%+ overnight jump is usually the listing's
+                # "from" price stepping to the next unit after a sale, or a
+                # relaunch — real market signal, but not a simple repricing.
+                c.setFillColor(FAINT); c.setFont('Courier', 6.5)
+                c.drawString(M, yy, '‡ Moves of ±20%+ typically reflect a relaunch or unit-mix change (e.g. cheapest unit sold), not a simple repricing.')
+                yy -= 12
         else:
             yy = para(M, yy, 'No observed price changes this week — every tracked unit held its asking price. That stability is itself the finding.', size=9.5)
         yy -= 14
