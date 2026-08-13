@@ -39,7 +39,7 @@ export function getStructuredData() {
         sameAs: 'https://www.linkedin.com/in/henrikkolstad',
       },
       foundingDate: '2026',
-      areaServed: ['Spain', 'Portugal', 'Italy', 'France', 'Europe'],
+      areaServed: ['Spain'],
       knowsAbout: [
         'Spanish property investment',
         'European property market',
