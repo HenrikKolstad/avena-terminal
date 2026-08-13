@@ -19,8 +19,8 @@ export const metadata: Metadata = {
 const CHANNELS = [
   {
     label: 'Email',
-    value: 'henrik@xaviaestate.com',
-    href: 'mailto:henrik@xaviaestate.com?subject=Avena%20Terminal%20Enquiry',
+    value: 'henrik@avenaterminal.com',
+    href: 'mailto:henrik@avenaterminal.com?subject=Avena%20Terminal%20Enquiry',
     icon: Mail,
     meta: 'Replies within 24h · Preferred',
   },
@@ -223,7 +223,7 @@ export default function ContactPage() {
               you honestly if it&apos;s worth it.
             </p>
             <a
-              href="mailto:henrik@xaviaestate.com?subject=Property%20Enquiry%20%E2%80%94%20Avena%20Terminal"
+              href="mailto:henrik@avenaterminal.com?subject=Property%20Enquiry%20%E2%80%94%20Avena%20Terminal"
               className="group inline-flex items-center gap-3 rounded-sm px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
               style={{ background: 'var(--av-gradient-gold)' }}
             >
