@@ -35,20 +35,13 @@ const KEYWORDS_PROP = [
 ];
 
 function matchTerms(text: string): string[] {
-  // Digests bundle many unrelated queries, so geo+property must co-occur
-  // within the SAME query, not merely the same email. First real digest
-  // (2026-08-13) matched on "abroad" in item 5 + "property" in item 3 —
-  // exactly the false positive this windowing kills. Queries are split on
-  // item markers; a long unstructured mail falls back to 400-char windows.
   const t = text.toLowerCase();
-  const segments = t.split(/(?:#item\d+|^\s*\d+\)\s|\n\s*\n)/m).filter((seg) => seg.length > 40);
-  const chunks = segments.length > 1 ? segments : (t.match(/.{1,400}/gs) ?? [t]);
-  for (const chunk of chunks) {
-    if (chunk.includes('spanish property') || chunk.includes('property in spain')) return ['spanish property'];
-    const geo = KEYWORDS_GEO.filter((k) => chunk.includes(k));
-    const prop = KEYWORDS_PROP.filter((k) => chunk.includes(k));
-    if (geo.length && prop.length) return [...geo, ...prop];
-  }
+  const geo = KEYWORDS_GEO.filter((k) => t.includes(k));
+  const prop = KEYWORDS_PROP.filter((k) => t.includes(k));
+  // A real match needs BOTH a place signal and a property signal —
+  // "spain" alone in a food query is noise, "housing" alone is US news.
+  if (geo.length && prop.length) return [...geo, ...prop];
+  if (t.includes('spanish property') || t.includes('property in spain')) return ['spanish property'];
   return [];
 }
 
