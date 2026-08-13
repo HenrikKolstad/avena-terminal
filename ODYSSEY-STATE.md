@@ -144,6 +144,21 @@ No new experiment today. Today's work was a pipeline hang and a fabricated
 published forecast — neither is an SEO change, and logging either as one would
 be exactly the manufactured progress this file exists to prevent.
 
+## 3b. PLAN B — press detonation calendar (Fable, 2026-08-13, Henrik's "B GO")
+
+The press room is the landing surface; the releases are the detonations. The
+genuine daily series started 2026-08-05 — every window below follows from that
+date. Drafts with named data slots live in `~/Desktop/PLAN-B-RELEASES.md`.
+Nothing fires without Henrik's explicit go on the day.
+
+| when | what | gate |
+|---|---|---|
+| 2026-08-13 | Press room truth-repaired + rebuilt (`4e9f96d`): /press live-computed quotable bank (was hardcoded APCI=74 + frozen April dates), /press/kit stripped of unverifiable claims (24-agents, carpenter, bipolar angle, fabricated La Finca case study, stale "cited by"), press contact unified to henrik@avenaterminal.com | done — verify live |
+| 2026-09-04 | Release 1 data window closes ("first 30 days of the ledger"); compute slots, finalize draft | series gap ≤2 days; all numbers day-of from `price_snapshots`/`sold_properties` |
+| 2026-09-07 | Release 1 proposed fire, 08:00 CET with Monday Pulse | Henrik's explicit go |
+| 2026-11-03 | Release 2 data window closes ("{PCT}% cut asking within 90 days") | same completeness gate; percentage reported as measured, boring or not |
+| 2026-11-09 | Release 2 proposed fire | Henrik's explicit go |
+
 ## 4. BASELINES — what the numbers were, so drift is detectable
 
 | metric | value | as of | source |
