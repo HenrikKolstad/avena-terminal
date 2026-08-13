@@ -57,14 +57,19 @@ async function buildTicks(): Promise<Tick[]> {
   }
 
   // Citation hit-rate (real — rolling 7d Perplexity citation rate)
+  // A failed lookup is unknown, not zero — the catch must not invent a 0.0%
+  // citation rate for the ticker to display as measured.
   const hit = await currentHitRate().catch(() => ({
-    rate: 0,
-    trend7d: 0,
+    rate: null,
+    trend7d: null,
     total_questions_tracked: 0,
   }));
-  const citeVal = hit.rate > 0 ? `${hit.rate.toFixed(1)}%` : '—';
+  const citeVal = hit.rate !== null && hit.rate > 0 ? `${hit.rate.toFixed(1)}%` : '—';
+  // 'flat' is a claim about a comparison. With no prior week there is none.
   const citeTrend =
-    hit.trend7d > 0
+    hit.trend7d === null
+      ? '—'
+      : hit.trend7d > 0
       ? `+${hit.trend7d.toFixed(1)}pp`
       : hit.trend7d < 0
       ? `${hit.trend7d.toFixed(1)}pp`
@@ -86,7 +91,7 @@ async function buildTicks(): Promise<Tick[]> {
   return [
     { sym: 'APCI', v: apci.toString(), d: `${totalProps} props`, up: true, label: 'Composite' },
     { sym: 'APYI', v: `${apyi}%`, d: 'avg yield', up: true, label: 'Yield' },
-    { sym: 'CITE', v: citeVal, d: citeTrend, up: hit.trend7d >= 0, label: 'AI-citation 7d' },
+    { sym: 'CITE', v: citeVal, d: citeTrend, up: hit.trend7d === null || hit.trend7d >= 0, label: 'AI-citation 7d' },
     { sym: 'MCP', v: mcpTotal.toLocaleString(), d: `${mcpMonth} / mo`, up: true, label: 'Agent calls' },
     { sym: 'AEO', v: promeCount.toLocaleString(), d: 'answers', up: true, label: 'Prometheus' },
     { sym: 'DEPTH', v: totalProps.toLocaleString(), d: 'scored new-builds', up: true, label: 'Spain' },

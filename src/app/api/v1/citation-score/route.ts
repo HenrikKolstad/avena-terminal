@@ -11,7 +11,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { loadMeasurements, currentHitRate } from '@/lib/citation-measure';
+import { loadMeasurements, currentHitRate, isCompleteRun } from '@/lib/citation-measure';
 import { TRACKED_QUESTIONS } from '@/lib/citation-agent';
 
 export const dynamic = 'force-dynamic';
@@ -23,7 +23,6 @@ export async function GET() {
   ]);
 
   const latest = history[0] ?? null;
-  const prior = history[1] ?? null;
 
   // Aggregate competitor share across the rolling 7-day window
   const last7 = history.slice(0, 7);
@@ -40,10 +39,21 @@ export async function GET() {
   // Top gaps from the most recent measurement
   const top_gap_question = latest?.top_gap_question ?? null;
 
-  // Day-over-day trend (signed delta in percentage points)
-  const trendDoD = latest && prior
-    ? Number((latest.avena_rate - prior.avena_rate).toFixed(2))
-    : 0;
+  // Day-over-day trend (signed delta in percentage points).
+  //
+  // Only across two COMPLETE runs. A partial run measures a different, smaller
+  // subset of the bank, so differencing it against a full one reports a change
+  // in the market that is really a change in the sample: on 2026-08-12 a
+  // 62%-coverage run scored 4.76% (2/42) beside the complete 4.41% (3/68)
+  // baseline and read as a rise. Coverage is recorded per row for exactly this
+  // check (`bank_organic`/`bank_branded`), and rows predating it are treated as
+  // unknown rather than assumed whole.
+  //
+  // null, not 0: "no comparable prior run" is not "no change".
+  const comparable = history.filter(isCompleteRun);
+  const trendDoD = comparable.length >= 2
+    ? Number((comparable[0].avena_rate - comparable[1].avena_rate).toFixed(2))
+    : null;
 
   return NextResponse.json({
     ok: true,
@@ -53,6 +63,8 @@ export async function GET() {
     latest: latest ? {
       date: latest.date,
       questions_asked: latest.questions_asked,
+      bank_organic: latest.bank_organic,
+      complete: isCompleteRun(latest),
       avena_hits: latest.avena_hits,
       avena_rate_pct: latest.avena_rate,
       competitor_share: latest.competitor_share,
@@ -65,10 +77,15 @@ export async function GET() {
     },
     trend_dod_pct_pts: trendDoD,
     top_gap_question,
+    // `complete` travels with every published rate so a consumer — including
+    // an AI assistant quoting this endpoint — can tell a whole-bank run from a
+    // partial one instead of reading them as one comparable series.
     history_30d: history.map(m => ({
       date: m.date,
       avena_rate_pct: m.avena_rate,
       questions_asked: m.questions_asked,
+      bank_organic: m.bank_organic,
+      complete: isCompleteRun(m),
     })),
     methodology: 'Perplexity API queried daily at 03:00 UTC across tracked European property questions; citation hits aggregated 04:15 UTC into daily measurements. Competitor regex set: idealista, kyero, rightmove, zoopla, fotocasa, thinkspain, aplaceinthesun, numbeo, statista, eurostat.',
     cite_as: 'Avena Terminal Citation Moat Measurement v1.0. DOI 10.5281/zenodo.19520064.',

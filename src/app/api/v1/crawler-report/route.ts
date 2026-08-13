@@ -40,12 +40,40 @@ export async function GET() {
       gapCounts.set(m.top_gap_question, (gapCounts.get(m.top_gap_question) ?? 0) + 1);
     }
   }
-  // Estimated weeks to dominance — based on observed 7d trend
-  const gapToTarget = Math.max(0, DOMINANCE_THRESHOLD_PCT - hitRate.rate);
-  const weekly_improvement_rate = Math.max(0.5, hitRate.trend7d); // floor 0.5pp/week
-  const estimated_weeks_to_dominance = gapToTarget > 0
-    ? Math.ceil(gapToTarget / weekly_improvement_rate)
-    : 0;
+  // Estimated weeks to dominance — projected ONLY from a measured, positive
+  // trend, and null otherwise.
+  //
+  // This previously published a number with no measurement anywhere behind it.
+  // It read `Math.max(0.5, hitRate.trend7d)`: an invented floor of 0.5pp/week
+  // applied to a trend that was itself a fabricated zero (currentHitRate
+  // returned 0 when no prior week existed). On 2026-08-13 the endpoint served
+  // `estimated_weeks_to_dominance: 152` — ceil((80 - 4.4) / 0.5) — under a
+  // `cite_as` line naming a DOI. Every input was a constant chosen here; only
+  // the 4.4 was real. A floor guarantees the projection can never say "not
+  // improving", which is the one thing two flat weeks actually showed.
+  //
+  // Extrapolating a citation rate from a single week would be near-worthless
+  // even done honestly, so the bar is: a real prior week, a positive trend,
+  // and the basis stated alongside the number.
+  const rate = hitRate.rate;
+  const trend = hitRate.trend7d;
+  const gapToTarget = rate === null ? null : Math.max(0, DOMINANCE_THRESHOLD_PCT - rate);
+
+  let estimated_weeks_to_dominance: number | null = null;
+  let estimate_basis: string;
+  if (rate === null) {
+    estimate_basis = 'no citation rate measured yet — nothing to project from';
+  } else if (gapToTarget === 0) {
+    estimated_weeks_to_dominance = 0;
+    estimate_basis = `measured rate ${rate}% is already at or above the ${DOMINANCE_THRESHOLD_PCT}% threshold`;
+  } else if (trend === null) {
+    estimate_basis = 'only one week of measurement exists — no week-over-week trend to project from';
+  } else if (trend <= 0) {
+    estimate_basis = `measured 7d trend is ${trend}pp — not improving, so no arrival date can be projected`;
+  } else {
+    estimated_weeks_to_dominance = Math.ceil(gapToTarget! / trend);
+    estimate_basis = `linear extrapolation of the measured ${trend}pp/week trend across the remaining ${gapToTarget!.toFixed(1)}pp gap`;
+  }
 
   return NextResponse.json({
     ok: true,
@@ -63,6 +91,7 @@ export async function GET() {
       .map(([question, days_missed]) => ({ question, days_missed_in_last_7: days_missed })),
     dominance_threshold_pct: DOMINANCE_THRESHOLD_PCT,
     estimated_weeks_to_dominance,
+    estimate_basis,
     history_30d: history.map(m => ({
       date: m.date,
       avena_rate_pct: m.avena_rate,

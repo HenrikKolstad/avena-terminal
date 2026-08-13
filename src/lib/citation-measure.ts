@@ -232,12 +232,18 @@ export async function loadMeasurements(limit = 30): Promise<DailyMeasurement[]> 
 }
 
 export async function currentHitRate(): Promise<{
-  rate: number;
-  trend7d: number; // percentage points change vs prior week
+  /** null when nothing has been measured — NEVER 0, which is a real rate. */
+  rate: number | null;
+  /** percentage points vs prior week; null when there is no prior week to compare. */
+  trend7d: number | null;
   total_questions_tracked: number;
 }> {
   const all = await loadMeasurements(14);
-  if (all.length === 0) return { rate: 0, trend7d: 0, total_questions_tracked: 0 };
+  // A rate of 0.00% is a measurement: "we asked and were cited zero times".
+  // Having asked nothing is not that, and returning 0 here published exactly
+  // the fabrication of 2026-08-02..06, when a Perplexity 401 overwrote a
+  // healthy ~33% with a confident 0.00% for six days.
+  if (all.length === 0) return { rate: null, trend7d: null, total_questions_tracked: 0 };
 
   const last7 = all.slice(0, 7);
   const prior7 = all.slice(7, 14);
@@ -257,8 +263,11 @@ export async function currentHitRate(): Promise<{
 
   return {
     rate: Number(rate.toFixed(1)),
-    // No prior week measured yet is not a trend of zero.
-    trend7d: prior7.length === 0 ? 0 : Number((rate - priorRate).toFixed(1)),
+    // No prior week measured yet is not a trend of zero. This comment was here
+    // before the code obeyed it: the branch returned 0, and /api/v1/* published
+    // "0.0pp vs prior 7d" as a measured flat week when no prior week existed at
+    // all. null is the only honest value for a comparison that cannot be made.
+    trend7d: prior7.length === 0 ? null : Number((rate - priorRate).toFixed(1)),
     total_questions_tracked,
   };
 }

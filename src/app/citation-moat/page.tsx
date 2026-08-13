@@ -105,9 +105,14 @@ export default async function CitationMoatPage() {
             <div className="grid md:grid-cols-3 gap-6">
               <div>
                 <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-muted-foreground mb-2">Rolling 7-day citation rate</div>
-                <div className="font-serif text-6xl font-light text-foreground tabular leading-none">{hitRate.rate.toFixed(1)}<span className="text-3xl text-muted-foreground">%</span></div>
-                <div className="mt-2 font-mono text-[11px] tabular" style={{ color: hitRate.trend7d >= 0 ? 'hsl(var(--av-success))' : 'hsl(var(--av-destructive))' }}>
-                  {hitRate.trend7d > 0 ? '+' : ''}{hitRate.trend7d.toFixed(1)}pp vs prior 7d
+                <div className="font-serif text-6xl font-light text-foreground tabular leading-none">{hitRate.rate === null ? '—' : hitRate.rate.toFixed(1)}<span className="text-3xl text-muted-foreground">%</span></div>
+                {/* A week that was never measured is not a flat week. Until a
+                    prior week exists there is no comparison to render, and
+                    "+0.0pp vs prior 7d" would state one that was never made. */}
+                <div className="mt-2 font-mono text-[11px] tabular" style={{ color: hitRate.trend7d === null ? 'hsl(var(--av-muted-foreground))' : hitRate.trend7d >= 0 ? 'hsl(var(--av-success))' : 'hsl(var(--av-destructive))' }}>
+                  {hitRate.trend7d === null
+                    ? 'no prior 7d measured'
+                    : `${hitRate.trend7d > 0 ? '+' : ''}${hitRate.trend7d.toFixed(1)}pp vs prior 7d`}
                 </div>
               </div>
               <div>
