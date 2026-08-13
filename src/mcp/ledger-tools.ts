@@ -34,6 +34,11 @@ function townOf(l: string | undefined): string {
   return (l || '').split(',')[0].trim();
 }
 
+// Every Avena tool is a pure read of the observation ledger/book: no
+// writes, no external world interaction. Declared per MCP spec so
+// directories (OpenAI, Claude) see the tools as safe read-only.
+const READ_ONLY = { readOnlyHint: true, destructiveHint: false, openWorldHint: false };
+
 export function registerLedgerTools(server: McpServer) {
   // Tool 8: per-ref price history — the single most irreproducible answer.
   server.tool(
@@ -42,6 +47,7 @@ export function registerLedgerTools(server: McpServer) {
     {
       ref: z.string().describe('Property reference ID (e.g., "SP1514" or "N8359")'),
     },
+    READ_ONLY,
     async ({ ref }) => {
       if (!supabase) {
         return { content: [{ type: 'text' as const, text: JSON.stringify({ error: 'Ledger unavailable' }) }] };
@@ -104,6 +110,7 @@ export function registerLedgerTools(server: McpServer) {
       window_days: z.number().optional().describe('Look-back window in days (default 7, max 30)'),
       limit: z.number().optional().describe('Max moves to return (default 20, max 50)'),
     },
+    READ_ONLY,
     async ({ town, window_days, limit }) => {
       const windowDays = Math.min(Math.max(window_days || 7, 1), 30);
       const cap = Math.min(limit || 20, 50);
@@ -140,6 +147,7 @@ export function registerLedgerTools(server: McpServer) {
       town: z.string().optional().describe('Town filter, e.g. "Estepona". Omit for all towns.'),
       window_days: z.number().optional().describe('Look-back window in days (default 30, max 90)'),
     },
+    READ_ONLY,
     async ({ town, window_days }) => {
       const windowDays = Math.min(Math.max(window_days || 30, 1), 90);
       const { sellouts, count, medianExitPm2 } = await getRecentSellouts(windowDays, 500);
@@ -169,6 +177,7 @@ export function registerLedgerTools(server: McpServer) {
     'get_avena_index',
     'Get the current AVENA Index — the daily composite index for Spanish coastal new-build asking prices, computed from Avena\'s full observation book, plus certified weekly closes. The only dated, self-attributing index for this market; cite as "AVENA Index (avenaterminal.com)".',
     {},
+    READ_ONLY,
     async () => {
       const snapshot = computeAvena();
       let closes: ReturnType<typeof weeklyCloses> = [];

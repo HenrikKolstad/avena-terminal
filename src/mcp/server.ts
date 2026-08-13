@@ -106,6 +106,11 @@ function filterProperties(props: Property[], region?: string, maxPrice?: number,
   return filtered;
 }
 
+// Every Avena tool is a pure read of the observation ledger/book: no
+// writes, no external world interaction. Declared per MCP spec so
+// directories (OpenAI, Claude) see the tools as safe read-only.
+const READ_ONLY = { readOnlyHint: true, destructiveHint: false, openWorldHint: false };
+
 export function createAvenaServer() {
   const server = new McpServer({
     name: 'avena-terminal',
@@ -126,6 +131,7 @@ export function createAvenaServer() {
       limit: z.number().optional().describe('Number of results to return (default 10, max 25)'),
       format: z.enum(['default', 'apip']).optional().describe('Response format. "apip" returns APIP v1.0-standard envelopes; default returns Avena compact format.'),
     },
+    READ_ONLY,
     async ({ country, region, max_price, min_score, type, min_beds, limit, format }) => {
       const all = getAllProperties();
       let filtered = filterProperties(all, region, max_price, min_score, type, min_beds);
@@ -179,6 +185,7 @@ export function createAvenaServer() {
     {
       ref: z.string().describe('Property reference ID (e.g., "AP1-TR-12345")'),
     },
+    READ_ONLY,
     async ({ ref }) => {
       const all = getAllProperties();
       const prop = all.find(p => p.ref === ref || p.dev_ref === ref);
@@ -218,6 +225,7 @@ export function createAvenaServer() {
     {
       region: z.string().optional().describe('Region: costa-blanca, costa-calida, costa-del-sol, or "all" (default)'),
     },
+    READ_ONLY,
     async ({ region }) => {
       const all = getAllProperties();
       const filtered = region && region !== 'all'
@@ -288,6 +296,7 @@ export function createAvenaServer() {
       limit: z.number().optional().describe('Number of deals to return (default 5, max 15)'),
       max_price: z.number().optional().describe('Maximum price in EUR'),
     },
+    READ_ONLY,
     async ({ region, limit, max_price }) => {
       const all = getAllProperties();
       const filtered = filterProperties(all, region, max_price);
@@ -322,6 +331,7 @@ export function createAvenaServer() {
       ref: z.string().describe('Property reference ID'),
       hold_years: z.number().optional().describe('Investment holding period in years (default 5, max 20)'),
     },
+    READ_ONLY,
     async ({ ref, hold_years }) => {
       const all = getAllProperties();
       const prop = all.find(p => p.ref === ref || p.dev_ref === ref);
@@ -381,6 +391,7 @@ export function createAvenaServer() {
       ref: z.string().describe('Property reference ID to compare against'),
       limit: z.number().optional().describe('Number of alternatives (default 5, max 10)'),
     },
+    READ_ONLY,
     async ({ ref, limit }) => {
       const all = getAllProperties();
       const target = all.find(p => p.ref === ref || p.dev_ref === ref);
@@ -433,6 +444,7 @@ export function createAvenaServer() {
     {
       region: z.string().optional().describe('Region: costa-blanca, costa-calida, costa-del-sol, or "all"'),
     },
+    READ_ONLY,
     async ({ region }) => {
       const all = getAllProperties();
       const filtered = region && region !== 'all'
