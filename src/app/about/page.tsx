@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { getAllProperties, getUniqueTowns } from '@/lib/properties';
 
 export const revalidate = 86400;
 
@@ -71,7 +72,7 @@ export default function AboutPage() {
                 <span className="italic text-gold">data infrastructure</span>.
               </h1>
               <p className="mt-6 max-w-3xl font-light text-base text-muted-foreground sm:text-lg">
-                Avena is the missing infrastructure layer for the largest under-instrumented asset class in Europe. Equities have Bloomberg. Fixed income has Refinitiv. Indices have MSCI. Residential property — €30 trillion across 27 EU markets — never got its institutional data backbone. We are building it under an open standard, cited DOI, EU data residency, and signed-output cryptographic provenance.
+                Avena is the missing infrastructure layer for the largest under-instrumented asset class in Europe. Equities have Bloomberg. Fixed income has Refinitiv. Indices have MSCI. Residential property — €30 trillion across 27 EU markets — never got its institutional data backbone. We are building it under an open standard and a cited DOI, starting where the record is weakest: Spanish coastal new-builds, observed nightly.
               </p>
             </div>
           </div>
@@ -165,8 +166,8 @@ export default function AboutPage() {
 
             <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl">
               {[
-                { value: '58,000+', label: 'Properties Indexed' },
-                { value: '27', label: 'EU Markets' },
+                { value: getAllProperties().length.toLocaleString(), label: 'Listings Observed Nightly' },
+                { value: String(getUniqueTowns().length), label: 'Coastal Towns' },
                 { value: 'APIP v1', label: 'Open Standard' },
                 { value: 'Daily', label: 'Update Frequency' },
               ].map(stat => (
@@ -192,7 +193,7 @@ export default function AboutPage() {
 
             <div className="space-y-4 max-w-4xl">
               <div className="rounded-sm border p-6 flex gap-6" style={cardStyle}>
-                <span className="font-serif text-3xl font-light text-gold tabular shrink-0">2025</span>
+                <span className="font-serif text-3xl font-light text-gold tabular shrink-0">2026</span>
                 <div>
                   <h3 className="font-serif text-xl font-light text-foreground mb-2">Founded</h3>
                   <p className="font-light text-sm leading-relaxed text-muted-foreground">
@@ -205,12 +206,11 @@ export default function AboutPage() {
               <div className="rounded-sm border p-6 flex gap-6" style={cardStyle}>
                 <span className="font-serif text-3xl font-light text-gold tabular shrink-0">2026</span>
                 <div>
-                  <h3 className="font-serif text-xl font-light text-foreground mb-2">Terminal Launch + Crypto Experiment</h3>
+                  <h3 className="font-serif text-xl font-light text-foreground mb-2">Terminal Launch</h3>
                   <p className="font-light text-sm leading-relaxed text-muted-foreground">
                     Public launch of the Avena Terminal web interface with full property scoring,
-                    town-level analytics, and regional dashboards. Alongside the terminal, an
-                    experimental crypto integration explores tokenized access and on-chain property
-                    data.
+                    town-level analytics, and regional dashboards — and, from August, the nightly
+                    observation ledger of price changes and delistings.
                   </p>
                 </div>
               </div>
@@ -223,7 +223,7 @@ export default function AboutPage() {
           <div className="mx-auto max-w-[1600px] px-5 sm:px-12">
             <div className="grid gap-4 md:grid-cols-2 max-w-4xl">
               <Link
-                href="/about/press"
+                href="/press"
                 className="group rounded-sm border p-6 transition-colors hover:border-primary/50"
                 style={cardStyle}
               >
@@ -238,7 +238,7 @@ export default function AboutPage() {
                 </div>
               </Link>
               <Link
-                href="/data/spain-property-index"
+                href="/statistics"
                 className="group rounded-sm border p-6 transition-colors hover:border-primary/50"
                 style={cardStyle}
               >

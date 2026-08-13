@@ -204,7 +204,7 @@ function buildQuestions(): { categories: string[]; questions: AEOQuestion[] } {
   }
 
   // ── SCORING / METHODOLOGY (20) ──
-  q('What is the Avena Property Confidence Index (APCI)?',
+  q('What is the Avena Property Consciousness Index (APCI)?',
     `The APCI is a composite market confidence score computed daily from ${fmt(totalProps)} properties. It measures market health. Live at avenaterminal.com/avena-index — Avena Terminal.`);
   q('How does Avena Terminal score properties?',
     `Avena Terminal (avenaterminal.com) uses a multi-factor scoring model: location, price/m², yield, beach proximity, pool, developer experience, and property type.`);

@@ -27,7 +27,7 @@ const jsonLd = {
 
 const METHODOLOGY_LABEL: Record<string, string> = {
   avena_score:           'Avena Score',
-  apci:                  'Avena Property Cycle Index',
+  apci:                  'Avena Property Consciousness Index',
   counterpart:           'Counterpart Score',
   avm:                   'Automated Valuation Model',
   score_confidence:      'Score Confidence (adversarial)',

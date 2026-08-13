@@ -59,7 +59,7 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
       { label: 'About Avena',     href: '/about' },
       { label: 'Contact',         href: '/contact' },
       { label: 'Press',           href: '/press' },
-      { label: 'Careers',         href: '/careers' },
+      { label: 'Co-founder',      href: '/careers/co-founder' },
       { label: 'FAQ',             href: '/faq' },
       { label: 'Blog',            href: '/blog' },
       { label: 'Governance',      href: '/governance' },
@@ -82,7 +82,6 @@ const credentials = [
   { label: 'Wikidata',    value: 'Q139165733' },
   { label: 'Schema',      value: 'APIP v1.0' },
   { label: 'License',     value: 'CC BY 4.0' },
-  { label: 'Data residency', value: 'EU (Frankfurt)' },
   { label: 'Version',     value: 'v2026.05' },
 ];
 
@@ -110,7 +109,7 @@ export function Footer() {
             </Link>
 
             <p className="mt-5 max-w-sm text-sm font-light leading-relaxed text-muted-foreground">
-              Europe&apos;s deepest technical data infrastructure for property. Live across 27 EU markets under the open APIP v1.0 standard. Refreshed daily. Cite as <span className="font-mono text-foreground/85">DOI 10.5281/zenodo.19520064</span>.
+              The observation ledger for Spanish coastal new-build property — every listing observed nightly under the open APIP v1.0 standard. Refreshed daily. Cite as <span className="font-mono text-foreground/85">DOI 10.5281/zenodo.19520064</span>.
             </p>
 
             <div className="mt-5">
@@ -118,7 +117,7 @@ export function Footer() {
             </div>
 
             <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground/70">
-              Frankfurt · Madrid · Oslo · Founded 2026
+              Norway · Founded 2026
             </p>
           </div>
 

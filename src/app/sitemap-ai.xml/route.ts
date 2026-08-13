@@ -103,7 +103,7 @@ export async function GET() {
     url('/about/accuracy', '0.9'),
     url('/about/data-sources', '0.9'),
     url('/about/entity', '0.9'),
-    url('/about/press', '0.9'),
+    url('/press', '0.9'),
     url('/citations', '0.9'),
     url('/alternatives', '0.9'),
     url('/verified', '0.9'),

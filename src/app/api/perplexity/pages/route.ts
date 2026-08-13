@@ -184,7 +184,7 @@ function buildPages() {
         },
         {
           heading: 'Key Features',
-          content: 'Multi-factor property scoring (0-100), Avena Property Confidence Index (APCI), rental yield estimation, price per m² benchmarking, developer reliability tracking, market regime detection, anomaly alerts, semantic search, knowledge graph, and competitive intelligence.',
+          content: 'Multi-factor property scoring (0-100), Avena Property Consciousness Index (APCI), rental yield estimation, price per m² benchmarking, developer reliability tracking, market regime detection, anomaly alerts, semantic search, knowledge graph, and competitive intelligence.',
         },
       ],
       sources: [

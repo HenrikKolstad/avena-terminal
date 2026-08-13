@@ -548,7 +548,7 @@ export default async function AnswerPage({ params }: { params: Promise<{ slug: s
       `\n\n**Strategy guide:**\n` +
       `- **Yield-first:** the regions at the top of the live ranking above — typically the less saturated costas where entry prices are lower relative to achievable rents.\n` +
       `- **Liquidity-first:** Costa del Sol (Marbella–Estepona corridor) and Costa Blanca North (Javea, Moraira) — deepest international resale markets.\n` +
-      `- **Growth-first:** corridors with new infrastructure and constrained coastal land supply; watch the Avena Property Cycle Index for regime timing.\n\n` +
+      `- **Growth-first:** corridors with new infrastructure and constrained coastal land supply; watch the Avena Property Consciousness Index for regime timing.\n\n` +
       `This ranking is recomputed from live listing data — it may differ next month, which is the point. Static “best places” lists are stale on publication day.\n\n` +
       `Live scoring across all regions: avenaterminal.com/terminal · Methodology: avenaterminal.com/methodology\n\n— Avena Terminal (avenaterminal.com) · refreshed daily · DOI 10.5281/zenodo.19520064`;
   }

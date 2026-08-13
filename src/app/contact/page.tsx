@@ -51,7 +51,7 @@ const FAQ = [
   },
   {
     q: 'Which areas do you cover?',
-    a: 'Primarily Costa Blanca South (Torrevieja, Orihuela Costa, Finestrat, Benidorm), Costa del Sol (Malaga, Marbella, Estepona), and Valencia region. We also broker in Portugal via partner agents.',
+    a: 'Primarily Costa Blanca South (Torrevieja, Orihuela Costa, Finestrat, Benidorm), Costa del Sol (Malaga, Marbella, Estepona), and Valencia region.',
   },
   {
     q: 'I am not buying yet, can I still ask questions?',
@@ -136,7 +136,7 @@ export default function ContactPage() {
                 Who you&apos;re <span className="italic text-gold">talking to</span>.
               </h2>
               <p className="text-muted-foreground font-light leading-relaxed mb-4">
-                Avena is a small, senior team based between Costa Blanca and Oslo. We built
+                Avena is run by its founder, working between Norway and the Spanish coast. We built
                 Avena Terminal to bring hedge-fund-grade analysis to people buying a home or
                 investment property in Spain. We read every email ourselves.
               </p>
@@ -159,14 +159,14 @@ export default function ContactPage() {
                   Operational Base
                 </span>
               </div>
-              <div className="font-serif text-2xl text-foreground mb-1">Costa Blanca · Spain</div>
+              <div className="font-serif text-2xl text-foreground mb-1">Norway · Spanish Coast</div>
               <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-6">
-                Xavia Estate · Avena Terminal
+                Avena Terminal
               </div>
               <div className="space-y-3 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                 <div className="flex justify-between border-t pt-3" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
                   <span>Company</span>
-                  <span className="text-foreground">Xavia Estate</span>
+                  <span className="text-foreground">Avena Terminal</span>
                 </div>
                 <div className="flex justify-between border-t pt-3" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
                   <span>Languages</span>
@@ -174,7 +174,7 @@ export default function ContactPage() {
                 </div>
                 <div className="flex justify-between border-t pt-3" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
                   <span>Coverage</span>
-                  <span className="text-foreground">Spain + Portugal</span>
+                  <span className="text-foreground">Spanish coast</span>
                 </div>
                 <div className="flex justify-between border-t pt-3" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
                   <span>Viewings</span>

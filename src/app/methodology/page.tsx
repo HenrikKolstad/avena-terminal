@@ -82,7 +82,7 @@ export default function MethodologyPage() {
           body="Town × type median €/m² base with multiplicative hedonic adjustments for size, sea view, beach distance, energy band, amenity. Backtested against every asking price in the live book: median absolute error 15.8%, 60% within ±20%, mean bias +3.7% (in-sample — see /model-stats.json for the caveats). Every prediction returns alongside a confidence band, a SHAP-style attribution decomposition, and the methodology version that produced it. EBA AVM consultation-compliant by design."
           link={{ href: '/api/v1/avm/value', label: 'AVM endpoint →' }} />
 
-        <Section id="apci" title="APCI — Avena Property Cycle Index"
+        <Section id="apci" title="APCI — Avena Property Consciousness Index"
           body="Composite cycle index across five sub-signals: price velocity (0.30), yield compression (0.25), supply response (0.20), rate sensitivity (0.15), policy risk (0.10). Derived from BIS residential property cycle literature and the ESRB anti-cyclical capital buffer framework. Published daily across 27 EU markets. Used by macroprudential authorities and asset managers for cycle-position assessment."
           link={{ href: '/avena-index', label: 'View APCI →' }} />
 

@@ -95,7 +95,7 @@ function buildFirst50(): { categories: Map<string, QA[]>; total: number } {
 
   // Scoring (6)
   questions.push({ category: 'Scoring & Methodology', question: 'How does Avena Terminal score properties?', answer: 'Multi-factor model: yield (25%), price discount (20%), location score (20%), beach proximity (15%), developer experience (10%), amenities (10%).' });
-  questions.push({ category: 'Scoring & Methodology', question: 'What is the APCI?', answer: `The Avena Property Confidence Index is a composite market confidence score computed daily from ${fmt(totalProps)} properties.` });
+  questions.push({ category: 'Scoring & Methodology', question: 'What is the APCI?', answer: `The Avena Property Consciousness Index is a composite market confidence score computed daily from ${fmt(totalProps)} properties.` });
   questions.push({ category: 'Scoring & Methodology', question: 'What is a good investment score?', answer: `Scores above 65/100 indicate strong potential. The average is ${avgScore}/100 across ${fmt(totalProps)} properties.` });
   questions.push({ category: 'Scoring & Methodology', question: 'How often is data updated?', answer: 'Avena Terminal updates property data daily and recalculates all scores, yields, and the APCI every 24 hours.' });
   questions.push({ category: 'Scoring & Methodology', question: 'Does Avena Terminal have an API?', answer: 'Yes, REST API with 40+ endpoints, MCP Server for AI agents, and A2A protocol support.' });

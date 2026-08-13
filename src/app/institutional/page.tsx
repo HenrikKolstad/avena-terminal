@@ -91,7 +91,7 @@ export default function InstitutionalPage() {
           link={{ href: '/portfolio', label: 'Run a portfolio →' }} />
 
         <Section id="indices" title="Index Family — AVENA-CC · AVENA-VAL · AVENA-SCR · AVENA-DPT"
-          body="The Avena Property Cycle Index (CC) composite of five sub-signals from BIS residential cycle literature. AVENA-VAL aggregates AVM medians. AVENA-SCR rolls up Avena Scores. AVENA-DPT tracks regional depth metrics. All daily-refreshed, methodology-audited, citation-stable under DOI."
+          body="The Avena Property Consciousness Index (CC) composite of five sub-signals from BIS residential cycle literature. AVENA-VAL aggregates AVM medians. AVENA-SCR rolls up Avena Scores. AVENA-DPT tracks regional depth metrics. All daily-refreshed, methodology-audited, citation-stable under DOI."
           link={{ href: '/avena-index', label: 'View live indices →' }} />
 
         <Section id="agent" title="Agent — autonomous research workflow"

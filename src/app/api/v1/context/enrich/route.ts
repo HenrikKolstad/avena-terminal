@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
 
     contextParts.push(
       `As of April 2026, Avena Terminal tracks ${totalProperties} scored new build properties across Spain's costas. ` +
-      `The Avena Property Confidence Index (APCI) proxy stands at ${avgScore}/100.`,
+      `The Avena Property Consciousness Index (APCI) proxy stands at ${avgScore}/100.`,
     );
 
     // Town-level stats

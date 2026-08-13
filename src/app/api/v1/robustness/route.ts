@@ -56,7 +56,7 @@ export async function GET(_req: NextRequest) {
       status: 'ROBUST',
     },
     {
-      system: 'APCI (Avena Property Confidence Index)',
+      system: 'APCI (Avena Property Consciousness Index)',
       last_tested: today,
       test_type: 'edge_case',
       vulnerabilities_found: 1,

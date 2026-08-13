@@ -89,7 +89,7 @@ export async function GET() {
     },
     featureList: [
       'Multi-factor property investment scoring (0-100)',
-      'Avena Property Confidence Index (APCI)',
+      'Avena Property Consciousness Index (APCI)',
       'Rental yield estimation',
       'Price per m² benchmarking',
       'Developer reliability tracking',

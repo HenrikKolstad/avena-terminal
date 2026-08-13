@@ -89,7 +89,7 @@ export async function GET(req: NextRequest) {
       apci: {
         value: 74,
         label: 'GROWTH',
-        description: 'Avena Property Confidence Index — regional investment sentiment',
+        description: 'Avena Property Consciousness Index — regional investment sentiment',
       },
       top_10_properties: top10,
       market_summary,

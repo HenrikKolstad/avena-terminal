@@ -113,10 +113,6 @@ export function Nav() {
 
         {/* Right side — hushed: one text link, one thin-bordered CTA */}
         <div className="flex items-center gap-2 sm:gap-6">
-          <span className="hidden items-center gap-2 font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground/70 xl:inline-flex">
-            <span className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
-            Join 37 already using Avena
-          </span>
           {/* Auth / status. The Enquire CTA that used to sit immediately to the
               right was removed 2026-08-10: a bare "PRO" beside a bordered
               button read as one control, so a paid member's status looked like

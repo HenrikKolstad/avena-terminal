@@ -43,7 +43,7 @@ export const NODES: CausalNode[] = [
 
   // Methodology
   { id: 'meth_avena_score', type: 'methodology', label: 'Avena Score',                   description: 'Property quality + investment score (weights at /methodology/evolution).' },
-  { id: 'meth_apci',        type: 'methodology', label: 'APCI',                          description: 'Avena Property Cycle Index — composite cycle position.' },
+  { id: 'meth_apci',        type: 'methodology', label: 'APCI',                          description: 'Avena Property Consciousness Index — composite cycle position.' },
   { id: 'meth_counterpart', type: 'methodology', label: 'Counterpart Score',             description: 'Developer credit grade.' },
   { id: 'meth_avm',         type: 'methodology', label: 'AVM',                           description: 'Town × type median €/m² base with adjustments.' },
   { id: 'meth_confidence',  type: 'methodology', label: 'Score Confidence',              description: 'Adversarial residual layer.' },
