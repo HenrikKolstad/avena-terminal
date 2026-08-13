@@ -83,6 +83,17 @@ address (dashboard-only) + subscribes it to Source of Sources. Also note:
 2026-08-13 07:47 UTC, success, 1 alert sent (closes your Monday check early).
 IndexNow first scheduled run 05:18 UTC, 200, 2,106 URLs.
 
+### FABLE 2026-08-13 (morning): ChatGPT Apps submission IN REVIEW
+"Avena Spanish Property Data" submitted to OpenAI's plugin/apps directory
+11:26 CET: 11 read-only tools, domain verified (.well-known/openai-apps-challenge),
+demo video live at /demo/avena-chatgpt-demo.mp4, all policy attestations true.
+Decision arrives by email to Henrik's OpenAI account — check status at
+platform.openai.com/plugins. Also this morning: GitHub MCP app granted
+Actions read/write on all repos (Odyssey's durable-token ask = SOLVED — use
+the MCP GitHub tools to cancel/dispatch runs, no PAT needed). Tool
+annotations (readOnlyHint etc.) now on all 11 MCP tools in prod — this also
+satisfies half the Claude connector directory requirements (OAuth remains).
+
 ## 2. OPEN — found, not yet fixed
 
 | # | what | evidence | why deferred | priority |
