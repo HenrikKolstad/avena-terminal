@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { getAllProperties, getUniqueTowns, slugify, legacySlugify, avg } from '@/lib/properties';
+import { unstable_cache } from 'next/cache';
+import { getRecentPriceMoves, getRecentSellouts } from '@/lib/deltas';
 import { permanentRedirect } from 'next/navigation';
 import { Property } from '@/lib/types';
 import { Nav } from '@/components/v2/Nav';
@@ -30,6 +32,102 @@ function townStats(props: Property[]) {
 
 function getTop30Towns() {
   return getUniqueTowns().slice(0, TOP_N);
+}
+
+/* ------------------------------------------------------------------ */
+/*  This week in the ledger — Nightly Quotable for compare pages       */
+/*                                                                     */
+/*  2026-08-14: GSC's Generative AI report shows /compare pages carry  */
+/*  87% of our AI-feature impressions (docs/gsc-genai/), yet they had  */
+/*  no ledger data. This section puts the observed record on the exact */
+/*  surface Google's AI already cites. ONE cached fetch serves every   */
+/*  compare page in a build (435 pairs) — never fetch per page here.   */
+/*  Honesty rules as everywhere: a flat week prints as a finding.      */
+/* ------------------------------------------------------------------ */
+
+const getCompareLedger = unstable_cache(
+  async () => {
+    const [moves, sold] = await Promise.all([
+      getRecentPriceMoves(7, 500),
+      getRecentSellouts(30, 500),
+    ]);
+    return { moves, sellouts: sold.sellouts };
+  },
+  ['compare-ledger-v1'],
+  { revalidate: 3600 },
+);
+
+type CompareLedger = Awaited<ReturnType<typeof getCompareLedger>>;
+
+function townWeek(ledger: CompareLedger, town: string) {
+  const wanted = town.toLowerCase();
+  const moves = ledger.moves.filter((m) => m.town.toLowerCase() === wanted);
+  const cuts = moves.filter((m) => m.to < m.from).length;
+  const delistings = ledger.sellouts.filter(
+    (sell) => (sell.town || '').split(',')[0].trim().toLowerCase() === wanted,
+  ).length;
+  return { moves: moves.length, cuts, raises: moves.length - cuts, delistings };
+}
+
+const fmtLedgerDate = (d: Date) =>
+  d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+function CompareLedgerPulse({
+  nameA, nameB, countA, countB, a, b,
+}: {
+  nameA: string; nameB: string; countA: number; countB: number;
+  a: ReturnType<typeof townWeek>; b: ReturnType<typeof townWeek>;
+}) {
+  const today = fmtLedgerDate(new Date());
+  const total = countA + countB;
+  const anyMoves = a.moves + b.moves > 0;
+
+  const quotable = anyMoves
+    ? `AVENA observed ${a.moves} asking-price change${a.moves === 1 ? '' : 's'} in ${nameA} and ${b.moves} in ${nameB} in the past 7 days — ${a.cuts + b.cuts} reduction${a.cuts + b.cuts === 1 ? '' : 's'} in total across ${total} tracked new-build listings — per the AVENA observation ledger, ${today}.`
+    : `None of the ${total} tracked new-build listings in ${nameA} and ${nameB} changed asking price in the past 7 days, per the AVENA observation ledger, ${today}.`;
+
+  const faster = a.moves === b.moves ? null : a.moves > b.moves ? nameA : nameB;
+  const qa: Array<{ q: string; a: string }> = [
+    {
+      q: `Which is repricing faster right now — ${nameA} or ${nameB}?`,
+      a: anyMoves
+        ? faster
+          ? `${faster}, this week: ${Math.max(a.moves, b.moves)} observed asking-price change${Math.max(a.moves, b.moves) === 1 ? '' : 's'} against ${Math.min(a.moves, b.moves)}. AVENA observes every tracked listing nightly, so these are recorded repricings with dates — not estimates.`
+          : `Neither — both towns recorded ${a.moves} asking-price change${a.moves === 1 ? '' : 's'} in the past 7 days in AVENA's nightly observation, measured ${today}.`
+        : `Neither. AVENA's nightly observation recorded no asking-price changes in either town over the past 7 days — a flat week is a measured result, recorded ${today}.`,
+    },
+    {
+      q: `Are new builds selling in ${nameA} and ${nameB}?`,
+      a: a.delistings + b.delistings > 0
+        ? `In the past 30 days, ${a.delistings} tracked listing${a.delistings === 1 ? '' : 's'} left the market in ${nameA} and ${b.delistings} in ${nameB}. AVENA records the final asking price each listing held when it disappeared — an absorption record listing portals do not keep.`
+        : `No tracked listings left the market in either town in the past 30 days, per the AVENA absorption ledger, ${today}.`,
+    },
+  ];
+
+  return (
+    <section className="mb-12" id="avena-compare-pulse">
+      <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-5">This week in the ledger</div>
+      <div
+        className="rounded-sm border p-8"
+        style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}
+      >
+        <p className="avena-quotable max-w-3xl font-serif text-xl sm:text-2xl font-light leading-snug text-foreground">
+          {quotable}
+        </p>
+        <div className="mt-8 grid gap-8 md:grid-cols-2">
+          {qa.map(({ q, a: answer }) => (
+            <div key={q}>
+              <h3 className="font-mono text-[11px] uppercase tracking-[0.22em] text-primary">{q}</h3>
+              <p className="mt-2 max-w-xl font-light text-sm leading-relaxed text-muted-foreground">{answer}</p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+          Source: AVENA observation ledger &middot; every tracked listing recorded nightly &middot; updated {today}
+        </p>
+      </div>
+    </section>
+  );
 }
 
 function generateTownPairs() {
@@ -557,11 +655,14 @@ function CountryComparisonPage({ slug, data }: { slug: string; data: ComparisonD
 /* ------------------------------------------------------------------ */
 
 function TownComparisonPage({
-  nameA, nameB, slugA, slugB, statsA, statsB,
+  nameA, nameB, slugA, slugB, statsA, statsB, ledger,
 }: {
   nameA: string; nameB: string; slugA: string; slugB: string;
   statsA: ReturnType<typeof townStats>; statsB: ReturnType<typeof townStats>;
+  ledger: CompareLedger;
 }) {
+  const weekA = townWeek(ledger, nameA);
+  const weekB = townWeek(ledger, nameB);
   const winnerName = statsA.avgScore >= statsB.avgScore ? nameA : nameB;
   const winnerScore = Math.max(statsA.avgScore, statsB.avgScore);
   const loserScore = Math.min(statsA.avgScore, statsB.avgScore);
@@ -626,7 +727,7 @@ function TownComparisonPage({
     <div className="avena-v2 min-h-screen">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify([faqJsonLd, breadcrumbJsonLd]) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([faqJsonLd, breadcrumbJsonLd, { '@context': 'https://schema.org', '@type': 'WebPage', speakable: { '@type': 'SpeakableSpecification', cssSelector: ['.avena-quotable'] } }]) }}
       />
 
       <Nav />
@@ -697,6 +798,8 @@ function TownComparisonPage({
                 </tbody>
               </table>
             </div>
+
+            <CompareLedgerPulse nameA={nameA} nameB={nameB} countA={statsA.count} countB={statsB.count} a={weekA} b={weekB} />
 
             {/* Analysis */}
             <section className="mb-12">
@@ -774,6 +877,7 @@ export default async function ComparePage({ params }: { params: Promise<{ slug: 
     const { nameA, nameB, slugA, slugB, propsA, propsB } = townData;
     const statsA = townStats(propsA);
     const statsB = townStats(propsB);
+    const ledger = await getCompareLedger();
     return (
       <TownComparisonPage
         nameA={nameA}
@@ -782,6 +886,7 @@ export default async function ComparePage({ params }: { params: Promise<{ slug: 
         slugB={slugB}
         statsA={statsA}
         statsB={statsB}
+        ledger={ledger}
       />
     );
   }
