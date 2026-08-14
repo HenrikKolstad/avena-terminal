@@ -25,97 +25,59 @@ cannot run an experiment, only a stunt.
 
 | shipped | what | how to verify | verified |
 |---|---|---|---|
-| 2026-08-13 | `714b9ab` **log the short feed body, not just its length** | **THE read of tomorrow, and the only one that matters.** If the nightly fails at step 1 again, attempt 1 now prints `feed too small: N bytes [content-type \| server \| cf-ray present] body: <first 300 chars>`. **Read that string before touching anything.** It decides everything: a WAF/rate-limit page → the runner's egress is blocked and the job must move off GitHub-hosted runners or go through a proxy; an auth/permission notice → FEED_URL needs a credential; a valid but empty `<root/>` → RedSP really is publishing an empty catalogue and the 1MB floor is correctly refusing it. Do NOT guess a fix before reading it — guessing is what produced this morning's wrong diagnosis | pending — first live test 2026-08-14 |
-| 2026-08-13 | `f7dbc83` per-attempt `AbortSignal.timeout` + `timeout-minutes: 150` | **Shipped on a wrong diagnosis — see the correction below.** It is insurance against an unbounded fetch, not a fix for anything observed. Nothing to verify: on a healthy night it never fires. Do not credit it if tomorrow goes green | n/a — insurance, not a fix |
-| 2026-08-13 | `63f405b` citation forecast + trend honesty (`estimated_weeks_to_dominance`, `trend7d`, day-over-day across complete runs only) | already verified live post-deploy: `/api/v1/crawler-report` returns `estimated_weeks_to_dominance: null`, `rolling_7d_trend_pct_pts: null`, `estimate_basis: "only one week of measurement exists…"` (was `152` and `0`). `/api/v1/citation-score` now carries `complete:true, bank_organic:68` on both rows; `/citation-moat` renders "no prior 7d measured" | **VERIFIED same day** |
-| 2026-08-13 | `355def7` recovered book (2,000 listings, generated_date 2026-08-13) | already verified: capture ran against it — `snapshotted:2000, price_moves:5, moves_baseline_refs:1998, trusted_prior:true, prior_date:2026-08-12, overlap:0.997, delisted:6, errors:null`. `price_snapshots` holds 2,000 rows / 2,000 distinct refs for 08-13, one clean write | **VERIFIED same day** |
-| 2026-08-12 | `2416532` **Market Pulse delivery engine** — `scripts/pulse/generate_editions.py` + `.github/workflows/pulse-weekly.yml` (cron Mon 05:45 UTC). Henrik sent 30 cold outreach emails selling a €500/mo weekly PDF ("first edition arrives Monday 08:00 CET"). Subscribers in `pulse_subscribers`; deliveries in `pulse_deliveries` with UNIQUE(subscriber, edition_date) so re-runs fill gaps, never double-send. Sends via Resend from pulse@avenaterminal.com. Gotcha: api.resend.com sits behind Cloudflare and 403s (error 1010) any default `Python-urllib` UA — the script sends `avena-pulse/1.0` | **PRICING (Henrik, 2026-08-13): one market area = up to 10 towns of the subscriber's choice, changeable anytime, EUR 500/mo.** Never quote per-town pricing. | Monday 2026-08-17 05:45 UTC is the first scheduled fire. Verify the Actions run went green and `pulse_deliveries` has a row per active subscriber for 2026-08-17. End-to-end already verified manually 08-12 (subscriber #1, resend 18bd97c7). **If a Stripe payment lands, a subscriber row (email + towns) MUST be added before Monday.** Same-day reprice alerts are promised in the outreach; `pulse-alerts.yml` exists (`ba1fd94`) but has never been observed firing — check it Monday too | pending — first cron fire 2026-08-17 |
-| 2026-08-12 | `24db855` `bank_organic`/`bank_branded` + `isCompleteRun()` | **VERIFIED.** Both live rows read 68/68 + 6/6. And as of today the function finally has a caller (`63f405b`), which was the missing half — see closed O-22 | **VERIFIED 2026-08-13** |
+| 2026-08-14 | `e415c6b` **curl fallback when the feed origin serves a bot challenge** | **THE read of tomorrow.** The 01:37 nightly is the first unattended test. Three outcomes: (a) fetch succeeds on attempt 1 — the challenge did not fire, proves nothing, wait for a night it does; (b) log shows `hit a bot-protection interstitial` then `Feed complete via curl fallback` — **the fix worked, close O-27's operational half**; (c) `BOTH node fetch and curl were refused` — the egress itself is blocked, the fingerprint theory is wrong for that night, and it escalates to Henrik immediately. All three paths were verified by hand in this container today, so a surprise here means the runner differs from it in a way I have not modelled. **Note precisely: today's 06:02 verification dispatch (run 31774954659) went green in 9 seconds because fetch was NOT challenged — so the fallback itself has still never run on a GitHub runner.** The fix is proven locally and unproven in CI; do not record it as confirmed until a runner log shows the curl line | pending — needs a night the challenge actually fires |
+| 2026-08-14 | `9c387fd` **change-answers window fix** (unpaginated read collapsed the ledger to 1 day) | Verified end-to-end at 06:4x via a manual dispatch (see below). Confirm again tomorrow that the nightly log line reads `ledger 2026-08-05..2026-08-15 (11 days)` and NOT `(1 days)`, and that `/answers/spanish-new-build-price-reductions-last-30-days` says "across 11 daily captures" with the true window | **VERIFIED same day** — see the dispatch note below |
+| 2026-08-13 | `714b9ab` log the short feed body | **VERIFIED, and it paid for itself.** It fired at 05:48 today and named the cause in one line after two days of guessing: `12112 bytes [text/html \| openresty/1.31.1.1] <title>One moment, please...</title>`. Everything in `e415c6b` follows from that string | **VERIFIED 2026-08-14** |
+| 2026-08-13 | `f7dbc83` per-attempt `AbortSignal.timeout` + `timeout-minutes: 150` | Insurance, never fired. Still correct to keep — but note today's work supersedes its purpose: the interstitial path now gives up in ~30s, so the 150-minute ceiling should never be approached again | n/a — insurance |
+| 2026-08-12 | `2416532` **Market Pulse delivery engine** — weekly PDF, Mon 05:45 UTC. **PRICING (Henrik, 2026-08-13): one market area = up to 10 towns of the subscriber's choice, changeable anytime, EUR 500/mo.** Never quote per-town pricing | Monday 2026-08-17 05:45 UTC is the first scheduled fire. Verify the Actions run went green and `pulse_deliveries` has a row per active subscriber. **If a Stripe payment lands, a subscriber row (email + towns) MUST be added before Monday.** `pulse-alerts.yml` is already confirmed firing (08-13 07:47, 1 alert) | pending — first cron fire 2026-08-17 |
 
-### CORRECTION — I got this morning's diagnosis wrong, and shipped on it
+### Today's manual dispatches — what they proved
 
-Read this before trusting anything else about the feed. **Yesterday's
-`78a493b` retry loop WORKED.** It did exactly what it was built to do.
+Two dispatches of `feed-refresh.yml`, both deliberate:
 
-What I did: at 05:39 I saw the nightly's step 1 still `in_progress` after 107
-minutes and the feed serving a complete 94MB to this container in 5s. GitHub
-will not return logs for an in-progress job, so I reasoned from the outside,
-concluded node's `fetch` had hung on a dead socket with no timeout, and shipped
-`f7dbc83` on that theory. **It was wrong.** The run ended at 05:52:10 — exactly
-120m01s, the budget expiring on schedule — and the log showed 28 clean attempts,
-one every five minutes, each returning a ~12.1KB body. Nothing hung. I had
-13 minutes of waiting between me and the evidence, and I did not wait.
+1. **05:47 (run 31774148318)** — dispatched to republish the corrected answers.
+   Step 5 hit the interstitial and started its 120-minute burn. I **cancelled it
+   at 20 minutes**, because cancelling makes GitHub serve the logs immediately
+   and the run could not have succeeded anyway. That cancel is what produced the
+   `openresty` evidence. It also proved the MCP GitHub integration can now cancel
+   runs — see closed O-25.
+2. **~06:5x** — dispatched on `e415c6b` to verify the curl fallback on a real
+   runner and republish the answers. **Read its outcome first thing tomorrow if
+   the brief did not already record it.**
 
-**What is actually wrong — and it is worse.** The source refuses this client:
-- Attempt 25 at **05:38:02** received 12,163 bytes. In that same minute I pulled
-  the complete **94,113,951**-byte feed from the same URL. Simultaneous, opposite
-  results. So this is client-dependent, **not a time window.**
-- The short body never grew across two hours: 12,036–12,213 bytes, ±100. A file
-  being written grows. A generated notice page does not.
-- Reproduced from here after the fact: node `fetch` (the identical code path)
-  pulled the full 87.5M chars three times in a row. It is the runner, not node.
+**Lesson that held today:** yesterday I diagnosed a running job from its symptoms
+and shipped on a wrong theory. Today the same wall appeared — logs unavailable
+on an in-progress job — and instead of theorising I cancelled the run to force
+the evidence out. Cost: one dispatch. Gain: the root cause, after three days.
 
-**So the premise of `78a493b` — "the source is mid-regeneration, wait it out" —
-is false, and no amount of extra waiting will ever fix this.** That reframes
-both failed nights: 08-12 and 08-13 are almost certainly the SAME cause, not two
-different ones. And it explains why 08-12's manual re-runs at 08:22 and 09:00
-succeeded — different runner, different egress IP, not a later hour.
-
-**What I shipped instead (`714b9ab`):** log the body. Two hours of retries
-produced zero evidence about the cause because the one thing never logged was
-what came back. That is now fixed, and tomorrow's attempt 1 will name it.
-
-**Lesson, recorded so it binds tomorrow:** I diagnosed a running job from its
-symptoms rather than its logs, and shipped a fix for a failure mode that had not
-occurred. If the evidence is minutes away, wait for it. Today's book and capture
-were recovered by hand, as on 08-12 — that part held.
-
-### FABLE 2026-08-13 (overnight): Press Desk shipped — do not duplicate
-The Source-Request Desk (journalist query radar) is LIVE: Resend inbound webhook
-at `/api/pressdesk/inbound` (Svix-verified, 401 on unsigned — tested), matcher
-requires geo+property keyword pairs, matched queries forward to Henrik with a
-live ledger stat bank, logged in `pressdesk_matches` (UNIQUE email_id).
-**Hard rule encoded in the route: the system NEVER answers a journalist —
-Henrik is the only trigger** (auto-response at agent speed is the HARO-killer
-spam pattern). Remaining activation: Henrik copies the .resend.app receiving
-address (dashboard-only) + subscribes it to Source of Sources. Also note:
-`pulse-alerts.yml` HAS now been observed firing — first scheduled run
-2026-08-13 07:47 UTC, success, 1 alert sent (closes your Monday check early).
-IndexNow first scheduled run 05:18 UTC, 200, 2,106 URLs.
-
-### FABLE 2026-08-13 (morning): ChatGPT Apps submission IN REVIEW
-"Avena Spanish Property Data" submitted to OpenAI's plugin/apps directory
-11:26 CET: 11 read-only tools, domain verified (.well-known/openai-apps-challenge),
-demo video live at /demo/avena-chatgpt-demo.mp4, all policy attestations true.
-Decision arrives by email to Henrik's OpenAI account — check status at
-platform.openai.com/plugins. Also this morning: GitHub MCP app granted
-Actions read/write on all repos (Odyssey's durable-token ask = SOLVED — use
-the MCP GitHub tools to cancel/dispatch runs, no PAT needed). Tool
-annotations (readOnlyHint etc.) now on all 11 MCP tools in prod — this also
-satisfies half the Claude connector directory requirements (OAuth remains).
+**Lesson learned today:** I concluded "IP reputation, not client" from the
+`nginx` vs `openresty` server headers, then this container was challenged
+minutes later and served normally minutes after that. The classification is
+**intermittent**, and my first reading was too confident. The measurement that
+actually held up was the controlled one (curl 6/6 vs fetch 3/3), not the
+inference from two observations.
 
 ## 2. OPEN — found, not yet fixed
 
 | # | what | evidence | why deferred | priority |
 |---|---|---|---|---|
-| O-27 | **RedSP serves the GitHub runner a ~12.1KB stub while serving other clients the full 94MB.** Two consecutive nightlies (08-12, 08-13) died at step 1 on this, ~28 attempts each. Almost certainly ONE cause across both nights, not two. Manual re-runs from a different runner succeeded on 08-12, which points at egress IP / WAF rather than timing | run 31665196372 log: 28 attempts, 12,036–12,213 bytes, never growing; attempt 25 at 05:38:02 got 12,163 bytes in the same minute this container got 94,113,951 | **cannot be fixed until the stub body is read** — `714b9ab` ships exactly that. Guessing at a UA spoof or a proxy today would repeat this morning's mistake. If tomorrow names a WAF/rate-limit, the real options are a self-hosted runner, a proxy, or asking RedSP to allow-list; all need Henrik | **CRITICAL** |
-| O-25 | **The GitHub PAT is not durable, so I cannot self-recover.** Henrik + Fable provisioned a fine-grained PAT on 08-12 and stored it at `~/.config/odyssey/github-token`. That path is inside an ephemeral container that no longer exists. Today I could not cancel the wedged run or re-dispatch the workflow; the MCP GitHub integration 403s on `actions:write` (`cancel_workflow_run` → "Resource not accessible by integration") | today, live | needs Henrik to choose a durable home for it. Everything else about today's recovery worked without it, but "wait ~6h for GitHub to kill a hung job" is not a recovery strategy | high |
-| O-24 | **Every enrichment step is downstream of the one step that keeps breaking.** corpus rebuild, GSC capture and the move capture are all `continue-on-error`, which protects the feed commit from them — but not them from the feed. Step 1 wedges and all four are simply never reached. That is why the corpus has lagged the book two days running | 08-12 and 08-13 nightlies both died at step 1; corpus stuck at v2026-08-12 | the root cause (the hang) is fixed today, so this may stop mattering. If the corpus lags again after a green nightly, split it into its own scheduled workflow that reads Supabase directly and does not depend on the feed run at all | high |
-| O-26 | **Audit the rest of `/api/v1/*` for invented constants.** `crawler-report`'s `Math.max(0.5, trend)` was found by reading one file. There are ~20 v1 endpoints, all carrying the same `cite_as` DOI line, and none has been read with this specific question in mind: which published numbers are computed from a constant chosen in the file rather than from a measurement? | `63f405b` found one; the class is unaudited | it is a reading job, not a fix job, and today's budget went to the pipeline. But this is priority-2 work by the ranking — a published claim not backed by the code — and should be a whole day's focus | high |
-| O-21 | **`sold_properties.last_seen_date` is stamped "today", not the date last actually seen.** Every parse-feed tombstone is a day late. The pricing-history route's own path uses `priorDate` and is correct; the two disagree | `parse-feed.js` sold-detection block, `last_seen_date: today_sd` | one-day provenance error in the absorption ledger — the moat's most defensible artifact. Needs a decision on whether to correct existing tombstones, so it wants its own day | high |
-| O-7 | `price_snapshots` rows for 2026-08-06..08-09 are a UNION of two books, not snapshots (08-08 holds 1,996 = 1,981 ∪ 1,990) | proven by diffing the data.json blobs against stored row counts | cause fixed; 08-10..08-13 are each a single clean write (1,999 / 1,999 / 2,004 / 2,000). The already-polluted historical rows still need careful reconciliation — branch-only, needs its own day | high |
-| O-5 | 186 of 492 indexed pages carry pre-transliteration accent slugs (`marbella-m-laga`, `j-vea-x-bia`); they hold 15 of 21 total clicks | `gsc_pages` 2026-08-07 | 301 shims already redirect old→new; need to confirm Google is consolidating rather than serving both. **GSC capture has not run since 08-11 (two dead nightlies), so this is reading stale data — recheck once a nightly completes** | high |
+| O-27 | **RedSP's provider serves a bot-protection JS interstitial to some clients/requests, not the feed.** ROOT CAUSE NOW KNOWN. `openresty/1.31.1.1` returns a 12.1KB "One moment, please..." page that reloads itself via JS after 5s. node's `fetch` cannot execute JS, so retrying is impossible-by-construction. Measured: curl 6/6 success across every UA/HTTP-version/encoding varied; node fetch 3/3 challenged. Not the UA — the TLS client fingerprint. **Intermittent, not sticky** | run 31774148318 log 05:48; controlled client comparison in this container 2026-08-14 | **operational half mitigated today** by `e415c6b` (curl fallback). The CAUSE is not fixed and cannot be by me: it needs RedSP to allow-list, or a stable-IP runner. If curl also starts getting challenged, the fallback dies with it | **CRITICAL — mitigated, cause still open** |
+| O-28 | **`avena-data` corpus mirror has NO automation at all.** Site is v2026-08-14, mirror frozen at v2026-08-12. Nothing in `scripts/` or `.github/` references the mirror repo; `push-corpus-surfaces.py` covers HF+Zenodo only and is also manual | checked every workflow and script today; mirror JSON read live | **corrects yesterday's O-11, which said this "should self-heal once the nightly completes". The nightly completed today and it did not.** Automating it needs a cross-repo write token (Actions' `GITHUB_TOKEN` is scoped to this repo), so it needs Henrik. Cross-source agreement is the whole point of the corpus channel — disagreeing surfaces actively weaken the claim | **high** |
+| O-26 | **Audit the rest of `/api/v1/*` for invented constants.** ~20 endpoints all carrying the same `cite_as` DOI line, none read with the question "which published numbers come from a constant chosen in the file rather than a measurement?" | `63f405b` found one (`Math.max(0.5, trend)`); today found a second of the same family in `generate-change-answers` (a window that came from a truncated read). Two for two on the surfaces actually examined | Today's budget went to the pipeline and the answers bug. **This is now the strongest candidate for a whole day's focus** — the hit rate on this class is 100% so far | **high** |
+| O-21 | **`sold_properties.last_seen_date` is stamped "today", not the date last actually seen.** Every parse-feed tombstone is a day late; the pricing-history route's own path uses `priorDate` and is correct. The two disagree | `parse-feed.js` sold-detection block, `last_seen_date: today_sd` | one-day provenance error in the absorption ledger — the moat's most defensible artifact. Needs a decision on whether to correct existing tombstones | high |
+| O-7 | `price_snapshots` rows for 2026-08-06..08-09 are a UNION of two books, not snapshots | proven by diffing data.json blobs against stored row counts | cause fixed; 08-10..08-14 are each a single clean write. Polluted historical rows still need careful reconciliation — branch-only, needs its own day | high |
+| O-5 | 186 of 492 indexed pages carry pre-transliteration accent slugs; they hold 15 of 21 total clicks | `gsc_pages` 2026-08-07 | 301 shims redirect old→new; need to confirm Google is consolidating. **GSC capture ran today (08-14) for the first time since 08-11 — re-read this against fresh data tomorrow** | high |
 | O-6 | `/compare` is 293 of 492 indexed pages, 64% of impressions, 20 of 21 clicks | `gsc_pages` 2026-08-07 | not a defect — the highest-leverage surface on the site, and still the least examined | high |
-| O-13 | **PerplexityBot is barely present.** The crawler the entire citation strategy is aimed at, holding the most generous allow-list in `robots.ts` | crawler ledger: **5 hits / 5 paths** since 08-12, last seen 08-12 08:34 | cause unknown and must not be guessed at. Not a robots.txt problem — the rules are permissive and OAI-SearchBot thrives under the same file | high |
-| O-15 | **Vercel Analytics figures are mostly machines.** 08-10 showed 295 "visitors", 0 leads | crawler report 2026-08-10 | the real human number is unknown and no method currently separates them. **Never quote 08-10 as a traffic or ads baseline** | high |
-| O-1 | `if (!error) count += chunk` in 5 more places: `scribe/route.ts:48`, `eu-anomalies.ts:127`, `eu-stats-feeds.ts:663`, `eu-validation.ts:281`, `dvf-ingest` | real instances of the recurring shape | `score_history` healthy so not actively losing rows; the pricing-history instance (the one that mattered) is fixed | high |
-| O-16 | **ClaudeBot has not returned.** Absent from the crawler ledger entirely since 08-11, after 1,901 requests on 08-04. It was the only crawler to fetch `/sitemap-ai.xml` | crawler ledger, 0 rows for ClaudeBot across 08-12..08-13 | now a three-week trend, not a cycle. Acting still requires knowing why, and I do not. Not a robots.txt change made blind | medium |
-| O-14 | **AwarioBot is the single largest crawler on the site and returns nothing.** 6,591 hits over 2,277 distinct paths since 08-12 — more than Googlebot (1,197) by a factor of five | crawler ledger | `98a87e7` fenced it off `/enquire` and `/_next/image` only; a full `Disallow` is the obvious next move and now has hard numbers, but this costs compute, not correctness. Worth doing deliberately, with a read-out | medium |
-| O-20 | **Two independent writers of `price_snapshots` and `sold_properties`.** `parse-feed.js:1003` banks both from inside the GitHub runner; the Vercel route banks them again minutes later | `parse-feed.js:962,1003` | 08-12 and 08-13 both had exactly ONE writer (parse-feed had no Supabase key in my container, so the route was sole writer) and both produced the cleanest captures on record. That is now two data points, still not proof. Wants a comment at both ends at minimum | medium |
-| O-11 | corpus mirror lag. Site and `avena-data/market/` AGREE at v2026-08-12, but both lag the 08-13 book because the corpus rebuild step has not been reached for two nights (see O-24) | checked all surfaces 2026-08-13 | should self-heal once the nightly completes. Hugging Face still cannot be verified from here — the API returns "Invalid username or password" without a token, so **three-way agreement remains unproven, only two-way** | medium |
-| O-10 | `citation_measurements` still contains the fabricated-zero rows from the Perplexity 401 incident (08-02..08-06) and two 0-question rows (08-08, 08-09) | table read | cannot distinguish "asked 87, genuinely 0 hits" from "all lookups failed" from this table alone. Never delete data. **They are excluded from every published surface** by `loadMeasurements` (`questions_asked > 0` and `date > BENCHMARK_EPOCH`) — verified today by reading the read path, not assumed | medium |
-| O-2 | `<html lang="en">` on the three `/no` pages while serving Norwegian | verified 2026-08-09 | per-route fix needs route-group root layouts (huge diff) or a dynamic root layout (kills static generation) | low — hreflang, the signal that matters, is already correct |
-| O-4 | Zenodo deposit frozen at 2026-04-11 | `zenodo.org/api/records/19520064` | publication is permanent; deliberately saved for a quarterly citable version | deliberate |
+| O-13 | **PerplexityBot is barely present.** 17 hits / 12 paths since 08-12 (was 5/5) — a slight rise, still negligible for the crawler the entire citation strategy targets | crawler ledger, 10 hits on 08-14 (partial day) — its best single day | cause unknown and must not be guessed at. Not a robots.txt problem — the rules are permissive and OAI-SearchBot thrives under the same file | high |
+| O-15 | **Vercel Analytics figures are mostly machines.** AwarioBot alone is 11,368 hits since 08-12 | crawler ledger | the real human number is unknown and no method currently separates them. **Never quote Vercel visitor counts as traffic** | high |
+| O-1 | `if (!error) count += chunk` in 5 more places: `scribe/route.ts:48`, `eu-anomalies.ts:127`, `eu-stats-feeds.ts:663`, `eu-validation.ts:281`, `dvf-ingest` | real instances of the recurring shape | `score_history` healthy so not actively losing rows | high |
+| O-29 | **Lightpanda is a new crawler and nobody asked it here.** 1,677 hits / 299 paths, first seen 08-13, zero before. An open-source headless browser marketed for AI-agent scraping | crawler ledger: 0 (08-11), 0 (08-12), 1,456 (08-13), 221 (08-14 partial) | new today, no action yet. Worth knowing what it fetches before deciding whether it is a citation channel or just cost — it executes JS, so unlike the bulk crawlers it sees the rendered page | medium |
+| O-16 | **ClaudeBot has barely returned.** 3 hits on 08-13 after 1,901 requests on 08-04, and 0 again on 08-14 | crawler ledger | slightly better than yesterday's flat 0, still effectively absent. Acting requires knowing why, and I do not | medium |
+| O-14 | **AwarioBot is the largest crawler on the site by far and returns nothing.** 11,368 hits over 2,277 paths since 08-12 — 4.7x Googlebot. Path count is flat at 2,277 while hits nearly doubled, so it is re-crawling the same set repeatedly | crawler ledger | `98a87e7` fenced it off `/enquire` and `/_next/image`; a full `Disallow` is the obvious next move and now has hard numbers. Costs compute, not correctness | medium |
+| O-20 | **Two independent writers of `price_snapshots` and `sold_properties`.** `parse-feed.js:1003` banks from inside the runner; the Vercel route banks again minutes later | `parse-feed.js:962,1003` | 08-12..08-14 all had effectively one writer and produced the cleanest captures on record. Still wants a comment at both ends at minimum | medium |
+| O-10 | `citation_measurements` still holds the fabricated-zero rows (08-02..08-06) and two 0-question rows (08-08, 08-09) | table read | cannot distinguish "asked 87, genuinely 0" from "all lookups failed". Never delete data. **They are excluded from every published surface** by `loadMeasurements` — verified by reading the read path | medium |
+| O-2 | `<html lang="en">` on the three `/no` pages while serving Norwegian | verified 2026-08-09 | per-route fix needs route-group root layouts (huge diff) or a dynamic root layout (kills static generation) | low — hreflang is already correct |
+| O-4 | Zenodo deposit frozen at 2026-04-11 | `zenodo.org/api/records/19520064` | deliberately saved for a quarterly citable version | deliberate |
 
 ## 3. EXPERIMENTS — changes with a read-out date
 
@@ -132,19 +94,19 @@ Flat. Any claimed effect must clear that noise band to mean anything.
 | 2026-08-11 | Closing `/_next/image` and `/enquire` to bulk training crawlers moves ~25% of their budget onto content | `4e96d3e` robots.txt, 14 bulk crawlers only | distinct properties fetched per crawler per pass | 2026-08-25 (2 weeks) | pending |
 | 2026-08-11 | A dated, self-attributing observation sentence on every property page raises the ORGANIC citation rate | `f665245` observed price record | organic citation rate (qb-v2, non-branded) vs the **4.41% baseline** | 2026-09-08 (4 weeks) | pending — read out on COMPLETE runs only |
 | 2026-08-11 | A change-first `sitemap-ai.xml` with true `lastmod` gets changed properties recrawled sooner than unchanged ones | `f665245` | time between an observed price change and the next crawler hit on that ref | 2026-08-25 (2 weeks) | pending — readable from `crawler_hits` |
-| 2026-08-11 | A weekly, dated, self-attributing series sentence makes the index citable BY NAME, the way Case-Shiller/Eurostat are | `ab21893` weekly pulse on `/avena-index` + `/api/v1/indices/avena` | Perplexity/ChatGPT responses naming "AVENA Index"; any external quote of a weekly close | 2026-09-08 (4 weeks) | pending — first certified COMPLETE weekly close publishes itself 2026-08-17 |
-| 2026-08-12 | Exposing the observation ledger as MCP tools turns Avena from a site AIs READ into a source AIs USE | MCP tools 8–11 + `mcp_calls.tool` column | `mcp_calls` grouped by tool: do external (non-Henrik) callers appear, and which ledger tools do they reach for? | 2026-09-09 (4 weeks) | pending — needs distribution: server not yet listed in any MCP registry/directory |
-| 2026-08-12 | **Nightly Quotable**: one extractable sentence (number+AVENA+date) + fan-out Q&A passages on all 97 town pages, regenerated nightly, Speakable-marked | `TownLedgerPulse` component, verified live | qb-v2 organic rate vs 4.41% baseline; Perplexity/AI Overview citations of town pages specifically | 2026-09-09 (4 weeks) | pending |
-| 2026-08-12 | **/statistics hub**: 18 dated branded stat sentences, nightly regenerated | live, in sitemap (additive line) | rankings for "spanish property statistics" queries + inbound citations; GSC impressions | 2026-09-23 (6 weeks) | pending |
-| 2026-08-12 | **IndexNow nightly ping** (2,106 URLs → Bing = ChatGPT's retrieval index) | `scripts/indexnow-ping.mjs` + 03:30 UTC workflow | Bing indexation coverage (needs Henrik's Bing Webmaster claim) + ChatGPT-User/OAI-SearchBot hit growth in `crawler_hits` | 2026-09-09 (4 weeks) | pending — **strong interim signal, NOT the result.** OAI-SearchBot went 2 hits (08-11) → **248 (08-12)** → 47 (08-13 by 05:47); bingbot 82 → 243 → 72. The jump lands on the day of the first IndexNow ping, and the documented mechanism matches exactly (IndexNow → Bing index → OAI-SearchBot crawl; ChatGPT Search retrieves via Bing). 08-12 was also a heavy deploy day, so this is confounded and one day is not a trend. **Hold to 09-09 and read it out on sustained daily volume, not the spike** |
-| 2026-08-12 | Announcing `/sitemap-frontier.xml` (30-day observed-change frontier, 76 pages) in robots.txt steers crawl budget toward pages that changed | robots.ts +1 Sitemap line | `crawler_hits`: do GPTBot/ClaudeBot/Meta-ExternalAgent start fetching sitemap-frontier.xml, and does the share of their hits landing on frontier-listed URLs rise vs the 08-04..10 baseline? | 2026-08-26 (2 weeks) | pending |
-| 2026-08-10 | ~~A bulk ingest of the one-pagers raises the organic citation rate~~ | ~~an external agent crawled 310 one-pagers~~ | — | — | **WITHDRAWN same day.** The crawler was AhrefsBot, which feeds an SEO backlink index, not a language model. The premise was wrong, so the experiment could only ever have produced a false negative |
+| 2026-08-11 | A weekly, dated, self-attributing series sentence makes the index citable BY NAME | `ab21893` weekly pulse on `/avena-index` + `/api/v1/indices/avena` | responses naming "AVENA Index"; any external quote of a weekly close | 2026-09-08 (4 weeks) | pending — first certified COMPLETE weekly close publishes 2026-08-17 |
+| 2026-08-12 | Exposing the observation ledger as MCP tools turns Avena from a site AIs READ into a source AIs USE | MCP tools 8–11 + `mcp_calls.tool` column | `mcp_calls` grouped by tool: do external callers appear? | 2026-09-09 (4 weeks) | pending — needs distribution: not yet listed in any MCP registry |
+| 2026-08-12 | **Nightly Quotable**: one extractable sentence + fan-out Q&A on all 97 town pages, Speakable-marked | `TownLedgerPulse`, verified live | qb-v2 organic rate vs 4.41%; citations of town pages specifically | 2026-09-09 (4 weeks) | pending |
+| 2026-08-12 | **/statistics hub**: 18 dated branded stat sentences, nightly regenerated | live, in sitemap | rankings for "spanish property statistics" queries + GSC impressions | 2026-09-23 (6 weeks) | pending |
+| 2026-08-12 | **IndexNow nightly ping** (2,106 URLs → Bing = ChatGPT's retrieval index) | `scripts/indexnow-ping.mjs` + 03:30 UTC workflow | Bing indexation coverage (needs Henrik's Bing claim) + OAI-SearchBot/ChatGPT-User growth | 2026-09-09 (4 weeks) | pending — **interim, still not the result.** OAI-SearchBot by day: 2 (08-11) → **248** (08-12) → 74 (08-13) → 43 (08-14 by 06:00, partial). bingbot 82 → 243 → 213 → 56. The spike decayed but the floor is ~20-40x the pre-ping baseline of 2/day and has now held **three days**, which is more than the one-day spike I cautioned about yesterday. Still confounded by 08-12 being a heavy deploy day. **Hold to 09-09** |
+| 2026-08-12 | Announcing `/sitemap-frontier.xml` in robots.txt steers crawl budget toward changed pages | robots.ts +1 Sitemap line | do GPTBot/ClaudeBot/Meta-ExternalAgent fetch it, and does their hit share on frontier URLs rise? | 2026-08-26 (2 weeks) | pending |
+| 2026-08-10 | ~~A bulk ingest of the one-pagers raises the organic citation rate~~ | ~~an external agent crawled 310 one-pagers~~ | — | — | **WITHDRAWN same day.** The crawler was AhrefsBot, which feeds a backlink index, not a language model |
 
-No new experiment today. Today's work was a pipeline hang and a fabricated
-published forecast — neither is an SEO change, and logging either as one would
-be exactly the manufactured progress this file exists to prevent.
+No new experiment today. Both changes were defect fixes — a pipeline failure
+and a false published number. Logging either as an SEO experiment would be
+exactly the manufactured progress this file exists to prevent.
 
-## 3b. PLAN B — press detonation calendar (Fable, 2026-08-13, Henrik's "B GO")
+## 3b. PLAN B — press detonation calendar (Henrik's "B GO")
 
 The press room is the landing surface; the releases are the detonations. The
 genuine daily series started 2026-08-05 — every window below follows from that
@@ -153,7 +115,7 @@ Nothing fires without Henrik's explicit go on the day.
 
 | when | what | gate |
 |---|---|---|
-| 2026-08-13 | Press room truth-repaired + rebuilt (`4e9f96d`): /press live-computed quotable bank (was hardcoded APCI=74 + frozen April dates), /press/kit stripped of unverifiable claims (24-agents, carpenter, bipolar angle, fabricated La Finca case study, stale "cited by"), press contact unified to henrik@avenaterminal.com | done — verify live |
+| 2026-08-13 | Press room truth-repaired (`4e9f96d`) | done |
 | 2026-09-04 | Release 1 data window closes ("first 30 days of the ledger"); compute slots, finalize draft | series gap ≤2 days; all numbers day-of from `price_snapshots`/`sold_properties` |
 | 2026-09-07 | Release 1 proposed fire, 08:00 CET with Monday Pulse | Henrik's explicit go |
 | 2026-11-03 | Release 2 data window closes ("{PCT}% cut asking within 90 days") | same completeness gate; percentage reported as measured, boring or not |
@@ -163,21 +125,22 @@ Nothing fires without Henrik's explicit go on the day.
 
 | metric | value | as of | source |
 |---|---|---|---|
-| AVM median absolute error | **15.94%** (in-sample, n=2000) | 2026-08-13 | `public/model-stats.json` — moved from 15.89%/n=2004 purely because the book shrank by 4 listings. Proven, not assumed: the same code re-run against HEAD's 08-12 data.json reproduces 15.89%/n=2004 exactly. MAPE 21.26→21.28, mean bias 3.12→3.18 |
-| Live book | **2,000 listings** | 2026-08-13 | `public/data.json` |
-| Sitemap | 2,651 `<loc>`, valid XML | 2026-08-13 | `/sitemap.xml` |
-| Corpus version | site v2026-08-12 · `avena-data` v2026-08-12 (agreeing) · HF unverified | 2026-08-13 | both lag the 08-13 book — the rebuild step has not been reached for two nights (O-24) |
-| **Real price moves by day** | 27 (08-06), 18 (08-07), 8 (08-08), 0 (08-09), 0 (08-10), 13 (08-11), 15 (08-12), **5 (08-13)** | 2026-08-13 | `price_snapshots`, diffed |
-| Snapshot rows by day | 1,999 (08-10) → 1,999 (08-11) → 2,004 (08-12) → **2,000 (08-13)**, one clean write per day since 08-10 | 2026-08-13 | `price_snapshots` |
-| Delistings | **6 on 08-13** (11 on 08-12, 1 on 08-11) | 2026-08-13 | `sold_properties` |
-| **Move events logged** | **20 total, all `increased`** — 15 on 08-12 (the table's first ever), 5 on 08-13. The O-19 FK fix is holding a second day | 2026-08-13 | `property_pricing_history` |
-| **Citation rate, organic (qb-v2) — THE baseline** | **4.41% (3/68).** Now TWO complete runs, 08-10 and 08-12, identical. One hit = 1.47pp; do not read anything under ~3pp as signal | 2026-08-12 | `citation_measurements` |
-| Citation rate, branded control (qb-v2) | 83.33% (5/6), both complete runs | 2026-08-12 | `citation_measurements` |
-| Citation run coverage | 08-10: 68/68 + 6/6 · 08-12: 68/68 + 6/6 — both complete after the 08-12 re-run | 2026-08-13 | `citation_measurements.bank_organic/bank_branded` |
+| AVM median absolute error | **15.94%** (in-sample, n=2007) | 2026-08-14 | `public/model-stats.json`. n moved 2000→2007 with the book; every error metric byte-identical to the committed file across both of today's gate runs |
+| Live book | **2,007 listings** | 2026-08-14 | `public/data.json` |
+| Sitemap | 2,658 `<loc>`, valid XML | 2026-08-14 | `/sitemap.xml` |
+| Corpus version | site **v2026-08-14** · `avena-data` **v2026-08-12 (DIVERGED, O-28)** · HF unverified | 2026-08-14 | the mirror has no automation and did not self-heal when the nightly completed |
+| Ledger (published) | first 2026-08-05, latest 2026-08-14, **10 observation days, 2,069 refs, 101 moves, 52 delistings** | 2026-08-14 | `/open-data/dataset.json` |
+| **Real price moves by day** | 27 (08-06), 18 (08-07), 8 (08-08), 0 (08-09), 0 (08-10), 13 (08-11), 15 (08-12), 5 (08-13), **15 (08-14)** | 2026-08-14 | `price_snapshots`, diffed |
+| Snapshot rows by day | 1,999 (08-10) → 1,999 (08-11) → 2,004 (08-12) → 2,000 (08-13) → **2,007 (08-14)**, one clean write per day since 08-10 | 2026-08-14 | `price_snapshots` |
+| Delistings | **0 on 08-14** (6 on 08-13, 11 on 08-12) | 2026-08-14 | `sold_properties` |
+| Cumulative moves / cuts | **101 moves since 08-05 — 28 cuts, 73 rises.** Median cut **3.83%** | 2026-08-14 | `price_snapshots`, SQL |
+| **Citation rate, organic (qb-v2) — THE baseline** | **4.41% (3/68)** on 08-10 and 08-12; **2.94% (2/68)** on 08-14. Three complete runs, mean 3.92%. One hit = 1.47pp, so **08-14 is one hit below and is NOT a decline** — do not read anything under ~3pp as signal | 2026-08-14 | `citation_measurements` |
+| Citation rate, branded control (qb-v2) | 83.33% (5/6), all three complete runs — perfectly stable | 2026-08-14 | `citation_measurements` |
+| Citation run coverage | 08-10, 08-12, 08-14 all 68/68 + 6/6 — three complete runs | 2026-08-14 | `bank_organic`/`bank_branded` |
 | Citation rate, qb-v1 (RETIRED RULER — never a baseline) | organic 6.19% (26/420), branded 20.00% (3/15) | 2026-08-07 | excluded from all published series |
-| **Crawler ledger, hits since 08-12** | AwarioBot 6,591 · Googlebot 1,197 · PetalBot 1,062 · Amazonbot 530 · AhrefsBot 509 · SERanking 381 · bingbot 315 · **OAI-SearchBot 295** · SemrushBot 249 · YandexBot 193 · MJ12bot 95 · ChatGPT-User 52 · Bytespider 38 · DotBot 15 · Applebot 9 · PerplexityBot 5 · GPTBot 4 · meta-externalagent 2 · **ClaudeBot 0** | 2026-08-13 | `crawler_hits` |
-| Daily impressions, 08-04..08-08 | 57, 55, 44, 61, 71 | 2026-08-11 | `gsc_daily` — **stale: no GSC capture since 08-11, two dead nightlies** |
-| Search impressions / clicks, last 28d | 1,906 / 21 (prior 28d: 2,087 / 22 — flat) | 2026-08-07 | `gsc_daily` |
+| **Crawler ledger, hits since 08-12** | AwarioBot 11,368 · Googlebot 2,433 · PetalBot 2,087 · **Lightpanda 1,677 (new)** · AhrefsBot 1,167 · Amazonbot 749 · bingbot 512 · SemrushBot 467 · SERanking 384 · **OAI-SearchBot 365** · YandexBot 275 · MJ12bot 116 · ChatGPT-User 103 · DotBot 65 · Bytespider 51 · **PerplexityBot 17** · Applebot 15 · GPTBot 11 · meta-externalagent 3 · **ClaudeBot 3** · Google-Extended 1 | 2026-08-14 | `crawler_hits` |
+| **Nightly reliability** | **5 of the last 7 scheduled nightlies FAILED at the feed step** (08-08, 08-09, 08-10, 08-12, 08-13 failed; 08-11, 08-14 succeeded). Pre-`78a493b` failures died in ~40s, later ones burned 120min — same cause, different give-up | 2026-08-14 | Actions run list. **This is the real reliability number and it was worse than recorded** |
+| Search impressions / clicks, last 28d | 1,906 / 21 (prior 28d: 2,087 / 22 — flat) | 2026-08-07 | `gsc_daily` — GSC capture ran again 08-14 after three missed days; re-read tomorrow |
 | Indexed pages with impressions | 492, of which 186 carry pre-transliteration accent slugs | 2026-08-07 | `gsc_pages` |
 | /compare share | 293 of 492 pages · 64% of impressions · 20 of 21 clicks | 2026-08-07 | `gsc_pages` |
 
@@ -190,31 +153,36 @@ recovery.
 
 | what | why it matters | what is needed |
 |---|---|---|
-| **RedSP may be blocking GitHub's runners** (O-27) | Two nights running, the nightly got a 12.1KB stub on every attempt while the same feed served 94MB elsewhere in the same minute. Both days of capture were recovered by hand; a day I am not here to recover is gone permanently. **Do not act on this yet** — tomorrow's log will name the cause. Flagged now so it is not a surprise if the answer is "RedSP must allow-list us". | Nothing today. If tomorrow's log says WAF/rate-limit: either ask RedSP to allow-list GitHub Actions egress, or approve moving the feed step to a runner with a stable IP. |
-| **A durable home for the GitHub PAT** (O-25) | The PAT provisioned 08-12 lived at `~/.config/odyssey/github-token` inside a container that is now gone. Today the nightly wedged and I could not cancel it or re-dispatch the workflow — the MCP GitHub integration 403s on `actions:write`. I recovered the day by hand instead, which works but is slower and depends on me being awake. | Either (a) grant the MCP GitHub app Actions read/write on this repo, or (b) tell me a path that persists across sessions and put the PAT there. (a) is cleaner — nothing to rotate by hand. |
-| `HF_TOKEN` in CI | Corpus mirroring is a manual script. Site and `avena-data` agree, but Hugging Face cannot be verified from here at all. Corpus filters resolve conflicts by cross-source agreement, so unproven agreement actively weakens the claim. | Store the HF write token as a repo secret so the nightly pushes all three surfaces together. |
-| Bing Webmaster Tools claim | The IndexNow experiment shows a real early signal (OAI-SearchBot 2 → 248 hits) but I can only see the crawl side. Bing's indexation coverage — the thing that actually determines whether ChatGPT can retrieve us — is invisible without the property claimed. | Claim avenaterminal.com in Bing Webmaster Tools. Also unlocks confirming the IndexNow key is accepted rather than silently ignored. |
-| `GOOGLE_SEARCH_CONSOLE_KEY` in Vercel | The GitHub Actions secret is set, so nightly capture works — when the nightly runs at all. Vercel does not have it, so no runtime route can read GSC. | Paste the same service-account JSON into Vercel env vars. Low priority. |
+| **RedSP is challenging GitHub Actions egress** (O-27) | ROOT CAUSE NOW PROVEN: their provider serves an openresty JS interstitial instead of the feed. It killed 5 of the last 7 nightlies. I shipped a curl fallback today that gets through, but that is a mitigation riding on a client-fingerprint difference — if their guard starts challenging curl too, it dies and every night is lost until someone notices. | Either (a) ask RedSP to allow-list GitHub Actions egress for the feed URL — the clean fix, and a reasonable ask since Avena is a paying consumer of that feed; or (b) approve moving the feed step to a runner with a stable IP that RedSP can allow-list. |
+| **Search Console now has Generative AI performance reports** (NEW today) | Google shipped them 3 June 2026: impressions in AI Overviews and AI Mode, and **which of your URLs got cited**, broken down by page/country/device/date. That is the first direct measurement of the exact channel this entire strategy targets — today it is measured only by proxy (a Perplexity question bank and crawler hits). **It is UI-only: no API, no `aiOverview`/`aiMode` type on `searchanalytics.query`, no BigQuery export.** So I cannot capture it, at all, until Google ships the API. | Check whether avenaterminal.com has the report yet (rollout began with a subset of sites) at Search Console → Performance → Generative AI. If it is there, export the CSV and drop it anywhere I can read it. Even one month would tell us whether the citation work is landing. |
+| **`avena-data` corpus mirror is unautomated and now diverged** (O-28) | Site publishes v2026-08-14, the mirror still serves v2026-08-12. Corpus filters resolve conflicts by cross-source agreement, so two surfaces disagreeing is worse than one surface alone. Nothing in the repo pushes the mirror — it has only ever been updated by hand. | A cross-repo write credential (deploy key or fine-grained PAT for `HenrikKolstad/avena-data`) as a repo secret, and I will add the mirror push to the nightly so all surfaces move together. |
+| `HF_TOKEN` in CI | Same family as above. Hugging Face cannot be verified from here at all — the API returns "Invalid username or password" without a token — so three-way agreement remains unproven, only two-way, and today even the two-way broke. | Store the HF write token as a repo secret so the nightly pushes all three surfaces together. |
+| Bing Webmaster Tools claim | The IndexNow experiment shows a real, now three-day-sustained signal (OAI-SearchBot 2/day → 43-74/day) but I can only see the crawl side. Bing's indexation coverage — what actually determines whether ChatGPT can retrieve us — is invisible without the property claimed. | Claim avenaterminal.com in Bing Webmaster Tools. Also confirms the IndexNow key is accepted rather than silently ignored. |
+| `GOOGLE_SEARCH_CONSOLE_KEY` in Vercel | The GitHub Actions secret is set, so nightly capture works. Vercel does not have it, so no runtime route can read GSC. | Paste the same service-account JSON into Vercel env vars. Low priority. |
 
 ## 6. CLOSED — resolved, kept so the same ground is not re-dug
 
 | closed | what | outcome |
 |---|---|---|
-| 2026-08-13 | a short feed body was logged only as a byte count, so two hours of retries produced no evidence about the cause | `714b9ab` — the first 300 chars plus content-type/server/cf-ray now travel with the error. Truncated and whitespace-collapsed; the feed URL is public |
-| 2026-08-13 | an unbounded `fetch` could wedge a run until GitHub's silent 6h default | `f7dbc83` — per-attempt `AbortSignal.timeout` (10min) + `timeout-minutes: 150`. **Closed as insurance, NOT as a fix: it was shipped on a wrong diagnosis and addressed a failure mode that had not occurred.** See the correction in section 1 |
-| 2026-08-13 | `/api/v1/crawler-report` published `estimated_weeks_to_dominance: 152` under a DOI `cite_as` line, computed as `ceil((80 − 4.4) / 0.5)` where 0.5 was an invented floor and the trend it floored was a fabricated zero | `63f405b` — floor removed; the projection is emitted only from a real prior week with a positive measured trend, else `null` plus an `estimate_basis` sentence. `currentHitRate` returns `number \| null` for rate and trend. Verified live |
-| ~~O-22~~ | **CLOSED 2026-08-13.** `isCompleteRun()` shipped 08-12 with no caller anywhere, so a partial run would still have published as comparable | `63f405b` — `/api/v1/citation-score` computes day-over-day across complete runs only and publishes `complete` + `bank_organic` with every rate. Shipped on a day when both live rows are complete, making it a provable no-op on every published number — hardening, not a number change |
-| 2026-08-13 | 2026-08-13's book and capture, lost by the wedged nightly | `355def7` — regenerated, pushed, capture hand-driven: 2,000 snapshots, 5 moves, 6 delistings, `errors:null`, `overlap:0.997` |
-| ~~O-23~~ | **CLOSED 2026-08-12 by Fable.** Not the Perplexity balance — a request-rate limit. Five parallel sonar calls → two instant 429s; batches of 5 with 250ms gaps tripped it ~40% of the time = exactly 29 of 74 failures. `b8376a0`: batches of 2, 1.5s gaps, ≤3 retries on 429 honouring Retry-After. Re-run: 74/74, organic 4.41%. Bonus defect fixed in `8482e6c`: the rollup counted rows, so partial+full double-counted to 110/68; it now dedupes per question, latest wins | closed |
-| ~~O-19~~ | **CLOSED 2026-08-12 by Fable on Henrik's delegation.** Dropped exactly one FK (rejecting 100% of live refs, and carrying a CASCADE that would have deleted the 394k-row history) + one index. Same-day proof: the first move events in the table's life. Holding a second day — 20 events now | closed |
-| 2026-08-12 | the nightly gave up on the feed after 3 tries in 15 seconds | `78a493b` — waits up to 120min with a 5-minute poll. Still correct, but insufficient on its own; see `f7dbc83` |
-| 2026-08-12 | a 62%-coverage citation run published as a comparable data point | `24db855` — `bank_organic`/`bank_branded` record what the bank intended. NULL is never read as complete |
-| 2026-08-11 | move diff compared today's price against itself | `7478108` — re-verified 08-12 and 08-13 |
-| 2026-08-11 | dedupe read seq-scanned 394k rows and hit `statement timeout` | `59c140d` — re-verified 08-12 and 08-13 |
-| 2026-08-11 | the FK rejection would have turned the nightly red every night | `779ac67` — verified 08-12 |
-| 2026-08-11 | crawler ledger (O-18) | `a9775c5`..`3ecf70b` — live, and now the only reason O-13/O-14/O-16 and the IndexNow signal are readable at all |
-| 2026-08-11 | O-17 provenance proven, ledger extended to 8 April | 688 properties with an observed price change over four months. Gap-spanning changes carry `spanned:true` |
-| 2026-08-11 | GSC capture lost any day Google published late | `7e19292` verified — picked up 08-08 |
+| 2026-08-14 | **the published change-answers claimed 101 price moves inside a 1-day observation window** — "28 reductions and 73 increases across 1 daily captures, 5 August to 5 August", which is self-refuting (a move needs two captures) and overstates daily churn ~10x on a page built to be cited | `9c387fd` — cause was an unpaginated `price_snapshots` select hitting PostgREST's 1000-row cap, so all returned rows were the earliest date. Window and moves now derive from ONE read, so they cannot disagree; the paging loop throws instead of silently truncating at its budget; and an invariant refuses to publish moves alongside <2 capture dates |
+| 2026-08-14 | the feed retry loop spent 120 minutes on a challenge it could never pass | `e415c6b` — HTML bodies recognised as interstitials, curl fallback (measured: curl 6/6, fetch 0/3), give-up in ~30s with a diagnosis naming the remedy |
+| ~~O-25~~ | **CLOSED 2026-08-14.** "The GitHub PAT is not durable, so I cannot self-recover" | The MCP GitHub integration now has Actions write (granted 08-13). Proven today: `cancel_workflow_run` succeeded on run 31774148318, and two `run_workflow` dispatches went through. No PAT needed. Cancelling a wedged run is how I got today's root-cause evidence |
+| ~~O-24~~ | **CLOSED 2026-08-14.** "Every enrichment step is downstream of the one step that keeps breaking" | The 08-14 nightly reached all of them — GSC capture, corpus rebuild, move capture and change-answers all ran green. The premise (that they never get reached) was a symptom of the feed failure, not a separate defect. If the corpus lags again after a green nightly, that is O-28, not this |
+| ~~O-11~~ | **SUPERSEDED 2026-08-14 by O-28.** Recorded as "corpus mirror lag, should self-heal once the nightly completes" | It did not self-heal. The nightly completed and the mirror stayed at v2026-08-12, because nothing has ever pushed it automatically. Reopened as O-28 with the real cause |
+| 2026-08-13 | a short feed body was logged only as a byte count | `714b9ab` — and it is what cracked O-27 the next morning |
+| 2026-08-13 | an unbounded `fetch` could wedge a run until GitHub's silent 6h default | `f7dbc83` — insurance, NOT a fix; shipped on a wrong diagnosis |
+| 2026-08-13 | `/api/v1/crawler-report` published `estimated_weeks_to_dominance: 152` computed from an invented 0.5 floor over a fabricated zero trend | `63f405b` — floor removed; projection emitted only from a real prior week, else `null` + an `estimate_basis` sentence. Verified live |
+| ~~O-22~~ | `isCompleteRun()` shipped with no caller | `63f405b` — day-over-day across complete runs only; publishes `complete` + `bank_organic` with every rate |
+| 2026-08-13 | 2026-08-13's book and capture, lost by the wedged nightly | `355def7` — regenerated, capture hand-driven, `errors:null` |
+| ~~O-23~~ | Perplexity failures were a request-rate limit, not balance | `b8376a0` batches of 2 with 1.5s gaps; re-run 74/74. `8482e6c` fixed a rollup that counted rows so partial+full double-counted |
+| ~~O-19~~ | one FK rejecting 100% of live refs, carrying a CASCADE that would have deleted 394k rows | dropped; first move events in the table's life followed |
+| 2026-08-12 | the nightly gave up on the feed after 3 tries in 15 seconds | `78a493b` — 120min budget. **Note 08-14: against an interstitial this was never going to work; superseded by `e415c6b`** |
+| 2026-08-12 | a 62%-coverage citation run published as a comparable data point | `24db855` — `bank_organic`/`bank_branded`; NULL never read as complete |
+| 2026-08-11 | move diff compared today's price against itself | `7478108` |
+| 2026-08-11 | dedupe read seq-scanned 394k rows and hit `statement timeout` | `59c140d` |
+| 2026-08-11 | crawler ledger (O-18) | `a9775c5`..`3ecf70b` — the only reason O-13/O-14/O-16/O-29 and the IndexNow signal are readable at all |
+| 2026-08-11 | O-17 provenance proven, ledger extended to 8 April | 688 properties with an observed price change over four months |
+| 2026-08-11 | GSC capture lost any day Google published late | `7e19292` |
 | 2026-08-11 | O-9: `loadMeasurements` pooled the final qb-v1 run into every v2 rate | fixed to strictly-after the epoch |
 | 2026-08-10 | pricing-history banked yesterday's book as today's snapshot | `1f0a130` |
 | 2026-08-09 | citation rate published fabricated zeros + blended branded control | `9171dce` |
