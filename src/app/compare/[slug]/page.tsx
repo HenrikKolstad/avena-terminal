@@ -60,7 +60,8 @@ const getCompareLedger = unstable_cache(
 type CompareLedger = Awaited<ReturnType<typeof getCompareLedger>>;
 
 function townWeek(ledger: CompareLedger, town: string) {
-  const wanted = town.toLowerCase();
+  // Compare names arrive as "Town, Province"; the ledger keys on bare town.
+  const wanted = town.split(',')[0].trim().toLowerCase();
   const moves = ledger.moves.filter((m) => m.town.toLowerCase() === wanted);
   const cuts = moves.filter((m) => m.to < m.from).length;
   const delistings = ledger.sellouts.filter(
