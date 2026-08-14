@@ -478,12 +478,63 @@ const FEED_WAIT_MINUTES = Number(process.env.FEED_WAIT_MINUTES || 120);
 // but it is insurance, not the cure, and it must not be remembered as the cure.
 // 10min is ~40x the honest download time, so it only ever kills a true hang.
 const FEED_ATTEMPT_TIMEOUT_MS = Number(process.env.FEED_ATTEMPT_TIMEOUT_MS || 600_000);
+/** Attempts allowed against an HTML interstitial before declaring it unwinnable. */
+const CHALLENGE_MAX_ATTEMPTS = Number(process.env.FEED_CHALLENGE_MAX_ATTEMPTS || 4);
+
+/**
+ * Fetch the feed with curl instead of node's fetch.
+ *
+ * Measured 2026-08-14, same container, same minute, same URL:
+ *
+ *   curl (default UA / browser UA / UA "node" / --http1.1 / --http2 /
+ *         Accept-Encoding gzip,deflate / +Connection keep-alive)  -> XML, 6/6
+ *   node fetch (default / browser UA / browser UA + Accept)       -> openresty
+ *                                                          challenge, 3/3
+ *
+ * So the guard is not reading the User-Agent, the HTTP version, the encoding
+ * or the connection header — every one of those was varied and curl still got
+ * through while fetch never did. What is left is the TLS client fingerprint,
+ * which openresty bot-guard modules routinely inspect and which undici cannot
+ * be made to change from JS. That is why 56 retries across two nights got
+ * nowhere: the request was being classified before a byte of it was read.
+ *
+ * curl is present on ubuntu-latest and this workflow already shells out to it
+ * elsewhere, so this costs nothing. Streams to a temp file rather than a pipe
+ * so a 94MB body never has to fit in a subprocess buffer.
+ */
+function downloadViaCurl(timeoutMs) {
+  const { execFile } = require('child_process');
+  const os = require('os');
+  const path = require('path');
+  const tmp = path.join(os.tmpdir(), `avena-feed-${process.pid}-${Date.now()}.xml`);
+  return new Promise((resolve, reject) => {
+    execFile(
+      'curl',
+      ['-sS', '--fail', '--location', '--max-time', String(Math.ceil(timeoutMs / 1000)), '-o', tmp, FEED_URL],
+      { timeout: timeoutMs + 30_000 },
+      (err, _stdout, stderr) => {
+        if (err) {
+          try { fs.unlinkSync(tmp); } catch { /* nothing to clean */ }
+          return reject(new Error(`curl fallback failed: ${String(stderr || err.message).trim().slice(0, 200)}`));
+        }
+        try {
+          const xml = fs.readFileSync(tmp, 'utf8');
+          fs.unlinkSync(tmp);
+          resolve(xml);
+        } catch (readErr) {
+          reject(new Error(`curl fallback wrote no readable body: ${readErr.message}`));
+        }
+      }
+    );
+  });
+}
 
 async function downloadFeed() {
   const startedAt = Date.now();
   const deadline = startedAt + FEED_WAIT_MINUTES * 60_000;
   let attempt = 0;
   let lastErr;
+  let triedCurl = false;
 
   while (true) {
     attempt++;
@@ -512,11 +563,42 @@ async function downloadFeed() {
         // Truncated hard and newline-stripped so a stub can never flood the
         // log, and the URL is public — nothing secret transits here.
         const preview = xml.replace(/\s+/g, ' ').trim().slice(0, 300);
+        const ctype = res.headers.get('content-type') || '';
         const server = [
-          res.headers.get('content-type'),
+          ctype,
           res.headers.get('server'),
           res.headers.get('cf-ray') ? 'cf-ray present' : null,
         ].filter(Boolean).join(' | ');
+        // An HTML body is not a short feed — it is a different document, and
+        // 2026-08-14 finally showed which one:
+        //
+        //   12112 bytes [text/html | openresty/1.31.1.1]
+        //   <title>One moment, please...</title>
+        //   <script>setTimeout(function(){ window.location.reload(); }, 5000)</script>
+        //
+        // A bot-protection interstitial that waits for a BROWSER to run JS and
+        // re-request. node's fetch cannot, so every retry draws a fresh
+        // challenge: 28 attempts over two hours on 08-12 and again on 08-13,
+        // zero successes. Retrying this is not slow, it is impossible.
+        //
+        // It is also not the origin: a clean client reaches `server: nginx`
+        // serving application/xml, while a flagged one is intercepted by
+        // openresty in front of it. Which one a runner gets tracks its egress
+        // IP, not its headers or the hour — 5 of the 7 scheduled nightlies to
+        // 08-14 were intercepted, and the recoveries that worked were all
+        // fresh runs on a new runner.
+        //
+        // So spend a few seconds in case it is a transient error page, then
+        // stop and say exactly what happened. Burning the full 120-minute
+        // budget on a challenge only delays the failure by two hours and
+        // costs the one thing that helps: time to start a fresh run.
+        if (/html/i.test(ctype) || /^\s*<!doctype html|<html[\s>]/i.test(xml)) {
+          const e = new Error(
+            `feed endpoint served an HTML interstitial, not the feed: ${xml.length} bytes ` +
+            `[${server}] body: ${preview}`);
+          e.interstitial = true;
+          throw e;
+        }
         throw new Error(`feed too small: ${xml.length} bytes [${server}] body: ${preview}`);
       }
       if (attempt > 1) {
@@ -535,6 +617,35 @@ async function downloadFeed() {
           : err;
       const remaining = deadline - Date.now();
       if (remaining <= 0) break;
+      // An interstitial does not clear by waiting — retrying fetch against it
+      // is provably useless (0/56 across two nights). Switch clients instead.
+      if (lastErr?.interstitial && !triedCurl) {
+        triedCurl = true;
+        console.error(`Feed attempt ${attempt} hit a bot-protection interstitial: ${lastErr.message}`);
+        console.error('Retrying the download with curl, which the origin serves normally.');
+        try {
+          const xml = await downloadViaCurl(FEED_ATTEMPT_TIMEOUT_MS);
+          if (xml.length < FEED_MIN_BYTES) {
+            throw new Error(`curl returned ${xml.length} bytes, under the ${FEED_MIN_BYTES} floor`);
+          }
+          console.log(`Feed complete via curl fallback after the fetch client was challenged.`);
+          return xml;
+        } catch (curlErr) {
+          // Do not let a failed fallback masquerade as the original problem.
+          console.error(`curl fallback did not recover it: ${curlErr.message}`);
+          lastErr = new Error(`${lastErr.message} | ${curlErr.message}`);
+          lastErr.interstitial = true;
+        }
+      }
+      if (lastErr?.interstitial && triedCurl && attempt >= CHALLENGE_MAX_ATTEMPTS) {
+        throw new Error(
+          `${lastErr.message}\n` +
+          `Gave up after ${attempt} attempts: this is a bot-protection interstitial, not a slow feed, ` +
+          `and BOTH node fetch and curl were refused, so it is not a client-fingerprint problem this ` +
+          `time — the egress itself is blocked. Retrying from the same runner does not clear it ` +
+          `(0 successes in 56 attempts over two full 120min budgets, 2026-08-12 and 08-13). Durable ` +
+          `fixes: have RedSP allow-list GitHub Actions egress, or move this step to a stable-IP runner.`);
+      }
       // Quick retries first for a transient blip, then settle into a 5-minute
       // poll so a two-hour wait costs ~24 tiny requests, not a busy loop.
       const wait = Math.min(attempt <= 3 ? attempt * 5_000 : 300_000, remaining);
