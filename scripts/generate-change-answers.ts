@@ -63,6 +63,26 @@ const longDate = (iso: string) => {
 
 interface Move { ref: string; from: number; to: number; date: string; }
 
+/**
+ * The moves AND the window they are attributed to, derived from one read.
+ *
+ * These were two separate queries until 2026-08-14, and they disagreed: the
+ * moves were counted over the real 30-day window while the window itself came
+ * from an unpaginated select that PostgREST capped at 1000 rows — every one of
+ * them from the earliest date. The published answer therefore claimed 101
+ * observed moves "across 1 daily captures, 5 August to 5 August", which is not
+ * merely wrong but self-refuting: a price move is a difference between two
+ * captures and cannot exist inside one. Keeping both on the same rows makes
+ * that class of disagreement unrepresentable.
+ */
+interface Ledger {
+  moves: Move[];
+  /** Distinct capture dates, ascending. Counts real captures, so a missed night shortens it honestly. */
+  dates: string[];
+  /** Distinct refs present on the most recent capture date. */
+  tracked: number;
+}
+
 /** Town + costa per ref, from the same book the site renders. */
 function loadBook(): Map<string, { town: string; costa: string }> {
   const raw = JSON.parse(readFileSync(join(process.cwd(), 'public/data.json'), 'utf8'));
@@ -79,13 +99,19 @@ function loadBook(): Map<string, { town: string; costa: string }> {
   return out;
 }
 
-async function fetchMoves(sinceDays: number): Promise<Move[]> {
+async function fetchLedger(sinceDays: number): Promise<Ledger> {
   const since = new Date(Date.now() - sinceDays * 86_400_000).toISOString().slice(0, 10);
   const from = since > LEDGER_START ? since : LEDGER_START;
 
   const rows: Array<{ ref: string; price: number | null; snapshot_date: string }> = [];
   const PAGE = 1000;
-  for (let page = 0; page < 60; page++) {
+  // ~2,000 refs x up to 30 days = ~60k rows, and the book grows. Budget well
+  // past that and treat exhausting the budget as a failure: a loop that stops
+  // at its cap and returns what it has is the same silent-truncation bug the
+  // unpaginated select was, just further from the surface.
+  const MAX_PAGES = 200;
+  let exhausted = true;
+  for (let page = 0; page < MAX_PAGES; page++) {
     const { data, error } = await db
       .from('price_snapshots')
       .select('ref, price, snapshot_date')
@@ -95,17 +121,24 @@ async function fetchMoves(sinceDays: number): Promise<Move[]> {
       .range(page * PAGE, page * PAGE + PAGE - 1);
     // A read failure must abort, never degrade into "no moves found".
     if (error) throw new Error(`price_snapshots read failed: ${error.message}`);
-    if (!data?.length) break;
+    if (!data?.length) { exhausted = false; break; }
     rows.push(...(data as typeof rows));
-    if (data.length < PAGE) break;
+    if (data.length < PAGE) { exhausted = false; break; }
+  }
+  if (exhausted) {
+    throw new Error(
+      `price_snapshots exceeded ${MAX_PAGES * PAGE} rows for the window from ${from} — ` +
+      `refusing to publish from a truncated read. Raise MAX_PAGES.`);
   }
   if (!rows.length) throw new Error('price_snapshots returned no rows — refusing to publish a zero.');
 
   const series = new Map<string, Array<{ d: string; v: number }>>();
+  const dateSet = new Set<string>();
   for (const r of rows) {
     const v = Math.round(Number(r.price));
     if (!Number.isFinite(v) || v <= 0) continue;
     const d = String(r.snapshot_date).slice(0, 10);
+    dateSet.add(d);
     const list = series.get(r.ref);
     if (list) { if (list[list.length - 1].d !== d) list.push({ d, v }); }
     else series.set(r.ref, [{ d, v }]);
@@ -119,7 +152,22 @@ async function fetchMoves(sinceDays: number): Promise<Move[]> {
       }
     }
   }
-  return moves;
+
+  const dates = [...dateSet].sort();
+  const latest = dates[dates.length - 1];
+  let tracked = 0;
+  for (const list of series.values()) {
+    if (list.some((p) => p.d === latest)) tracked++;
+  }
+
+  // A move needs two captures to exist. If the window says otherwise, the
+  // window is wrong — do not publish the contradiction.
+  if (moves.length && dates.length < 2) {
+    throw new Error(
+      `${moves.length} moves derived from ${dates.length} capture date(s) — impossible; ` +
+      `the window read is wrong. Refusing to publish.`);
+  }
+  return { moves, dates, tracked };
 }
 
 const pct = (m: Move) => ((m.to - m.from) / m.from) * 100;
@@ -236,24 +284,11 @@ function build(moves: Move[], book: Map<string, { town: string; costa: string }>
 }
 
 async function main() {
-  const moves = await fetchMoves(30);
+  const { moves, dates, tracked } = await fetchLedger(30);
   const book = loadBook();
 
-  const { data: span, error: spanErr } = await db
-    .from('price_snapshots')
-    .select('snapshot_date')
-    .gte('snapshot_date', LEDGER_START)
-    .order('snapshot_date', { ascending: true });
-  if (spanErr || !span?.length) throw new Error('could not read the ledger window — refusing to publish.');
-  const dates = [...new Set(span.map((r) => String(r.snapshot_date).slice(0, 10)))].sort();
-
-  const { count: tracked } = await db
-    .from('price_snapshots')
-    .select('ref', { count: 'exact', head: true })
-    .eq('snapshot_date', dates[dates.length - 1]);
-
   const window = { first: dates[0], last: dates[dates.length - 1], days: dates.length };
-  const answers = build(moves, book, window, tracked ?? 0);
+  const answers = build(moves, book, window, tracked);
 
   console.log(`ledger ${window.first}..${window.last} (${window.days} days), ` +
     `${moves.length} observed moves, ${tracked} units tracked`);
