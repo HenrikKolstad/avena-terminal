@@ -73,14 +73,18 @@ export async function GET(req: NextRequest) {
       ? Number((newListings / marketDepth).toFixed(4))
       : 0;
 
-    // Absorption rate from lookup
-    const absorptionRate = ABSORPTION_RATES[regionSlug] ?? 3.5;
+    // Absorption is an assumed constant per region, not a measurement: the
+    // delisting ledger holds 57 tombstones over 10 days, far too thin to derive
+    // a monthly absorption rate. It is also the dominant input to deriveRegime(),
+    // which produces the published BUY/HOLD signal — so a `?? 3.5` fallback here
+    // meant an unmapped region got a trading signal manufactured from a default.
+    // No absorption figure → no regime, no signal.
+    const absorptionRate = ABSORPTION_RATES[regionSlug] ?? null;
 
-    // Derive regime
-    const regime = deriveRegime(absorptionRate, bidAskSpread);
+    const regime = absorptionRate === null ? null : deriveRegime(absorptionRate, bidAskSpread);
 
-    // Microstructure signal: composite
     const microstructureSignal =
+      regime === null ? null :
       regime === 'SELLER_MARKET' ? 'STRONG_BUY' :
       regime === 'BUYER_MARKET' ? 'ACCUMULATE' :
       regime === 'BALANCED' ? 'HOLD' : 'MONITOR';
@@ -95,9 +99,13 @@ export async function GET(req: NextRequest) {
         order_flow_imbalance: orderFlowImbalance,
         new_listings_7d: newListings,
         absorption_rate_pct: absorptionRate,
+        absorption_basis: absorptionRate === null ? 'unavailable' : 'assumed_constant',
       },
       regime,
       microstructure_signal: microstructureSignal,
+      ...(absorptionRate === null
+        ? { unavailable_reason: `No absorption figure exists for region "${regionSlug}", so no regime or signal is derived. Other metrics on this response are computed from the live book.` }
+        : {}),
       timestamp: new Date().toISOString(),
     });
   } catch (err) {

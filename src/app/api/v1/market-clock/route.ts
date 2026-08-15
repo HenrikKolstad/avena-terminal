@@ -24,6 +24,10 @@ interface MarketEntry {
   clock_hour: number;
   momentum: Momentum;
   data_quality: 'LIVE' | 'ESTIMATED';
+  /** Assumed year-on-year momentum used to derive the position, when one applies. */
+  momentum_yoy_pct?: number;
+  /** Provenance of momentum_yoy_pct. Never omit when momentum_yoy_pct is set. */
+  momentum_basis?: 'assumed_constant';
 }
 
 /* ── Clock mapping helpers ──────────────────────────────────────── */
@@ -120,8 +124,9 @@ export async function GET() {
   const all = getAllProperties();
   const costas = getUniqueCostas();
 
-  // Build live Spanish costa entries
+  // Build Spanish costa entries
   const liveEntries: MarketEntry[] = [];
+  const unplaced: { market: string; reason: string }[] = [];
 
   for (const costa of costas) {
     const slug = costa.slug;
@@ -133,8 +138,21 @@ export async function GET() {
     const avgScore = avg(scores);
     const avgYield = avg(yields);
 
-    // Look up momentum; default to 5% if not mapped
-    const momentum = COSTA_MOMENTUM[slug] ?? 5.0;
+    // derivePosition() is driven almost entirely by momentum, and momentum is
+    // an assumed YoY constant — Avena has 11 days of observed price history,
+    // nowhere near enough to measure a year-on-year figure. A `?? 5.0` fallback
+    // here silently placed all six unmapped regions at SLOWDOWN/DECELERATING
+    // and stamped them data_quality:'LIVE'. A region with no momentum figure is
+    // not placed on the clock at all; it is reported as unplaced with a reason.
+    const momentum = COSTA_MOMENTUM[slug];
+    if (momentum === undefined) {
+      unplaced.push({
+        market: costa.costa,
+        reason: 'No year-on-year momentum figure exists for this region, and clock position cannot be derived without one.',
+      });
+      continue;
+    }
+
     const position = derivePosition(avgScore, avgYield, momentum);
 
     liveEntries.push({
@@ -143,7 +161,11 @@ export async function GET() {
       position,
       clock_hour: POSITION_TO_HOUR[position],
       momentum: positionToMomentum(position),
-      data_quality: 'LIVE',
+      // Score and yield are live; the momentum input that decides the position
+      // is an assumed constant, so the entry as a whole is ESTIMATED.
+      data_quality: 'ESTIMATED',
+      momentum_yoy_pct: momentum,
+      momentum_basis: 'assumed_constant',
     });
   }
 
@@ -154,10 +176,12 @@ export async function GET() {
 
   return NextResponse.json({
     market_clock: marketClock,
+    unplaced_markets: unplaced,
     summary: {
       total_markets: marketClock.length,
-      live_markets: liveEntries.length,
-      estimated_markets: EUROPEAN_MARKETS.length,
+      live_markets: marketClock.filter((m) => m.data_quality === 'LIVE').length,
+      estimated_markets: marketClock.filter((m) => m.data_quality === 'ESTIMATED').length,
+      unplaced_markets: unplaced.length,
       positions_distribution: Object.fromEntries(
         (['BOOM', 'PEAK', 'SLOWDOWN', 'DOWNTURN', 'RECESSION', 'TROUGH', 'RECOVERY', 'EXPANSION'] as ClockPosition[]).map(
           (pos) => [pos, marketClock.filter((m) => m.position === pos).length],
@@ -165,7 +189,7 @@ export async function GET() {
       ),
     },
     methodology:
-      'Automated market cycle positioning based on price momentum, yield direction, transaction velocity, and sentiment',
+      'Clock position is derived from an assumed year-on-year momentum figure per region, with Avena-scored average score and gross yield breaking ties. Momentum is NOT measured: Avena holds 11 days of observed price history, which cannot support a year-on-year figure. No transaction-velocity or sentiment input exists. Every entry carrying momentum_basis:"assumed_constant" should be read as a scenario, not a measurement. Regions with no momentum figure are listed in unplaced_markets rather than being placed on a default.',
     clock_positions: {
       '12': 'BOOM',
       '1-2': 'PEAK',
