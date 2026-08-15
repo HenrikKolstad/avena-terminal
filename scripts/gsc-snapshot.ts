@@ -59,14 +59,27 @@ async function main() {
   const { error: e1 } = await db.from('gsc_daily').upsert(dailyRows, { onConflict: 'date' });
   if (e1) throw new Error(`gsc_daily upsert failed: ${e1.message}`);
 
-  // ── Per-page, for the most recent day only ──────────────────────────────
+  // ── Per-page, for the most recent day Google ACTUALLY has ───────────────
   // Page-level for a 90-day backfill would be a huge write for little value;
   // the daily series is what experiments read out against.
+  //
+  // This query used `end` — latestUsableDate(), an ASSUMED lag — as a single
+  // day. That is the same bug the window above was introduced to fix, left
+  // unfixed on this half: Search Console's lag is not a fixed 2 days, so on
+  // most nights `end` is a day Google has not published and the page query
+  // returned nothing. The result was a silent, plausible-looking "0 pages"
+  // rather than an error. `gsc_pages` accumulated exactly TWO dates in its
+  // lifetime (2026-08-07 and 2026-08-12) — the rare nights the assumed date
+  // happened to be real — while every other night reported success.
+  //
+  // Ask for the latest date the daily query actually returned instead. Take
+  // the max explicitly rather than trusting row order.
+  const latestActual = dailyRows.reduce((a, r) => (r.date > a ? r.date : a), dailyRows[0].date);
   const pages = await searchAnalytics({
-    startDate: end, endDate: end, dimensions: ['page'], rowLimit: 5000,
+    startDate: latestActual, endDate: latestActual, dimensions: ['page'], rowLimit: 5000,
   });
   const pageRows = pages.map((r) => ({
-    date: end,
+    date: latestActual,
     page: r.keys[0],
     clicks: Math.round(r.clicks),
     impressions: Math.round(r.impressions),
@@ -79,13 +92,21 @@ async function main() {
         .upsert(pageRows.slice(i, i + 500), { onConflict: 'date,page' });
       if (error) throw new Error(`gsc_pages upsert failed: ${error.message}`);
     }
+  } else {
+    // A day that has daily totals but no page rows is not normal. Say so
+    // loudly rather than letting "0 pages" read as a measurement.
+    console.error(
+      `gsc-snapshot: WARNING — ${latestActual} has daily totals but returned ZERO ` +
+      'page rows. That is not ordinary lag (the date came from Google\'s own ' +
+      'response). Check the page-dimension quota and the property URL form.',
+    );
   }
 
-  const last = dailyRows[dailyRows.length - 1];
+  const last = dailyRows.find((r) => r.date === latestActual)!;
   console.log(
     `gsc-snapshot: ${dailyRows.length} day(s) ${start}..${end} · latest ${last.date}: ` +
     `${last.clicks} clicks, ${last.impressions} impressions, pos ${last.avg_position} · ` +
-    `${pageRows.length} pages`,
+    `${pageRows.length} pages for ${latestActual}`,
   );
 }
 
