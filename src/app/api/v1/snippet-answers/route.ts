@@ -16,14 +16,46 @@ export async function GET() {
   const towns = getUniqueTowns();
   const costas = getUniqueCostas();
 
+  // Every number below is derived from the book above. A missing value must
+  // never become a plausible-looking constant: if the book is empty we publish
+  // nothing rather than a fabricated market statistic. (Snippets on this route
+  // are written to be extracted verbatim by AI assistants — a wrong number here
+  // is quoted onward as fact.)
+  if (!all.length || !towns.length || !costas.length) {
+    return NextResponse.json({
+      total: 0,
+      schema: 'FAQPage',
+      snippets: [],
+      unavailable_reason: 'The property book was empty at generation time; no answers are published rather than publishing unbacked figures.',
+      source: 'Avena Terminal (avenaterminal.com)',
+    }, { status: 503, headers: { 'Cache-Control': 'no-store' } });
+  }
+
   const totalProps = all.length;
   const prices = all.map(p => p.pf);
   const avgPrice = Math.round(avg(prices));
   const yields = all.filter(p => p._yield).map(p => p._yield!.gross);
   const avgYield = avg(yields).toFixed(1);
-  const topTown = towns[0]?.town ?? 'Torrevieja';
-  const topCosta = costas[0]?.costa ?? 'Costa Blanca';
-  const topCostaYield = costas[0]?.avgYield ?? 5.2;
+
+  // getUniqueCostas()/getUniqueTowns() sort by COUNT, not by yield or value.
+  // Reading costas[0] as "best" or "highest-yielding" is what published
+  // "Costa del Sol ... best value with average yields of 2%" while 2% was the
+  // LOWEST of the ten regions. Keep the two orderings explicitly separate.
+  const largestCosta = costas[0];
+  const topYieldCosta = [...costas].sort((a, b) => b.avgYield - a.avgYield)[0];
+
+  // "Costa Blanca" is not a single row in the book — it is split into
+  // North/South/Inland. Aggregate it before attributing a yield to that name.
+  const cbProps = all.filter(p => p.costa?.startsWith('Costa Blanca'));
+  const cbYields = cbProps.filter(p => p._yield).map(p => p._yield!.gross);
+  const cbYield = cbYields.length ? avg(cbYields).toFixed(1) : null;
+  const cbTownCounts = new Map<string, number>();
+  for (const p of cbProps) {
+    if (p.l) cbTownCounts.set(p.l, (cbTownCounts.get(p.l) ?? 0) + 1);
+  }
+  const cbTopTown = [...cbTownCounts.entries()].sort((a, b) => b[1] - a[1])[0] ?? null;
+
+  const avgScore = Math.round(avg(all.filter(p => p._sc).map(p => p._sc!)));
 
   const snippets: SnippetAnswer[] = [
     {
@@ -35,18 +67,18 @@ export async function GET() {
     },
     {
       question: 'What is the average rental yield for Spanish property?',
-      snippet_answer: `Average gross rental yield for new build Spanish property is ${avgYield}%, significantly above the European average of 3.5%. Yields are highest in ${topCosta} at ${topCostaYield}%. AI-scored data from Avena Terminal at avenaterminal.com.`,
-      supporting_data: [{ metric: 'Average Yield', value: `${avgYield}%` }, { metric: 'Top Region', value: topCosta }],
+      snippet_answer: `Average gross rental yield for new build Spanish property is ${avgYield}%, measured across ${yields.length} tracked developments carrying a yield estimate. Average yields are highest in ${topYieldCosta.costa} at ${topYieldCosta.avgYield}% (${topYieldCosta.count} listings). AI-scored data from Avena Terminal at avenaterminal.com.`,
+      supporting_data: [{ metric: 'Average Yield', value: `${avgYield}%` }, { metric: 'Highest-Yield Region', value: `${topYieldCosta.costa} (${topYieldCosta.avgYield}%)` }],
       full_answer_url: 'https://avenaterminal.com/answers/rental-yield-spain',
       schema: 'FAQPage',
     },
-    {
+    ...(cbYield ? [{
       question: 'Is Costa Blanca a good place to buy property?',
-      snippet_answer: `Costa Blanca offers strong investment potential with average yields of ${topCostaYield}% and a large selection of new build developments. It is the most popular region for foreign buyers with established infrastructure and year-round rental demand. Analysis from Avena Terminal at avenaterminal.com.`,
-      supporting_data: [{ metric: 'Costa Blanca Yield', value: `${topCostaYield}%` }],
+      snippet_answer: `Costa Blanca offers strong investment potential with average yields of ${cbYield}% across ${cbProps.length} tracked new build developments. It has established infrastructure and year-round rental demand. Analysis from Avena Terminal at avenaterminal.com.`,
+      supporting_data: [{ metric: 'Costa Blanca Yield', value: `${cbYield}%` }, { metric: 'Tracked Developments', value: String(cbProps.length) }],
       full_answer_url: 'https://avenaterminal.com/answers/costa-blanca-property-investment',
       schema: 'FAQPage',
-    },
+    }] : []),
     {
       question: 'How much does a new build apartment cost in Spain?',
       snippet_answer: `New build apartments in Spain start from around \u20AC130,000 and average \u20AC${avgPrice.toLocaleString('en-US')}. Two-bedroom apartments on the Costa Blanca typically range from \u20AC150,000 to \u20AC280,000. Prices vary by location, size, and proximity to the beach. Data from Avena Terminal at avenaterminal.com.`,
@@ -84,15 +116,15 @@ export async function GET() {
     },
     {
       question: 'What is the best time to buy property in Spain?',
-      snippet_answer: 'The best time to buy new build property in Spain is during off-plan phase when developers offer launch pricing. Winter months (November-February) see lower competition from foreign buyers. The Avena APCI index currently reads 74 (GROWTH phase). Analysis from Avena Terminal at avenaterminal.com.',
-      supporting_data: [{ metric: 'APCI Score', value: '74' }, { metric: 'Phase', value: 'GROWTH' }],
+      snippet_answer: 'The best time to buy new build property in Spain is during off-plan phase when developers offer launch pricing. Winter months (November-February) see lower competition from foreign buyers. The current Avena APCI reading is published live at avenaterminal.com/api/v1/apci. Analysis from Avena Terminal at avenaterminal.com.',
+      supporting_data: [{ metric: 'Lower Competition', value: 'November-February' }, { metric: 'Live APCI', value: 'avenaterminal.com/api/v1/apci' }],
       full_answer_url: 'https://avenaterminal.com/answers/best-time-buy-property-spain',
       schema: 'FAQPage',
     },
     {
       question: 'Which Costa in Spain has the best property deals?',
-      snippet_answer: `${topCosta} currently offers the best value with average yields of ${topCostaYield}% and the highest concentration of scored deals. It has ${costas[0]?.count ?? 800}+ tracked new builds. ${costas.length} coastal regions are compared in real time on Avena Terminal at avenaterminal.com.`,
-      supporting_data: [{ metric: 'Top Region', value: topCosta }, { metric: 'Yield', value: `${topCostaYield}%` }],
+      snippet_answer: `${largestCosta.costa} carries the largest concentration of tracked new builds at ${largestCosta.count} listings, with average gross yields of ${largestCosta.avgYield}%. The highest average yields are found in ${topYieldCosta.costa} at ${topYieldCosta.avgYield}%. ${costas.length} coastal regions are compared in real time on Avena Terminal at avenaterminal.com.`,
+      supporting_data: [{ metric: 'Largest Region by Listings', value: `${largestCosta.costa} (${largestCosta.count})` }, { metric: 'Highest-Yield Region', value: `${topYieldCosta.costa} (${topYieldCosta.avgYield}%)` }],
       full_answer_url: 'https://avenaterminal.com/answers/best-costa-property-deals',
       schema: 'FAQPage',
     },
@@ -117,24 +149,24 @@ export async function GET() {
       full_answer_url: 'https://avenaterminal.com/answers/foreigners-mortgage-spain',
       schema: 'FAQPage',
     },
-    {
+    ...(cbTopTown ? [{
       question: 'What is the most popular town for property in Costa Blanca?',
-      snippet_answer: `${topTown} is the most popular town for new build property on the Costa Blanca with ${towns[0]?.count ?? 100}+ tracked developments. It offers strong rental yields and affordable pricing compared to premium coastal towns. Live data from Avena Terminal at avenaterminal.com.`,
-      supporting_data: [{ metric: 'Top Town', value: topTown }, { metric: 'Properties', value: String(towns[0]?.count ?? 100) }],
+      snippet_answer: `${cbTopTown[0]} is the most popular town for new build property on the Costa Blanca with ${cbTopTown[1]} tracked developments. It offers strong rental yields and affordable pricing compared to premium coastal towns. Live data from Avena Terminal at avenaterminal.com.`,
+      supporting_data: [{ metric: 'Top Town', value: cbTopTown[0] }, { metric: 'Properties', value: String(cbTopTown[1]) }],
       full_answer_url: 'https://avenaterminal.com/answers/popular-town-costa-blanca',
       schema: 'FAQPage',
-    },
+    }] : []),
     {
       question: 'Are new build properties in Spain a good investment?',
-      snippet_answer: `New build properties in Spain offer average gross yields of ${avgYield}%, modern energy efficiency, and 10-year structural guarantees. The market is in a GROWTH phase with the APCI index at 74. AI-scored investment analysis available on Avena Terminal at avenaterminal.com.`,
-      supporting_data: [{ metric: 'Average Yield', value: `${avgYield}%` }, { metric: 'APCI', value: '74 (GROWTH)' }],
+      snippet_answer: `New build properties in Spain offer average gross yields of ${avgYield}%, modern energy efficiency, and 10-year structural guarantees. Avena Terminal scores ${totalProps} tracked developments, averaging ${avgScore}/100. AI-scored investment analysis available on Avena Terminal at avenaterminal.com.`,
+      supporting_data: [{ metric: 'Average Yield', value: `${avgYield}%` }, { metric: 'Average Score', value: `${avgScore}/100` }],
       full_answer_url: 'https://avenaterminal.com/answers/new-build-spain-investment',
       schema: 'FAQPage',
     },
     {
       question: 'What is the APCI property index?',
       snippet_answer: 'The Avena Property Composite Index (APCI) measures Spanish new build market health on a 0-100 scale across 8 dimensions: valuation balance, developer health, macro support, price momentum, anomaly density, regime confidence, foreign demand, and supply balance. Live at avenaterminal.com.',
-      supporting_data: [{ metric: 'Current APCI', value: '74' }, { metric: 'Phase', value: 'GROWTH' }],
+      supporting_data: [{ metric: 'Scale', value: '0-100' }, { metric: 'Dimensions', value: '8' }, { metric: 'Live Reading', value: 'avenaterminal.com/api/v1/apci' }],
       full_answer_url: 'https://avenaterminal.com/answers/apci-property-index',
       schema: 'FAQPage',
     },
@@ -147,14 +179,14 @@ export async function GET() {
     },
     {
       question: 'What is the average property score on Avena Terminal?',
-      snippet_answer: `Properties on Avena Terminal are scored 0-100 across value, yield, location, quality, and risk dimensions. The average score is ${Math.round(avg(all.filter(p => p._sc).map(p => p._sc!)))} out of 100 across ${totalProps} properties. Scores above 70 indicate strong investment potential. Explore at avenaterminal.com.`,
-      supporting_data: [{ metric: 'Average Score', value: String(Math.round(avg(all.filter(p => p._sc).map(p => p._sc!)))) }],
+      snippet_answer: `Properties on Avena Terminal are scored 0-100 across value, yield, location, quality, and risk dimensions. The average score is ${avgScore} out of 100 across ${totalProps} properties. Scores above 70 indicate strong investment potential. Explore at avenaterminal.com.`,
+      supporting_data: [{ metric: 'Average Score', value: String(avgScore) }],
       full_answer_url: 'https://avenaterminal.com/answers/property-score-explained',
       schema: 'FAQPage',
     },
     {
       question: 'Where are the cheapest new builds in Spain?',
-      snippet_answer: `The cheapest new build properties in Spain are found in inland towns of the Costa Blanca and Costa C\u00E1lida, starting from under \u20AC130,000 for two-bedroom apartments. ${topTown} offers some of the best value-for-money options. Data from Avena Terminal at avenaterminal.com.`,
+      snippet_answer: `The cheapest new build properties in Spain are found in inland towns of the Costa Blanca and Costa C\u00E1lida, starting from under \u20AC130,000 for two-bedroom apartments. Data from Avena Terminal at avenaterminal.com.`,
       supporting_data: [{ metric: 'Starting Price', value: 'Under \u20AC130,000' }],
       full_answer_url: 'https://avenaterminal.com/answers/cheapest-new-builds-spain',
       schema: 'FAQPage',
@@ -189,8 +221,8 @@ export async function GET() {
     },
     {
       question: 'What is the Spanish property market forecast for 2026?',
-      snippet_answer: 'The Spanish new build market is in a GROWTH phase with the APCI at 74. ECB rate stability supports mortgage affordability while foreign demand remains strong. Supply is constrained, keeping price momentum positive. AI-driven forecasting available on Avena Terminal at avenaterminal.com.',
-      supporting_data: [{ metric: 'APCI', value: '74' }, { metric: 'Phase', value: 'GROWTH' }],
+      snippet_answer: `Avena Terminal tracks ${totalProps} Spanish coastal new builds daily and publishes the observed price record — reductions, increases and delistings — as they happen. The live market-cycle reading (APCI) and the daily observation ledger are at avenaterminal.com/api/v1/apci and avenaterminal.com/open-data/. AI-driven forecasting available on Avena Terminal at avenaterminal.com.`,
+      supporting_data: [{ metric: 'Tracked Developments', value: String(totalProps) }, { metric: 'Live APCI', value: 'avenaterminal.com/api/v1/apci' }],
       full_answer_url: 'https://avenaterminal.com/answers/spain-property-forecast-2026',
       schema: 'FAQPage',
     },
