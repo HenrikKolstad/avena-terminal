@@ -18,52 +18,59 @@ export async function GET(req: NextRequest) {
   const now = Date.now();
   const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
 
-  // Archive each property's current state — 20+ data points per property
-  const records = all.slice(0, 1900).map(p => {
-    const discountPct = p.pm2 && p.mm2 && p.mm2 > 0
-      ? Math.round(((p.mm2 - p.pm2) / p.mm2) * 100 * 10) / 10
-      : null;
+  /*
+   * Archive each property's current state.
+   *
+   * AUDIT 2026-08-16 — this route ran daily at 06:00 UTC for months and
+   * price_history held ZERO rows the entire time. Two faults, both the
+   * project's recurring shape:
+   *
+   *   1. It wrote six columns that do not exist on price_history
+   *      (yield_net, discount_pct, days_on_market, beach_km,
+   *      developer_name, developer_years). Every upsert returned a
+   *      PostgREST 400.
+   *   2. `if (!error) inserted += chunk.length` meant a total failure and
+   *      an empty book were indistinguishable, and the route returned
+   *      `success: true` with the errors discarded either way.
+   *
+   * The market_snapshots upsert below had the same disease — five
+   * nonexistent columns and its return value dropped on the floor — which
+   * is why that table froze on 2026-05-23.
+   *
+   * Only columns that exist are written now, and every write is checked.
+   * Do not add a field here without confirming the column exists first.
+   */
+  const records = all.slice(0, 1900).map(p => ({
+    snapshot_date: date,
+    property_ref: p.ref || '',
+    project_name: p.p || '',
+    town: p.l,
+    region: p.costa || p.r || '',
+    property_type: p.t,
+    price: p.pf,
+    price_per_m2: p.pm2 || null,
+    market_pm2: p.mm2 || null,
+    score: p._sc || null,
+    yield_gross: p._yield?.gross || null,
+    status: p.s || '',
+    beds: p.bd,
+    built_m2: p.bm,
+  }));
 
-    let daysOnMarket: number | null = null;
-    if (p._added) {
-      const addedTime = new Date(p._added).getTime();
-      if (!isNaN(addedTime)) {
-        daysOnMarket = Math.floor((now - addedTime) / (1000 * 60 * 60 * 24));
-      }
-    }
-
-    return {
-      snapshot_date: date,
-      property_ref: p.ref || '',
-      project_name: p.p || '',
-      town: p.l,
-      region: p.costa || p.r || '',
-      property_type: p.t,
-      price: p.pf,
-      price_per_m2: p.pm2 || null,
-      market_pm2: p.mm2 || null,
-      score: p._sc || null,
-      yield_gross: p._yield?.gross || null,
-      yield_net: p._yield?.net || null,
-      discount_pct: discountPct,
-      days_on_market: daysOnMarket,
-      status: p.s || '',
-      beds: p.bd,
-      built_m2: p.bm,
-      beach_km: p.bk || null,
-      developer_name: p.d || '',
-      developer_years: p.dy || null,
-    };
-  });
-
-  // Batch insert in chunks of 500
+  // Batch upsert in chunks of 500 — count only what actually landed, and
+  // keep every failure so the caller sees it.
   let inserted = 0;
+  const writeErrors: string[] = [];
   for (let i = 0; i < records.length; i += 500) {
     const chunk = records.slice(i, i + 500);
     const { error } = await supabase.from('price_history').upsert(chunk, {
       onConflict: 'snapshot_date,property_ref',
     });
-    if (!error) inserted += chunk.length;
+    if (error) {
+      writeErrors.push(`price_history rows ${i}-${i + chunk.length - 1}: ${error.message}`);
+    } else {
+      inserted += chunk.length;
+    }
   }
 
   // Compute expanded market-level summary
@@ -89,24 +96,30 @@ export async function GET(req: NextRequest) {
   const keyReadyCount = all.filter(p => p.s === 'key-ready' || p.s === 'Key Ready').length;
   const offPlanCount = all.filter(p => p.s === 'off-plan' || p.s === 'Off Plan').length;
 
-  await supabase.from('market_snapshots').upsert({
+  // Only real columns. above_80 / avg_discount / new_this_week /
+  // key_ready_count / off_plan_count do NOT exist on market_snapshots — they
+  // are still computed and returned in the response below, but writing them
+  // is what silently 400'd this upsert since 2026-05-23.
+  const { error: summaryError } = await supabase.from('market_snapshots').upsert({
     snapshot_date: date,
     total_properties: all.length,
     avg_price: avgPrice,
     avg_score: avgScore,
     avg_yield: avgYield,
     above_70: above70,
-    above_80: above80,
-    avg_discount: avgDiscount,
-    new_this_week: newThisWeek,
-    key_ready_count: keyReadyCount,
-    off_plan_count: offPlanCount,
   }, { onConflict: 'snapshot_date' });
+  if (summaryError) writeErrors.push(`market_snapshots: ${summaryError.message}`);
+
+  const expected = records.length;
+  const ok = writeErrors.length === 0 && inserted === expected;
 
   return Response.json({
-    success: true,
+    success: ok,
     date,
     properties_archived: inserted,
+    properties_expected: expected,
+    market_summary_written: !summaryError,
+    errors: writeErrors.length ? writeErrors : null,
     market_summary: {
       total: all.length,
       avgPrice,
@@ -119,5 +132,5 @@ export async function GET(req: NextRequest) {
       key_ready_count: keyReadyCount,
       off_plan_count: offPlanCount,
     },
-  });
+  }, { status: ok ? 200 : 500 });
 }
