@@ -2,7 +2,10 @@
  * /no/kjope-bolig-i-spania — the Norwegian buying guide (2026-08-06).
  * Targets the head query "kjøpe bolig i Spania" + long-tail (NIE, omkostninger,
  * off-plan). Factual, range-based numbers with confirm-with-professional
- * hedges; FAQPage schema for the rich result.
+ * hedges; FAQPage schema — kept for AI/answer-engine parsing, NOT for a
+ * Google rich result: those were deprecated 2026-05-07 and Search Console
+ * API support ended August 2026. The markup stays because it is still valid
+ * schema.org and still read by answer engines.
  */
 
 import type { Metadata } from 'next';
