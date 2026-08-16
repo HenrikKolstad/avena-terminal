@@ -161,15 +161,39 @@ async function macroAndForeignDims(): Promise<{ macro: Dim; foreign: Dim }> {
   }
   const { data, error } = await supabase
     .from('causal_indicators')
-    .select('name, current_value')
+    .select('name, current_value, last_updated')
     .eq('target_market', 'all_spain')
     .limit(100);
   if (error) {
     const r = `causal_indicators query failed: ${error.message}`;
     return { macro: unavailable(r), foreign: unavailable(r) };
   }
-  const inds = ((data ?? []) as Array<{ name: string; current_value: number | null }>)
+  const inds = ((data ?? []) as Array<{ name: string; current_value: number | null; last_updated: string | null }>)
     .filter((i) => i.current_value != null);
+
+  /*
+   * These values are real measurements, but causal_indicators has not been
+   * written since 2026-05-23 — nothing updates it. The daily sync-macro cron
+   * writes a DIFFERENT table (macro_indicators), which is fresh but returns
+   * null for the ECB policy rate, both Euribors and Spanish unemployment, so
+   * repointing at it today would trade complete-but-stale inputs for
+   * fresh-but-empty ones. Until that is reconciled, publish the age of the
+   * inputs alongside them so nobody quotes them as current.
+   */
+  const stamps = inds.map((i) => i.last_updated).filter(Boolean).sort() as string[];
+  const asOf = stamps.length ? stamps[stamps.length - 1] : null;
+  const ageDays = asOf
+    ? Math.floor((Date.now() - new Date(asOf).getTime()) / 86_400_000)
+    : null;
+  const STALE_AFTER_DAYS = 45;
+  const freshness = {
+    as_of: asOf,
+    age_days: ageDays,
+    stale: ageDays != null ? ageDays > STALE_AFTER_DAYS : null,
+    ...(ageDays != null && ageDays > STALE_AFTER_DAYS
+      ? { staleness_note: `inputs are ${ageDays} days old — causal_indicators has no active writer; treat as a last-known reading, not a current one` }
+      : {}),
+  };
 
   if (!inds.length) {
     const r = 'no live macro indicators for all_spain';
@@ -186,9 +210,11 @@ async function macroAndForeignDims(): Promise<{ macro: Dim; foreign: Dim }> {
     ? measured(macroScoreFromIndicators(inds), {
         indicators_available: inds.length,
         indicators_used: used.map((i) => `${i.name}=${i.current_value}`),
+        ...freshness,
       })
     : unavailable('none of the mapped macro families (rate/inflation/GDP/unemployment) are present', {
         indicators_available: inds.length,
+        ...freshness,
       });
 
   // Foreign demand: the real measured share, not a keyword proxy. Mapping is
@@ -199,8 +225,9 @@ async function macroAndForeignDims(): Promise<{ macro: Dim; foreign: Dim }> {
     ? measured(50 + (share - 10) * 2, {
         foreign_buyer_share_pct: share,
         mapping: 'score = 50 + (share_pct - 10) * 2, clamped 0-100',
+        ...freshness,
       })
-    : unavailable('no "Foreign Buyer Share" indicator on record');
+    : unavailable('no "Foreign Buyer Share" indicator on record', { ...freshness });
 
   return { macro, foreign };
 }
