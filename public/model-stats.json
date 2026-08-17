@@ -14,5 +14,5 @@
     "In-sample: town × type medians are drawn from the same book, so each listing contributes to its own baseline. Out-of-sample error is higher.",
     "Target is asking price, not registered transaction price. Spanish coastal new-build transaction prices are not publicly available at listing level."
   ],
-  "computed_at": "2026-08-16T02:46:09.819Z"
+  "computed_at": "2026-08-17T02:45:31.346Z"
 }
