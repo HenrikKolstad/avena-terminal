@@ -30,14 +30,25 @@ interface Snapshot {
   valid_for_date: string | null;
 }
 
+/*
+ * Returns null on any failure — but says WHY on the way out. Previously a
+ * 404, a 500 and a timeout were all the same silent null, so a series key
+ * that had been retired upstream looked exactly like a slow network and
+ * neither was visible anywhere.
+ */
 async function fetchWithTimeout(url: string, ms: number): Promise<Response | null> {
   try {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), ms);
     const res = await fetch(url, { signal: ctrl.signal, cache: 'no-store', headers: { 'User-Agent': 'AvenaTerminalBot/1.0', Accept: 'application/json' } });
     clearTimeout(t);
-    return res.ok ? res : null;
-  } catch {
+    if (!res.ok) {
+      console.warn(`macro fetch HTTP ${res.status} — ${url}`);
+      return null;
+    }
+    return res;
+  } catch (e) {
+    console.warn(`macro fetch failed (${e instanceof Error ? e.message : 'unknown'}) — ${url}`);
     return null;
   }
 }
@@ -81,13 +92,37 @@ async function eurostat(dataset: string, params: string, label: string): Promise
     }
     const periods: string[] = Object.keys(dim.index).sort();
     const values = json.value as Record<string, number>;
-    const lastPeriod = periods[periods.length - 1];
-    const prevPeriod = periods[periods.length - 2];
-    const lastIdx = dim.index[lastPeriod];
-    const prevIdx = dim.index[prevPeriod];
+
+    /*
+     * AUDIT 2026-08-17 — this used to take periods[last] blindly and read
+     * values[index[last]]. Eurostat publishes the period LABEL before the
+     * observation, so the newest period in `dimension.time` routinely
+     * carries no value: `une_rt_m` for Spain listed 2026-07 with nothing
+     * against it while 2026-06 held 10.1. The old code therefore stored
+     * value=null stamped valid_for_date=2026-07, and — worse — filled
+     * previous_value from 2026-06, so the row claimed the CURRENT reading
+     * was unknown while the PRIOR one was 10.1. Same fault emptied
+     * gr_inflation_yoy. A null here is not harmless: macro_support in
+     * /api/v1/apci counts an indicator as unavailable and drops it from
+     * the measured weight.
+     *
+     * Select the newest period that actually carries an observation, and
+     * report THAT period as valid_for. A trailing labelled-but-empty
+     * period is a publication lag, not missing data.
+     */
+    const observed = periods.filter((p) => {
+      const v = values[String(dim.index[p])];
+      return typeof v === 'number' && Number.isFinite(v);
+    });
+    if (observed.length === 0) {
+      console.warn(`eurostat ${label}: ${periods.length} periods, none carrying an observation`);
+      return { latest: null, previous: null, valid_for: null };
+    }
+    const lastPeriod = observed[observed.length - 1];
+    const prevPeriod = observed.length >= 2 ? observed[observed.length - 2] : null;
     return {
-      latest: values[String(lastIdx)] ?? null,
-      previous: prevIdx != null ? values[String(prevIdx)] ?? null : null,
+      latest: values[String(dim.index[lastPeriod])],
+      previous: prevPeriod != null ? values[String(dim.index[prevPeriod])] : null,
       valid_for: lastPeriod,
     };
   } catch {
