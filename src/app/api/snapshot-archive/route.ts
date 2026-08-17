@@ -39,8 +39,17 @@ export async function GET(req: NextRequest) {
    *
    * Only columns that exist are written now, and every write is checked.
    * Do not add a field here without confirming the column exists first.
+   *
+   * AUDIT 2026-08-17 — a third fault, caught before the first successful
+   * write landed: `all.slice(0, 1900)` capped the archive at 1,900 rows
+   * while the live book is 2,017, so 117 units would have been dropped
+   * from every single day of the series. `expected` was measured off the
+   * TRUNCATED list, so `inserted === expected` held and the route would
+   * have reported a complete archive of an incomplete book — the same
+   * shape as the two faults above. The whole book is archived now, and
+   * `expected` is the book size, so any shortfall shows up as a 500.
    */
-  const records = all.slice(0, 1900).map(p => ({
+  const records = all.map(p => ({
     snapshot_date: date,
     property_ref: p.ref || '',
     project_name: p.p || '',
@@ -110,7 +119,10 @@ export async function GET(req: NextRequest) {
   }, { onConflict: 'snapshot_date' });
   if (summaryError) writeErrors.push(`market_snapshots: ${summaryError.message}`);
 
-  const expected = records.length;
+  // Measured off the book, not off `records` — a cap or a filter that
+  // silently shrinks `records` must show up here as a shortfall, not be
+  // absorbed into the definition of "expected".
+  const expected = all.length;
   const ok = writeErrors.length === 0 && inserted === expected;
 
   return Response.json({
