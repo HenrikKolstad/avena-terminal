@@ -154,8 +154,13 @@ async function fetchEcbFx(code: string): Promise<{ value: number; direction: str
  */
 import { supabase } from '@/lib/supabase';
 
-/** `as_of` omitted means the value was fetched from upstream during this request. */
-interface SourcedValue { value: number; direction: string; as_of?: string | null }
+/**
+ * `as_of` omitted means the value was fetched from upstream during this request.
+ * `origin`, when set, names where the value actually came from and overrides the
+ * caller's expected-source label — so a fallback can never be reported as if it
+ * had come from the preferred source.
+ */
+interface SourcedValue { value: number; direction: string; as_of?: string | null; origin?: string }
 
 /**
  * Exact indicator-name → `macro_indicators.indicator_key` map.
@@ -195,7 +200,7 @@ async function fetchFromMacroIndicators(indicatorName: string): Promise<SourcedV
     if (!row || typeof row.value !== 'number') return null;
     const delta = row.previous_value != null ? row.value - row.previous_value : 0;
     const direction = delta < -0.05 ? 'falling' : delta > 0.05 ? 'rising' : 'stable';
-    return { value: row.value, direction, as_of: row.fetched_at };
+    return { value: row.value, direction, as_of: row.fetched_at, origin: `macro_indicators: ${key}` };
   } catch {
     return null;
   }
@@ -226,7 +231,12 @@ async function fetchFromCausalIndicators(namePattern: string): Promise<SourcedVa
     const row = data?.[0] as
       { current_value: number | null; signal: string | null; last_updated: string | null } | undefined;
     if (!row || typeof row.current_value !== 'number') return null;
-    return { value: row.current_value, direction: row.signal ?? 'stable', as_of: row.last_updated };
+    return {
+      value: row.current_value,
+      direction: row.signal ?? 'stable',
+      as_of: row.last_updated,
+      origin: 'causal_indicators (legacy)',
+    };
   } catch {
     return null;
   }
@@ -309,10 +319,12 @@ export async function loadMacroIndicators(): Promise<MacroIndicator[]> {
     const stale = fetched == null || ageDays == null || ageDays > STALE_AFTER_DAYS;
     const live = !stale;
 
+    // Report where the value actually came from, not where we hoped to find it.
+    const actualSource = fetched?.origin ?? source;
     let label: string;
     if (fetched == null)   label = `${source} (unavailable — published literal)`;
-    else if (stale)        label = `${source} (stale: ${ageDays}d old)`;
-    else                   label = source;
+    else if (stale)        label = `${actualSource} (stale: ${ageDays}d old)`;
+    else                   label = actualSource;
 
     return {
       name, value, unit, direction,
@@ -329,7 +341,7 @@ export async function loadMacroIndicators(): Promise<MacroIndicator[]> {
   return [
     ind('ECB Rate',                    ecb,                2.40, 'falling', '%',           (v, d) => d === 'falling', 'ECB SDW: FM.D.U2.EUR.4F.KR.MRR_FR.LEV'),
     ind('EUR/GBP',                     fxGbp,              0.856, 'stable', '',            (_, d) => d === 'falling', 'ECB SDW: EXR.D.GBP.EUR.SP00.A'),
-    ind('Spain Inflation',             inflation,          2.8,  'falling', '%',           (v) => v < 3.0, 'causal_indicators'),
+    ind('Spain Inflation',             inflation,          2.8,  'falling', '%',           (v) => v < 3.0, 'macro_indicators: spain_inflation_yoy (Eurostat prc_hicp_manr)'),
     ind('Spain GDP',                   gdp,                2.9,  'stable',  '%',           (v) => v > 2.0, 'causal_indicators'),
     ind('Costa Blanca YoY',            costaBlancaYoy,     9.4,  'rising',  '%',           (v) => v > 5,   'causal_indicators'),
     ind('Foreign Buyer Share',         foreignBuyerShare,  19.3, 'rising',  '%',           (v) => v > 15,  'causal_indicators'),
@@ -341,7 +353,7 @@ export async function loadMacroIndicators(): Promise<MacroIndicator[]> {
     ind('New Supply YoY',              newSupply,          12.4, 'rising',  '%',           (v) => v <= 0,  'causal_indicators'),
     ind('Euribor 3M',                  euribor,            2.85, 'falling', '%',           (v) => v < 3.0, 'ECB SDW: FM.M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA'),
     ind('Spain 10Y Bond',              spainBond,          3.21, 'stable',  '%',           (v) => v < 4.5, 'causal_indicators'),
-    ind('Spain Unemployment',          unemployment,       11.2, 'falling', '%',           (v) => v < 12,  'causal_indicators'),
+    ind('Spain Unemployment',          unemployment,       11.2, 'falling', '%',           (v) => v < 12,  'macro_indicators: spain_unemployment_rate (Eurostat une_rt_m)'),
     ind('Spain Mortgage Approvals YoY',mortgageApprovals,  8.3,  'rising',  '%',           (v) => v > 0,   'causal_indicators'),
     // Both were `() => true` — bullish at every possible exchange rate, which
     // is not a signal, just a vote. A falling EUR cross means the buyer's
