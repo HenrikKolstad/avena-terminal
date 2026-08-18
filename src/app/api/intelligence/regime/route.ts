@@ -52,30 +52,46 @@ export async function GET() {
     const spainBond         = find('Spain 10Y Bond');
     const brent             = find('Brent Crude');
 
-    // Compute regime score (10 bull conditions, 2 bear deductions)
+    // Compute regime score (10 bull conditions, 2 bear deductions).
+    //
+    // Each condition also records whether the indicator behind it was live.
+    // The published headline is "N/10 bull signals firing", and most of those
+    // signals are literals with no updating source — a caveat that belonged
+    // next to the score rather than buried in an aggregate count.
     let regimeScore = 0;
-    if (ecb?.direction === 'falling') regimeScore++;
-    if ((costaBlancaYoy?.value ?? 0) > 5) regimeScore++;
-    if ((foreignBuyerShare?.value ?? 0) > 15) regimeScore++;
-    if (avgDiscount > 5) regimeScore++;
-    if (highScoreCount > 50) regimeScore++;
-    if ((spainGdp?.value ?? 0) > 2) regimeScore++;
-    if ((euribor?.value ?? 99) < 3.0) regimeScore++;
-    if ((unemployment?.value ?? 99) < 12) regimeScore++;
-    if ((mortgageYoy?.value ?? 0) > 0) regimeScore++;
-    if ((consumerConfidence?.value ?? 0) > 85) regimeScore++;
+    const scoringSignals: { name: string; fired: boolean; live: boolean }[] = [];
+    const bull = (name: string, ind: { value: number; live: boolean } | undefined, fired: boolean) => {
+      scoringSignals.push({ name, fired, live: ind?.live ?? false });
+      if (fired) regimeScore++;
+    };
+
+    bull('ECB rate falling',      ecb,                ecb?.direction === 'falling');
+    bull('Costa Blanca YoY >5',   costaBlancaYoy,     (costaBlancaYoy?.value ?? 0) > 5);
+    bull('Foreign buyers >15%',   foreignBuyerShare,  (foreignBuyerShare?.value ?? 0) > 15);
+    bull('Avg discount >5%',      { value: avgDiscount, live: true }, avgDiscount > 5);
+    bull('High-score deals >50',  { value: highScoreCount, live: true }, highScoreCount > 50);
+    bull('Spain GDP >2%',         spainGdp,           (spainGdp?.value ?? 0) > 2);
+    bull('Euribor 3M <3%',        euribor,            (euribor?.value ?? 99) < 3.0);
+    bull('Unemployment <12%',     unemployment,       (unemployment?.value ?? 99) < 12);
+    bull('Mortgage approvals up', mortgageYoy,        (mortgageYoy?.value ?? 0) > 0);
+    bull('Consumer conf. >85',    consumerConfidence, (consumerConfidence?.value ?? 0) > 85);
+
     if ((spainBond?.value ?? 0) > 4.5) regimeScore--;
     if ((brent?.value ?? 0) > 95) regimeScore--;
 
     regimeScore = Math.max(0, Math.min(10, regimeScore));
     const regime = scoreToRegime(regimeScore);
 
+    const firedSignals   = scoringSignals.filter((s) => s.fired);
+    const firedFromLive  = firedSignals.filter((s) => s.live).length;
+    const firedFromStale = firedSignals.length - firedFromLive;
+
     // Append computed-from-properties indicators
     const indicators = [
       ...macroIndicators,
-      { name: 'Avg Discount',     value: Number(avgDiscount.toFixed(1)), unit: '%',          direction: 'computed', bullish: avgDiscount > 5, live: true, source: 'avena.properties', fetched_at: new Date().toISOString() },
-      { name: 'Avg Score',        value: Number(avgScore.toFixed(1)),    unit: '/100',       direction: 'computed', bullish: avgScore > 55,   live: true, source: 'avena.properties', fetched_at: new Date().toISOString() },
-      { name: 'High Score Count', value: highScoreCount,                  unit: 'properties', direction: 'computed', bullish: highScoreCount > 50, live: true, source: 'avena.properties', fetched_at: new Date().toISOString() },
+      { name: 'Avg Discount',     value: Number(avgDiscount.toFixed(1)), unit: '%',          direction: 'computed', bullish: avgDiscount > 5, live: true, source: 'avena.properties', fetched_at: new Date().toISOString(), as_of: new Date().toISOString(), age_days: 0, stale: false },
+      { name: 'Avg Score',        value: Number(avgScore.toFixed(1)),    unit: '/100',       direction: 'computed', bullish: avgScore > 55,   live: true, source: 'avena.properties', fetched_at: new Date().toISOString(), as_of: new Date().toISOString(), age_days: 0, stale: false },
+      { name: 'High Score Count', value: highScoreCount,                  unit: 'properties', direction: 'computed', bullish: highScoreCount > 50, live: true, source: 'avena.properties', fetched_at: new Date().toISOString(), as_of: new Date().toISOString(), age_days: 0, stale: false },
     ];
 
     const liveCount  = indicators.filter((i) => i.live).length;
@@ -109,6 +125,12 @@ export async function GET() {
       } catch { /* table may not exist — non-fatal */ }
     }
 
+    // The score is only as current as the signals behind it. Say so at the
+    // same level as the score itself, not only as an indicator-level flag.
+    if (firedFromStale > 0) {
+      narrative += ` Note: ${firedFromStale} of the ${firedSignals.length} firing signals come from indicators with no currently-updating source; see scoring_freshness.`;
+    }
+
     return Response.json({
       regime,
       regime_score: regimeScore,
@@ -116,6 +138,12 @@ export async function GET() {
       confidence,
       indicators,
       narrative,
+      scoring_freshness: {
+        fired: firedSignals.length,
+        fired_from_live_sources: firedFromLive,
+        fired_from_stale_or_literal: firedFromStale,
+        signals: scoringSignals,
+      },
       data_freshness: {
         live_indicators: liveCount,
         fallback_indicators: totalCount - liveCount,
@@ -125,7 +153,7 @@ export async function GET() {
       property_count: all.length,
       avg_discount: Number(avgDiscount.toFixed(1)),
       above_70: highScoreCount,
-      methodology: 'ECB SDW for rates/FX, causal_indicators table for Spain macro, properties dataset for valuation primitives.',
+      methodology: 'ECB SDW for rates/FX; macro_indicators (nightly Eurostat/ECB sync) for Spain inflation and unemployment; properties dataset for valuation primitives. Indicators with no currently-updating source are published as literals and marked stale:true with age_days — they are not market readings.',
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Regime detection failed';
