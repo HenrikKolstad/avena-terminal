@@ -46,6 +46,38 @@ export async function startCronLog(
   }
 }
 
+/**
+ * Turn any thrown/returned error value into text worth reading tomorrow.
+ *
+ * The previous version was `String(error)`, which renders every non-Error
+ * object as "[object Object]". Supabase returns PostgrestError — a plain
+ * object, not an Error — so /api/cron/counterpart-discover recorded
+ * "[object Object]" on all 86 of its failures: a job that has never once
+ * succeeded and never once said why.
+ */
+export function describeError(error: unknown): string | null {
+  if (error == null) return null;
+  if (typeof error === 'string') return error.slice(0, 1000) || null;
+  if (error instanceof Error) return error.message.slice(0, 1000);
+
+  // Supabase PostgrestError and similar shapes: keep the fields that identify
+  // the failure rather than flattening the object to "[object Object]".
+  if (typeof error === 'object') {
+    const e = error as Record<string, unknown>;
+    const parts = ['message', 'code', 'details', 'hint']
+      .filter((k) => typeof e[k] === 'string' && (e[k] as string).length > 0)
+      .map((k) => `${k}=${e[k] as string}`);
+    if (parts.length) return parts.join(' | ').slice(0, 1000);
+    try {
+      const json = JSON.stringify(error);
+      if (json && json !== '{}') return json.slice(0, 1000);
+    } catch { /* circular — fall through */ }
+  }
+
+  const s = String(error);
+  return s === '[object Object]' ? 'unserialisable error value' : s.slice(0, 1000);
+}
+
 export async function finishCronLog(
   handle: CronLogHandle,
   status: 'success' | 'error' | 'skipped',
@@ -62,11 +94,7 @@ export async function finishCronLog(
         finished_at: new Date(finishedAt).toISOString(),
         duration_ms: finishedAt - handle.startedAt,
         output_summary: summary ?? null,
-        error: error
-          ? error instanceof Error
-            ? error.message.slice(0, 1000)
-            : String(error).slice(0, 1000)
-          : null,
+        error: describeError(error),
       })
       .eq('id', handle.id);
   } catch {

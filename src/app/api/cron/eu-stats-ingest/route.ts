@@ -142,11 +142,25 @@ export async function GET() {
   const totalAttempts = Object.values(summary).reduce((acc, s) => acc + s.indicators_attempted, 0);
   const totalErrors = Object.values(summary).reduce((acc, s) => acc + s.errors.length, 0);
 
-  await finishCronLog(log, totalErrors === 0 ? 'success' : 'error', {
-    rows_upserted: totalRows,
-    indicators_attempted: totalAttempts,
-    errors: totalErrors,
-  });
+  // The per-source error strings are already collected above; passing them on
+  // is the difference between a diagnosable failure and a bare 'error' row.
+  // Without this the route logged status='error' with error=NULL on 91 of its
+  // 92 runs — a job failing daily with nothing recorded about why.
+  const failureDetail = Object.entries(summary)
+    .filter(([, s]) => s.errors.length > 0)
+    .map(([src, s]) => `${src}: ${s.errors.slice(0, 3).join('; ')}`)
+    .join(' | ');
+
+  await finishCronLog(
+    log,
+    totalErrors === 0 ? 'success' : 'error',
+    {
+      rows_upserted: totalRows,
+      indicators_attempted: totalAttempts,
+      errors: totalErrors,
+    },
+    failureDetail || null,
+  );
 
   return NextResponse.json({
     ok: true,
