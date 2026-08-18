@@ -98,7 +98,6 @@
 
     { "path": "/api/cron/dvf-ingest", "schedule": "30 4 * * *" },
 
-    { "path": "/api/cron/precursor-scan", "schedule": "0 5 * * *" },
     { "path": "/api/cron/counterpart-discover", "schedule": "30 3 * * *" },
     { "path": "/api/cron/counterpart-scan", "schedule": "0 4 * * *" },
     { "path": "/api/cron/sync-feeds", "schedule": "0 3 * * *" },
