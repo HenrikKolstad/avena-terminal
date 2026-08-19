@@ -1144,6 +1144,69 @@ async function main() {
       if (sbUrl && sbKey) {
         const { createClient } = require('@supabase/supabase-js');
         const sb = createClient(sbUrl, sbKey);
+
+        // ─── The date a unit was last SEEN is not the date it went missing ───
+        // This writer stamped today_sd, i.e. the date the unit was found ABSENT.
+        // The column means what it says — the last date the unit was actually
+        // observed — and the pricing-history cron has always written it that way
+        // (it stores its priorDate). The two writers therefore disagreed by one
+        // day, and because this one runs first and upserts on `ref`, this one
+        // won: on 2026-08-19, 17 units present in the 2,026-row snapshot of
+        // 08-18 and absent from the 2,011-row feed of 08-19 were all recorded as
+        // "last seen 2026-08-19". Across the whole table 36 of 75 tombstones
+        // carry that off-by-one, and the error is published — open-dataset.ts
+        // maps last_seen_date straight into tombstones.csv and into the daily
+        // delisting counts of movement-ledger.csv.
+        //
+        // price_snapshots holds one row per ref per day, so the true answer is
+        // that ref's newest snapshot strictly before today.
+        let lastSeenByRef = {};
+        let priorObservationDate = null;
+        let dateLookupFailed = false;
+        try {
+          const soldRefs = soldProps.map(p => p.ref).filter(Boolean);
+          for (let i = 0; i < soldRefs.length; i += 200) {
+            const chunk = soldRefs.slice(i, i + 200);
+            const { data, error } = await sb
+              .from('price_snapshots')
+              .select('ref, snapshot_date')
+              .in('ref', chunk)
+              .lt('snapshot_date', today_sd);
+            if (error) throw new Error(error.message);
+            for (const row of data || []) {
+              if (!lastSeenByRef[row.ref] || row.snapshot_date > lastSeenByRef[row.ref]) {
+                lastSeenByRef[row.ref] = row.snapshot_date;
+              }
+            }
+          }
+          // Fallback for a ref with no snapshot of its own: the most recent
+          // observation day of the book as a whole. Every ref reaching this
+          // block was in the previous data.json by construction, so that day is
+          // when it was last seen.
+          const { data: priorRows, error: priorErr } = await sb
+            .from('price_snapshots')
+            .select('snapshot_date')
+            .lt('snapshot_date', today_sd)
+            .order('snapshot_date', { ascending: false })
+            .limit(1);
+          if (priorErr) throw new Error(priorErr.message);
+          priorObservationDate = priorRows && priorRows[0] ? priorRows[0].snapshot_date : null;
+        } catch (e) {
+          // Loudly, and never silently back to today_sd — writing the known-wrong
+          // date is what this change exists to stop. Yesterday is the last resort
+          // because the pipeline runs nightly, and it is never worse than today.
+          dateLookupFailed = true;
+          console.error(
+            `⚠️  LAST-SEEN LOOKUP FAILED (${e.message}) — falling back to yesterday for ` +
+            `${soldProps.length} tombstones. These dates are a guess, not an observation.`
+          );
+        }
+        const yesterday = new Date(Date.now() - 86400_000).toISOString().slice(0, 10);
+        const fallbackDate = priorObservationDate || yesterday;
+        if (!dateLookupFailed && !priorObservationDate) {
+          console.warn('  No prior snapshot day found — using yesterday as the last-seen fallback.');
+        }
+
         const rows = soldProps.map(p => ({
           ref: p.ref,
           property_name: p.p,
@@ -1152,10 +1215,15 @@ async function main() {
           type: p.t,
           last_price: p.pf,
           last_pm2: p.pm2,
-          last_seen_date: today_sd,
+          last_seen_date: lastSeenByRef[p.ref] || fallbackDate,
           beds: p.bd,
           built_m2: p.bm,
         }));
+        const derived = soldProps.filter(p => lastSeenByRef[p.ref]).length;
+        console.log(
+          `  Last-seen dates: ${derived} from price_snapshots, ` +
+          `${rows.length - derived} from fallback ${fallbackDate}`
+        );
         const { error } = await sb.from('sold_properties').upsert(rows, { onConflict: 'ref' });
         if (error) console.error('Supabase sold_properties error:', error.message);
         else console.log(`  Stored ${rows.length} sold comps in Supabase`);

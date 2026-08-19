@@ -260,10 +260,23 @@ export function buildLedger(
     if (!movesByDay.has(m.date)) movesByDay.set(m.date, []);
     movesByDay.get(m.date)!.push(m);
   }
+  // A delisting is OBSERVED on the first day the unit is missing, which is not
+  // the day it was last seen. Bucketing straight on last_seen_date put the
+  // delisting on a day the unit was still present and still counted in that
+  // day's listings_observed — the row said "1,000 listings observed, 1 delisted"
+  // about a day on which nothing had yet left.
+  //
+  // Attribute each tombstone to the first observation day strictly after its
+  // last_seen_date. A unit last seen on the newest day in the series has not
+  // been observed absent yet and is deliberately counted nowhere rather than
+  // being pushed onto the latest day.
+  const observationDays = [...perDay.keys()].sort();
   const soldByDay = new Map<string, number>();
   for (const s of sold) {
     if (!s.last_seen_date) continue;
-    soldByDay.set(s.last_seen_date, (soldByDay.get(s.last_seen_date) ?? 0) + 1);
+    const observedMissingOn = observationDays.find((d) => d > s.last_seen_date!);
+    if (!observedMissingOn) continue;
+    soldByDay.set(observedMissingOn, (soldByDay.get(observedMissingOn) ?? 0) + 1);
   }
   const relistedByDay = new Map<string, number>();
   for (const date of relisted.values()) {
