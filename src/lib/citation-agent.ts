@@ -360,66 +360,202 @@ async function queryOne(question: string, apiKey: string, date: string): Promise
 }
 
 /**
+ * How long queryMonitor may spend on lookups before it stops of its own accord.
+ *
+ * The route's Vercel maxDuration is 300s. On 2026-08-17 a complete run took
+ * 273s of it and succeeded with 27s to spare; on 2026-08-19 it went over and
+ * the platform killed the function mid-flight. That kill is the worst possible
+ * failure mode here: the insert used to happen once, after all 74 lookups, so
+ * ~60 completed (and paid-for) Perplexity calls were discarded, no terminal
+ * status was ever written, and the cron_logs row sat at 'started' forever. A
+ * silently lost measurement day, on the instrument that scores the entire
+ * AI-citation strategy.
+ *
+ * 210s leaves ~90s for the downstream steps and for writing an honest
+ * terminal status. Stopping early is not a failure — the run persists what it
+ * finished and reports how much is left; the second scheduled invocation picks
+ * the tail up via the resume path below.
+ */
+const QUERY_BUDGET_MS = Number(process.env.CITATION_QUERY_BUDGET_MS ?? 210_000);
+
+export type QueryMonitorRun = {
+  results: CitationResult[];
+  /** True when every question in the bank now has a result for this date. */
+  complete: boolean;
+  /** Questions still unqueried when the budget ran out. */
+  remaining: number;
+  /** Recovered from an earlier invocation today rather than re-queried (and re-paid for). */
+  from_earlier_run: number;
+  queried_this_run: number;
+  persisted_this_run: number;
+  /** Rows that came back OK but could not be stored. Never folded into persisted. */
+  persist_failures: number;
+  /** True when the run stopped itself on the time budget rather than finishing the bank. */
+  stopped_on_budget: boolean;
+};
+
+/**
+ * Lookups already recorded for `date`, so a resumed run neither re-queries nor
+ * duplicates them. Duplication is not hypothetical: 2026-08-12 holds 119 rows
+ * for a 74-question bank because a recovery run re-inserted the whole day.
+ * There is no unique index on (question, date) to lean on, so the guard is to
+ * read what is there and skip it.
+ *
+ * A read failure returns null, NOT an empty map: "nothing recorded yet" and
+ * "could not find out" must not lead to the same behaviour, since treating a
+ * failed read as an empty day is exactly how a run would silently re-query and
+ * re-insert all 74.
+ */
+async function loadRecordedForDate(date: string): Promise<Map<string, CitationResult> | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase
+    .from('citation_monitoring')
+    .select('question, cited_sources, avena_cited, competitor_cited')
+    .eq('date', date);
+
+  if (error || !data) {
+    console.error('[citation-agent] could not read today\'s existing lookups:', error?.message ?? 'no data');
+    return null;
+  }
+
+  const byQuestion = new Map<string, CitationResult>();
+  for (const row of data) {
+    byQuestion.set(row.question as string, {
+      question: row.question as string,
+      cited_sources: Array.isArray(row.cited_sources) ? (row.cited_sources as string[]) : [],
+      avena_cited: Boolean(row.avena_cited),
+      competitor_cited: Array.isArray(row.competitor_cited) ? (row.competitor_cited as string[]) : [],
+      date,
+    });
+  }
+  return byQuestion;
+}
+
+/**
  * Step 1: Query Perplexity for each tracked question in parallel batches.
  *
- * Why batches: 60 questions × ~5s each serial = 300s+, blows past the
- * Vercel function timeout. Parallel batches of 5 cuts wall time to ~60s.
- * Each request has its own 8s AbortController so a slow query can't
- * tank the whole run.
+ * Resumable and time-boxed. Results are persisted batch-by-batch as they land,
+ * so a run that is cut short keeps everything it finished instead of throwing
+ * the whole day away.
  */
-export async function queryMonitor(): Promise<CitationResult[]> {
+export async function queryMonitor(): Promise<QueryMonitorRun> {
   const apiKey = process.env.PERPLEXITY_API_KEY;
   const date = new Date().toISOString().slice(0, 10);
 
   if (!apiKey) {
     console.error('[citation-agent] PERPLEXITY_API_KEY missing — reporting failure, not zeros');
-    return TRACKED_QUESTIONS.map((question) => ({
-      question, cited_sources: [], avena_cited: false, competitor_cited: [], date,
-      failed: true, error: 'PERPLEXITY_API_KEY missing',
-    }));
+    return {
+      results: TRACKED_QUESTIONS.map((question) => ({
+        question, cited_sources: [], avena_cited: false, competitor_cited: [], date,
+        failed: true, error: 'PERPLEXITY_API_KEY missing',
+      })),
+      complete: false,
+      remaining: TRACKED_QUESTIONS.length,
+      from_earlier_run: 0,
+      queried_this_run: 0,
+      persisted_this_run: 0,
+      persist_failures: 0,
+      stopped_on_budget: false,
+    };
+  }
+
+  const recorded = await loadRecordedForDate(date);
+  const cached = recorded ?? new Map<string, CitationResult>();
+  const pending = TRACKED_QUESTIONS.filter((q) => !cached.has(q));
+
+  if (cached.size > 0) {
+    console.log(`[citation-agent] resuming ${date}: ${cached.size} already recorded, ${pending.length} to query`);
   }
 
   // BATCH was 5 with 250ms gaps; measured on 2026-08-12 that pattern trips
   // the key's request-rate limit ~40% of the time. Two concurrent with a
   // longer gap stays under it, and the 429 retry above catches the stragglers.
   const BATCH = 2;
-  const results: CitationResult[] = [];
-  for (let i = 0; i < TRACKED_QUESTIONS.length; i += BATCH) {
-    const slice = TRACKED_QUESTIONS.slice(i, i + BATCH);
+  const startedAt = Date.now();
+  const fresh: CitationResult[] = [];
+  let persisted = 0;
+  let persistFailures = 0;
+  let stoppedOnBudget = false;
+
+  for (let i = 0; i < pending.length; i += BATCH) {
+    if (Date.now() - startedAt > QUERY_BUDGET_MS) {
+      stoppedOnBudget = true;
+      console.warn(
+        `[citation-agent] query budget of ${QUERY_BUDGET_MS}ms reached after ${fresh.length} lookups; ` +
+        `${pending.length - i} left for the next invocation`
+      );
+      break;
+    }
+
+    const slice = pending.slice(i, i + BATCH);
     const batchResults = await Promise.all(slice.map((q) => queryOne(q, apiKey, date)));
-    results.push(...batchResults);
+    fresh.push(...batchResults);
+
+    // Persist THIS batch's successes now. Holding every row until the end is
+    // what made the 2026-08-19 timeout cost the entire day rather than its tail.
+    // Only successful lookups are stored: a failed call is not a zero citation.
+    const batchOk = batchResults.filter((r) => !r.failed);
+    if (supabase && batchOk.length > 0) {
+      try {
+        const { error } = await supabase.from('citation_monitoring').insert(
+          batchOk.map((r) => ({
+            question: r.question,
+            cited_sources: r.cited_sources,
+            avena_cited: r.avena_cited,
+            competitor_cited: r.competitor_cited,
+            date: r.date,
+          }))
+        );
+        // The return used to be dropped on the floor here, which made a
+        // rejected insert look exactly like a stored one. Count only what
+        // the database actually accepted.
+        if (error) {
+          persistFailures += batchOk.length;
+          console.error('[citation-agent] batch insert rejected:', error.message);
+        } else {
+          persisted += batchOk.length;
+        }
+      } catch (e) {
+        persistFailures += batchOk.length;
+        console.error('[citation-agent] batch insert threw:', e instanceof Error ? e.message : e);
+      }
+    }
+
     // 1.5s between batches — measured, not guessed politeness (see BATCH note).
-    if (i + BATCH < TRACKED_QUESTIONS.length) {
+    if (i + BATCH < pending.length) {
       await new Promise((r) => setTimeout(r, 1500));
     }
   }
 
-  const ok = results.filter((r) => !r.failed);
-  const failedCount = results.length - ok.length;
+  const failedCount = fresh.filter((r) => r.failed).length;
   if (failedCount > 0) {
-    console.error(`[citation-agent] ${failedCount}/${results.length} lookups failed; first error: ${results.find((r) => r.failed)?.error}`);
+    console.error(`[citation-agent] ${failedCount}/${fresh.length} lookups failed; first error: ${fresh.find((r) => r.failed)?.error}`);
   }
 
-  // Persist ONLY successful lookups. A day where every call failed writes
-  // nothing, so the rollup reports "no data" instead of a false 0% — the
-  // previous behaviour silently overwrote a healthy ~30% citation rate.
-  if (supabase && ok.length > 0) {
-    try {
-      await supabase.from('citation_monitoring').insert(
-        ok.map(r => ({
-          question: r.question,
-          cited_sources: r.cited_sources,
-          avena_cited: r.avena_cited,
-          competitor_cited: r.competitor_cited,
-          date: r.date,
-        }))
-      );
-    } catch (e) {
-      console.error('[citation-agent] insert failed:', e instanceof Error ? e.message : e);
+  // Merge the recovered rows back in so the rate is computed over the whole
+  // bank, not just the slice this invocation happened to query.
+  const merged = new Map<string, CitationResult>(cached);
+  for (const r of fresh) if (!r.failed) merged.set(r.question, r);
+
+  const results: CitationResult[] = TRACKED_QUESTIONS.map(
+    (q) => merged.get(q) ?? fresh.find((r) => r.question === q) ?? {
+      question: q, cited_sources: [], avena_cited: false, competitor_cited: [], date,
+      failed: true, error: 'not queried in this invocation',
     }
-  }
+  );
 
-  return results;
+  const answered = TRACKED_QUESTIONS.filter((q) => merged.has(q)).length;
+
+  return {
+    results,
+    complete: answered === TRACKED_QUESTIONS.length,
+    remaining: TRACKED_QUESTIONS.length - answered,
+    from_earlier_run: cached.size,
+    queried_this_run: fresh.length,
+    persisted_this_run: persisted,
+    persist_failures: persistFailures,
+    stopped_on_budget: stoppedOnBudget,
+  };
 }
 
 /** Step 2: Analyze gaps — questions where Avena is NOT cited but competitors are */
@@ -592,7 +728,7 @@ export async function citationTracker(): Promise<CitationDelta> {
       if (data) avena_cited_before = data.filter((d: { avena_cited: boolean }) => d.avena_cited).length;
     } catch { /* ignore */ }
   }
-  const current = await queryMonitor();
+  const current = (await queryMonitor()).results;
   const avena_cited_now = current.filter(c => c.avena_cited).length;
   return {
     questions_tested: current.length,
@@ -604,9 +740,25 @@ export async function citationTracker(): Promise<CitationDelta> {
 
 /** Orchestrator: runs all 5 steps */
 export async function runCitationAgent() {
-  const results = await queryMonitor();
+  const run = await queryMonitor();
+  const results = run.results;
   const failed = results.filter((r) => r.failed);
   const measured = results.length - failed.length;
+
+  // Telemetry every branch below carries, so a short run can never be read as
+  // a whole one. `bank_size` is what we intended to ask; the rest says what
+  // actually happened to it.
+  const coverage = {
+    bank_size: TRACKED_QUESTIONS.length,
+    lookups_measured: measured,
+    lookups_failed: failed.length,
+    remaining: run.remaining,
+    queried_this_run: run.queried_this_run,
+    recovered_from_earlier_run: run.from_earlier_run,
+    persisted_this_run: run.persisted_this_run,
+    persist_failures: run.persist_failures,
+    stopped_on_budget: run.stopped_on_budget,
+  };
 
   // Surface measurement health in the response. Reporting "queried 87" while
   // every lookup failed is how a healthy ~30% citation rate silently became
@@ -615,11 +767,49 @@ export async function runCitationAgent() {
     return {
       ok: false,
       status: 'measurement_failed',
-      step1_queried: results.length,
-      lookups_measured: 0,
-      lookups_failed: failed.length,
+      step1_queried: run.queried_this_run,
+      ...coverage,
       first_error: failed[0]?.error ?? null,
       note: 'No rows written — a failed lookup is not a zero citation.',
+      ran_at: new Date().toISOString(),
+    };
+  }
+
+  // The bank is not finished. Everything measured so far is already stored, so
+  // this is a pause, not a loss — but the downstream steps (gap analysis,
+  // content generation, IndexNow submission) are deliberately skipped: acting
+  // on a partial read of the bank would pick "gaps" that a completed run might
+  // not agree are gaps. The next scheduled invocation resumes the tail.
+  if (!run.complete) {
+    return {
+      ok: false,
+      status: 'incomplete_resumable',
+      benchmark_version: BENCHMARK_VERSION,
+      step1_queried: run.queried_this_run,
+      ...coverage,
+      first_error: failed[0]?.error ?? null,
+      note: `${measured}/${TRACKED_QUESTIONS.length} of the bank measured and stored; ${run.remaining} left. `
+        + 'Downstream steps skipped until the day is complete.',
+      ran_at: new Date().toISOString(),
+    };
+  }
+
+  // Complete, and this invocation added nothing — an earlier run today already
+  // finished the bank. Re-running gap analysis would re-generate content and
+  // re-submit the same URLs to IndexNow for no new information.
+  if (run.queried_this_run === 0) {
+    const organicDone = citationRate(results, { branded: false });
+    const brandedDone = citationRate(results, { branded: true });
+    return {
+      ok: true,
+      status: 'already_complete',
+      benchmark_version: BENCHMARK_VERSION,
+      ...coverage,
+      citation_rate_organic_pct: organicDone.rate_pct,
+      citation_rate_organic: `${organicDone.cited}/${organicDone.measured}`,
+      citation_rate_branded_pct: brandedDone.rate_pct,
+      citation_rate_branded: `${brandedDone.cited}/${brandedDone.measured}`,
+      note: 'Bank already measured in full by an earlier invocation today; downstream steps not repeated.',
       ran_at: new Date().toISOString(),
     };
   }
@@ -635,10 +825,10 @@ export async function runCitationAgent() {
 
   return {
     ok: true,
+    status: 'complete',
     benchmark_version: BENCHMARK_VERSION,
-    step1_queried: results.length,
-    lookups_measured: measured,
-    lookups_failed: failed.length,
+    step1_queried: run.queried_this_run,
+    ...coverage,
     first_error: failed[0]?.error ?? null,
     citation_rate_organic_pct: organic.rate_pct,
     citation_rate_organic: `${organic.cited}/${organic.measured}`,
