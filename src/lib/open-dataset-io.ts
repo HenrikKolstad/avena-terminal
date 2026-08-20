@@ -28,11 +28,19 @@ async function fetchAll<T>(
       .order(orderCol, { ascending: true })
       .range(page * PAGE, page * PAGE + PAGE - 1);
     if (error) throw new Error(`open-dataset: ${table} read failed: ${error.message}`);
-    if (!data?.length) break;
+    if (!data?.length) return out;
     out.push(...(data as T[]));
-    if (data.length < PAGE) break;
+    if (data.length < PAGE) return out;
   }
-  return out;
+  // Falling out of the loop means page MAX_PAGES-1 came back FULL, so there is
+  // more data the caller never saw. Reads are ordered ascending, so a silent
+  // truncation here would drop the NEWEST observation days and publish a corpus
+  // that quietly stopped growing — the worst failure available to this file.
+  // Raise the cap; never let this pass.
+  throw new Error(
+    `open-dataset: ${table} exceeded ${MAX_PAGES} pages (${MAX_PAGES * PAGE} rows) — ` +
+    `refusing to publish a truncated dataset. Raise MAX_PAGES.`,
+  );
 }
 
 export async function fetchSnapshots(db: SupabaseClient, sinceDate: string): Promise<SnapshotRow[]> {

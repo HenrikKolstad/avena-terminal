@@ -13,7 +13,8 @@
  *   towns        — cross-sectional aggregates of the live book (k>=5 per town)
  *   ledger       — per-day counts of what we observed: moves, delistings
  *   moves        — every individual price move we watched happen
- *   tombstones   — units that left the market, with their last observed price
+ *   tombstones   — units that left the market, with their last observed price,
+ *                  and the date they returned if they were listed again
  *
  * What is deliberately NOT here: listing descriptions, images, URLs, project
  * or developer names. We redistribute our own observations and derived
@@ -73,6 +74,8 @@ export interface LedgerDay {
   price_reductions: number;
   median_abs_move_pct: number | null;
   delistings: number;
+  /** Units observed listed again on this day after a delisting had been recorded. */
+  relistings: number;
 }
 
 export interface ObservedMove {
@@ -96,6 +99,10 @@ export interface Tombstone {
   last_price_eur: number | null;
   last_pm2_eur: number | null;
   last_seen_date: string | null;
+  /** First day the unit was observed listed again after its delisting, or null. */
+  relisted_on: string | null;
+  /** Whether the unit is present on the most recent observation day. */
+  still_listed: boolean;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
@@ -203,8 +210,46 @@ export function buildObservedMoves(snapshots: SnapshotRow[]): ObservedMove[] {
   return moves.sort((a, b) => a.date.localeCompare(b.date) || a.avn_id.localeCompare(b.avn_id));
 }
 
+/**
+ * Refs observed listed again AFTER their delisting was recorded, mapped to the
+ * first day they reappeared.
+ *
+ * A tombstone asserts that a specific unit left the market. Some come back.
+ * Publishing the tombstone while hiding the return would make the corpus state
+ * a falsehood about a named unit, which is the one thing that cannot be traded
+ * away here. The answer is disclosure, not deletion: the row stays, and carries
+ * the date it returned. A unit that delists and relists is real market
+ * intelligence no public source records.
+ *
+ * Strictly-after is deliberate, and correct under BOTH the accurate and the
+ * one-day-late `last_seen_date` stamping (see O-21): on the accurate stamping
+ * a snapshot dated last_seen_date contains the ref by definition and must be
+ * excluded; on the late stamping that date is a day the unit was already
+ * absent, so no snapshot for it holds the ref and nothing is lost.
+ */
+export function findRelistings(snapshots: SnapshotRow[], sold: SoldRow[]): Map<string, string> {
+  const lastSeen = new Map<string, string>();
+  for (const s of sold) {
+    if (s.last_seen_date) lastSeen.set(s.ref, s.last_seen_date);
+  }
+  const relisted = new Map<string, string>();
+  if (!lastSeen.size) return relisted;
+  for (const s of snapshots) {
+    const seen = lastSeen.get(s.ref);
+    if (seen === undefined || s.snapshot_date <= seen) continue;
+    const first = relisted.get(s.ref);
+    if (first === undefined || s.snapshot_date < first) relisted.set(s.ref, s.snapshot_date);
+  }
+  return relisted;
+}
+
 /** Per-day observation ledger. Days come from the snapshot set itself. */
-export function buildLedger(snapshots: SnapshotRow[], moves: ObservedMove[], sold: SoldRow[]): LedgerDay[] {
+export function buildLedger(
+  snapshots: SnapshotRow[],
+  moves: ObservedMove[],
+  sold: SoldRow[],
+  relisted: Map<string, string>,
+): LedgerDay[] {
   const perDay = new Map<string, number>();
   for (const s of snapshots) perDay.set(s.snapshot_date, (perDay.get(s.snapshot_date) ?? 0) + 1);
   if (!perDay.size) {
@@ -220,6 +265,10 @@ export function buildLedger(snapshots: SnapshotRow[], moves: ObservedMove[], sol
     if (!s.last_seen_date) continue;
     soldByDay.set(s.last_seen_date, (soldByDay.get(s.last_seen_date) ?? 0) + 1);
   }
+  const relistedByDay = new Map<string, number>();
+  for (const date of relisted.values()) {
+    relistedByDay.set(date, (relistedByDay.get(date) ?? 0) + 1);
+  }
   return [...perDay.entries()]
     .map(([date, n]) => {
       const dayMoves = movesByDay.get(date) ?? [];
@@ -231,12 +280,42 @@ export function buildLedger(snapshots: SnapshotRow[], moves: ObservedMove[], sol
         price_reductions: dayMoves.filter((m) => m.change_pct < 0).length,
         median_abs_move_pct: absPcts.length ? Number(median(absPcts).toFixed(2)) : null,
         delistings: soldByDay.get(date) ?? 0,
+        relistings: relistedByDay.get(date) ?? 0,
       };
     })
     .sort((a, b) => a.date.localeCompare(b.date));
 }
 
-export function buildTombstones(sold: SoldRow[]): Tombstone[] {
+/**
+ * Refs present on the most recent observation day — the live book as the
+ * ledger itself saw it, not as data.json happens to be built.
+ */
+export function latestObservedRefs(snapshots: SnapshotRow[]): Set<string> {
+  let latest = '';
+  for (const s of snapshots) if (s.snapshot_date > latest) latest = s.snapshot_date;
+  const refs = new Set<string>();
+  if (!latest) return refs;
+  for (const s of snapshots) if (s.snapshot_date === latest) refs.add(s.ref);
+  return refs;
+}
+
+/**
+ * A tombstone has three possible states, and collapsing them would mislead in
+ * one direction or the other:
+ *   relisted_on null,  still_listed false — never seen again; clean absorption
+ *   relisted_on set,   still_listed true  — the unit is back and ON the market
+ *   relisted_on set,   still_listed false — it returned, then left again; the
+ *                                           delisting stands, last_seen_date is
+ *                                           merely earlier than the true one
+ * Publishing both fields lets a reader tell them apart. Netting "ever relisted"
+ * out of the absorption figure would have understated absorption for the third
+ * state, which is as wrong as overstating it for the second.
+ */
+export function buildTombstones(
+  sold: SoldRow[],
+  relisted: Map<string, string>,
+  liveRefs: Set<string>,
+): Tombstone[] {
   return sold
     .map((s) => ({
       avn_id: s.ref,
@@ -248,6 +327,8 @@ export function buildTombstones(sold: SoldRow[]): Tombstone[] {
       last_price_eur: s.last_price != null ? Math.round(s.last_price) : null,
       last_pm2_eur: s.last_pm2 != null ? Math.round(s.last_pm2) : null,
       last_seen_date: s.last_seen_date,
+      relisted_on: relisted.get(s.ref) ?? null,
+      still_listed: liveRefs.has(s.ref),
     }))
     .sort((a, b) => (a.last_seen_date ?? '').localeCompare(b.last_seen_date ?? '') || a.avn_id.localeCompare(b.avn_id));
 }
@@ -270,6 +351,12 @@ export interface DatasetManifest {
     refs_observed: number;
     moves_recorded: number;
     delistings_recorded: number;
+    /** Delisted units observed listed again at any point. They keep their tombstone row. */
+    relistings_recorded: number;
+    /** Tombstoned units that are back on the market as of the latest observation day. */
+    delistings_still_listed: number;
+    /** Tombstoned units absent from the latest observation day — the absorption figure. */
+    delistings_currently_absent: number;
   };
   cross_section: {
     live_listings: number;
@@ -291,10 +378,15 @@ export function buildManifest(args: {
 }): DatasetManifest {
   const { props, towns, ledger, moves, tombstones, snapshots, generatedAt } = args;
   const dates = ledger.map((d) => d.date);
+  const relistings = tombstones.filter((t) => t.relisted_on !== null).length;
+  const stillListed = tombstones.filter((t) => t.still_listed).length;
   return {
     name: 'Avena Spanish Coastal New-Build Market Observations',
     version: `v${generatedAt.slice(0, 10)}`,
-    schema_version: 1,
+    // 2 (2026-08-20): tombstones.csv gained relisted_on, movement-ledger.csv
+    // gained relistings, and the manifest separates delistings that stuck from
+    // those that came back.
+    schema_version: 2,
     generated_at: generatedAt,
     license: 'CC-BY-4.0',
     attribution: 'Avena Terminal (avenaterminal.com)',
@@ -307,6 +399,9 @@ export function buildManifest(args: {
       refs_observed: new Set(snapshots.map((s) => s.ref)).size,
       moves_recorded: moves.length,
       delistings_recorded: tombstones.length,
+      relistings_recorded: relistings,
+      delistings_still_listed: stillListed,
+      delistings_currently_absent: tombstones.length - stillListed,
     },
     cross_section: {
       live_listings: props.length,
@@ -315,14 +410,17 @@ export function buildManifest(args: {
     },
     files: {
       'towns.csv': 'Per-town aggregates of the live book (k>=5): median price, price/m2 quartiles, size, villa share, beach distance',
-      'movement-ledger.csv': 'Per observed day: listings observed, price increases/reductions, median move size, delistings',
+      'movement-ledger.csv': 'Per observed day: listings observed, price increases/reductions, median move size, delistings, relistings',
       'moves.csv': 'Every individual price move observed (consecutive observations of the same unit)',
-      'tombstones.csv': 'Units that left the market: last observed price and date',
+      'tombstones.csv': 'Units observed leaving the market: last observed price and date, plus relisted_on and still_listed where the unit was later observed listed again',
     },
     honesty: [
       'Prices are ASKING prices observed in listings. Spanish transaction prices are not public at unit level; nothing here is a registered sale price.',
       `The observation ledger begins ${dates[0]}. Earlier internal tables exist but repeated a frozen snapshot rather than recording observations, and are excluded on principle.`,
       'A delisting means the unit left the observed feed — strong evidence of absorption, not a notarised sale.',
+      relistings === 0
+        ? 'No delisted unit has been observed listed again. Any that is keeps its tombstone row and gains a relisted_on date rather than being deleted.'
+        : `${relistings} of the ${tombstones.length} delisted units were later observed listed again (relisted_on). Of those, ${stillListed} are on the market as of the latest observation day (still_listed=true) and are NOT evidence of absorption; the rest returned and left again. ${tombstones.length - stillListed} of the ${tombstones.length} tombstoned units are absent today. Tombstones are never deleted — a withdrawal followed by a return is itself an observation, and one no public source records.`,
       'Cross-sectional aggregates cover only towns with at least 5 live listings.',
       'No listing descriptions, images, URLs, or project/developer names are redistributed — only numeric observations and derived statistics.',
       'AVM accuracy, measured nightly against the whole book, is published at https://avenaterminal.com/model-stats.json (in-sample, caveats included).',
@@ -346,8 +444,9 @@ export function buildOpenDataset(
   if (!props.length) throw new Error('open-dataset: live book is empty — refusing to generate');
   const towns = buildTownAggregates(props);
   const moves = buildObservedMoves(snapshots);
-  const ledger = buildLedger(snapshots, moves, sold);
-  const tombstones = buildTombstones(sold);
+  const relisted = findRelistings(snapshots, sold);
+  const ledger = buildLedger(snapshots, moves, sold, relisted);
+  const tombstones = buildTombstones(sold, relisted, latestObservedRefs(snapshots));
   const manifest = buildManifest({ props, towns, ledger, moves, tombstones, snapshots, generatedAt });
 
   return {
@@ -360,7 +459,7 @@ export function buildOpenDataset(
       ]),
       'towns.json': JSON.stringify(towns, null, 2) + '\n',
       'movement-ledger.csv': toCsv(ledger as unknown as Record<string, unknown>[], [
-        'date', 'listings_observed', 'price_increases', 'price_reductions', 'median_abs_move_pct', 'delistings',
+        'date', 'listings_observed', 'price_increases', 'price_reductions', 'median_abs_move_pct', 'delistings', 'relistings',
       ]),
       'movement-ledger.json': JSON.stringify(ledger, null, 2) + '\n',
       'moves.csv': toCsv(moves as unknown as Record<string, unknown>[], [
@@ -368,7 +467,7 @@ export function buildOpenDataset(
       ]),
       'moves.json': JSON.stringify(moves, null, 2) + '\n',
       'tombstones.csv': toCsv(tombstones as unknown as Record<string, unknown>[], [
-        'avn_id', 'town', 'region', 'type', 'beds', 'built_m2', 'last_price_eur', 'last_pm2_eur', 'last_seen_date',
+        'avn_id', 'town', 'region', 'type', 'beds', 'built_m2', 'last_price_eur', 'last_pm2_eur', 'last_seen_date', 'relisted_on', 'still_listed',
       ]),
       'tombstones.json': JSON.stringify(tombstones, null, 2) + '\n',
     },
