@@ -118,8 +118,15 @@ check('ledger counts D\'s relisting on its own day',
   ledger.find((d) => d.date === '2026-08-06')?.relistings === 1);
 check('ledger reports 0 relistings on days with none',
   ledger.find((d) => d.date === '2026-08-05')?.relistings === 0);
-check('the delisting still counts on the day it happened',
-  ledger.find((d) => d.date === '2026-08-05')?.delistings === 2);
+// A delisting is attributed to the first observation day on which the unit was
+// actually MISSING, not to the last day it was seen (that day still counted it
+// in listings_observed). A and D were last seen 08-05, so both land on 08-06;
+// B was last seen 08-06 and lands on 08-07.
+check('no delisting is charged to a day the unit was still present',
+  ledger.find((d) => d.date === '2026-08-05')?.delistings === 0);
+check('delistings land on the first day the units were observed missing',
+  ledger.find((d) => d.date === '2026-08-06')?.delistings === 2
+  && ledger.find((d) => d.date === '2026-08-07')?.delistings === 1);
 
 const manifest = buildManifest({
   props: [{ id: 'x' } as unknown as Property],
