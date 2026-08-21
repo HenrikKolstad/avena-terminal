@@ -193,16 +193,61 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: npx tsx scripts/generate-change-answers.ts
 
+      - name: Snapshot scores against the book we just published
+        # score_history is written only by the scribe route, which — like
+        # pricing-history — reads the DEPLOYED data.json. Its 02:00 UTC
+        # schedule was correct when the feed landed at 01:37; the feed moved to
+        # 02:47 and scribe did not follow, so for months it captured yesterday's
+        # book and stamped it with today's date. Measured 2026-08-21: 100% of
+        # rows on all 8 days checked held the previous day's price.
+        #
+        # The route now dates rows from feed-meta.json, so a late deploy is
+        # merely late rather than wrong. Triggering it here removes the guess
+        # entirely: assert it captured the same book this run just pushed.
+        id: scores
+        continue-on-error: true
+        run: |
+          EXPECTED=$(node -e "console.log(require('./public/feed-meta.json').generated_date)")
+          for i in $(seq 1 20); do
+            BODY=$(curl -sS -m 60 -H 'x-vercel-cron: 1' \
+              https://avenaterminal.com/api/cron/scribe || echo '{}')
+            GOT=$(node -e "try{console.log(JSON.parse(process.argv[1]).date||'')}catch{console.log('')}" "$BODY")
+            if [ "$GOT" = "$EXPECTED" ]; then
+              node -e '
+                const r = JSON.parse(process.argv[1]);
+                if (r.date_source !== "feed-meta") {
+                  console.error("Scribe dated the capture from", r.date_source, "— feed-meta.json is missing from the deploy.");
+                  process.exit(1);
+                }
+                if (r.rows_failed > 0) {
+                  console.error("Scribe had rows rejected:", JSON.stringify(r.errors));
+                  process.exit(1);
+                }
+                if (!r.rows_sent) {
+                  console.error("Scribe found 0 scoreable properties in the book — that is a dead feed, not a quiet day.");
+                  process.exit(1);
+                }
+                console.log(`OK — date=${r.date} sent=${r.rows_sent} accepted=${r.rows_accepted} pre_existing=${r.rows_pre_existing}`);
+              ' "$BODY"
+              exit $?
+            fi
+            echo "  attempt $i: scribe is serving '${GOT:-unknown}', want '${EXPECTED}' — waiting 30s"
+            sleep 30
+          done
+          echo "Scribe never captured the ${EXPECTED} book within 10 minutes."
+          exit 1
+
       - name: Re-raise enrichment failures
         # The feed is committed by now, so failing here loses nothing but
         # still shows Henrik a red run. A silently-green enrichment failure
         # is the bug shape this whole repo keeps getting bitten by.
-        if: steps.avm.outcome != 'success' || steps.corpus.outcome != 'success' || steps.gsc.outcome != 'success' || steps.capture.outcome != 'success' || steps.answers.outcome != 'success'
+        if: steps.avm.outcome != 'success' || steps.corpus.outcome != 'success' || steps.gsc.outcome != 'success' || steps.capture.outcome != 'success' || steps.answers.outcome != 'success' || steps.scores.outcome != 'success'
         run: |
           echo "avm-backtest: ${{ steps.avm.outcome }}"
           echo "open-dataset: ${{ steps.corpus.outcome }}"
           echo "gsc-snapshot: ${{ steps.gsc.outcome }}"
           echo "move-capture: ${{ steps.capture.outcome }}"
           echo "change-answers: ${{ steps.answers.outcome }}"
+          echo "score-capture: ${{ steps.scores.outcome }}"
           echo "The feed itself was committed; the step(s) above still need fixing."
           exit 1

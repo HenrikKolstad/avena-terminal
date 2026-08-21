@@ -20,10 +20,15 @@
  * present) — so the first run merely seeds today's snapshot, and a broken or
  * partial feed can never mass-flag phantom sales. All writes are idempotent.
  *
- * score_history (scribe) and the RedSP feed are deliberately untouched.
+ * The RedSP feed is deliberately untouched. score_history (scribe) was listed
+ * here as untouched too — and that scoping note is how scribe kept the exact
+ * bug this route was fixed for: it dated rows by wall-clock while reading a
+ * deployed book that was usually a day old. Fixed 2026-08-21; scribe now dates
+ * from feed-meta.json, same as the guard below.
  *
- * Schedule: once daily via vercel.json, after the feed refresh (01:37 UTC) and
- * scribe (02:00 UTC).
+ * Schedule: once daily via vercel.json (02:20 UTC), plus an explicit trigger
+ * from the feed workflow once the new book is confirmed deployed — the
+ * schedule alone is only a guess at when the nightly lands.
  */
 
 import { isAuthorizedCron } from '@/lib/cron-auth';
