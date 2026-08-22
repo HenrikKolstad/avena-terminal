@@ -14,6 +14,7 @@
  * Path: data/training-pairs-YYYY-MM-DD.jsonl
  */
 import { isAuthorizedCron } from '@/lib/cron-auth';
+import { withCronLog } from '@/lib/cron-log';
 import { NextRequest } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
@@ -76,10 +77,11 @@ async function uploadToHuggingFace(
   }
 }
 
-export async function GET(req: NextRequest) {
-  if (process.env.CRON_SECRET && !isAuthorizedCron(req)) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+/** Exactly the predicate this route already used: open when no secret is
+ *  configured, `isAuthorizedCron` when one is. Copied, not changed. */
+const pushAuth = (req: NextRequest) => !process.env.CRON_SECRET || isAuthorizedCron(req);
+
+export const GET = withCronLog('push-training-data', '/api/cron/push-training-data', pushAuth, async () => {
   if (!supabase) return Response.json({ error: 'No Supabase' }, { status: 503 });
 
   try {
@@ -162,4 +164,4 @@ export async function GET(req: NextRequest) {
     const message = err instanceof Error ? err.message : 'Push training data cron failed';
     return Response.json({ error: message }, { status: 500 });
   }
-}
+});

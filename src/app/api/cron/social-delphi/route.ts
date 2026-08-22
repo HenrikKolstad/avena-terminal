@@ -10,8 +10,9 @@
  * Runs 06:45 UTC, after the 06:00 DELPHI panel.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { isAuthorizedCron } from '@/lib/cron-auth';
+import { withCronLog } from '@/lib/cron-log';
 import { indexHistory, latestPanel } from '@/lib/delphi';
 import { DELPHI_QUESTIONS } from '@/lib/delphi-questions';
 
@@ -68,14 +69,10 @@ async function postToBluesky(text: string, linkUrl: string): Promise<{ ok: boole
   return { ok: true, detail: out.uri ?? 'posted' };
 }
 
-export async function GET(req: NextRequest) {
-  if (!isAuthorizedCron(req)) {
-    return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
-  }
-
+export const GET = withCronLog('social-delphi', '/api/cron/social-delphi', isAuthorizedCron, async () => {
   const [history, panel] = await Promise.all([indexHistory(2), latestPanel()]);
   const today = history[0];
-  if (!today) return NextResponse.json({ ok: false, error: 'no DELPHI data yet' }, { status: 200 });
+  if (!today) return NextResponse.json({ ok: false, skipped: true, reason: 'no DELPHI data yet' }, { status: 200 });
 
   const prev = history[1];
   const delta = prev ? Number(today.consensus_index) - Number(prev.consensus_index) : null;
@@ -98,5 +95,16 @@ export async function GET(req: NextRequest) {
 
   const bluesky = await postToBluesky(text, url);
 
+  // A post that did not happen was previously reported as ok:true. Dormant
+  // (no credentials configured) is a skip; a rejected post is a failure.
+  if (!bluesky.ok) {
+    const dormant = bluesky.detail.startsWith('skipped:');
+    return NextResponse.json(
+      { ok: false, skipped: dormant, run_date: today.run_date, bluesky, chars: text.length,
+        ...(dormant ? {} : { error: `bluesky post failed: ${bluesky.detail}` }) },
+      { status: dormant ? 200 : 502 },
+    );
+  }
+
   return NextResponse.json({ ok: true, run_date: today.run_date, bluesky, chars: text.length });
-}
+});

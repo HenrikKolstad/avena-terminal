@@ -1,14 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { xCronKeyAuth, withCronLog } from '@/lib/cron-log';
+import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { getAllProperties } from '@/lib/properties';
 
 export const maxDuration = 60;
 
-export async function GET(req: NextRequest) {
-  const key = req.headers.get('x-cron-key');
-  if (key !== process.env.CRON_SECRET) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+export const GET = withCronLog('detect-events', '/api/detect-events', xCronKeyAuth, async () => {
 
   if (!supabase) return NextResponse.json({ error: 'No database' }, { status: 500 });
 
@@ -161,4 +158,4 @@ export async function GET(req: NextRequest) {
     snapshotAttempted: snapshotUpserts.length,
     snapshotError,
   });
-}
+});

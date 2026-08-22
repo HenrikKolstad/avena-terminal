@@ -6,21 +6,18 @@
  */
 
 import { isAuthorizedCron } from '@/lib/cron-auth';
-import { NextRequest } from 'next/server';
+import { withCronLog } from '@/lib/cron-log';
 import { ingestAllRegulatoryFeeds } from '@/lib/regulatory-intent';
 
 export const maxDuration = 300;
 
-export async function GET(req: NextRequest) {
-  if (!isAuthorizedCron(req)) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+export const GET = withCronLog('sync-regulatory-signals', '/api/cron/sync-regulatory-signals', isAuthorizedCron, async () => {
   const result = await ingestAllRegulatoryFeeds();
   return Response.json({
     agent: 'Regulatory Radar',
     ran_at: new Date().toISOString(),
     ...result,
   });
-}
+});
 
 export const POST = GET;

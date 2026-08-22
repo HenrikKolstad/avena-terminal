@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { bearerCronAuth, withCronLog } from '@/lib/cron-log';
 import Anthropic from '@anthropic-ai/sdk';
 import { detectAnomalies } from '@/lib/anomaly';
 import { supabase } from '@/lib/supabase';
@@ -8,11 +8,7 @@ export const maxDuration = 60;
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+export const GET = withCronLog('generate-briefs', '/api/generate-briefs', bearerCronAuth, async () => {
 
   if (!supabase) return Response.json({ error: 'No Supabase' }, { status: 503 });
 
@@ -114,4 +110,4 @@ End with: "— Avena Terminal Intelligence Agent"`;
     briefs_generated: briefsGenerated,
     date,
   });
-}
+});

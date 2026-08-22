@@ -6,15 +6,12 @@
  */
 
 import { isAuthorizedCron } from '@/lib/cron-auth';
-import { NextRequest } from 'next/server';
+import { withCronLog } from '@/lib/cron-log';
 import { runBenchmark } from '@/lib/plab';
 
 export const maxDuration = 300;
 
-export async function GET(req: NextRequest) {
-  if (!isAuthorizedCron(req)) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+export const GET = withCronLog('plab-run', '/api/cron/plab-run', isAuthorizedCron, async () => {
   const result = await runBenchmark();
   return Response.json({
     agent: 'PLAB Runner',
@@ -25,6 +22,6 @@ export async function GET(req: NextRequest) {
     },
     ...result,
   });
-}
+});
 
 export const POST = GET;

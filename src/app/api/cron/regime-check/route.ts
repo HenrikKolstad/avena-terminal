@@ -1,5 +1,5 @@
 import { isAuthorizedCron } from '@/lib/cron-auth';
-import { NextRequest } from 'next/server';
+import { withCronLog } from '@/lib/cron-log';
 import { supabase } from '@/lib/supabase';
 import { recordEvent } from '@/lib/event-store';
 
@@ -10,10 +10,7 @@ export const maxDuration = 60;
  * Daily cron at 6am. Calls regime detection, stores to regime_history,
  * creates alpha signal if regime changed.
  */
-export async function GET(req: NextRequest) {
-  if (!isAuthorizedCron(req)) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+export const GET = withCronLog('regime-check', '/api/cron/regime-check', isAuthorizedCron, async () => {
   if (!supabase) {
     return Response.json({ error: 'No Supabase' }, { status: 503 });
   }
@@ -90,15 +87,24 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    // The row this job exists to write. Failing to write it is a failed
+    // run, not a successful one carrying a false flag.
+    if (insertError) {
+      return Response.json(
+        { error: `regime_history insert failed: ${insertError.message}`, regime: regime.regime, stored: false },
+        { status: 500 },
+      );
+    }
+
     return Response.json({
       regime: regime.regime,
       regime_score: regime.regime_score,
       previous_regime: previousRegime,
       regime_changed: regimeChanged,
-      stored: !insertError,
+      stored: true,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Regime check cron failed';
     return Response.json({ error: message }, { status: 500 });
   }
-}
+});

@@ -10,8 +10,9 @@
  * avena-data) is set in Vercel. Runs 07:15 UTC after PLAB + DELPHI.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { isAuthorizedCron } from '@/lib/cron-auth';
+import { withCronLog } from '@/lib/cron-log';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { getAllProperties } from '@/lib/properties';
 import { buildOpenDataset } from '@/lib/open-dataset';
@@ -63,12 +64,12 @@ async function appendCsv(token: string, path: string, header: string, lines: str
   return putFile(token, path, existing + fresh.join('\n') + '\n', `data: ${path} append`);
 }
 
-export async function GET(req: NextRequest) {
-  if (!isAuthorizedCron(req)) {
-    return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
-  }
+export const GET = withCronLog('github-snapshot', '/api/cron/github-snapshot', isAuthorizedCron, async () => {
   const token = process.env.GITHUB_DATA_TOKEN;
-  if (!token) return NextResponse.json({ ok: false, detail: 'skipped: GITHUB_DATA_TOKEN not set' });
+  // Dormant, not broken — logged as a skip so a missing credential never
+  // reads as a healthy push. This is also what finally separates "this cron
+  // is dead" from "this cron runs and declines to do anything" (O-46).
+  if (!token) return NextResponse.json({ ok: false, skipped: true, detail: 'skipped: GITHUB_DATA_TOKEN not set' });
 
   const date = new Date().toISOString().slice(0, 10);
 
@@ -141,4 +142,4 @@ export async function GET(req: NextRequest) {
     { ok: failed.length === 0 && !('error' in market), date, results, market },
     { status: failed.length === 0 ? 200 : 500 },
   );
-}
+});

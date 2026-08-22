@@ -14,6 +14,7 @@
  *   }
  */
 
+import type { NextRequest } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
 export interface CronLogHandle {
@@ -130,4 +131,180 @@ export async function loadAgentCounts(): Promise<{
   } catch {
     return { per_agent: {}, total: 0 };
   }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// withCronLog — the wrapper that makes a scheduled route observable.
+//
+// WHY THIS EXISTS
+// 24 of 64 scheduled crons wrote nothing to `cron_logs`. For those routes
+// "no rows" was evidence of nothing, so seven of them had been dead for up
+// to four months without a single signal: /api/detect-events last wrote on
+// 2026-04-11, generate-briefs / weekly-alpha / digest on 2026-06-15, and
+// predictions/generate and push-training-data have never written a row at
+// all. Nothing surfaced any of it, because a job that cannot report is
+// indistinguishable from a job with nothing to report.
+//
+// Hand-writing the same try/finally in 24 files is how transcription bugs
+// get in. One wrapper, tested once, applied as a one-line change per route.
+//
+// THREE DECISIONS WORTH KNOWING
+//
+// 1. A REJECTED PLATFORM RUN IS A FAILED RUN, NOT SILENCE.
+//    Only Vercel's scheduler sets `x-vercel-cron: 1`. If that header is
+//    present and the route's own auth check still rejects the request, the
+//    job was invoked and did not run — that is logged as an error. This is
+//    exactly the state /api/detect-events has been in since April: it wants
+//    an `x-cron-key` header the scheduler does not send, so it answers 401
+//    to its own scheduler every night. An unauthenticated request WITHOUT
+//    that header is ordinary internet noise and is not logged, so a public
+//    endpoint cannot be used to fill the table.
+//
+// 2. THE 'started' ROW IS WRITTEN BEFORE THE HANDLER.
+//    A route that exceeds maxDuration never returns, so the only trace it
+//    can leave is a `started` row with a NULL `finished_at`. That is the
+//    signal that caught the citation agent's timeout; it is worth the extra
+//    round trip.
+//
+// 3. AUTH BEHAVIOUR IS COPIED, NEVER CHANGED.
+//    Each route keeps the exact predicate it had. Fixing detect-events'
+//    header mismatch would revive a cron that has been dead four months —
+//    a behaviour change that does not belong in a logging commit. It is
+//    logged loudly instead, and fixed on its own merits.
+
+export type CronAuth = (req: NextRequest) => boolean;
+export type CronHandler = (req: NextRequest) => Promise<Response>;
+
+/** `Authorization: Bearer $CRON_SECRET` — the header Vercel attaches to
+ *  scheduled invocations when CRON_SECRET is configured. */
+export function bearerCronAuth(req: NextRequest): boolean {
+  return req.headers.get('authorization') === `Bearer ${process.env.CRON_SECRET}`;
+}
+
+/** `x-cron-key: $CRON_SECRET` — a header the Vercel scheduler does NOT send.
+ *  Preserved verbatim for the routes that already use it so that wiring up
+ *  logging changes nothing about what runs. See decision 3 above. */
+export function xCronKeyAuth(req: NextRequest): boolean {
+  return req.headers.get('x-cron-key') === process.env.CRON_SECRET;
+}
+
+const MAX_STRING = 500;
+const MAX_ARRAY = 40;
+const MAX_KEYS = 60;
+
+/**
+ * Bound a response body so one chatty route cannot bloat `cron_logs`.
+ * Truncation is always marked in the stored value — a silently shortened
+ * summary would be the same class of lie this module exists to remove.
+ */
+export function boundSummary(value: unknown, depth = 0): unknown {
+  if (value == null) return value ?? null;
+  if (typeof value === 'string') {
+    return value.length > MAX_STRING ? `${value.slice(0, MAX_STRING)}…[+${value.length - MAX_STRING} chars]` : value;
+  }
+  if (typeof value === 'number' || typeof value === 'boolean') return value;
+  if (depth >= 4) return '[depth limit]';
+
+  if (Array.isArray(value)) {
+    const head = value.slice(0, MAX_ARRAY).map((v) => boundSummary(v, depth + 1));
+    return value.length > MAX_ARRAY ? [...head, `…[+${value.length - MAX_ARRAY} more]`] : head;
+  }
+  if (typeof value === 'object') {
+    const entries = Object.entries(value as Record<string, unknown>);
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of entries.slice(0, MAX_KEYS)) out[k] = boundSummary(v, depth + 1);
+    if (entries.length > MAX_KEYS) out['_truncated_keys'] = entries.length - MAX_KEYS;
+    return out;
+  }
+  return String(value);
+}
+
+/**
+ * Derive an honest run status from what the handler actually returned.
+ *
+ * A non-2xx response is an error — no exceptions, and in particular no
+ * "it was already broken" allowance. A 2xx response is a success UNLESS the
+ * body says otherwise via an explicit `skipped` marker, which several routes
+ * need in order to distinguish "deliberately dormant because a credential is
+ * not configured" from "failed". Nothing is inferred from a body beyond
+ * those two documented markers.
+ */
+export function deriveCronStatus(
+  res: Response,
+  body: unknown,
+): { status: 'success' | 'error' | 'skipped'; error: unknown } {
+  const b = (body && typeof body === 'object' ? body : {}) as Record<string, unknown>;
+  if (b.skipped === true || b.status === 'skipped') {
+    return { status: 'skipped', error: null };
+  }
+  if (!res.ok) {
+    return { status: 'error', error: b.error ?? b.message ?? `HTTP ${res.status}` };
+  }
+  return { status: 'success', error: null };
+}
+
+/**
+ * Wrap a scheduled route handler so every invocation leaves a real row.
+ *
+ * `cronPath` MUST be the path exactly as it appears in vercel.json —
+ * scripts/test-cron-coverage.ts asserts that, because a drifted path makes
+ * a job invisible to every query that looks for it by name, which is the
+ * failure this whole module is here to prevent.
+ */
+export function withCronLog(
+  agentId: string,
+  cronPath: string,
+  auth: CronAuth,
+  handler: CronHandler,
+): CronHandler {
+  return async function wrapped(req: NextRequest): Promise<Response> {
+    const platformRun = req.headers.get('x-vercel-cron') === '1';
+
+    if (!auth(req)) {
+      if (platformRun) {
+        // The scheduler called and was turned away. That is a failed run and
+        // must be as loud as any other failure.
+        const log = await startCronLog(agentId, cronPath);
+        await finishCronLog(
+          log,
+          'error',
+          { reason: 'auth_rejected_platform_run', cron_path: cronPath },
+          'the Vercel scheduler invoked this route and its own auth check rejected the call — the job did not run',
+        );
+      }
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const log = await startCronLog(agentId, cronPath);
+    let res: Response;
+    try {
+      res = await handler(req);
+    } catch (err) {
+      await finishCronLog(log, 'error', { threw: true, cron_path: cronPath }, err);
+      throw err; // behaviour preserved: Next still renders its 500
+    }
+
+    // Read the body from a clone so the response returned to the caller is
+    // untouched. A body that is not JSON is recorded as such rather than
+    // quietly becoming an empty summary.
+    let body: unknown = null;
+    let parsed = false;
+    try {
+      body = await res.clone().json();
+      parsed = true;
+    } catch {
+      parsed = false;
+    }
+
+    const { status, error } = parsed
+      ? deriveCronStatus(res, body)
+      : { status: res.ok ? ('success' as const) : ('error' as const), error: `HTTP ${res.status}` };
+
+    const summary = parsed
+      ? boundSummary(body)
+      : { non_json_body: true, http_status: res.status };
+
+    await finishCronLog(log, status, summary, error);
+    return res;
+  };
 }

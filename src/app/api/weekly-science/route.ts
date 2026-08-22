@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { bearerCronAuth, withCronLog } from '@/lib/cron-log';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, avg, slugify } from '@/lib/properties';
 import { supabase } from '@/lib/supabase';
 
@@ -18,11 +18,7 @@ function pearsonCorrelation(x: number[], y: number[]): number {
   return dx && dy ? Number((num / Math.sqrt(dx * dy)).toFixed(3)) : 0;
 }
 
-export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+export const GET = withCronLog('weekly-science', '/api/weekly-science', bearerCronAuth, async () => {
 
   if (!supabase) return Response.json({ error: 'No Supabase' }, { status: 503 });
 
@@ -129,4 +125,4 @@ export async function GET(req: NextRequest) {
     correlations_computed: findings.length,
     findings,
   });
-}
+});

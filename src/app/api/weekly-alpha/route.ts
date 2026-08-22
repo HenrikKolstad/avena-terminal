@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { bearerCronAuth, withCronLog } from '@/lib/cron-log';
 import Anthropic from '@anthropic-ai/sdk';
 import { detectAnomalies } from '@/lib/anomaly';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, avg } from '@/lib/properties';
@@ -9,11 +9,7 @@ export const maxDuration = 60;
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+export const GET = withCronLog('weekly-alpha', '/api/weekly-alpha', bearerCronAuth, async () => {
 
   try {
     const signals = detectAnomalies();
@@ -102,4 +98,4 @@ End with: "— Avena Terminal Intelligence Agent"`;
     console.error('Weekly alpha error:', err);
     return Response.json({ error: 'Report generation failed' }, { status: 500 });
   }
-}
+});

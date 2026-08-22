@@ -6,17 +6,14 @@
  */
 
 import { isAuthorizedCron } from '@/lib/cron-auth';
-import { NextRequest } from 'next/server';
+import { withCronLog } from '@/lib/cron-log';
 import { runDelphi } from '@/lib/delphi';
 
 export const maxDuration = 300;
 
-export async function GET(req: NextRequest) {
-  if (!isAuthorizedCron(req)) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+export const GET = withCronLog('delphi-run', '/api/cron/delphi-run', isAuthorizedCron, async () => {
   const result = await runDelphi();
   return Response.json({ agent: 'DELPHI Panel', ran_at: new Date().toISOString(), ...result });
-}
+});
 
 export const POST = GET;

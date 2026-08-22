@@ -1,16 +1,11 @@
-import { NextRequest } from 'next/server';
+import { bearerCronAuth, withCronLog } from '@/lib/cron-log';
 import { detectAnomalies } from '@/lib/anomaly';
 import { supabase } from '@/lib/supabase';
 import { pingIndexNow } from '@/lib/indexnow';
 
 export const maxDuration = 60;
 
-export async function GET(req: NextRequest) {
-  // Verify cron secret
-  const authHeader = req.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+export const GET = withCronLog('detect-anomalies', '/api/detect-anomalies', bearerCronAuth, async () => {
 
   try {
     const signals = detectAnomalies();
@@ -44,8 +39,14 @@ export async function GET(req: NextRequest) {
       .from('alpha_signals')
       .upsert(records, { onConflict: 'signal_id' });
 
+    // Storing the signals is the job. A rejected upsert is a failed run, not
+    // a success:true carrying a silently wrong `stored` count.
     if (error) {
       console.error('Failed to store signals:', error);
+      return Response.json(
+        { error: `alpha_signals upsert failed: ${error.message}`, total_signals: signals.length, stored: 0 },
+        { status: 500 },
+      );
     }
 
     // Check for subscriber alerts
@@ -103,4 +104,4 @@ export async function GET(req: NextRequest) {
     console.error('Anomaly detection error:', err);
     return Response.json({ error: 'Detection failed' }, { status: 500 });
   }
-}
+});

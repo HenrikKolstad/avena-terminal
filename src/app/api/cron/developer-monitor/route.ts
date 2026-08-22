@@ -1,5 +1,5 @@
 import { isAuthorizedCron } from '@/lib/cron-auth';
-import { NextRequest } from 'next/server';
+import { withCronLog } from '@/lib/cron-log';
 import { supabase } from '@/lib/supabase';
 
 export const maxDuration = 60;
@@ -8,10 +8,7 @@ export const maxDuration = 60;
  * GET /api/cron/developer-monitor
  * Weekly cron Monday 4am. Calls stress monitor, stores to developer_stress_history.
  */
-export async function GET(req: NextRequest) {
-  if (!isAuthorizedCron(req)) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+export const GET = withCronLog('developer-monitor', '/api/cron/developer-monitor', isAuthorizedCron, async () => {
   if (!supabase) {
     return Response.json({ error: 'No Supabase' }, { status: 503 });
   }
@@ -39,12 +36,18 @@ export async function GET(req: NextRequest) {
       created_at: new Date().toISOString(),
     });
 
+    // The row this job exists to write. Failing to write it is a failed run,
+    // not a successful one carrying a false flag.
     if (insertError) {
       console.error('Failed to insert developer stress history:', insertError.message);
+      return Response.json(
+        { error: `developer_stress_history insert failed: ${insertError.message}`, stored: false },
+        { status: 500 },
+      );
     }
 
     return Response.json({
-      stored: !insertError,
+      stored: true,
       market_health: data.market_health,
       total_developers: data.total_developers,
       flagged_count: data.flagged.length,
@@ -53,4 +56,4 @@ export async function GET(req: NextRequest) {
     const message = err instanceof Error ? err.message : 'Developer monitor cron failed';
     return Response.json({ error: message }, { status: 500 });
   }
-}
+});

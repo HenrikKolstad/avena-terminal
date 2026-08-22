@@ -4,22 +4,18 @@
  * accuracy, writes prediction_outcomes, updates leaderboard.
  */
 
-import { NextRequest } from 'next/server';
+import { bearerCronAuth, withCronLog } from '@/lib/cron-log';
 import { verifyDue } from '@/lib/predictions';
 
 export const maxDuration = 120;
 
-export async function GET(req: NextRequest) {
-  const auth = req.headers.get('authorization');
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+export const GET = withCronLog('predictions-verify', '/api/cron/predictions/verify', bearerCronAuth, async () => {
   const result = await verifyDue();
   return Response.json({
     agent: 'Arbiter',
     ran_at: new Date().toISOString(),
     ...result,
   });
-}
+});
 
 export const POST = GET;

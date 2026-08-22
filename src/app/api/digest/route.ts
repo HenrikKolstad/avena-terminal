@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { bearerCronAuth, withCronLog } from '@/lib/cron-log';
 import Anthropic from '@anthropic-ai/sdk';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, avg } from '@/lib/properties';
 import { detectAnomalies } from '@/lib/anomaly';
@@ -8,30 +9,16 @@ export const maxDuration = 60;
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-// GET — generate or fetch latest digest
-export async function GET(req: NextRequest) {
-  const generate = req.nextUrl.searchParams.get('generate') === 'true';
-  const authHeader = req.headers.get('authorization');
-
-  if (generate && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
+/**
+ * The scheduled generation pass. Only this path is a cron run, so only this
+ * path is logged — a public read of /api/digest must never land in
+ * `cron_logs`, or the table stops meaning "scheduled jobs".
+ *
+ * digest_issues last received a row on 2026-06-15. This route has been
+ * scheduled weekly throughout and reported nothing either way.
+ */
+const generateDigest = withCronLog('digest', '/api/digest?generate=true', bearerCronAuth, async () => {
   if (!supabase) return Response.json({ error: 'No Supabase' }, { status: 503 });
-
-  // If not generating, return latest digest
-  if (!generate) {
-    const { data } = await supabase
-      .from('digest_issues')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(1);
-
-    if (data && data.length > 0) {
-      return Response.json(data[0], { headers: { 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'public, max-age=3600' } });
-    }
-    return Response.json({ message: 'No digest published yet' });
-  }
 
   // Generate new digest
   const all = getAllProperties();
@@ -101,4 +88,22 @@ End with: "— Avena Terminal Intelligence Digest | avenaterminal.com"`,
     week: weekLabel,
     content_length: content.length,
   });
+});
+
+// GET — public read of the latest digest, or the scheduled generation pass.
+export async function GET(req: NextRequest) {
+  if (req.nextUrl.searchParams.get('generate') === 'true') return generateDigest(req);
+
+  if (!supabase) return Response.json({ error: 'No Supabase' }, { status: 503 });
+
+  const { data } = await supabase
+    .from('digest_issues')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(1);
+
+  if (data && data.length > 0) {
+    return Response.json(data[0], { headers: { 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'public, max-age=3600' } });
+  }
+  return Response.json({ message: 'No digest published yet' });
 }

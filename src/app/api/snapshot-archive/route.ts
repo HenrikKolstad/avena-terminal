@@ -1,15 +1,11 @@
-import { NextRequest } from 'next/server';
+import { bearerCronAuth, withCronLog } from '@/lib/cron-log';
 import { getAllProperties, avg } from '@/lib/properties';
 import { supabase } from '@/lib/supabase';
 
 export const maxDuration = 60;
 
 // Runs daily — archives current dataset state to price_history
-export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+export const GET = withCronLog('snapshot-archive', '/api/snapshot-archive', bearerCronAuth, async () => {
 
   if (!supabase) return Response.json({ error: 'No Supabase' }, { status: 503 });
 
@@ -145,4 +141,4 @@ export async function GET(req: NextRequest) {
       off_plan_count: offPlanCount,
     },
   }, { status: ok ? 200 : 500 });
-}
+});

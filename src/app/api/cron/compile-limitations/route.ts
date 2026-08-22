@@ -5,21 +5,18 @@
  */
 
 import { isAuthorizedCron } from '@/lib/cron-auth';
-import { NextRequest } from 'next/server';
+import { withCronLog } from '@/lib/cron-log';
 import { compileLimitations } from '@/lib/limitations';
 
 export const maxDuration = 120;
 
-export async function GET(req: NextRequest) {
-  if (!isAuthorizedCron(req)) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+export const GET = withCronLog('compile-limitations', '/api/cron/compile-limitations', isAuthorizedCron, async () => {
   const result = await compileLimitations();
   return Response.json({
     agent: 'Limitations Compiler',
     ran_at: new Date().toISOString(),
     ...result,
   });
-}
+});
 
 export const POST = GET;

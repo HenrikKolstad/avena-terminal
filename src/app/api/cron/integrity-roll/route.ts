@@ -6,21 +6,18 @@
  */
 
 import { isAuthorizedCron } from '@/lib/cron-auth';
-import { NextRequest } from 'next/server';
+import { withCronLog } from '@/lib/cron-log';
 import { rollDailyRoot } from '@/lib/integrity';
 
 export const maxDuration = 60;
 
-export async function GET(req: NextRequest) {
-  if (!isAuthorizedCron(req)) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+export const GET = withCronLog('integrity-roll', '/api/cron/integrity-roll', isAuthorizedCron, async () => {
   const result = await rollDailyRoot();
   return Response.json({
     agent: 'Integrity Roll',
     ran_at: new Date().toISOString(),
     result,
   });
-}
+});
 
 export const POST = GET;
