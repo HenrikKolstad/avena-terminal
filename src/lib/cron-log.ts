@@ -25,7 +25,8 @@ export interface CronLogHandle {
 
 export async function startCronLog(
   agentId: string,
-  cronPath?: string
+  cronPath?: string,
+  invokedBy?: string | null
 ): Promise<CronLogHandle> {
   const startedAt = Date.now();
   if (!supabase) return { id: null, startedAt, agentId };
@@ -38,6 +39,7 @@ export async function startCronLog(
         cron_path: cronPath ?? null,
         status: 'started',
         started_at: new Date(startedAt).toISOString(),
+        invoked_by: invokedBy ?? null,
       })
       .select('id')
       .single();
@@ -224,10 +226,31 @@ export function boundSummary(value: unknown, depth = 0): unknown {
  *
  * A non-2xx response is an error — no exceptions, and in particular no
  * "it was already broken" allowance. A 2xx response is a success UNLESS the
- * body says otherwise via an explicit `skipped` marker, which several routes
- * need in order to distinguish "deliberately dormant because a credential is
- * not configured" from "failed". Nothing is inferred from a body beyond
- * those two documented markers.
+ * body says otherwise via one of three documented markers:
+ *
+ *   1. `skipped: true` / `status: 'skipped'` — deliberately dormant because
+ *      a credential is not configured. Distinct from failure on purpose.
+ *   2. a NON-EMPTY `errors` array.
+ *   3. a non-empty `error` string.
+ *
+ * WHY 2 AND 3 EXIST
+ * A run that recorded its own failures and then returned HTTP 200
+ * `{ success: true }` is the recurring bug of this project wearing a
+ * different hat: the failure is right there in the body and the status still
+ * says the job is fine. Measured instances on 2026-08-22 alone —
+ *   predictions-generate  errors:["claude_parse: 400 … credit balance is too
+ *                         low …"]                        -> logged 'success'
+ *   causal-update         errors:["debate_null: costa_blanca", …]
+ *                                                        -> logged 'success'
+ *   dvf-ingest            two FK-violation chunks, ~935 of 3,504 rows dropped
+ *                                                        -> logged 'success'
+ * — none of which any query for failing crons could ever have surfaced.
+ *
+ * A run with errors is not a clean run. It may still have done useful work,
+ * and the full body is kept in output_summary so that work stays visible;
+ * what it does not get is a green light. Deliberately NOT introducing a
+ * fourth 'partial' status: /swarm counts status='success' and an unknown
+ * value would silently drop out of every existing reader.
  */
 export function deriveCronStatus(
   res: Response,
@@ -240,7 +263,66 @@ export function deriveCronStatus(
   if (!res.ok) {
     return { status: 'error', error: b.error ?? b.message ?? `HTTP ${res.status}` };
   }
+  if (Array.isArray(b.errors) && b.errors.length > 0) {
+    const first = describeError(b.errors[0]) ?? 'unspecified';
+    return {
+      status: 'error',
+      error: `HTTP ${res.status} but the run reported ${b.errors.length} error(s); first: ${first}`,
+    };
+  }
+  if (typeof b.error === 'string' && b.error.length > 0) {
+    return { status: 'error', error: b.error };
+  }
   return { status: 'success', error: null };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WHO INVOKED THIS RUN
+//
+// The wrapper only logs an auth-rejected run when it can tell that the
+// PLATFORM made the call — otherwise a public endpoint could be used to fill
+// the table with noise. Until today that test was `x-vercel-cron === '1'`
+// alone, and it was never checked against a real scheduled invocation.
+//
+// It does not hold. /api/detect-events requires an `x-cron-key` header the
+// scheduler does not send, so its 07:30 run is rejected every night. On
+// 2026-08-22, with logging live and deployed since ~05:00, that 07:30 run
+// wrote NO ROW AT ALL — while /api/cron/github-snapshot logged normally at
+// 07:15 and four bearer-authenticated routes logged successes between 06:00
+// and 08:03. So the scheduler fires, and it sends `Authorization: Bearer
+// $CRON_SECRET`, but the rejected-run branch never triggered. The only
+// auth_rejected_platform_run row in the table's whole history is a hand
+// probe I sent myself at 05:52.
+//
+// That means the loud-failure design was decorative under the real
+// scheduler: any route whose auth does not match what the platform sends
+// goes silent in exactly the way this module exists to prevent — the missing
+// header quietly becoming "not a platform run", and a failed job becoming no
+// job at all.
+//
+// Two changes, and the second matters more than the first:
+//   - Widen the test to any recognised scheduler signal. Vercel identifies
+//     its cron requests with a `vercel-cron/…` user-agent as well as the
+//     header, so either one now counts.
+//   - RECORD WHICH SIGNAL FIRED, in cron_logs.invoked_by. Widening the test
+//     on its own would just replace one unverified assumption with another.
+//     Tomorrow the question "what does the scheduler actually send?" is a
+//     GROUP BY over rows written by runs I did not touch, not a guess.
+//
+// A request carrying no recognised signal is ordinary internet noise and is
+// still not logged when it fails auth.
+
+export type InvokedBy = 'vercel-cron-header' | 'vercel-cron-ua' | 'direct';
+
+export function classifyInvocation(req: NextRequest): InvokedBy {
+  if (req.headers.get('x-vercel-cron') === '1') return 'vercel-cron-header';
+  if (/vercel-cron/i.test(req.headers.get('user-agent') ?? '')) return 'vercel-cron-ua';
+  return 'direct';
+}
+
+/** True when some recognised signal says Vercel's scheduler made this call. */
+export function isPlatformRun(invokedBy: InvokedBy): boolean {
+  return invokedBy !== 'direct';
 }
 
 /**
@@ -258,24 +340,24 @@ export function withCronLog(
   handler: CronHandler,
 ): CronHandler {
   return async function wrapped(req: NextRequest): Promise<Response> {
-    const platformRun = req.headers.get('x-vercel-cron') === '1';
+    const invokedBy = classifyInvocation(req);
 
     if (!auth(req)) {
-      if (platformRun) {
+      if (isPlatformRun(invokedBy)) {
         // The scheduler called and was turned away. That is a failed run and
         // must be as loud as any other failure.
-        const log = await startCronLog(agentId, cronPath);
+        const log = await startCronLog(agentId, cronPath, invokedBy);
         await finishCronLog(
           log,
           'error',
-          { reason: 'auth_rejected_platform_run', cron_path: cronPath },
+          { reason: 'auth_rejected_platform_run', cron_path: cronPath, invoked_by: invokedBy },
           'the Vercel scheduler invoked this route and its own auth check rejected the call — the job did not run',
         );
       }
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const log = await startCronLog(agentId, cronPath);
+    const log = await startCronLog(agentId, cronPath, invokedBy);
     let res: Response;
     try {
       res = await handler(req);

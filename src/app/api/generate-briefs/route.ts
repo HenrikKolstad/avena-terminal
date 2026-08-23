@@ -1,4 +1,4 @@
-import { bearerCronAuth, withCronLog } from '@/lib/cron-log';
+import { bearerCronAuth, describeError, withCronLog } from '@/lib/cron-log';
 import Anthropic from '@anthropic-ai/sdk';
 import { detectAnomalies } from '@/lib/anomaly';
 import { supabase } from '@/lib/supabase';
@@ -22,6 +22,15 @@ export const GET = withCronLog('generate-briefs', '/api/generate-briefs', bearer
   let briefsGenerated = 0;
   const date = new Date().toISOString().split('T')[0];
   const urls: string[] = [];
+
+  // Every generation failure below used to be swallowed by a bare
+  // `catch (err) { console.error(...) }`, after which the route returned
+  // HTTP 200 `{ success: true, briefs_generated: 0 }`. `intelligence_briefs`
+  // has held no row since 2026-06-15 and nothing anywhere said why: on
+  // 2026-08-22 this run had three high-severity signals, failed on all three,
+  // and reported success. Failures are collected and reported now, which also
+  // lets deriveCronStatus mark the run for what it is.
+  const errors: string[] = [];
 
   for (const signal of topSignals) {
     const prompt = `Write a 200-word investment brief for this property anomaly:
@@ -67,7 +76,7 @@ End with: "— Avena Terminal Intelligence Agent"`;
       const content = response.content[0].type === 'text' ? response.content[0].text : '';
       const slug = `${date}-${signal.id.replace(/[^a-z0-9-]/gi, '-').toLowerCase()}`.slice(0, 100);
 
-      await supabase.from('intelligence_briefs').upsert({
+      const { error: writeError } = await supabase.from('intelligence_briefs').upsert({
         slug,
         signal_id: signal.id,
         signal_type: signal.type,
@@ -83,6 +92,13 @@ End with: "— Avena Terminal Intelligence Agent"`;
         published_at: new Date().toISOString(),
       }, { onConflict: 'slug' });
 
+      // Count only what the database accepted. `briefsGenerated++` on a
+      // discarded write result is the same lie one level down.
+      if (writeError) {
+        errors.push(`brief_write ${slug}: ${writeError.message}`);
+        continue;
+      }
+
       urls.push(`https://avenaterminal.com/intelligence/briefs`);
       briefsGenerated++;
 
@@ -97,6 +113,7 @@ End with: "— Avena Terminal Intelligence Agent"`;
       }
     } catch (err) {
       console.error('Brief generation error:', err);
+      errors.push(`brief_generate ${signal.id}: ${describeError(err) ?? 'unknown'}`);
     }
   }
 
@@ -106,8 +123,10 @@ End with: "— Avena Terminal Intelligence Agent"`;
   }
 
   return Response.json({
-    success: true,
+    success: errors.length === 0,
     briefs_generated: briefsGenerated,
+    signals_attempted: topSignals.length,
+    errors: errors.length > 0 ? errors : null,
     date,
   });
 });

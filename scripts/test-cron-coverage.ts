@@ -23,7 +23,7 @@
 
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { boundSummary, deriveCronStatus } from '../src/lib/cron-log';
+import { boundSummary, classifyInvocation, deriveCronStatus, isPlatformRun } from '../src/lib/cron-log';
 
 const ROOT = join(__dirname, '..');
 let passed = 0;
@@ -122,6 +122,57 @@ ok('status:"skipped" in the body is honoured',
 ok('a 200 is NOT downgraded by an unrelated falsy field',
   deriveCronStatus(res(200), { ok: true, posted: false }).status === 'success');
 ok('a skipped run records no error', deriveCronStatus(res(200), { skipped: true }).error === null);
+
+// A 200 carrying the run's own failures is not a clean run. Every case below
+// was observed in cron_logs on 2026-08-22, logged as 'success'.
+ok('a 200 with a populated errors[] is an error',
+  deriveCronStatus(res(200), { agent: 'Nostradamus', errors: ['claude_parse: 400 credit balance too low'] }).status === 'error');
+ok('an EMPTY errors[] is still a success',
+  deriveCronStatus(res(200), { errors: [] }).status === 'success');
+ok('a null errors field is still a success',
+  deriveCronStatus(res(200), { errors: null }).status === 'success');
+ok('the error text names how many failed and quotes the first',
+  String(deriveCronStatus(res(200), { errors: ['a', 'b', 'c'] }).error).includes('3 error(s)')
+  && String(deriveCronStatus(res(200), { errors: ['a', 'b', 'c'] }).error).includes('a'));
+ok('a PostgrestError inside errors[] is described, not "[object Object]"',
+  String(deriveCronStatus(res(200), { errors: [{ message: 'FK violation', code: '23503' }] }).error).includes('FK violation'));
+ok('a 200 with a non-empty error string is an error',
+  deriveCronStatus(res(200), { error: 'generate-pulse failed: HTTP 500' }).status === 'error');
+ok('a 200 with an empty error string stays a success',
+  deriveCronStatus(res(200), { error: '' }).status === 'success');
+ok('skipped still wins over a populated errors[]',
+  deriveCronStatus(res(200), { skipped: true, errors: ['x'] }).status === 'skipped');
+ok('dvf-ingest’s real 08-23 shape is now an error',
+  deriveCronStatus(res(200), { status: 'success', transactions_inserted: 2569, errors: ['chunk 3: FK violation'] }).status === 'error');
+
+// ── Part 2b: who invoked the run ─────────────────────────────────────────────
+//
+// The rejected-platform-run branch is only as good as this test. It was
+// `x-vercel-cron === '1'` alone, and /api/detect-events’ 07:30 scheduled run
+// on 2026-08-22 was rejected and left NO row, so that test did not match what
+// the scheduler sends.
+
+console.log('\nInvocation classification\n');
+
+const req = (h: Record<string, string>) =>
+  ({ headers: { get: (k: string) => h[k.toLowerCase()] ?? null } }) as unknown as Parameters<typeof classifyInvocation>[0];
+
+ok('the x-vercel-cron header is recognised',
+  classifyInvocation(req({ 'x-vercel-cron': '1' })) === 'vercel-cron-header');
+ok('a vercel-cron user-agent is recognised',
+  classifyInvocation(req({ 'user-agent': 'vercel-cron/1.0' })) === 'vercel-cron-ua');
+ok('the header wins when both are present',
+  classifyInvocation(req({ 'x-vercel-cron': '1', 'user-agent': 'vercel-cron/1.0' })) === 'vercel-cron-header');
+ok('an ordinary browser request is direct',
+  classifyInvocation(req({ 'user-agent': 'Mozilla/5.0' })) === 'direct');
+ok('a request with no headers at all is direct',
+  classifyInvocation(req({})) === 'direct');
+ok('x-vercel-cron with any other value is not a platform run',
+  classifyInvocation(req({ 'x-vercel-cron': '0' })) === 'direct');
+ok('both recognised signals count as a platform run',
+  isPlatformRun('vercel-cron-header') && isPlatformRun('vercel-cron-ua'));
+ok('a direct call is NOT a platform run, so noise cannot fill cron_logs',
+  !isPlatformRun('direct'));
 
 // ── Part 3: summary bounding ─────────────────────────────────────────────────
 
