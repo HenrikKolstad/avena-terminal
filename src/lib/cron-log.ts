@@ -168,11 +168,11 @@ export async function loadAgentCounts(): Promise<{
 //    signal that caught the citation agent's timeout; it is worth the extra
 //    round trip.
 //
-// 3. AUTH BEHAVIOUR IS COPIED, NEVER CHANGED.
-//    Each route keeps the exact predicate it had. Fixing detect-events'
-//    header mismatch would revive a cron that has been dead four months —
-//    a behaviour change that does not belong in a logging commit. It is
-//    logged loudly instead, and fixed on its own merits.
+// 3. AUTH BEHAVIOUR WAS COPIED, NEVER CHANGED (when this was written).
+//    Each route kept the exact predicate it had, so that wiring up logging
+//    changed nothing about what ran. detect-events' header mismatch was
+//    fixed on 2026-08-23 on its own merits, in its own commit, after its
+//    baseline read was proven broken — see that route's header.
 
 export type CronAuth = (req: NextRequest) => boolean;
 export type CronHandler = (req: NextRequest) => Promise<Response>;
@@ -184,8 +184,13 @@ export function bearerCronAuth(req: NextRequest): boolean {
 }
 
 /** `x-cron-key: $CRON_SECRET` — a header the Vercel scheduler does NOT send.
- *  Preserved verbatim for the routes that already use it so that wiring up
- *  logging changes nothing about what runs. See decision 3 above. */
+ *
+ *  NO ROUTE USES THIS ANY MORE, and it is kept only as a named warning.
+ *  /api/detect-events was the single route that required it, which is why it
+ *  answered 401 to its own 07:30 scheduler every night from 2026-04-11 to
+ *  2026-08-23. Do not reach for this predicate for a scheduled route: the
+ *  scheduler sends `Authorization: Bearer $CRON_SECRET`, so isAuthorizedCron
+ *  (src/lib/cron-auth.ts) is the one that works. */
 export function xCronKeyAuth(req: NextRequest): boolean {
   return req.headers.get('x-cron-key') === process.env.CRON_SECRET;
 }
