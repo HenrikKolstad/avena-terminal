@@ -9,6 +9,10 @@ interface TaxRequest {
   buyer_nationality: string;
   intended_use: 'rental' | 'personal' | 'both';
   holding_years?: number;
+  // Scenario assumptions the CALLER supplies. Avena does not forecast future
+  // prices or assert a generic yield, so neither has a baked-in default.
+  annual_appreciation_pct?: number; // e.g. 3 for 3%/yr — required for any exit/CGT/return figure
+  gross_yield_pct?: number;         // used only when no property_ref resolves to a derived yield
 }
 
 interface NationalityProfile {
@@ -31,26 +35,32 @@ const NATIONALITY_PROFILES: Record<string, NationalityProfile> = {
   FR: { irnr_rate: 0.19, is_eu_eea: true, treaty: 'France-Spain DTA', cgt_rate: 0.19, notes: 'EU member, deductible expenses allowed' },
 };
 
-// Purchase cost rates (new-build)
-const IVA_RATE = 0.10;
-const AJD_RATE = 0.012;
+// Purchase cost rates (new-build) — statutory / conventional Spanish rates.
+const IVA_RATE = 0.10;          // VAT on new-build
+const AJD_RATE = 0.012;         // stamp duty (AJD), region-dependent ~1.0–1.5%
 const NOTARY_RATE = 0.005;
 const REGISTRY_RATE = 0.003;
 const LEGAL_RATE = 0.01;
 const TOTAL_PURCHASE_COST_RATE = IVA_RATE + AJD_RATE + NOTARY_RATE + REGISTRY_RATE + LEGAL_RATE;
 
-// Annual holding
-const IBI_EFFECTIVE_RATE = 0.0016; // 0.4% of cadastral (est 40% of purchase)
+// Annual holding — IBI is statutory; community fees and insurance are typical
+// cost estimates, disclosed as assumptions in the response.
+const IBI_EFFECTIVE_RATE = 0.0016; // ~0.4% of cadastral value (est. 40% of purchase)
 const COMMUNITY_FEES_ANNUAL = 1800;
 const INSURANCE_ANNUAL = 400;
-
-// Growth assumption
-const ANNUAL_APPRECIATION = 0.07;
 
 export async function POST(request: NextRequest) {
   try {
     const body: TaxRequest = await request.json();
-    const { property_ref, purchase_price, buyer_nationality, intended_use, holding_years = 10 } = body;
+    const {
+      property_ref,
+      purchase_price,
+      buyer_nationality,
+      intended_use,
+      holding_years = 10,
+      annual_appreciation_pct,
+      gross_yield_pct,
+    } = body;
 
     if (!purchase_price || !buyer_nationality || !intended_use) {
       return NextResponse.json({ error: 'Missing required fields: purchase_price, buyer_nationality, intended_use' }, { status: 400 });
@@ -64,7 +74,7 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Property lookup if ref provided
+    // Property lookup if ref provided — this is the only yield figure Avena stands behind.
     let propertyGrossYield: number | null = null;
     let propertyName: string | null = null;
     if (property_ref) {
@@ -74,6 +84,18 @@ export async function POST(request: NextRequest) {
         propertyGrossYield = prop._yield?.gross ?? null;
         propertyName = `${prop.p} - ${prop.l}`;
       }
+    }
+
+    // Resolve the yield honestly: a property's own derived yield first, then a
+    // caller-supplied scenario yield, then nothing. No fabricated default.
+    let estimatedGrossYield: number | null = null;
+    let yieldSource: 'property_derived' | 'caller_supplied' | null = null;
+    if (propertyGrossYield != null) {
+      estimatedGrossYield = propertyGrossYield;
+      yieldSource = 'property_derived';
+    } else if (typeof gross_yield_pct === 'number' && gross_yield_pct > 0) {
+      estimatedGrossYield = gross_yield_pct;
+      yieldSource = 'caller_supplied';
     }
 
     // Purchase costs
@@ -88,45 +110,64 @@ export async function POST(request: NextRequest) {
     const ibi = purchase_price * IBI_EFFECTIVE_RATE;
     const annualHoldingCosts = ibi + COMMUNITY_FEES_ANNUAL + INSURANCE_ANNUAL;
 
-    // Rental income
+    // Rental income — only computable when a yield is actually known.
     const includesRental = intended_use === 'rental' || intended_use === 'both';
-    const estimatedGrossYield = propertyGrossYield ?? 5.5; // default 5.5% if unknown
-    const annualRentalIncome = includesRental
-      ? purchase_price * (estimatedGrossYield / 100)
+    const yieldKnown = includesRental && estimatedGrossYield != null;
+    const annualRentalIncome = yieldKnown
+      ? purchase_price * ((estimatedGrossYield as number) / 100)
       : 0;
 
     // Tax on rental
     let annualTaxOnRental = 0;
     let deductibleExpenses = 0;
-    if (includesRental) {
+    if (yieldKnown) {
       if (profile.is_eu_eea) {
-        // EU/EEA can deduct expenses
         deductibleExpenses = annualHoldingCosts;
         annualTaxOnRental = Math.max(0, (annualRentalIncome - deductibleExpenses) * profile.irnr_rate);
       } else {
-        // Non-EU taxed on gross
         annualTaxOnRental = annualRentalIncome * profile.irnr_rate;
       }
     }
 
     const afterTaxRentalIncome = annualRentalIncome - annualTaxOnRental;
-    const afterTaxYield = purchase_price > 0 ? Number(((afterTaxRentalIncome / purchase_price) * 100).toFixed(2)) : 0;
+    const afterTaxYield = yieldKnown && purchase_price > 0
+      ? Number(((afterTaxRentalIncome / purchase_price) * 100).toFixed(2))
+      : null;
 
-    // Exit projection
-    const projectedExitPrice = Math.round(purchase_price * (1 + ANNUAL_APPRECIATION * holding_years));
-    const capitalGain = projectedExitPrice - purchase_price - totalPurchaseCosts;
-    const capitalGainsTax = Math.max(0, Math.round(capitalGain * profile.cgt_rate));
+    // Exit projection — ONLY when the caller supplies an appreciation scenario.
+    // Avena records ~20 days of listing history; it cannot forecast multi-year
+    // prices, so there is no default here. Compound growth (not linear).
+    const hasAppreciation = typeof annual_appreciation_pct === 'number' && Number.isFinite(annual_appreciation_pct);
+    const appreciationRate = hasAppreciation ? (annual_appreciation_pct as number) / 100 : null;
 
-    // Total return
+    let projectedExitPrice: number | null = null;
+    let capitalGain: number | null = null;
+    let capitalGainsTax: number | null = null;
+    if (appreciationRate != null) {
+      projectedExitPrice = Math.round(purchase_price * Math.pow(1 + appreciationRate, holding_years));
+      capitalGain = projectedExitPrice - purchase_price - totalPurchaseCosts;
+      capitalGainsTax = Math.max(0, Math.round(capitalGain * profile.cgt_rate));
+    }
+
+    // Total return depends on the exit projection, so it is null without one.
     const totalRentalIncomeOverPeriod = afterTaxRentalIncome * holding_years;
     const totalHoldingCostsOverPeriod = annualHoldingCosts * holding_years;
-    const totalReturnAfterTax = Math.round(
-      projectedExitPrice - purchase_price - totalPurchaseCosts - capitalGainsTax +
-      totalRentalIncomeOverPeriod - totalHoldingCostsOverPeriod
-    );
-    const effectiveTaxRate = purchase_price > 0
-      ? Number((((totalPurchaseCosts + capitalGainsTax + annualTaxOnRental * holding_years) / (projectedExitPrice - purchase_price + annualRentalIncome * holding_years)) * 100).toFixed(2))
-      : 0;
+    let totalReturnAfterTax: number | null = null;
+    let effectiveTaxRate: number | null = null;
+    let annualizedReturn: string | null = null;
+    if (projectedExitPrice != null && capitalGainsTax != null) {
+      totalReturnAfterTax = Math.round(
+        projectedExitPrice - purchase_price - totalPurchaseCosts - capitalGainsTax +
+        totalRentalIncomeOverPeriod - totalHoldingCostsOverPeriod
+      );
+      const denom = projectedExitPrice - purchase_price + annualRentalIncome * holding_years;
+      effectiveTaxRate = purchase_price > 0 && denom !== 0
+        ? Number((((totalPurchaseCosts + capitalGainsTax + annualTaxOnRental * holding_years) / denom) * 100).toFixed(2))
+        : null;
+      annualizedReturn = holding_years > 0
+        ? `${((totalReturnAfterTax / (purchase_price + totalPurchaseCosts) / holding_years) * 100).toFixed(2)}%`
+        : '0%';
+    }
 
     return NextResponse.json({
       input: {
@@ -158,9 +199,11 @@ export async function POST(request: NextRequest) {
         community_fees: COMMUNITY_FEES_ANNUAL,
         insurance: INSURANCE_ANNUAL,
         total_holding: Math.round(annualHoldingCosts),
+        note: 'IBI derived from cadastral estimate; community fees and insurance are typical annual estimates, not property-specific.',
       },
-      rental_analysis: includesRental ? {
-        estimated_gross_yield: `${estimatedGrossYield.toFixed(1)}%`,
+      rental_analysis: includesRental ? (yieldKnown ? {
+        estimated_gross_yield: `${(estimatedGrossYield as number).toFixed(1)}%`,
+        yield_source: yieldSource,
         annual_rental_income: Math.round(annualRentalIncome),
         deductible_expenses: profile.is_eu_eea ? Math.round(deductibleExpenses) : 0,
         taxable_rental_income: profile.is_eu_eea
@@ -168,22 +211,37 @@ export async function POST(request: NextRequest) {
           : Math.round(annualRentalIncome),
         annual_tax_on_rental: Math.round(annualTaxOnRental),
         after_tax_rental_income: Math.round(afterTaxRentalIncome),
-        after_tax_yield: `${afterTaxYield}%`,
-      } : null,
-      exit_projection: {
+        after_tax_yield: afterTaxYield != null ? `${afterTaxYield}%` : null,
+      } : {
+        estimated_gross_yield: null,
+        yield_source: null,
+        note: 'No yield available: provide a property_ref that resolves to a derived yield, or pass gross_yield_pct as a scenario assumption. Avena does not assume a generic default yield.',
+      }) : null,
+      exit_projection: appreciationRate != null ? {
         holding_years,
-        annual_appreciation: `${(ANNUAL_APPRECIATION * 100).toFixed(0)}%`,
+        annual_appreciation: `${(annual_appreciation_pct as number).toFixed(1)}%`,
+        appreciation_source: 'caller_supplied_scenario',
+        compounding: 'annual',
         projected_exit_price: projectedExitPrice,
-        capital_gain: Math.round(capitalGain),
+        capital_gain: capitalGain != null ? Math.round(capitalGain) : null,
         capital_gains_tax: capitalGainsTax,
+      } : {
+        holding_years,
+        annual_appreciation: null,
+        appreciation_source: null,
+        projected_exit_price: null,
+        capital_gain: null,
+        capital_gains_tax: null,
+        note: 'Exit price, capital gain and CGT require an appreciation assumption. Avena records ~20 days of listing history and does not forecast multi-year prices; pass annual_appreciation_pct to model a scenario.',
       },
       summary: {
         total_investment: Math.round(purchase_price + totalPurchaseCosts),
         total_return_after_tax: totalReturnAfterTax,
-        effective_tax_rate: `${effectiveTaxRate}%`,
-        annualized_return: holding_years > 0
-          ? `${((totalReturnAfterTax / (purchase_price + totalPurchaseCosts) / holding_years) * 100).toFixed(2)}%`
-          : '0%',
+        effective_tax_rate: effectiveTaxRate != null ? `${effectiveTaxRate}%` : null,
+        annualized_return: annualizedReturn,
+        note: totalReturnAfterTax == null
+          ? 'Return figures require annual_appreciation_pct; without it only purchase costs, holding costs and (given a yield) rental figures are computable.'
+          : undefined,
       },
     });
   } catch (error) {
