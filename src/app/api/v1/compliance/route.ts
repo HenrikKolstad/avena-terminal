@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAllProperties } from '@/lib/properties';
+import { toEpcLetter } from '@/lib/epc';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,27 +42,12 @@ export const dynamic = 'force-dynamic';
  * input to build one from.
  */
 
-/** EPC letters recognised by the EPBD certificate scale. */
-const EPC_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G'] as const;
-type EpcLetter = (typeof EPC_LETTERS)[number];
-
 /**
- * Normalises the listing's energy field to a recognised EPC letter, or null.
- *
- * The feed carries 'X' on 16 of 2,036 listings — a placeholder, not a rating.
- * The previous implementation coerced every unrecognised or missing value to
- * 'D' via `energy || 'D'` and `?? 3200`, which published a fabricated rating,
- * a fabricated emissions figure and a fabricated compliance verdict for
- * properties whose certificate Avena does not hold. Returning null is the
- * whole point of this function.
+ * EPC normalisation lives in @/lib/epc — see the note there. It was local to
+ * this file until 2026-08-26, which is exactly how /api/v1/carbon came to
+ * publish `energy_rating: "X"` and a fabricated emissions figure for a
+ * property this route already reported as `epc_rating: null`.
  */
-function toEpcLetter(energy: string | null | undefined): EpcLetter | null {
-  if (!energy) return null;
-  const letter = energy.trim().toUpperCase();
-  return (EPC_LETTERS as readonly string[]).includes(letter)
-    ? (letter as EpcLetter)
-    : null;
-}
 
 /**
  * The dated regulatory calendar. Each entry is sourced; nothing here is
