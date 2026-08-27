@@ -26,9 +26,11 @@
  * deployed book that was usually a day old. Fixed 2026-08-21; scribe now dates
  * from feed-meta.json, same as the guard below.
  *
- * Schedule: once daily via vercel.json (02:20 UTC), plus an explicit trigger
- * from the feed workflow once the new book is confirmed deployed — the
- * schedule alone is only a guess at when the nightly lands.
+ * Schedule: twice daily via vercel.json (02:20 and 12:00 UTC), plus an explicit
+ * trigger from the feed workflow once the new book is confirmed deployed — the
+ * schedule alone is only a guess at when the nightly lands. The 12:00 run is a
+ * watchdog: by then the nightly has either landed or failed, so it is the run
+ * that can tell a stale book apart from a missing one (see the guard below).
  */
 
 import { isAuthorizedCron } from '@/lib/cron-auth';
@@ -37,6 +39,15 @@ import { startCronLog, finishCronLog } from '@/lib/cron-log';
 import { supabase } from '@/lib/supabase';
 import { getAllProperties } from '@/lib/properties';
 import { getFeedGeneratedDate } from '@/lib/feed-meta';
+
+/**
+ * Hour (UTC) from which a book that is not today's stops being "the nightly is
+ * still in flight" and becomes "the nightly did not run". The refresh is
+ * scheduled for 01:37 but has legitimately landed as late as 10:23, so the
+ * alarm is held until 11:00. An alarm that cries wolf on every slow night is
+ * an alarm everyone learns to ignore.
+ */
+const STALE_FEED_ALARM_HOUR_UTC = 11;
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 120;
@@ -127,12 +138,45 @@ export async function GET(req: NextRequest) {
   // An absent stamp means "unknown", and unknown must never block the capture.
   const feedDate = getFeedGeneratedDate();
   if (feedDate !== null && feedDate < today) {
+    // Refusing is correct (above) and on the 02:20 run it is also ROUTINE — the
+    // nightly simply has not landed yet. But until 2026-08-27 "still in flight"
+    // and "never ran at all" wrote an identical `skipped` row, so the two were
+    // indistinguishable from the outside. That morning GitHub silently dropped
+    // the schedule: no workflow run was ever created, the deployed book stayed
+    // on 08-26, this route reported `ok:true, skipped:true` exactly as it does
+    // on a healthy night, and nothing anywhere flagged a problem. The capture
+    // was only recovered because it was caught by hand.
+    //
+    // A missed capture is unrecoverable once the UTC day ends, so the two cases
+    // must not share a status.
+    const ageDays = Math.round(
+      (Date.parse(`${today}T00:00:00Z`) - Date.parse(`${feedDate}T00:00:00Z`)) / 86_400_000
+    );
+    const utcHour = new Date().getUTCHours();
+    // Two or more days old is unambiguous at any hour — a day is already lost.
+    const overdue = ageDays >= 2 || utcHour >= STALE_FEED_ALARM_HOUR_UTC;
     const stale = {
-      reason: 'stale feed — deployed book predates today',
+      reason: overdue
+        ? "nightly feed has not landed — today's capture has not happened"
+        : 'stale feed — deployed book predates today',
       feed_generated_date: feedDate,
       today,
+      feed_age_days: ageDays,
+      overdue,
       feed: feed.length,
     };
+    if (overdue) {
+      await finishCronLog(
+        log,
+        'error',
+        stale,
+        new Error(
+          `Deployed book is ${ageDays} day(s) old at ${utcHour}:00 UTC — the nightly ` +
+            `refresh has not landed and today's price capture has not happened.`
+        )
+      );
+      return NextResponse.json({ ok: false, skipped: true, ...stale }, { status: 500 });
+    }
     await finishCronLog(log, 'skipped', stale);
     return NextResponse.json({ ok: true, skipped: true, ...stale });
   }
