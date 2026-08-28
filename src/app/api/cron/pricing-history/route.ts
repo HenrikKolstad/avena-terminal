@@ -42,12 +42,27 @@ import { getFeedGeneratedDate } from '@/lib/feed-meta';
 
 /**
  * Hour (UTC) from which a book that is not today's stops being "the nightly is
- * still in flight" and becomes "the nightly did not run". The refresh is
- * scheduled for 01:37 but has legitimately landed as late as 10:23, so the
- * alarm is held until 11:00. An alarm that cries wolf on every slow night is
- * an alarm everyone learns to ignore.
+ * still in flight" and becomes "the nightly did not run". An alarm that cries
+ * wolf on every slow night is an alarm everyone learns to ignore.
+ *
+ * Calibrated against how late a SUCCESSFUL night has actually landed, which is
+ * the only thing that can produce a false alarm here:
+ *   2026-08-15..08-26  02:35–02:50  (cron 01:37 + ~1h)
+ *   2026-08-27         11:57        (+10h20m — GitHub scheduler degradation)
+ *
+ * Set to 11:00 on 08-27 when 10:23 was the worst landing on record. The very
+ * next night beat that, landing at 11:57 — past the threshold. It did not
+ * misfire only because the watchdog samples at a fixed time that happened to
+ * fall three minutes later; a landing at 12:05 would have logged `error` and
+ * returned 500 for a day that was fully captured. That is luck, not design,
+ * so the threshold moves to 14:00 — 12h23m past the cron and ~2h beyond the
+ * worst observed landing — and the watchdog schedule in vercel.json moves with
+ * it. Re-check this constant if the scheduler's latency regime shifts again.
+ *
+ * The `ageDays >= 2` arm below is the robust signal and is deliberately not
+ * hour-gated: a two-day-old book is a lost day whatever the scheduler is doing.
  */
-const STALE_FEED_ALARM_HOUR_UTC = 11;
+const STALE_FEED_ALARM_HOUR_UTC = 14;
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 120;
@@ -141,11 +156,18 @@ export async function GET(req: NextRequest) {
     // Refusing is correct (above) and on the 02:20 run it is also ROUTINE — the
     // nightly simply has not landed yet. But until 2026-08-27 "still in flight"
     // and "never ran at all" wrote an identical `skipped` row, so the two were
-    // indistinguishable from the outside. That morning GitHub silently dropped
-    // the schedule: no workflow run was ever created, the deployed book stayed
+    // indistinguishable from the outside. That morning the deployed book stayed
     // on 08-26, this route reported `ok:true, skipped:true` exactly as it does
     // on a healthy night, and nothing anywhere flagged a problem. The capture
     // was only recovered because it was caught by hand.
+    //
+    // CORRECTION 2026-08-28: the 08-27 commentary here (and in commit 12df144)
+    // said GitHub had DROPPED the schedule and never created a run. That was
+    // wrong — it was read at 05:55, before the run existed. The scheduled run
+    // was created and succeeded at 11:57 UTC, 10h20m after its 01:37 cron; the
+    // IndexNow ping likewise landed 11h01m late. The failure mode is severe
+    // DELAY, not omission. That distinction matters here because the threshold
+    // below is calibrated against how late a legitimate night can land.
     //
     // A missed capture is unrecoverable once the UTC day ends, so the two cases
     // must not share a status.

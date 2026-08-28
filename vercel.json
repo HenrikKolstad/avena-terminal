@@ -95,7 +95,7 @@
     { "path": "/api/cron/property-augment", "schedule": "0 21 * * *" },
 
     { "path": "/api/cron/pricing-history", "schedule": "20 2 * * *" },
-    { "path": "/api/cron/pricing-history", "schedule": "0 12 * * *" },
+    { "path": "/api/cron/pricing-history", "schedule": "30 14 * * *" },
 
     { "path": "/api/cron/dvf-ingest", "schedule": "30 4 * * *" },
 
