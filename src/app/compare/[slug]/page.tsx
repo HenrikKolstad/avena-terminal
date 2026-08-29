@@ -199,7 +199,7 @@ const COMPARISONS: Record<string, ComparisonData> = {
     countryA: 'Spain',
     countryB: 'Portugal',
     summary:
-      'The Iberian neighbours offer distinct investment profiles. Spain provides a deeper, more liquid market with higher rental yields on the costas, while Portugal counters with its NHR tax regime, faster EU citizenship path, and strong English proficiency. Spain\'s Golden Visa closed to real estate in 2024, while Portugal restructured its programme around investment funds. Both markets show robust capital appreciation headed into 2026, but differ significantly in tax treatment for non-residents.',
+      'The Iberian neighbours offer distinct investment profiles. Spain provides a deeper, more liquid market with higher rental yields on the costas, while Portugal counters with its NHR tax regime, faster EU citizenship path, and strong English proficiency. Spain\'s Golden Visa closed to real estate in April 2025, while Portugal restructured its programme around investment funds. Both markets show robust capital appreciation headed into 2026, but differ significantly in tax treatment for non-residents.',
     rows: [
       { metric: 'Avg Coastal Price/m\u00B2', a: '\u20AC2,800', b: '\u20AC3,200' },
       { metric: 'Gross Rental Yield', a: '5.2\u20137.8%', b: '4.5\u20136.5%' },
@@ -227,7 +227,7 @@ const COMPARISONS: Record<string, ComparisonData> = {
     faqs: [
       { q: 'Is Spain or Portugal cheaper for property?', a: 'Spain\'s coastal average is lower at \u20AC2,800/m\u00B2 compared to Portugal\'s \u20AC3,200/m\u00B2. However, Portugal\'s Silver Coast offers values from \u20AC2,200/m\u00B2, below many Spanish costas.' },
       { q: 'Which country has better rental yields?', a: 'Spain generally offers higher gross rental yields (5.2\u20137.8%) due to its massive tourism infrastructure. Portugal yields range from 4.5\u20136.5% but can be enhanced by NHR tax savings.' },
-      { q: 'Can I still get a Golden Visa in Spain?', a: 'No. Spain closed its Golden Visa to real estate investment in April 2024. Portugal restructured its programme around \u20AC500k investment fund contributions.' },
+      { q: 'Can I still get a Golden Visa in Spain?', a: 'No. Spain closed its Golden Visa to real estate investment in April 2025 (Organic Law 1/2025). Portugal restructured its programme around \u20AC500k investment fund contributions.' },
       { q: 'How long until I get EU citizenship?', a: 'Portugal offers citizenship after 5 years of legal residency. Spain requires 10 years (2 years for citizens of certain Latin American and former colonial nations).' },
       { q: 'Which is better for retirees?', a: 'Portugal\'s NHR regime historically offered 0% tax on foreign pensions, making it extremely attractive for retirees. Spain taxes worldwide income for residents, though non-resident pension taxation can be managed with proper structuring.' },
     ],

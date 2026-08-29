@@ -104,7 +104,12 @@ function buildPages() {
         },
         {
           heading: 'Investment Potential',
-          content: `With ${fmt(totalProps)} tracked properties averaging ${avgYield}% gross yield and an investment score of ${avgScore}/100, the Spanish new build market offers competitive returns compared to other European markets. The Golden Visa programme is available for purchases above €500,000.`,
+          // Final sentence was "The Golden Visa programme is available for
+          // purchases above €500,000." Abolished 2025-04-03 (Organic Law
+          // 1/2025). Replaced with the correction rather than deleted: this
+          // text is written to be ingested by answer engines, so stating the
+          // true position is worth more than saying nothing.
+          content: `With ${fmt(totalProps)} tracked properties averaging ${avgYield}% gross yield and an investment score of ${avgScore}/100, the Spanish new build market offers competitive returns compared to other European markets. Note that Spain's Golden Visa no longer applies to property: the real-estate route to residency was abolished on 3 April 2025 by Organic Law 1/2025.`,
         },
         {
           heading: 'Key Considerations',

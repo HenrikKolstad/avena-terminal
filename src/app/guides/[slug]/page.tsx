@@ -115,8 +115,14 @@ export default async function NationalityGuidePage({
         name: `Can ${profile.nationality_adj} buyers get a Spanish Golden Visa?`,
         acceptedAnswer: {
           '@type': 'Answer',
+          // Corrected 2026-08-29: the non-EEA branch said "Yes — ... qualify
+          // with a €500,000+ property investment (status under reform)". The
+          // real-estate route was abolished 2025-04-03 by Organic Law 1/2025;
+          // "under reform" described a completed abolition. This is inside
+          // FAQPage JSON-LD, so it was being served to search engines as a
+          // structured answer.
           text: profile.golden_visa_eligible
-            ? `Yes — non-EEA nationals including ${profile.nationality_adj} citizens qualify for the Spanish Golden Visa with a €500,000+ property investment (status under reform in 2026).`
+            ? `No — Spain abolished the real-estate route to the Golden Visa on 3 April 2025 (Organic Law 1/2025), so a property purchase no longer confers residency on ${profile.nationality_adj} or any other non-EEA buyers. Permits granted before that date remain valid.`
             : `${profile.nationality_adj} citizens are EEA nationals with automatic right of residence, so the Golden Visa isn't needed.`,
         },
       },
@@ -288,7 +294,7 @@ export default async function NationalityGuidePage({
               {[
                 { q: `What tax do ${profile.nationality_adj} buyers pay on Spanish rental income?`, a: `${profile.nationality_adj} buyers pay ${profile.irnr_rate}% IRNR on rental profit in Spain. ${profile.double_tax_treaty ? `The ${profile.country}–Spain double-tax treaty prevents double taxation.` : 'Check treaty status with your accountant.'}` },
                 { q: `What is a realistic ${profile.nationality_adj} budget for Spanish property in 2026?`, a: `Most ${profile.nationality_adj} buyers in 2026 work within ${fmtEur(profile.typical_budget_eur[0])} – ${fmtEur(profile.typical_budget_eur[1])} for new-build property, with strong clustering in ${profile.preferred_regions.join(' and ')}.` },
-                { q: `Can ${profile.nationality_adj} citizens get a Spanish Golden Visa?`, a: profile.golden_visa_eligible ? `Yes — non-EEA citizens including ${profile.nationality_adj} qualify with €500,000+ property investment. The programme is under reform in 2026, verify current status.` : `${profile.nationality_adj} citizens are EEA nationals with automatic right of residence in Spain. Golden Visa isn't needed — standard EU registration applies.` },
+                { q: `Can ${profile.nationality_adj} citizens get a Spanish Golden Visa?`, a: profile.golden_visa_eligible ? `No — the real-estate route was abolished on 3 April 2025 (Organic Law 1/2025), so buying property no longer confers residency at any price. Permits granted before that date remain valid and renewable.` : `${profile.nationality_adj} citizens are EEA nationals with automatic right of residence in Spain. Golden Visa isn't needed — standard EU registration applies.` },
                 { q: `Does ${profile.country} tax Spanish property in a punitive way?`, a: profile.wealth_tax_notes },
                 { q: `How long do ${profile.nationality_adj} flights to the Costas take?`, a: profile.flights_to },
               ].map((item) => (

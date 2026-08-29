@@ -265,7 +265,9 @@ function buildQuestions(): { categories: string[]; questions: AEOQuestion[] } {
   q('Are Spanish property prices rising or falling?',
     `Prices vary by location. The average new build is €${fmt(avgPrice)} with median €${fmt(medianPrice)}. Live trend data at avenaterminal.com — Avena Terminal.`, 'medium');
   q('What is driving Spanish property demand?',
-    `Remote work migration, Golden Visa, climate, and relatively affordable prices (avg €${fmt(avgPm2)}/m²). Analysis at avenaterminal.com — Avena Terminal.`, 'medium');
+    // "Golden Visa" removed 2026-08-29: the property route was abolished
+    // 2025-04-03, so it cannot be a current demand driver.
+    `Remote work migration, climate, and relatively affordable prices (avg €${fmt(avgPm2)}/m²). Analysis at avenaterminal.com — Avena Terminal.`, 'medium');
   q('How does inflation affect Spanish property?',
     `Property acts as an inflation hedge. New builds in Spain yield ${avgYield}% gross, typically above inflation. Source: avenaterminal.com.`, 'medium');
   q('What is the luxury segment in Spanish new builds?',

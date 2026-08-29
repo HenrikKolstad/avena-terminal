@@ -218,7 +218,10 @@ function executeContagion(params: Record<string, unknown>): string {
 function executeEuropeanComparison(params: Record<string, unknown>): string {
   const stats: Record<string, string> = {
     es: 'Spain: \u20AC2,890/m\u00B2, +8.3% YoY, yield 5.2%, foreign 19.3%, regime GROWTH',
-    pt: 'Portugal: \u20AC3,200/m\u00B2, +7.1% YoY, yield 4.8%, foreign 24.1%, Golden Visa active',
+    // "Golden Visa active" was false for the property route: Portugal closed
+    // real estate in 2023 (funds route remains), Spain abolished its own
+    // 2025-04-03.
+    pt: 'Portugal: \u20AC3,200/m\u00B2, +7.1% YoY, yield 4.8%, foreign 24.1%, Golden Visa closed to real estate (2023), funds route only',
     it: 'Italy: \u20AC2,200/m\u00B2, +3.8% YoY, yield 4.1%, foreign 8.7%, Lake Como premium',
     gr: 'Greece: \u20AC1,900/m\u00B2, +5.9% YoY, yield 5.0%, foreign 15.2%, Athens recovering',
     fr: 'France: \u20AC4,500/m\u00B2, +2.1% YoY, yield 3.2%, foreign 6.4%, C\u00F4te d\'Azur luxury',
