@@ -6,10 +6,39 @@ name: Nightly feed refresh
 #
 # Runs before the Vercel score cron (02:00 UTC) so score_history is written
 # from fresh prices. Also runnable on demand from the Actions tab.
+#
+# TWO schedule entries on purpose — the second is a backstop, not a duplicate.
+# Both failure modes below have been observed, and on 2026-08-28 they landed on
+# the same run:
+#
+#   1. GitHub's scheduler for this repo degraded sharply. The 01:37 slot landed
+#      02:35-02:50 for twelve nights (08-15..08-26), then 11:57 (08-27, +10h20m),
+#      then 13:19 (08-28, +11h42m), then had not fired at all by 05:36 (08-29).
+#   2. RedSP's provider serves a bot-protection interstitial to GitHub Actions
+#      egress, intermittently. On 08-28 the delayed 13:19 run drew it four times
+#      in 37s and BOTH node fetch and the curl fallback were refused, so the run
+#      died with no book at all.
+#
+# Every one of those three mornings the day was saved by a hand-run dispatch.
+# That is not a system. The backstop removes the human from the critical path.
+#
+# 05:10 UTC is chosen from evidence, not taste: every download attempted in the
+# 05:30-06:00 UTC window has been served normally (runs 31, 33, 35 on 08-27,
+# 08-28, 08-29), while both observed refusals were midday (08-28 13:19, and the
+# 08-12/08-13 daytime storms). So the second slot is an independent draw on
+# GitHub's queue AND a draw in the time-of-day band RedSP has not refused.
+# It also lands before the 14:30 UTC Vercel watchdog, which stays the alarm of
+# last resort — a backstop that fired after the alarm would silence it.
+#
+# Safe to run twice in one night: both commit steps are guarded by
+# `git diff --staged --quiet`, the concurrency group below queues rather than
+# collides, and /api/cron/pricing-history is idempotent (moves_already_logged).
+# If the 01:37 run already banked the day, the 05:10 run commits nothing.
 
 on:
   schedule:
-    - cron: '37 1 * * *'   # 01:37 UTC daily
+    - cron: '37 1 * * *'   # 01:37 UTC — primary
+    - cron: '10 5 * * *'   # 05:10 UTC — backstop, see the note above
   workflow_dispatch:
     inputs:
       gsc_backfill_days:
