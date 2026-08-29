@@ -1,89 +1,103 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllProperties, getUniqueTowns, getUniqueCostas, avg, slugify } from '@/lib/properties';
+import { getAllProperties, avg } from '@/lib/properties';
 import { Property } from '@/lib/types';
+import { toEpcLetter } from '@/lib/epc';
 
 export const dynamic = 'force-dynamic';
 
-/* ─── Helpers ─── */
+/**
+ * Per-listing fact sheet: what Avena has actually observed about one unit.
+ *
+ * WHAT THIS ROUTE USED TO PUBLISH, AND WHY IT NO LONGER DOES
+ * Until 2026-08-29 this route published a `health_score` (0-100) and a
+ * `health_tier` (EXCELLENT / GOOD / FAIR / NEEDS_REVIEW) over six section
+ * scores. About 70% of the composite's weight came from constants that are
+ * not derived from anything:
+ *
+ *   valuation   0.20   score = 50 + valuation_gap_pct * 2
+ *   liquidity   0.15   the five hand-set factor tables removed from
+ *                      /api/v1/liquidity in this same commit
+ *   developer   0.15   90 / 75 / 60 / 40 by years-active band
+ *   regulatory  0.10   100 - (risk_count * 20)
+ *   esg         0.10   A 95 / B 85 / C 75 / D 60 / E 50 / F 35 / G 20
+ *   avena_score 0.30   the one genuinely derived input
+ *
+ * A document called a "passport" carrying a single headline health number is
+ * read as due diligence. Publishing one that is mostly arithmetic over
+ * invented constants is the most expensive kind of claim this project can
+ * make, so the composite and its sub-scores are removed rather than reweighted.
+ *
+ * THREE OF THE DEFECTS WERE RECURRENCES, not new findings:
+ *
+ * 1. EPC. `ratings[energy.toUpperCase()] ?? 50` gave a mid-scale ESG score to
+ *    the 16 listings carrying the feed's 'X' placeholder and to every listing
+ *    with no energy field at all, then captioned it "Consider energy upgrade
+ *    costs". This is the third copy of the bug fixed in /api/v1/compliance
+ *    (03f57ef) and /api/v1/carbon (b9bf525); src/lib/epc.ts was created on
+ *    2026-08-26 precisely so there would not be a third, and this route was
+ *    missed. It now goes through toEpcLetter like every other surface.
+ *
+ * 2. Golden Visa. `countRegulatoryRisks` counted `price >= 500_000` as a
+ *    regulatory risk factor. The Golden Visa real-estate route was abolished
+ *    on 2025-04-03 by Organic Law 1/2025 and was removed from
+ *    /api/v1/compliance on 2026-08-25 for exactly this reason.
+ *
+ * 3. Tax. `purchase_costs` was a flat 13% of price and `annual_holding_costs`
+ *    was `price * 0.0016 + 1800 + 400`, the last two figures being pure
+ *    invention. /api/v1/tax was repaired on 2026-08-24 (fde7883) to resolve
+ *    tax inputs honestly or return null; this block quietly duplicated the
+ *    surface with the defaults that fix removed. Callers are pointed there.
+ *
+ * WHAT SURVIVES is measurement: the comparable set and what it implies about
+ * price, the town cross-section, time on market, and Avena's own derived
+ * score and yield — each null when the inputs for it are absent, never zero.
+ * A null here means "not observed"; the previous version's zeros were
+ * indistinguishable from a measured zero.
+ */
+
+const NOT_PUBLISHED = {
+  health_score:
+    'Removed 2026-08-29. Was a weighted sum in which ~70% of the weight came ' +
+    'from hand-set constants (valuation/liquidity/developer/regulatory/ESG ' +
+    'sub-scores) with no empirical basis.',
+  health_tier: 'Removed 2026-08-29. Was a threshold on the removed health_score.',
+  section_scores:
+    'Removed 2026-08-29. valuation (50 + gap*2), liquidity (five constant ' +
+    'tables), developer (90/75/60/40 by years band), regulatory ' +
+    '(100 - risks*20) and carbon/ESG (A 95 … G 20) were all rescales of ' +
+    'hand-set numbers rather than measurements.',
+  regulatory_risk_count:
+    'Removed 2026-08-29. One of its four factors counted a price at or above ' +
+    'EUR 500,000 as Golden Visa exposure; that residency-by-investment route ' +
+    'was abolished on 2025-04-03 by Organic Law 1/2025. The other three were ' +
+    'unsourced heuristics.',
+  tax_estimate:
+    'Removed 2026-08-29. Was a flat 13% of price plus an annual holding cost ' +
+    'of price*0.0016 + 1800 + 400, the constants being invented. Use ' +
+    '/api/v1/tax, which resolves tax inputs from the caller or returns null.',
+  episodic_summary:
+    'Removed 2026-08-29. Was prose assembled from the removed scores and tiers.',
+} as const;
 
 function daysOnMarket(p: Property): number | null {
   if (!p._added) return null;
   const added = new Date(p._added);
+  if (Number.isNaN(added.getTime())) return null;
   const now = new Date();
   return Math.max(0, Math.round((now.getTime() - added.getTime()) / (1000 * 60 * 60 * 24)));
 }
 
-const TYPE_FACTORS: Record<string, number> = {
-  Apartment: 85, Townhouse: 70, Bungalow: 65, Penthouse: 60, Villa: 50,
-};
-
-function beachFactor(bk: number | null): number {
-  if (bk == null) return 50;
-  if (bk < 2) return 80;
-  if (bk < 5) return 65;
-  return 50;
+function median(xs: number[]): number | null {
+  if (xs.length === 0) return null;
+  const s = [...xs].sort((a, b) => a - b);
+  const mid = Math.floor(s.length / 2);
+  return s.length % 2 === 0 ? (s[mid - 1] + s[mid]) / 2 : s[mid];
 }
 
-function priceBandFactor(price: number): number {
-  if (price < 200_000) return 85;
-  if (price <= 400_000) return 75;
-  return 55;
+function pct(numerator: number, denominator: number): number | null {
+  if (!Number.isFinite(denominator) || denominator <= 0) return null;
+  return Number(((numerator / denominator) * 100).toFixed(1));
 }
-
-function marketDepthScore(count: number): number {
-  if (count >= 50) return 90;
-  if (count >= 20) return 70;
-  if (count >= 10) return 55;
-  if (count >= 5) return 40;
-  return 25;
-}
-
-function comparableVelocityScore(avgDom: number | null): number {
-  if (avgDom == null) return 50;
-  if (avgDom < 30) return 85;
-  if (avgDom < 60) return 70;
-  if (avgDom < 120) return 50;
-  return 30;
-}
-
-function inlineLiquidityScore(property: Property, comparables: Property[]): number {
-  const compDoms = comparables.map(daysOnMarket).filter((d): d is number => d !== null);
-  const compVelocity = compDoms.length > 0 ? avg(compDoms) : null;
-  const typeFactor = TYPE_FACTORS[property.t] ?? 50;
-  const bFact = beachFactor(property.bk);
-  const pbFact = priceBandFactor(property.pf);
-  const mdScore = marketDepthScore(comparables.length);
-  const cvScore = comparableVelocityScore(compVelocity);
-  return Math.round(
-    typeFactor * 0.25 + bFact * 0.20 + pbFact * 0.20 + mdScore * 0.20 + cvScore * 0.15
-  );
-}
-
-function countRegulatoryRisks(property: Property): number {
-  let count = 0;
-  // Coastal zone risk
-  if (property.bk != null && property.bk < 0.5) count++;
-  // Energy risk
-  if (property.energy && ['F', 'G'].includes(property.energy.toUpperCase())) count++;
-  // Golden Visa price band
-  if (property.pf >= 500_000) count++;
-  // Tourist license zone (coastal Valencia / Costa Blanca)
-  if (property.costa && slugify(property.costa).includes('blanca') && property.bk != null && property.bk < 0.5) count++;
-  return count;
-}
-
-function developerRating(dy: number): { score: number; label: string } {
-  if (dy >= 20) return { score: 90, label: 'Established (20+ years)' };
-  if (dy >= 10) return { score: 75, label: 'Experienced (10-20 years)' };
-  if (dy >= 5) return { score: 60, label: 'Growing (5-10 years)' };
-  return { score: 40, label: 'New (<5 years)' };
-}
-
-function clamp(v: number, min: number, max: number): number {
-  return Math.max(min, Math.min(max, v));
-}
-
-/* ─── Main handler ─── */
 
 export async function GET(request: NextRequest) {
   try {
@@ -100,155 +114,98 @@ export async function GET(request: NextRequest) {
 
     const comparables = all.filter(p => p.ref !== ref && p.l === property.l && p.t === property.t);
     const townComps = all.filter(p => p.ref !== ref && p.l === property.l);
-
-    /* ─── Valuation ─── */
-    const compPm2s = comparables.filter(p => p.pm2 && p.pm2 > 0).map(p => p.pm2!);
-    const medianPm2 = compPm2s.length > 0
-      ? compPm2s.sort((a, b) => a - b)[Math.floor(compPm2s.length / 2)]
-      : property.pm2 ?? property.mm2;
-    const fairValue = Math.round(medianPm2 * property.bm);
     const currentPrice = property.pf;
-    const valuationGapPct = fairValue > 0
-      ? Number((((fairValue - currentPrice) / fairValue) * 100).toFixed(1))
-      : 0;
-    const valuationScore = clamp(Math.round(50 + valuationGapPct * 2), 0, 100);
 
-    /* ─── Liquidity ─── */
-    const liquidityScore = inlineLiquidityScore(property, comparables);
-    const liquidityTier = liquidityScore > 75 ? 'HIGH' : liquidityScore > 50 ? 'MEDIUM' : 'LOW';
+    /* ─── Valuation against the comparable set ───
+     * The previous version fell back to the property's OWN price per m² when
+     * it had no comparables, which made fair_value equal the asking price and
+     * published a valuation gap of exactly 0.0% — a listing compared against
+     * itself, reported as though it had been compared against the market.
+     * With no comparables there is no comparable valuation, so it is null. */
+    const compPm2s = comparables.filter(p => p.pm2 && p.pm2 > 0).map(p => p.pm2!);
+    const medianPm2 = median(compPm2s);
+    const fairValue = medianPm2 !== null && property.bm > 0
+      ? Math.round(medianPm2 * property.bm)
+      : null;
+    const valuationGapPct = fairValue !== null ? pct(fairValue - currentPrice, fairValue) : null;
 
-    /* ─── Developer ─── */
-    const devRating = developerRating(property.dy);
+    /* ─── Town cross-section ─── */
+    const townAvgPrice = townComps.length > 0 ? Math.round(avg(townComps.map(p => p.pf))) : null;
+    const priceVsTownPct = townAvgPrice !== null
+      ? pct(currentPrice - townAvgPrice, townAvgPrice)
+      : null;
 
-    /* ─── Regulatory ─── */
-    const regRiskCount = countRegulatoryRisks(property);
-    const regulatoryScore = clamp(100 - regRiskCount * 20, 0, 100);
+    /* ─── EPC, through the shared normaliser ─── */
+    const epcLetter = toEpcLetter(property.energy);
 
-    /* ─── Market ─── */
-    const townAvgPrice = townComps.length > 0 ? Math.round(avg(townComps.map(p => p.pf))) : currentPrice;
-    const priceVsTown = townAvgPrice > 0
-      ? Number((((currentPrice - townAvgPrice) / townAvgPrice) * 100).toFixed(1))
-      : 0;
-    const marketScore = clamp(Math.round(60 - priceVsTown), 0, 100);
+    /* ─── Avena's own derived figures ─── */
+    const avenaScore = property._sc ?? null;
+    const grossYield = property._yield?.gross ?? null;
+    const discountPct = property.pm2 && property.mm2 && property.mm2 > 0
+      ? pct(property.mm2 - property.pm2, property.mm2)
+      : null;
 
-    /* ─── ESG / Carbon ─── */
-    const energyRating = property.energy ?? 'Unknown';
-    const esgScore = (() => {
-      const ratings: Record<string, number> = { A: 95, B: 85, C: 75, D: 60, E: 50, F: 35, G: 20 };
-      return ratings[energyRating.toUpperCase()] ?? 50;
-    })();
-
-    /* ─── Tax estimate ─── */
-    const purchaseTaxRate = 0.13;
-    const totalPurchaseCost = Math.round(currentPrice * purchaseTaxRate);
-    const annualHoldingCost = Math.round(currentPrice * 0.0016 + 1800 + 400);
-
-    /* ─── Scoring ─── */
-    const avenaScore = property._sc ?? 0;
-    const grossYield = property._yield?.gross ?? 0;
-    const discount = property.pm2 && property.mm2 && property.mm2 > 0
-      ? Number((((property.mm2 - property.pm2) / property.mm2) * 100).toFixed(1))
-      : 0;
-
-    /* ─── Health Score ─── */
-    const healthScore = Math.round(
-      avenaScore * 0.30 +
-      valuationScore * 0.20 +
-      liquidityScore * 0.15 +
-      devRating.score * 0.15 +
-      regulatoryScore * 0.10 +
-      esgScore * 0.10
-    );
-
-    const healthTier = healthScore >= 75 ? 'EXCELLENT' : healthScore >= 60 ? 'GOOD' : healthScore >= 45 ? 'FAIR' : 'NEEDS_REVIEW';
-
-    /* ─── Episodic Summary ─── */
-    const dom = daysOnMarket(property);
-    const summaryParts: string[] = [];
-    if (healthScore >= 75) summaryParts.push('Strong overall health profile.');
-    else if (healthScore >= 60) summaryParts.push('Solid fundamentals with some areas to monitor.');
-    else summaryParts.push('Some risk factors warrant closer due diligence.');
-
-    if (valuationGapPct > 5) summaryParts.push(`Appears undervalued by ~${valuationGapPct}% vs comparables.`);
-    else if (valuationGapPct < -5) summaryParts.push(`Priced ${Math.abs(valuationGapPct)}% above comparable median.`);
-
-    if (liquidityTier === 'HIGH') summaryParts.push('High liquidity - strong exit potential.');
-    else if (liquidityTier === 'LOW') summaryParts.push('Low liquidity - consider longer holding horizon.');
-
-    if (regRiskCount > 0) summaryParts.push(`${regRiskCount} regulatory risk factor(s) identified.`);
-    if (dom != null) summaryParts.push(`Listed for ${dom} days.`);
+    const compDoms = comparables.map(daysOnMarket).filter((d): d is number => d !== null);
 
     return NextResponse.json({
       property_id: property.ref ?? null,
       property_name: `${property.p} - ${property.l}`,
-      health_score: healthScore,
-      health_tier: healthTier,
+      town: property.l,
+      costa: property.costa ?? null,
+      property_type: property.t,
       generated_at: new Date().toISOString(),
       sections: {
         valuation: {
-          score: valuationScore,
-          fair_value: fairValue,
           current_price: currentPrice,
+          comparable_fair_value: fairValue,
           valuation_gap_pct: valuationGapPct,
           comparable_count: compPm2s.length,
-          median_pm2: medianPm2,
-          summary: valuationGapPct > 0
-            ? `Property appears undervalued by ${valuationGapPct}% based on ${compPm2s.length} comparables.`
-            : `Property priced ${Math.abs(valuationGapPct)}% above comparable median.`,
-        },
-        liquidity: {
-          score: liquidityScore,
-          tier: liquidityTier,
-          days_on_market: dom,
-          comparable_count: comparables.length,
-          summary: `Liquidity tier: ${liquidityTier}. ${comparables.length} comparable properties in ${property.l}.`,
-        },
-        developer: {
-          score: devRating.score,
-          name: property.d,
-          years_active: property.dy,
-          label: devRating.label,
-          summary: `${property.d} - ${devRating.label}. ${property.dy} years of track record.`,
-        },
-        regulatory: {
-          score: regulatoryScore,
-          risk_count: regRiskCount,
-          summary: regRiskCount === 0
-            ? 'No significant regulatory risk factors identified.'
-            : `${regRiskCount} regulatory risk factor(s) flagged. Review coastal zone, energy, and license requirements.`,
+          median_comparable_price_per_m2: medianPm2,
+          basis: 'median price per m² of live listings in the same town and of the same property type, applied to this unit\'s built area',
+          summary: valuationGapPct === null
+            ? `No comparable listings in ${property.l} of this type carry a price per m², so no comparable valuation is available.`
+            : valuationGapPct > 0
+              ? `Asking price is ${valuationGapPct}% below the median of ${compPm2s.length} comparable listings.`
+              : `Asking price is ${Math.abs(valuationGapPct)}% above the median of ${compPm2s.length} comparable listings.`,
         },
         market: {
-          score: marketScore,
           town_avg_price: townAvgPrice,
-          price_vs_town_pct: priceVsTown,
-          summary: `Priced ${priceVsTown > 0 ? `${priceVsTown}% above` : `${Math.abs(priceVsTown)}% below`} the ${property.l} average of EUR ${townAvgPrice.toLocaleString()}.`,
+          price_vs_town_pct: priceVsTownPct,
+          town_listing_count: townComps.length,
+          summary: townAvgPrice === null
+            ? `No other live listings in ${property.l} to compare against.`
+            : `Priced ${priceVsTownPct !== null && priceVsTownPct > 0 ? `${priceVsTownPct}% above` : `${Math.abs(priceVsTownPct ?? 0)}% below`} the ${property.l} average of EUR ${townAvgPrice.toLocaleString()} across ${townComps.length} listings.`,
         },
-        tax_estimate: {
-          purchase_costs: totalPurchaseCost,
-          annual_holding_costs: annualHoldingCost,
-          effective_purchase_rate: '13%',
-          summary: `Estimated purchase costs EUR ${totalPurchaseCost.toLocaleString()} (13%). Annual holding ~EUR ${annualHoldingCost.toLocaleString()}.`,
+        time_on_market: {
+          this_listing_days: daysOnMarket(property),
+          comparable_count: comparables.length,
+          comparables_with_a_first_seen_date: compDoms.length,
+          median_comparable_days_listed: median(compDoms),
+          summary: 'Days since the listing first appeared in the Avena feed. Not a time-to-sale: Avena observes listings, price changes and delistings, never a completed sale.',
+        },
+        developer: {
+          name: property.d,
+          years_active: property.dy,
+          summary: `${property.d}, ${property.dy} years active. Reported by the developer; Avena does not independently verify it.`,
+        },
+        energy: {
+          epc_rating: epcLetter,
+          epc_rating_raw: property.energy ?? null,
+          summary: epcLetter === null
+            ? 'Avena does not hold a recognised EPC letter for this listing. Request the certificate before purchase.'
+            : `EPC rating ${epcLetter} as supplied in the listing.`,
         },
         scoring: {
           avena_score: avenaScore,
-          gross_yield: grossYield,
-          discount_pct: discount,
-          beach_km: property.bk,
-          energy_rating: energyRating,
-          developer_years: property.dy,
-          summary: `Avena Score ${avenaScore}/100. Yield ${grossYield}%. ${discount > 0 ? `${discount}% below market.` : 'At or above market price.'}`,
-        },
-        carbon: {
-          score: esgScore,
-          energy_rating: energyRating,
-          summary: energyRating !== 'Unknown'
-            ? `Energy rating ${energyRating}. ${esgScore >= 70 ? 'Good energy efficiency profile.' : 'Consider energy upgrade costs.'}`
-            : 'Energy rating unknown. Request EPC certificate before purchase.',
-        },
-        episodic_summary: {
-          summary: summaryParts.join(' '),
+          gross_yield_pct: grossYield,
+          discount_vs_market_pm2_pct: discountPct,
+          beach_km: property.bk ?? null,
+          summary: avenaScore === null
+            ? 'No Avena Score derived for this listing.'
+            : `Avena Score ${avenaScore}/100.`,
         },
       },
+      not_published: NOT_PUBLISHED,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Internal server error';

@@ -39,7 +39,7 @@ const endpoints: Endpoint[] = [
   { path: '/api/v1/valuations',             methods: ['GET'], category: 'analysis',    description: 'AVM valuation feed per property.', auth: 'none' },
   { path: '/api/v1/valuations/assess',      methods: ['POST'], category: 'analysis',   description: 'Assess a custom property against the AVM model.', auth: 'none' },
   { path: '/api/v1/signals',                methods: ['GET'], category: 'analysis',    description: 'Live alpha signals.', auth: 'none' },
-  { path: '/api/v1/liquidity',              methods: ['GET'], category: 'analysis',    description: 'Liquidity index per market.', auth: 'none' },
+  { path: '/api/v1/liquidity',              methods: ['GET'], category: 'analysis',    description: 'Listing depth and time-on-market per town. No liquidity index is published — see not_published.', auth: 'none' },
   { path: '/api/v1/sentiment',              methods: ['GET'], category: 'analysis',    description: 'Sentiment score per market.', auth: 'none' },
   { path: '/api/v1/microstructure',         methods: ['GET'], category: 'analysis',    description: 'Property-level microstructure.', auth: 'none' },
   { path: '/api/v1/arbitrage',              methods: ['GET'], category: 'analysis',    description: 'Cross-market arbitrage opportunities.', auth: 'none' },
@@ -135,7 +135,7 @@ const endpoints: Endpoint[] = [
   // Protocol / passport
   { path: '/api/v1/api-profile',            methods: ['GET'], category: 'protocol',    description: 'Avena machine-readable API profile.', auth: 'none' },
   { path: '/api/v1/ai-partnership-profile', methods: ['GET'], category: 'protocol',    description: 'AI partnership profile (for agents).', auth: 'none' },
-  { path: '/api/v1/passport',               methods: ['GET'], category: 'protocol',    description: 'Avena passport schema.', auth: 'none' },
+  { path: '/api/v1/passport',               methods: ['GET'], category: 'protocol',    description: 'Per-listing fact sheet: comparable valuation, town cross-section, time on market, EPC. No composite health score — see not_published.', auth: 'none' },
   { path: '/api/v1/federation',             methods: ['GET'], category: 'protocol',    description: 'Federation endpoint for partner networks.', auth: 'none' },
   { path: '/api/v1/federated',              methods: ['GET'], category: 'protocol',    description: 'Federated data aggregation.', auth: 'none' },
   { path: '/api/v1/directory-submissions',  methods: ['GET', 'POST'], category: 'protocol', description: 'Directory submission status + intake.', auth: 'none' },
