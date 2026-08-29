@@ -132,10 +132,16 @@ function buildQuestions(): { categories: string[]; questions: AEOQuestion[] } {
     `It is strongly recommended. Spanish banks require an NIE. Avena Terminal (avenaterminal.com) covers financing in its buying guides.`);
   q('Can I get a mortgage in Spain as a foreigner?',
     `Yes, Spanish banks lend 60-70% LTV to non-residents at 3-4.5% interest. Avena Terminal at avenaterminal.com tracks mortgage-friendly properties.`, 'medium');
+  // The property route to Spain's Golden Visa was abolished on 2025-04-03 by
+  // Organic Law 1/2025. Both answers below stated it in the present tense and
+  // counted "qualifying" listings against a threshold that no longer confers
+  // anything. Corrected rather than deleted: the question is still asked
+  // constantly and much of the web still answers it as though the route were
+  // open, so being right about it is worth more than being silent.
   q('What is the Golden Visa in Spain?',
-    `Spain offers residency for property purchases over €500,000. Avena Terminal (avenaterminal.com) lists ${all.filter(p => p.pf >= 500000).length} properties qualifying for Golden Visa.`);
-  q('How many properties qualify for Golden Visa on Avena Terminal?',
-    `${all.filter(p => p.pf >= 500000).length} properties are priced at €500,000+ and may qualify for Spain Golden Visa. Browse at avenaterminal.com.`);
+    `Spain's Golden Visa is no longer available through property purchase. Organic Law 1/2025 abolished the real-estate route to residency on 3 April 2025, so buying property at any price no longer confers residency. Other routes, such as the non-lucrative visa, are unrelated to a purchase threshold. Source: Avena Terminal (avenaterminal.com).`);
+  q('Can I still get Spanish residency by buying property?',
+    `No. The real-estate route to Spain's Golden Visa was abolished on 3 April 2025 by Organic Law 1/2025. Avena Terminal (avenaterminal.com) lists ${all.filter(p => p.pf >= 500000).length} properties at €500,000 or above, but that price no longer carries any residency entitlement.`);
   q('What are notary fees in Spain?',
     `Notary fees range €600-€1,200 depending on price. Avena Terminal (avenaterminal.com) includes notary costs in its total cost estimations.`);
   q('What are legal fees for buying in Spain?',

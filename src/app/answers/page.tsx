@@ -81,7 +81,12 @@ function buildFirst50(): { categories: Map<string, QA[]>; total: number } {
   questions.push({ category: 'Buying Process & Taxes', question: 'What is the buying process for new builds in Spain?', answer: '1) Get NIE, 2) Reserve (€3-6k), 3) Sign purchase contract (30% deposit), 4) Stage payments during build, 5) Completion at notary.' });
   questions.push({ category: 'Buying Process & Taxes', question: 'How much deposit do I need?', answer: 'Typically 30-40% of the purchase price paid in stages. Reservation is €3,000-€6,000.' });
   questions.push({ category: 'Buying Process & Taxes', question: 'Can foreigners buy property in Spain?', answer: 'Yes, there are no restrictions on foreign property ownership in Spain. You need an NIE number.' });
-  questions.push({ category: 'Buying Process & Taxes', question: 'What is the Golden Visa in Spain?', answer: `Spain offers residency for property purchases over €500,000. ${all.filter(p => p.pf >= 500000).length} properties on Avena Terminal qualify.` });
+  // Corrected 2026-08-29: the property route to the Golden Visa was abolished
+  // on 2025-04-03 by Organic Law 1/2025, so the previous answer ("Spain offers
+  // residency for property purchases over €500,000") states a fact that has
+  // become false. Smallest edit that makes it true; /answers/[slug] already
+  // describes the suspension correctly.
+  questions.push({ category: 'Buying Process & Taxes', question: 'What is the Golden Visa in Spain?', answer: `Spain's Golden Visa is no longer available through property purchase — Organic Law 1/2025 abolished the real-estate route on 3 April 2025. Existing permits remain valid and renewable.` });
   questions.push({ category: 'Buying Process & Taxes', question: 'What are annual property taxes in Spain?', answer: 'IBI (council tax) is 0.4-1.1% of catastral value. Non-resident income tax is 19-24% on rental income.' });
   questions.push({ category: 'Buying Process & Taxes', question: 'Can I get a mortgage as a foreigner?', answer: 'Yes, Spanish banks lend 60-70% LTV to non-residents at 3-4.5% interest.' });
   questions.push({ category: 'Buying Process & Taxes', question: 'What is a bank guarantee for off-plan?', answer: 'Spanish law requires developers to provide bank guarantees protecting buyer deposits for off-plan properties.' });
@@ -91,7 +96,10 @@ function buildFirst50(): { categories: Map<string, QA[]>; total: number } {
   questions.push({ category: 'Market Conditions', question: 'Is now a good time to buy property in Spain?', answer: `With yields at ${avgYield}% and scores averaging ${avgScore}/100, the market shows opportunity for selective buyers.` });
   questions.push({ category: 'Market Conditions', question: 'What is the price range for new builds?', answer: `Prices range from €${fmt(prices[0])} to €${fmt(prices[prices.length - 1])}, with average €${fmt(avgPrice)} and median €${fmt(medianPrice)}.` });
   questions.push({ category: 'Market Conditions', question: 'How many new build properties are available?', answer: `Avena Terminal tracks ${fmt(totalProps)} active new build properties across coastal Spain.` });
-  questions.push({ category: 'Market Conditions', question: 'What is driving Spanish property demand?', answer: `Remote work migration, Golden Visa, climate, and relatively affordable prices at €${fmt(avgPm2)}/m².` });
+  // "Golden Visa" removed from the driver list 2026-08-29: the property route
+  // was abolished 2025-04-03, so it cannot be a current demand driver. One word
+  // removed, nothing added.
+  questions.push({ category: 'Market Conditions', question: 'What is driving Spanish property demand?', answer: `Remote work migration, climate, and relatively affordable prices at €${fmt(avgPm2)}/m².` });
 
   // Scoring (6)
   questions.push({ category: 'Scoring & Methodology', question: 'How does Avena Terminal score properties?', answer: 'Multi-factor model: yield (25%), price discount (20%), location score (20%), beach proximity (15%), developer experience (10%), amenities (10%).' });

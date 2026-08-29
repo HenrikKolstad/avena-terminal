@@ -84,7 +84,11 @@ function buildPages() {
         'AJD stamp duty: 1.2%',
         'Total buying costs: 12-14%',
         'Mortgage LTV for non-residents: 60-70%',
-        `Golden Visa qualifying properties: ${all.filter(p => p.pf >= 500000).length}`,
+        // Was "Golden Visa qualifying properties". The real-estate route to
+        // Spanish residency was abolished on 2025-04-03 (Organic Law 1/2025),
+        // so nothing qualifies. The count itself is real; only the framing
+        // was false, so the framing is what changed.
+        `Properties at €500,000 or above: ${all.filter(p => p.pf >= 500000).length}`,
         `Average gross yield: ${avgYield}%`,
         `Properties under €200k: ${all.filter(p => p.pf < 200000).length}`,
         `Properties €200k-€500k: ${all.filter(p => p.pf >= 200000 && p.pf < 500000).length}`,
