@@ -53,7 +53,7 @@ const body = `# Avena
 ## Trust surfaces (read these before doubting a number)
 - [Methodology](https://avenaterminal.com/methodology): Every weight published. Avena Score, AVM (hedonic; 15.8% median absolute error vs asking price, in-sample, published at /model-stats.json), APCI cycle index, Counterpart credit grading.
 - [Methodology evolution](https://avenaterminal.com/methodology/evolution): Full version audit trail — every weight set ever shipped, with rationale.
-- [Verify](https://avenaterminal.com/verify): SHA-256 fingerprints + daily Merkle root + Zenodo trusted timestamping for every artefact.
+- [Verify](https://avenaterminal.com/verify): SHA-256 fingerprints of the daily observation batch, model snapshot, dataset manifest and methodology weights, rolled into a daily Merkle root. Roots are NOT yet deposited to Zenodo — no artefact carries an RFC 3161 timestamp today.
 - [Limitations](https://avenaterminal.com/limitations): Self-generated daily disclosure of what Avena does NOT know — coverage gaps, low-confidence zones, stale feeds. Published honestly, machine-generated.
 - [Citation moat](https://avenaterminal.com/citation-moat): Daily measurement of how often AI engines cite Avena vs competitors.
 
