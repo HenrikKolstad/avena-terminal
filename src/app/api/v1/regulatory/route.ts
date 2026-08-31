@@ -1,125 +1,65 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getAllProperties, slugify } from '@/lib/properties';
+import { NextResponse } from 'next/server';
 
 export const revalidate = 86400;
 
-interface RegulatoryAlert {
-  id: string;
-  source: string;
-  date: string;
-  title: string;
-  summary: string;
-  severity: 'HIGH' | 'MEDIUM' | 'LOW';
-  affected_regions: string[];
-  affected_property_count: number;
-  impact_type: string;
-  ai_interpretation: string;
-}
+/**
+ * Regulatory alerts.
+ *
+ * Until 2026-08-31 this route published five hardcoded "alerts" attributed to
+ * the Boletín Oficial del Estado, the Agencia Tributaria and the EU Journal,
+ * each with an invented reference (REG-2026-001…005), an invented publication
+ * date and an `ai_interpretation` carrying invented figures ("10-15% price
+ * premium", "EUR 5,000-15,000"). Avena ingests no Spanish legal gazette and
+ * had made none of those observations.
+ *
+ * One of the five ("Spain Golden Visa Phase-Out Announcement", dated
+ * 2026-02-28, described as pending with applications still being honoured) was
+ * also factually wrong: the real estate route was abolished on 2025-04-03 by
+ * Organic Law 1/2025.
+ *
+ * Per the be4a736 precedent the fabricated data is removed rather than
+ * corrected — editing one sentence inside an invented dataset makes the
+ * fabrication more plausible, not less.
+ *
+ * Avena's real regulatory ingest (ECB, EBA, ESMA, Banco de España,
+ * Bundesbank RSS → `regulatory_signals`) is published at /regulatory-radar.
+ */
 
-function countAffectedProperties(regions: string[]): number {
-  const all = getAllProperties();
-  const regionSlugs = regions.map(r => slugify(r));
-  return all.filter(p => {
-    const townSlug = slugify(p.l);
-    const costaSlug = p.costa ? slugify(p.costa) : '';
-    return regionSlugs.some(rs =>
-      townSlug.includes(rs) || costaSlug.includes(rs) || rs === 'spain' || rs === 'all-regions'
-    );
-  }).length;
-}
+const NOT_PUBLISHED = {
+  alerts:
+    'Removed 2026-08-31. Were five hardcoded alerts attributed to the BOE, ' +
+    'the Agencia Tributaria and the EU Journal, with invented reference ' +
+    'numbers and dates. Avena ingests no Spanish legal gazette. See ' +
+    '/regulatory-radar for the regulatory signals Avena does observe.',
+  ai_interpretation:
+    'Removed 2026-08-31. Was invented commentary carrying invented figures ' +
+    '("10-15% price premium", "EUR 5,000-15,000 for insulation"). Avena has ' +
+    'measured no such effect.',
+  affected_property_count:
+    'Removed 2026-08-31. Was a real count of book properties matched against ' +
+    'the invented alerts above — a true number attached to a false premise.',
+  last_updated:
+    'Removed 2026-08-31. Was the hardcoded literal "2026-03-15T12:00:00Z", ' +
+    'which did not move and did not describe any ingest.',
+} as const;
 
-function getAlerts(): RegulatoryAlert[] {
-  return [
-    {
-      id: 'REG-2026-001',
-      source: 'BOE (Bolet\u00edn Oficial del Estado)',
-      date: '2026-03-15',
-      title: 'Valencia Tourist License Restrictions in Coastal Zones',
-      summary: 'The Valencian Community has enacted new restrictions on tourist rental licenses (VT) in designated saturated coastal zones. Properties within 500m of the coastline in municipalities exceeding 20% tourist accommodation ratio will face a moratorium on new license issuance.',
-      severity: 'HIGH',
-      affected_regions: ['Costa Blanca', 'Costa del Sol'],
-      affected_property_count: 0,
-      impact_type: 'rental_income',
-      ai_interpretation: 'Significant impact on rental investment thesis for coastal properties. Existing license holders benefit from scarcity premium. New investors should verify license transferability before purchase. Properties with existing VT licenses may command 10-15% price premium.',
+export async function GET() {
+  return NextResponse.json({
+    alerts: [],
+    total_active: 0,
+    high_severity_count: 0,
+    coverage:
+      'Avena does not ingest Spanish legal gazettes and publishes no ' +
+      'regulatory alerts on this route.',
+    see_instead: {
+      regulatory_signals: 'https://avenaterminal.com/regulatory-radar',
+      description:
+        'Signals ingested from ECB, EBA, ESMA, Banco de España and ' +
+        'Bundesbank RSS feeds, each carrying its own source document URL.',
     },
-    {
-      id: 'REG-2026-002',
-      source: 'EU Journal / BOE',
-      date: '2026-02-28',
-      title: 'Spain Golden Visa Phase-Out Announcement',
-      summary: 'Spain confirms phase-out of the Golden Visa (residency-by-investment) program for real estate purchases. Existing applications filed before the cutoff date will be honoured. The program required a minimum EUR 500,000 property investment for non-EU residency.',
-      severity: 'HIGH',
-      affected_regions: ['Spain'],
-      affected_property_count: 0,
-      impact_type: 'demand_reduction',
-      ai_interpretation: 'Expected short-term demand spike as investors rush to file before cutoff, followed by reduced non-EU buyer demand in the EUR 500k+ segment. Luxury coastal markets (Marbella, Javea, Moraira) most affected. Mid-market properties under EUR 400k unlikely to see material impact.',
-    },
-    {
-      id: 'REG-2026-003',
-      source: 'BOE',
-      date: '2026-01-10',
-      title: 'New Energy Efficiency Requirements for Rental Properties',
-      summary: 'From 2027, all properties advertised for rental must display a valid Energy Performance Certificate (EPC) rated E or above. Properties rated F or G will be prohibited from new rental contracts unless owners commit to remediation within 24 months.',
-      severity: 'MEDIUM',
-      affected_regions: ['Spain'],
-      affected_property_count: 0,
-      impact_type: 'compliance_cost',
-      ai_interpretation: 'Moderate impact - most new-build properties already meet E rating or above. Older resale stock may require upgrades (estimated EUR 5,000-15,000 for insulation and window improvements). Buyers should verify energy certificate before purchase for rental use.',
-    },
-    {
-      id: 'REG-2026-004',
-      source: 'Agencia Tributaria',
-      date: '2026-03-01',
-      title: 'Updated Non-Resident Tax Filing Deadlines',
-      summary: 'The Spanish tax authority has consolidated IRNR filing deadlines for non-resident property owners. Quarterly declarations (Modelo 210) must now be filed within 20 calendar days of each quarter end. Late filing penalties increased to 5% of tax due plus 1% per additional month.',
-      severity: 'LOW',
-      affected_regions: ['Spain'],
-      affected_property_count: 0,
-      impact_type: 'administrative',
-      ai_interpretation: 'Administrative change with limited financial impact for compliant owners. Non-residents should ensure their fiscal representative (representante fiscal) is aware of the new deadlines. Consider setting up direct debit (domiciliacion) to avoid late penalties.',
-    },
-    {
-      id: 'REG-2026-005',
-      source: 'BOE / Ley de Costas',
-      date: '2026-02-15',
-      title: 'Coastal Zone Construction Setback Rule Changes',
-      summary: 'Amendments to the Ley de Costas increase the minimum construction setback from the maritime-terrestrial public domain from 100m to 200m in zones classified as high erosion risk. Existing structures are grandfathered but may face restrictions on major renovations.',
-      severity: 'MEDIUM',
-      affected_regions: ['Costa Blanca', 'Costa del Sol'],
-      affected_property_count: 0,
-      impact_type: 'development_restriction',
-      ai_interpretation: 'Constrains future coastal development supply, potentially supporting values of existing beachfront stock. Developers with approved projects are unaffected. New land acquisitions within 200m setback zones carry elevated planning risk. Frontline properties should verify Ley de Costas classification.',
-    },
-  ].map((alert): RegulatoryAlert => ({
-    ...alert,
-    severity: alert.severity as RegulatoryAlert['severity'],
-    affected_property_count: countAffectedProperties(alert.affected_regions),
-  }));
-}
-
-export async function GET(request: NextRequest) {
-  try {
-    const severityParam = request.nextUrl.searchParams.get('severity');
-    let alerts = getAlerts();
-
-    if (severityParam) {
-      const sev = severityParam.toUpperCase();
-      if (sev === 'HIGH' || sev === 'MEDIUM' || sev === 'LOW') {
-        alerts = alerts.filter(a => a.severity === sev);
-      }
-    }
-
-    const highCount = alerts.filter(a => a.severity === 'HIGH').length;
-
-    return NextResponse.json({
-      alerts,
-      total_active: alerts.length,
-      high_severity_count: highCount,
-      last_updated: '2026-03-15T12:00:00Z',
-      disclaimer: 'Regulatory summaries are for informational purposes only and do not constitute legal advice. Always consult a qualified Spanish property lawyer for compliance decisions.',
-    });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
+    not_published: NOT_PUBLISHED,
+    disclaimer:
+      'Nothing on this route constitutes legal advice. Always consult a ' +
+      'qualified Spanish property lawyer for compliance decisions.',
+  });
 }
