@@ -237,6 +237,33 @@ export function boundSummary(value: unknown, depth = 0): unknown {
  *      a credential is not configured. Distinct from failure on purpose.
  *   2. a NON-EMPTY `errors` array.
  *   3. a non-empty `error` string.
+ *   4. `ok: false` — the run declaring its own failure.
+ *
+ * WHY 4 EXISTS
+ * On 2026-08-31, a Monday and therefore a citation run day, all three atlas
+ * invocations returned HTTP 200 with
+ *   { ok: false, status: 'measurement_failed', lookups_failed: 74,
+ *     lookups_measured: 0,
+ *     first_error: 'Perplexity HTTP 401: You exceeded your current quota' }
+ * and every one of them was logged 'success'. The engine that measures
+ * whether AI assistants cite Avena had stopped measuring, said so plainly in
+ * its own response body, and no query for failing crons could see it.
+ *
+ * The `9171dce` guard did hold — atlas wrote no rows, so no fabricated 0.00%
+ * was published, and the note in the body says why ("a failed lookup is not a
+ * zero citation"). This marker is about the monitoring layer, not the data:
+ * a dead engine must not look like a healthy one in cron_logs either.
+ *
+ * `ok: false` alone is NOT enough to call a failure, and checking it alone
+ * would have been wrong. atlas is resumable by design (`b090f52`): it works
+ * the question bank across three staggered invocations and returns
+ * `ok: false, status: 'incomplete_resumable'` from every invocation that
+ * hands work to the next one. Six such rows exist since 2026-07-15 and all
+ * six are healthy — the day's measurement completed. Flagging those would
+ * have produced a false alarm on most run days, which is worse than the gap
+ * it closes. So the benign in-progress states are named explicitly and
+ * everything else that declares `ok: false` is an error: a new failure mode
+ * fails loud rather than joining the successes.
  *
  * WHY 2 AND 3 EXIST
  * A run that recorded its own failures and then returned HTTP 200
@@ -257,6 +284,20 @@ export function boundSummary(value: unknown, depth = 0): unknown {
  * fourth 'partial' status: /swarm counts status='success' and an unknown
  * value would silently drop out of every existing reader.
  */
+/**
+ * Self-declared statuses that legitimately carry `ok: false` on a healthy run.
+ *
+ * Only resumable work belongs here: an invocation that deliberately stopped
+ * short and handed the remainder to its next scheduled run. Anything that
+ * means "this did not do its job" must NOT be added — that is the whole point
+ * of marker 4 above.
+ */
+const BENIGN_INCOMPLETE_STATUSES = new Set(['incomplete_resumable']);
+
+function isBenignIncompleteStatus(status: unknown): boolean {
+  return typeof status === 'string' && BENIGN_INCOMPLETE_STATUSES.has(status);
+}
+
 export function deriveCronStatus(
   res: Response,
   body: unknown,
@@ -277,6 +318,14 @@ export function deriveCronStatus(
   }
   if (typeof b.error === 'string' && b.error.length > 0) {
     return { status: 'error', error: b.error };
+  }
+  if (b.ok === false && !isBenignIncompleteStatus(b.status)) {
+    const self = typeof b.status === 'string' ? b.status : 'unspecified';
+    const first = describeError(b.first_error) ?? describeError(b.note) ?? 'no reason given';
+    return {
+      status: 'error',
+      error: `HTTP ${res.status} but the run reported ok:false (${self}); first: ${first}`,
+    };
   }
   return { status: 'success', error: null };
 }

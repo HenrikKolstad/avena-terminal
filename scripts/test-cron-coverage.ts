@@ -138,6 +138,45 @@ ok('a PostgrestError inside errors[] is described, not "[object Object]"',
   String(deriveCronStatus(res(200), { errors: [{ message: 'FK violation', code: '23503' }] }).error).includes('FK violation'));
 ok('a 200 with a non-empty error string is an error',
   deriveCronStatus(res(200), { error: 'generate-pulse failed: HTTP 500' }).status === 'error');
+
+// ok:false — the run declaring its own failure. Both bodies below are real
+// atlas rows, and the whole point is that they must NOT be treated alike.
+const atlasFailed = {
+  ok: false,
+  status: 'measurement_failed',
+  note: 'No rows written — a failed lookup is not a zero citation.',
+  bank_size: 74,
+  lookups_failed: 74,
+  lookups_measured: 0,
+  first_error: 'Perplexity HTTP 401: You exceeded your current quota',
+};
+const atlasResumable = {
+  ok: false,
+  status: 'incomplete_resumable',
+  bank_size: 74,
+  remaining: 31,
+  first_error: 'not queried in this invocation',
+};
+
+ok('a 200 with ok:false and a failure status is an error (atlas, 2026-08-31)',
+  deriveCronStatus(res(200), atlasFailed).status === 'error');
+ok('the ok:false error names the self-declared status and the first error',
+  String(deriveCronStatus(res(200), atlasFailed).error).includes('measurement_failed')
+  && String(deriveCronStatus(res(200), atlasFailed).error).includes('Perplexity HTTP 401'));
+ok('incomplete_resumable is NOT an error — atlas hands work to its next run',
+  deriveCronStatus(res(200), atlasResumable).status === 'success');
+ok('a completed atlas run is a success',
+  deriveCronStatus(res(200), { ok: true, status: 'complete' }).status === 'success');
+ok('already_complete is a success',
+  deriveCronStatus(res(200), { ok: true, status: 'already_complete' }).status === 'success');
+ok('ok:false with an UNKNOWN status fails loud rather than passing quietly',
+  deriveCronStatus(res(200), { ok: false, status: 'something_new' }).status === 'error');
+ok('ok:false with no status at all is still an error',
+  deriveCronStatus(res(200), { ok: false }).status === 'error');
+ok('ok:false with no reason says so instead of inventing one',
+  String(deriveCronStatus(res(200), { ok: false }).error).includes('no reason given'));
+ok('skipped still beats ok:false — a dormant run is not a failed one',
+  deriveCronStatus(res(200), { ok: false, skipped: true }).status === 'skipped');
 ok('a 200 with an empty error string stays a success',
   deriveCronStatus(res(200), { error: '' }).status === 'success');
 ok('skipped still wins over a populated errors[]',
