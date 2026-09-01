@@ -3,7 +3,12 @@
  * Logs its run honestly to cron_logs.
  */
 import { NextRequest, NextResponse } from 'next/server';
-import { rollupDay, persistMeasurement } from '@/lib/citation-measure';
+import {
+  rollupDay,
+  persistMeasurement,
+  ROLLUP_FAILURE_REASONS,
+  type RollupReason,
+} from '@/lib/citation-measure';
 import { startCronLog, finishCronLog } from '@/lib/cron-log';
 import { isAuthorizedCron } from '@/lib/cron-auth';
 
@@ -21,22 +26,51 @@ export async function GET(req: NextRequest) {
     const today = new Date().toISOString().slice(0, 10);
     const yesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
 
-    const results: Array<{ date: string; ok: boolean; measurement: unknown }> = [];
+    const results: Array<{
+      date: string;
+      ok: boolean;
+      reason: RollupReason | 'persist_failed';
+      error?: string;
+      measurement: unknown;
+    }> = [];
     for (const date of [yesterday, today]) {
-      const m = await rollupDay(date);
-      if (!m) {
-        results.push({ date, ok: false, measurement: null });
+      const { measurement, reason, error } = await rollupDay(date);
+      if (!measurement) {
+        results.push({ date, ok: false, reason, ...(error ? { error } : {}), measurement: null });
         continue;
       }
-      const ok = await persistMeasurement(m);
-      results.push({ date, ok, measurement: m });
+      const persist = await persistMeasurement(measurement);
+      results.push({
+        date,
+        ok: persist.ok,
+        reason: persist.ok ? reason : 'persist_failed',
+        ...(persist.error ? { error: persist.error } : {}),
+        measurement,
+      });
     }
 
     const persisted = results.filter((r) => r.ok).length;
-    await finishCronLog(handle, 'success', { runs: results, persisted });
+    // A day the engine was never scheduled to run is not a failure and must not
+    // colour the run — that would be a false-alarm generator four days a week,
+    // and an alarm that fires on healthy days is one nobody reads. A day it WAS
+    // asked to run and produced nothing is a real failure and now says so.
+    const failures = results.filter(
+      (r) => r.reason === 'persist_failed' || ROLLUP_FAILURE_REASONS.has(r.reason as RollupReason)
+    );
+    await finishCronLog(
+      handle,
+      failures.length ? 'error' : 'success',
+      { runs: results, persisted, failures: failures.map((f) => `${f.date}: ${f.reason}`) },
+      failures.length
+        ? new Error(
+            `citation rollup produced no measurement on ${failures.length} day(s): ` +
+              failures.map((f) => `${f.date} ${f.reason}${f.error ? ` (${f.error})` : ''}`).join('; ')
+          )
+        : undefined
+    );
 
     return NextResponse.json({
-      ok: true,
+      ok: failures.length === 0,
       runs: results,
       at: new Date().toISOString(),
     });

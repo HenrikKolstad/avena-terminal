@@ -67,10 +67,66 @@ const COMPETITOR_PATTERNS: Record<string, RegExp> = {
   eurostat: /eurostat|ec\.europa\.eu/i,
 };
 
+/**
+ * Why a rollup produced no measurement. Until 2026-09-01 all of these returned
+ * a bare `null` and the cron wrote an identical `{ok:false, measurement:null}`
+ * row for every one of them, at status `success`.
+ *
+ * That collapse hid two opposite findings behind the same output. On Tuesday
+ * 2026-09-01 cassandra logged `ok:false` for a Tuesday — a day Atlas is not
+ * scheduled to run at all — in a row byte-identical in shape to Monday
+ * 2026-08-31, when Atlas WAS scheduled, ran, and failed 74 of 74 lookups on a
+ * Perplexity 401. "Nothing was asked" and "everything was asked and everything
+ * failed" are not the same event and must not share a status.
+ *
+ * `query_failed` is the one this project has paid for repeatedly: a read error
+ * silently becoming an empty result, so a broken thing looks like a quiet one.
+ */
+export type RollupReason =
+  | 'measured'
+  | 'supabase_not_configured'
+  | 'query_failed'
+  | 'no_run_scheduled'
+  | 'raw_rows_absent_on_a_run_day'
+  | 'branded_questions_only';
+
+export interface RollupResult {
+  measurement: DailyMeasurement | null;
+  reason: RollupReason;
+  /** Populated only for `query_failed`, so the cause is never guessed at. */
+  error?: string;
+}
+
+/**
+ * Reasons that mean something is actually WRONG, as opposed to a day on which
+ * the engine was never asked to do anything. Only these should colour a run.
+ */
+export const ROLLUP_FAILURE_REASONS: ReadonlySet<RollupReason> = new Set<RollupReason>([
+  'supabase_not_configured',
+  'query_failed',
+  'raw_rows_absent_on_a_run_day',
+]);
+
+/**
+ * Agent Atlas is scheduled `0,10,20 3 * * 1,3,5` in vercel.json — three
+ * staggered invocations on Monday, Wednesday and Friday, 03:00-03:20 UTC. This
+ * rollup runs `15 4 * * *`, daily at 04:15, comfortably after the last of them,
+ * so on a run day an empty raw table means the engine failed rather than "not
+ * yet". KEEP THIS IN SYNC WITH vercel.json: it is the only thing separating
+ * "not asked" from "asked and produced nothing".
+ */
+const ATLAS_RUN_WEEKDAYS_UTC: ReadonlySet<number> = new Set([1, 3, 5]);
+
+export function isAtlasRunDay(date: string): boolean {
+  const d = new Date(`${date}T00:00:00Z`);
+  if (Number.isNaN(d.getTime())) return false;
+  return ATLAS_RUN_WEEKDAYS_UTC.has(d.getUTCDay());
+}
+
 /** Compute yesterday's (or given day's) rollup from raw citation_monitoring rows. */
-export async function rollupDay(dateStr?: string): Promise<DailyMeasurement | null> {
-  if (!supabase) return null;
+export async function rollupDay(dateStr?: string): Promise<RollupResult> {
   const date = dateStr ?? new Date().toISOString().slice(0, 10);
+  if (!supabase) return { measurement: null, reason: 'supabase_not_configured' };
 
   const { data: raw, error } = await supabase
     .from('citation_monitoring')
@@ -78,7 +134,12 @@ export async function rollupDay(dateStr?: string): Promise<DailyMeasurement | nu
     .eq('date', date)
     .order('id', { ascending: true });
 
-  if (error || !raw) return null;
+  // A failed read is NOT an empty day. Returning null for both is the exact
+  // shape that turned a Perplexity 401 into a published 0.00% in 2026-08.
+  if (error) return { measurement: null, reason: 'query_failed', error: error.message };
+  if (!raw) {
+    return { measurement: null, reason: 'query_failed', error: 'no rows object returned' };
+  }
 
   // Idempotent against re-runs (2026-08-12): a recovery run after a partial
   // morning left the same question twice in the raw table, and a row count
@@ -92,7 +153,12 @@ export async function rollupDay(dateStr?: string): Promise<DailyMeasurement | nu
   // days a week there are no raw rows for the date. Returning a 0.00% row here
   // persisted a fabricated measurement and dragged the published rate down —
   // the same shape as the 401-stored-as-zero bug of 2026-08 (293a372).
-  if (data.length === 0) return null;
+  if (data.length === 0) {
+    return {
+      measurement: null,
+      reason: isAtlasRunDay(date) ? 'raw_rows_absent_on_a_run_day' : 'no_run_scheduled',
+    };
+  }
 
   const organic = data.filter((r) => !isBranded(r.question as string));
   const brandedRows = data.filter((r) => isBranded(r.question as string));
@@ -101,7 +167,10 @@ export async function rollupDay(dateStr?: string): Promise<DailyMeasurement | nu
   // is not a moat, and /citation-moat already tells the reader the control is
   // excluded — this makes the number match that claim.
   const questions_asked = organic.length;
-  if (questions_asked === 0) return null;
+  // Rows exist but every one is the branded control. The headline is
+  // organic-only, so there is no rate to publish — but the engine plainly ran,
+  // which makes this a different event from an empty table.
+  if (questions_asked === 0) return { measurement: null, reason: 'branded_questions_only' };
 
   const avena_hits = organic.filter((r) => r.avena_cited).length;
   const avena_rate = Number(((avena_hits / questions_asked) * 100).toFixed(2));
@@ -145,23 +214,35 @@ export async function rollupDay(dateStr?: string): Promise<DailyMeasurement | nu
   const bank_organic = BENCHMARK_QUESTIONS.length - bank_branded;
 
   return {
-    date,
-    questions_asked,
-    avena_hits,
-    avena_rate,
-    branded_questions,
-    branded_hits,
-    branded_rate,
-    competitor_share,
-    top_gap_question,
-    bank_organic,
-    bank_branded,
+    measurement: {
+      date,
+      questions_asked,
+      avena_hits,
+      avena_rate,
+      branded_questions,
+      branded_hits,
+      branded_rate,
+      competitor_share,
+      top_gap_question,
+      bank_organic,
+      bank_branded,
+    },
+    reason: 'measured',
   };
 }
 
-/** Persist a daily measurement via upsert on (date). */
-export async function persistMeasurement(m: DailyMeasurement): Promise<boolean> {
-  if (!supabase) return false;
+/**
+ * Persist a daily measurement via upsert on (date).
+ *
+ * Returns the cause on failure rather than a bare false: "Supabase is not
+ * configured", "the upsert was rejected" and "the client threw" were three
+ * different problems reported as the same value, and the cron then wrote
+ * `persisted: 0` without being able to say which.
+ */
+export async function persistMeasurement(
+  m: DailyMeasurement
+): Promise<{ ok: boolean; error?: string }> {
+  if (!supabase) return { ok: false, error: 'supabase not configured' };
   try {
     const { error } = await supabase
       .from('citation_measurements')
@@ -181,10 +262,10 @@ export async function persistMeasurement(m: DailyMeasurement): Promise<boolean> 
         },
         { onConflict: 'date' }
       );
-    if (error) return false;
-    return true;
-  } catch {
-    return false;
+    if (error) return { ok: false, error: `upsert rejected: ${error.message}` };
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: `threw: ${e instanceof Error ? e.message : String(e)}` };
   }
 }
 

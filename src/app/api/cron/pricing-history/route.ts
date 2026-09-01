@@ -39,6 +39,7 @@ import { startCronLog, finishCronLog } from '@/lib/cron-log';
 import { supabase } from '@/lib/supabase';
 import { getAllProperties } from '@/lib/properties';
 import { getFeedGeneratedDate } from '@/lib/feed-meta';
+import { findSupersededRefs } from '@/lib/capture-integrity';
 
 /**
  * Hour (UTC) from which a book that is not today's stops being "the nightly is
@@ -228,6 +229,18 @@ export async function GET(req: NextRequest) {
   // overwrote it into the snapshot without ever logging the event.
   const todayRows = await selectAllPages<{ ref: string; price: number | null }>('ref, price', today);
   const todayByRef = new Map((todayRows ?? []).map((r) => [r.ref, r]));
+
+  // Is today's stored snapshot still ONE book? The `feedDate < today` guard
+  // above catches yesterday's book being banked under today's date; it cannot
+  // catch two DIFFERENT books that both carry today's stamp, which is what a
+  // late nightly plus an early hand-dispatch produces. See findSupersededRefs
+  // for the 2026-08-31 case this was written from. Reported, not repaired —
+  // retracting these refs is a DELETE against the moat's ground truth and sits
+  // on a branch.
+  const supersededRefs = findSupersededRefs(
+    (todayRows ?? []).map((r) => r.ref),
+    currentRefs
+  );
 
   const priorAgeDays = priorDate
     ? Math.round((Date.parse(today) - Date.parse(priorDate)) / 86_400_000)
@@ -424,6 +437,19 @@ export async function GET(req: NextRequest) {
     // failure: the moves themselves are in price_snapshots either way.
     moves_ledger_blocked: movesLedgerBlocked,
     delisted,
+    // Non-zero means an earlier capture today banked a book this run can no
+    // longer see, so the stored day is a union of two books: membership from
+    // the earlier one, prices from this one. Every individual row is still
+    // defensible; the day's row SET describes a book that never existed, so no
+    // daily aggregate over it should be quoted without saying so.
+    //
+    // Kept OUT of `errors` deliberately, on the same reasoning as
+    // moves_ledger_blocked above: the capture itself succeeded — twice — and
+    // turning the nightly red for a filed, approval-blocked repair would train
+    // the one alarm that matters to be ignored. It is a named, non-null field
+    // in a summary that is read every morning, which is what it was missing.
+    snapshot_superseded: supersededRefs.length,
+    snapshot_superseded_refs: supersededRefs.length ? supersededRefs.slice(0, 25) : null,
     prior_date: priorDate,
     prior_age_days: priorAgeDays === Infinity ? null : priorAgeDays,
     trusted_prior: trustPrior,
