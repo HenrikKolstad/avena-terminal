@@ -13,7 +13,7 @@
 import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
-import { startCronLog, finishCronLog } from '@/lib/cron-log';
+import { startCronLog, finishCronLog, finishCronLogDerived } from '@/lib/cron-log';
 import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    await finishCronLog(log, 'success', { signals_generated: 0, note: 'ANTHROPIC_API_KEY not set — skipping' });
+    await finishCronLogDerived(log, { signals_generated: 0, note: 'ANTHROPIC_API_KEY not set — skipping' });
     return NextResponse.json({ ok: true, signals_generated: 0, note: 'ANTHROPIC_API_KEY not set' });
   }
 
@@ -168,7 +168,7 @@ Output ONE high-quality signal as pure JSON (no markdown fences). Make it realis
     return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : String(e) }, { status: 500 });
   }
 
-  await finishCronLog(log, 'success', {
+  await finishCronLogDerived(log, {
     signals_generated: 1,
     signal_id: signal.signal_id,
     confidence: signal.confidence_score,

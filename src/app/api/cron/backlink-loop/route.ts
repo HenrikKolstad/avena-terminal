@@ -1,7 +1,7 @@
 import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { runBacklinkLoop } from '@/lib/backlink-loop';
-import { startCronLog, finishCronLog } from '@/lib/cron-log';
+import { startCronLog, finishCronLog, finishCronLogDerived } from '@/lib/cron-log';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 120;
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
   const handle = await startCronLog('hermes', '/api/cron/backlink-loop');
   try {
     const result = await runBacklinkLoop();
-    await finishCronLog(handle, 'success', {
+    await finishCronLogDerived(handle, {
       drafted: result.drafted,
       logged: result.logged,
       emailed: result.emailed,

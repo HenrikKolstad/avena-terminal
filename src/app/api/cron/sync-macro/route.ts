@@ -14,7 +14,7 @@
  */
 import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextRequest, NextResponse } from 'next/server';
-import { startCronLog, finishCronLog } from '@/lib/cron-log';
+import { startCronLog, finishCronLog, finishCronLogDerived } from '@/lib/cron-log';
 import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -189,6 +189,6 @@ export async function GET(req: NextRequest) {
     missing: snapshots.filter((s) => s.value == null).length,
     indicators: snapshots.map((s) => ({ key: s.indicator_key, value: s.value, valid_for: s.valid_for_date })),
   };
-  await finishCronLog(log, 'success', summary);
+  await finishCronLogDerived(log, summary);
   return NextResponse.json({ ok: true, ...summary });
 }

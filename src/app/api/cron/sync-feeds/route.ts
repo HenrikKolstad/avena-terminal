@@ -13,7 +13,7 @@
  */
 import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextRequest, NextResponse } from 'next/server';
-import { startCronLog, finishCronLog } from '@/lib/cron-log';
+import { startCronLog, finishCronLog, finishCronLogDerived } from '@/lib/cron-log';
 import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -186,6 +186,6 @@ export async function GET(req: NextRequest) {
     results,
     merge_summary: mergeSummary,
   };
-  await finishCronLog(log, 'success', summary);
+  await finishCronLogDerived(log, summary);
   return NextResponse.json({ ok: true, ...summary });
 }

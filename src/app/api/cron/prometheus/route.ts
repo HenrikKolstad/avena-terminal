@@ -1,7 +1,7 @@
 import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextRequest } from 'next/server';
 import { runPrometheus } from '@/lib/prometheus';
-import { startCronLog, finishCronLog } from '@/lib/cron-log';
+import { startCronLog, finishCronLog, finishCronLogDerived } from '@/lib/cron-log';
 
 export const maxDuration = 300;
 
@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   try {
     const max = parseInt(req.nextUrl.searchParams.get('max') || '8', 10);
     const summary = await runPrometheus(Math.min(Math.max(max, 1), 20));
-    await finishCronLog(handle, 'success', {
+    await finishCronLogDerived(handle, {
       harvested: summary.harvested,
       drafted: summary.drafted,
       published: summary.published,

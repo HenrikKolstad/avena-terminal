@@ -14,7 +14,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { startCronLog, finishCronLog } from '@/lib/cron-log';
+import { startCronLog, finishCronLogDerived } from '@/lib/cron-log';
 import { logFindings, type Finding } from '@/lib/findings';
 import { getAllProperties } from '@/lib/properties';
 import { INGESTION_SWARM } from '@/lib/ingestion-swarm';
@@ -49,7 +49,7 @@ export async function GET() {
   const all = getAllProperties().filter((p) => p.ref && p._sc != null);
 
   if (all.length === 0) {
-    await finishCronLog(log, 'success', { attempted: 0, inserted: 0, note: 'no inventory yet' });
+    await finishCronLogDerived(log, { attempted: 0, inserted: 0, note: 'no inventory yet' });
     return NextResponse.json({ ok: true, attempted: 0, inserted: 0 });
   }
 
@@ -83,7 +83,7 @@ export async function GET() {
 
   const result = await logFindings(findings);
 
-  await finishCronLog(log, 'success', {
+  await finishCronLogDerived(log, {
     slice,
     sliceSize,
     propertiesProcessed: properties.length,

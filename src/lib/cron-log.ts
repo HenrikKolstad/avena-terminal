@@ -298,6 +298,64 @@ function isBenignIncompleteStatus(status: unknown): boolean {
   return typeof status === 'string' && BENIGN_INCOMPLETE_STATUSES.has(status);
 }
 
+/**
+ * The four body markers, applied to a summary object on its own.
+ *
+ * WHY THIS IS SEPARATE FROM deriveCronStatus
+ * On 2026-09-02 the `485fa15` marker-4 fix was read out against its
+ * pre-registered discriminator and FAILED — not because the derivation was
+ * wrong, but because it never ran. All three atlas invocations that morning
+ * returned `ok:false, status:'measurement_failed'` on a Perplexity 401 and
+ * were still logged `success`, exactly as on 08-31, because
+ * /api/cron/citation-agent does not use withCronLog: it calls
+ *   finishCronLog(handle, 'success', summary)
+ * with the status as a LITERAL. A hardcoded 'success' cannot be talked out of
+ * by any marker, so every rule documented above was unreachable for that
+ * route. Eighteen routes were written that way — 22 call sites — against 22
+ * that go through the wrapper.
+ *
+ * That is this project's recurring bug one level up the stack: not a failed
+ * value becoming a zero, but a failure having no way to reach the field that
+ * reports it. The fix is to give the direct callers the same derivation the
+ * wrapper has (finishCronLogDerived below), and scripts/test-cron-coverage.ts
+ * now fails the build if a literal 'success' reappears at a finishCronLog
+ * call site — the guard, not the patch, is what stops the class recurring.
+ *
+ * Bounded before shipping by replaying these rules over the 175 cron_logs
+ * rows the affected agents wrote in the preceding 7 days: 8 rows flip to
+ * `error` (atlas ×6 on the 401; dvf-ingest ×2 on real FK violations that
+ * dropped rows) and 167 stay `success`. The false-alarm case that marker 4
+ * was built around — atlas `ok:false, status:'incomplete_resumable'` on
+ * 08-28 — correctly stays `success`.
+ */
+export function deriveStatusFromSummary(
+  summary: unknown,
+): { status: 'success' | 'error' | 'skipped'; error: unknown } {
+  const b = (summary && typeof summary === 'object' ? summary : {}) as Record<string, unknown>;
+  if (b.skipped === true || b.status === 'skipped') {
+    return { status: 'skipped', error: null };
+  }
+  if (Array.isArray(b.errors) && b.errors.length > 0) {
+    const first = describeError(b.errors[0]) ?? 'unspecified';
+    return {
+      status: 'error',
+      error: `the run reported ${b.errors.length} error(s); first: ${first}`,
+    };
+  }
+  if (typeof b.error === 'string' && b.error.length > 0) {
+    return { status: 'error', error: b.error };
+  }
+  if (b.ok === false && !isBenignIncompleteStatus(b.status)) {
+    const self = typeof b.status === 'string' ? b.status : 'unspecified';
+    const first = describeError(b.first_error) ?? describeError(b.note) ?? 'no reason given';
+    return {
+      status: 'error',
+      error: `the run reported ok:false (${self}); first: ${first}`,
+    };
+  }
+  return { status: 'success', error: null };
+}
+
 export function deriveCronStatus(
   res: Response,
   body: unknown,
@@ -309,25 +367,27 @@ export function deriveCronStatus(
   if (!res.ok) {
     return { status: 'error', error: b.error ?? b.message ?? `HTTP ${res.status}` };
   }
-  if (Array.isArray(b.errors) && b.errors.length > 0) {
-    const first = describeError(b.errors[0]) ?? 'unspecified';
-    return {
-      status: 'error',
-      error: `HTTP ${res.status} but the run reported ${b.errors.length} error(s); first: ${first}`,
-    };
+  const derived = deriveStatusFromSummary(body);
+  if (derived.status === 'error') {
+    // Keep the HTTP code in the message: "200 but the run says it failed" is
+    // the specific contradiction these markers exist to surface.
+    return { status: 'error', error: `HTTP ${res.status} but ${String(derived.error)}` };
   }
-  if (typeof b.error === 'string' && b.error.length > 0) {
-    return { status: 'error', error: b.error };
-  }
-  if (b.ok === false && !isBenignIncompleteStatus(b.status)) {
-    const self = typeof b.status === 'string' ? b.status : 'unspecified';
-    const first = describeError(b.first_error) ?? describeError(b.note) ?? 'no reason given';
-    return {
-      status: 'error',
-      error: `HTTP ${res.status} but the run reported ok:false (${self}); first: ${first}`,
-    };
-  }
-  return { status: 'success', error: null };
+  return derived;
+}
+
+/**
+ * Finish a run with the status its own summary implies.
+ *
+ * Direct callers (routes that do not use withCronLog) MUST use this rather
+ * than passing a status literal — see the note on deriveStatusFromSummary.
+ */
+export async function finishCronLogDerived(
+  handle: CronLogHandle,
+  summary: unknown,
+): Promise<void> {
+  const { status, error } = deriveStatusFromSummary(summary);
+  await finishCronLog(handle, status, summary, error ?? undefined);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

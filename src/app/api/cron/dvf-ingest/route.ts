@@ -14,7 +14,7 @@
 
 import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextRequest, NextResponse } from 'next/server';
-import { startCronLog, finishCronLog } from '@/lib/cron-log';
+import { startCronLog, finishCronLog, finishCronLogDerived } from '@/lib/cron-log';
 import { supabase } from '@/lib/supabase';
 import {
   fetchCommuneYear,
@@ -69,7 +69,7 @@ export async function GET(req: NextRequest) {
   }
 
   if (rows.length === 0) {
-    await finishCronLog(log, 'success', { commune: commune.insee, year, fetched: 0 });
+    await finishCronLogDerived(log, { commune: commune.insee, year, fetched: 0 });
     return NextResponse.json({ ok: true, commune: commune.name, year, fetched: 0 });
   }
 
@@ -178,6 +178,6 @@ export async function GET(req: NextRequest) {
     errors: errors.slice(0, 5),
   };
 
-  await finishCronLog(log, 'success', summary);
+  await finishCronLogDerived(log, summary);
   return NextResponse.json({ ok: true, ...summary });
 }

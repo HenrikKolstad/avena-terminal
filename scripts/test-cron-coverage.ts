@@ -21,9 +21,15 @@
  * a failure is recorded as a failure.
  */
 
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { boundSummary, classifyInvocation, deriveCronStatus, isPlatformRun } from '../src/lib/cron-log';
+import {
+  boundSummary,
+  classifyInvocation,
+  deriveCronStatus,
+  deriveStatusFromSummary,
+  isPlatformRun,
+} from '../src/lib/cron-log';
 
 const ROOT = join(__dirname, '..');
 let passed = 0;
@@ -233,6 +239,72 @@ ok('nesting is bounded rather than infinite',
 
 const cyclicSafe = boundSummary([{ a: 1 }, { b: 2 }]);
 ok('arrays of objects survive', JSON.stringify(cyclicSafe) === '[{"a":1},{"b":2}]');
+
+// ── Part 4: no route may hardcode its own success ────────────────────────────
+//
+// This is the guard, and it matters more than the derivation it protects.
+//
+// On 2026-08-31 marker 4 was added to deriveCronStatus specifically so that
+// atlas — the citation engine — could not report a Perplexity 401 as a green
+// run. On 2026-09-02 the same three invocations failed the same way and were
+// logged `success` again, because /api/cron/citation-agent never calls
+// deriveCronStatus: it passed the literal 'success' straight to
+// finishCronLog. The rule was correct, deployed, unit-tested and unreachable.
+// Seventeen other routes were written the same way.
+//
+// A status literal is a claim about the run made BEFORE the run's own result
+// is looked at. Deriving it from the summary is the only shape that cannot
+// drift, so the literal is banned outright at the call site. A conditional
+// (`failed === 0 ? 'success' : 'error'`, as moat-archive and pricing-history
+// already do) is honest derivation and stays allowed; only the unconditional
+// literal is rejected.
+
+console.log('\nNo cron route hardcodes success\n');
+
+const API_ROOT = join(ROOT, 'src/app/api');
+const cronRouteFiles = readdirSync(API_ROOT, { recursive: true, encoding: 'utf8' })
+  .filter((p) => p.endsWith('route.ts'))
+  .map((p) => join(API_ROOT, p));
+
+// A scan that silently matched nothing would pass this test forever.
+ok('the route scan actually found routes to check', cronRouteFiles.length > 50,
+  `found ${cronRouteFiles.length}`);
+
+const hardcoded: string[] = [];
+for (const file of cronRouteFiles) {
+  const src = readFileSync(file, 'utf8');
+  const re = /finishCronLog\(\s*[A-Za-z_$][\w$]*\s*,\s*'success'/g;
+  if (re.test(src)) hardcoded.push(file.replace(`${ROOT}/`, ''));
+}
+
+ok(
+  'no route passes a literal \'success\' to finishCronLog',
+  hardcoded.length === 0,
+  hardcoded.join(', '),
+);
+
+// The derivation the direct callers now share must behave identically to the
+// wrapper's on the cases that distinguish a dead run from a healthy one.
+// These are the exact bodies atlas wrote on 2026-09-02 and 2026-08-28.
+ok('a run declaring ok:false with a failed status is an error',
+  deriveStatusFromSummary({ ok: false, status: 'measurement_failed', lookups_failed: 74 }).status === 'error');
+ok('the reason travels with it, not just the verdict',
+  String(deriveStatusFromSummary({ ok: false, status: 'measurement_failed', first_error: 'Perplexity HTTP 401' }).error)
+    .includes('Perplexity HTTP 401'));
+ok('a resumable run that handed work to its next invocation is NOT an error',
+  deriveStatusFromSummary({ ok: false, status: 'incomplete_resumable' }).status === 'success');
+ok('a completed run is a success',
+  deriveStatusFromSummary({ ok: true, status: 'complete' }).status === 'success');
+ok('a non-empty errors[] is an error even with no ok field',
+  deriveStatusFromSummary({ fetched: 502, inserted: 309, errors: ['FK violation'] }).status === 'error');
+ok('an empty errors[] is a success',
+  deriveStatusFromSummary({ fetched: 502, inserted: 502, errors: [] }).status === 'success');
+ok('a deliberately dormant run is skipped, not failed',
+  deriveStatusFromSummary({ skipped: true, reason: 'no supabase' }).status === 'skipped');
+ok('a summary with no markers at all is a success',
+  deriveStatusFromSummary({ sent: 0, alerts: 0 }).status === 'success');
+ok('null and non-objects do not throw',
+  deriveStatusFromSummary(null).status === 'success' && deriveStatusFromSummary('x').status === 'success');
 
 // ── Report ──────────────────────────────────────────────────────────────────
 

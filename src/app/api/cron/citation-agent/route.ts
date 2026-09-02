@@ -1,7 +1,7 @@
 import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextRequest } from 'next/server';
 import { runCitationAgent } from '@/lib/citation-agent';
-import { startCronLog, finishCronLog } from '@/lib/cron-log';
+import { startCronLog, finishCronLog, finishCronLogDerived } from '@/lib/cron-log';
 
 export const maxDuration = 300;
 
@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   const handle = await startCronLog('atlas', '/api/cron/citation-agent');
   try {
     const summary = await runCitationAgent();
-    await finishCronLog(handle, 'success', summary as unknown as Record<string, unknown>);
+    await finishCronLogDerived(handle, summary as unknown as Record<string, unknown>);
     return Response.json({
       agent: 'Atlas',
       ...summary,

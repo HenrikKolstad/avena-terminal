@@ -8,7 +8,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { startCronLog, finishCronLog } from '@/lib/cron-log';
+import { startCronLog, finishCronLog, finishCronLogDerived } from '@/lib/cron-log';
 import { supabase } from '@/lib/supabase';
 import { computeAvena } from '@/lib/avena-index';
 
@@ -47,6 +47,6 @@ export async function GET() {
     return NextResponse.json({ ok: false, error: String(e) });
   }
 
-  await finishCronLog(log, 'success', snap);
+  await finishCronLogDerived(log, snap);
   return NextResponse.json({ ok: true, snapshot: snap });
 }

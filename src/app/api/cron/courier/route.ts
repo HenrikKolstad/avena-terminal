@@ -7,7 +7,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { startCronLog, finishCronLog } from '@/lib/cron-log';
+import { startCronLog, finishCronLog, finishCronLogDerived } from '@/lib/cron-log';
 import { supabase } from '@/lib/supabase';
 import { getAllProperties } from '@/lib/properties';
 
@@ -49,7 +49,7 @@ export async function GET() {
 
   const alerts = (alertsRaw ?? []) as Alert[];
   if (alerts.length === 0) {
-    await finishCronLog(log, 'success', { sent: 0, alerts: 0 });
+    await finishCronLogDerived(log, { sent: 0, alerts: 0 });
     return NextResponse.json({ ok: true, sent: 0, alerts: 0 });
   }
 
@@ -123,6 +123,6 @@ export async function GET() {
     }
   }
 
-  await finishCronLog(log, 'success', { sent, alerts: alerts.length });
+  await finishCronLogDerived(log, { sent, alerts: alerts.length });
   return NextResponse.json({ ok: true, sent, alerts: alerts.length });
 }

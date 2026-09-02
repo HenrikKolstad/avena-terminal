@@ -5,7 +5,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { startCronLog, finishCronLog } from '@/lib/cron-log';
+import { startCronLog, finishCronLog, finishCronLogDerived } from '@/lib/cron-log';
 import { generateSnapshots, persistSnapshots } from '@/lib/eu-validation';
 
 export const dynamic = 'force-dynamic';
@@ -16,7 +16,7 @@ export async function GET() {
   try {
     const snaps = await generateSnapshots();
     const written = await persistSnapshots(snaps);
-    await finishCronLog(log, 'success', { generated: snaps.length, written });
+    await finishCronLogDerived(log, { generated: snaps.length, written });
     return NextResponse.json({ ok: true, generated: snaps.length, written, snapshots: snaps });
   } catch (e) {
     await finishCronLog(log, 'error', null, e as Error);

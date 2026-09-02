@@ -4,7 +4,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { startCronLog, finishCronLog } from '@/lib/cron-log';
+import { startCronLog, finishCronLog, finishCronLogDerived } from '@/lib/cron-log';
 import { detectAnomalies, persistAnomalies } from '@/lib/eu-anomalies';
 import { deliverEvent } from '@/lib/webhooks';
 
@@ -45,7 +45,7 @@ export async function GET() {
       }
     }
 
-    await finishCronLog(log, 'success', { detected: rows.length, written, by_severity: bySev, webhooks_sent, webhooks_failed });
+    await finishCronLogDerived(log, { detected: rows.length, written, by_severity: bySev, webhooks_sent, webhooks_failed });
     return NextResponse.json({ ok: true, detected: rows.length, written, by_severity: bySev, webhooks_sent, webhooks_failed, sample: rows.slice(0, 10) });
   } catch (e) {
     await finishCronLog(log, 'error', null, e as Error);

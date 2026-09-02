@@ -1,7 +1,7 @@
 import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { runCrawlerSubmit } from '@/lib/crawler-submit';
-import { startCronLog, finishCronLog } from '@/lib/cron-log';
+import { startCronLog, finishCronLog, finishCronLogDerived } from '@/lib/cron-log';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
   const handle = await startCronLog('janus', '/api/cron/crawler-submit');
   try {
     const result = await runCrawlerSubmit();
-    await finishCronLog(handle, 'success', {
+    await finishCronLogDerived(handle, {
       internet_archive: result.internet_archive,
       internet_archive_failed: result.internet_archive_failed,
       indexnow_ok: result.indexnow.ok,

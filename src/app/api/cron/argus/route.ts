@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { runArgus } from '@/lib/comp-sanity';
-import { startCronLog, finishCronLog } from '@/lib/cron-log';
+import { startCronLog, finishCronLog, finishCronLogDerived } from '@/lib/cron-log';
 import { isAuthorizedCron } from '@/lib/cron-auth';
 
 export const dynamic = 'force-dynamic';
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
   const handle = await startCronLog('argus', '/api/cron/argus');
   try {
     const result = await runArgus();
-    await finishCronLog(handle, 'success', {
+    await finishCronLogDerived(handle, {
       scanned: result.scanned,
       flagged: result.flagged,
     });

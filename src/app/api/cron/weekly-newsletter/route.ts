@@ -1,7 +1,7 @@
 import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { runWeekly } from '@/lib/newsletter';
-import { startCronLog, finishCronLog } from '@/lib/cron-log';
+import { startCronLog, finishCronLog, finishCronLogDerived } from '@/lib/cron-log';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
   try {
     const dryRun = req.nextUrl.searchParams.get('dry') === '1';
     const result = await runWeekly({ dryRun });
-    await finishCronLog(handle, 'success', {
+    await finishCronLogDerived(handle, {
       issue_number: result.issue_number,
       subscribers: result.subscribers,
       sent: result.sent,

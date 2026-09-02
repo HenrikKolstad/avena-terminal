@@ -15,7 +15,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { startCronLog, finishCronLog } from '@/lib/cron-log';
+import { startCronLog, finishCronLogDerived } from '@/lib/cron-log';
 import { logFindings, type Finding } from '@/lib/findings';
 import { getAllProperties } from '@/lib/properties';
 import { INGESTION_SWARM } from '@/lib/ingestion-swarm';
@@ -153,7 +153,7 @@ export async function GET() {
 
   const result = await logFindings(findings);
 
-  await finishCronLog(log, 'success', {
+  await finishCronLogDerived(log, {
     attempted: findings.length,
     inserted: result.inserted,
     spain_agents: buildRegionMaps().length,
