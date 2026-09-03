@@ -12,6 +12,7 @@
 
 import { supabase } from '@/lib/supabase';
 import { getAllProperties } from '@/lib/properties';
+import { chunkedWrite, emptyChunkWriteResult, type ChunkWriteResult } from './chunked-write';
 
 export interface ValidationSnapshot {
   country_code: string;
@@ -270,17 +271,18 @@ export async function generateSnapshots(): Promise<ValidationSnapshot[]> {
   return out;
 }
 
-export async function persistSnapshots(snaps: ValidationSnapshot[]): Promise<number> {
-  if (!supabase || snaps.length === 0) return 0;
-  let written = 0;
-  for (let i = 0; i < snaps.length; i += 100) {
-    const chunk = snaps.slice(i, i + 100);
-    const { error } = await supabase
-      .from('eu_validation_snapshots')
-      .upsert(chunk, { onConflict: 'country_code,region,period,official_source,official_indicator' });
-    if (!error) written += chunk.length;
-  }
-  return written;
+export async function persistSnapshots(snaps: ValidationSnapshot[]): Promise<ChunkWriteResult> {
+  const db = supabase;
+  if (!db || snaps.length === 0) return emptyChunkWriteResult();
+  return chunkedWrite(
+    snaps,
+    100,
+    (chunk) =>
+      db
+        .from('eu_validation_snapshots')
+        .upsert(chunk, { onConflict: 'country_code,region,period,official_source,official_indicator' }),
+    { label: 'validation' },
+  );
 }
 
 // ─── Read API for UI ──────────────────────────────────────────────────────

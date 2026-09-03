@@ -15,7 +15,7 @@ export async function GET() {
   const log = await startCronLog('eu-anomalies', '/api/cron/eu-anomalies');
   try {
     const rows = await detectAnomalies();
-    const written = await persistAnomalies(rows);
+    const write = await persistAnomalies(rows);
     const bySev: Record<string, number> = {};
     for (const r of rows) bySev[r.severity] = (bySev[r.severity] ?? 0) + 1;
 
@@ -45,8 +45,8 @@ export async function GET() {
       }
     }
 
-    await finishCronLogDerived(log, { detected: rows.length, written, by_severity: bySev, webhooks_sent, webhooks_failed });
-    return NextResponse.json({ ok: true, detected: rows.length, written, by_severity: bySev, webhooks_sent, webhooks_failed, sample: rows.slice(0, 10) });
+    await finishCronLogDerived(log, { detected: rows.length, written: write.written, rows_lost: write.lost, write_chunks_failed: write.chunks_failed, errors: write.errors, by_severity: bySev, webhooks_sent, webhooks_failed });
+    return NextResponse.json({ ok: true, detected: rows.length, written: write.written, rows_lost: write.lost, write_chunks_failed: write.chunks_failed, errors: write.errors, by_severity: bySev, webhooks_sent, webhooks_failed, sample: rows.slice(0, 10) });
   } catch (e) {
     await finishCronLog(log, 'error', null, e as Error);
     return NextResponse.json({ ok: false, error: (e as Error).message }, { status: 500 });

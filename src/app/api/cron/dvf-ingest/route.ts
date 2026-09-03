@@ -13,6 +13,7 @@
  */
 
 import { isAuthorizedCron } from '@/lib/cron-auth';
+import { chunkedWrite, mergeChunkWriteResults } from '@/lib/chunked-write';
 import { NextRequest, NextResponse } from 'next/server';
 import { startCronLog, finishCronLog, finishCronLogDerived } from '@/lib/cron-log';
 import { supabase } from '@/lib/supabase';
@@ -47,6 +48,7 @@ export async function GET(req: NextRequest) {
   if (!supabase) {
     return NextResponse.json({ ok: false, error: 'Supabase not configured' }, { status: 503 });
   }
+  const db = supabase; // narrowed once, so the chunk writers below close over a non-null client
 
   const log = await startCronLog('dvf-ingest', '/api/cron/dvf-ingest');
 
@@ -109,24 +111,15 @@ export async function GET(req: NextRequest) {
 
   // Upsert registry rows in chunks (smaller chunks for safety + better error surfacing)
   const CHUNK = 50;
-  let registryUpserted = 0;
-  const errors: string[] = [];
-  for (let i = 0; i < registryRows.length; i += CHUNK) {
-    try {
-      const { error } = await supabase
+  const registryWrite = await chunkedWrite(
+    registryRows,
+    CHUNK,
+    (chunk) =>
+      db
         .from('properties_registry')
-        .upsert(registryRows.slice(i, i + CHUNK), { onConflict: 'source_portal,source_listing_id', ignoreDuplicates: false });
-      if (!error) {
-        registryUpserted += Math.min(CHUNK, registryRows.length - i);
-      } else if (errors.length < 3) {
-        errors.push(`chunk ${i}: ${error.message}`);
-      }
-    } catch (e) {
-      if (errors.length < 3) {
-        errors.push(`chunk ${i}: ${e instanceof Error ? e.message : String(e)}`);
-      }
-    }
-  }
+        .upsert(chunk, { onConflict: 'source_portal,source_listing_id', ignoreDuplicates: false }),
+    { label: 'registry' },
+  );
 
   // Insert transaction rows — de-dupe by AVN to avoid duplicate transaction entries
   // for the same property/date (caused by repeated CSV rows for same parcel)
@@ -150,32 +143,36 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  let txInserted = 0;
-  for (let i = 0; i < txRows.length; i += CHUNK) {
-    try {
-      const { error } = await supabase
-        .from('property_transactions')
-        .insert(txRows.slice(i, i + CHUNK));
-      if (!error) {
-        txInserted += Math.min(CHUNK, txRows.length - i);
-      } else if (errors.length < 5) {
-        errors.push(`tx chunk ${i}: ${error.message}`);
-      }
-    } catch (e) {
-      if (errors.length < 5) {
-        errors.push(`tx chunk ${i}: ${e instanceof Error ? e.message : String(e)}`);
-      }
-    }
-  }
+  const txWrite = await chunkedWrite(
+    txRows,
+    CHUNK,
+    (chunk) => db.from('property_transactions').insert(chunk),
+    { label: 'tx' },
+  );
 
+  const write = mergeChunkWriteResults([registryWrite, txWrite]);
+
+  // `transactions_fetched` counts raw CSV rows; the writers see the DE-DUPED
+  // set. Reporting only those two invited the reading that the difference was
+  // lost rows — on 2026-09-03 that looked like 1,846 lost when the real loss
+  // was 50. `transactions_deduped` is the middle term that makes the funnel
+  // legible: fetched -> deduped -> written (+ lost).
   const summary = {
     commune: commune.name,
     insee: commune.insee,
     year,
     transactions_fetched: rows.length,
-    registry_upserted: registryUpserted,
-    transactions_inserted: txInserted,
-    errors: errors.slice(0, 5),
+    transactions_deduped: txRows.length,
+    duplicate_rows_dropped: rows.length - txRows.length,
+    registry_candidates: registryRows.length,
+    registry_upserted: registryWrite.written,
+    registry_lost: registryWrite.lost,
+    transactions_inserted: txWrite.written,
+    transactions_lost: txWrite.lost,
+    rows_lost: write.lost,
+    chunks_failed: write.chunks_failed,
+    errors: write.errors,
+    errors_total: write.errors_total,
   };
 
   await finishCronLogDerived(log, summary);

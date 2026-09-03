@@ -20,6 +20,7 @@
  */
 
 import { supabase } from '@/lib/supabase';
+import { chunkedWrite, emptyChunkWriteResult, type ChunkWriteResult } from './chunked-write';
 
 // ─── Types ────────────────────────────────────────────────────────────────
 
@@ -39,6 +40,10 @@ export interface IngestResult {
   source: string;
   indicators_attempted: number;
   rows_upserted: number;
+  /** Rows the database rejected. `rows_upserted` alone cannot distinguish
+   *  "nothing to write" from "every write failed" — this is that difference. */
+  rows_lost: number;
+  write_chunks_failed: number;
   countries: Set<string>;
   errors: string[];
 }
@@ -201,7 +206,7 @@ export async function ingestEurostat(): Promise<IngestResult> {
   const result: IngestResult = {
     source: 'eurostat',
     indicators_attempted: 0,
-    rows_upserted: 0,
+    rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0,
     countries: new Set(),
     errors: [],
   };
@@ -209,8 +214,11 @@ export async function ingestEurostat(): Promise<IngestResult> {
     result.indicators_attempted++;
     try {
       const rows = await fetchEurostatIndicator(ind);
-      const written = await upsertRows(rows);
-      result.rows_upserted += written;
+      const w = await upsertRows(rows);
+      result.rows_upserted += w.written;
+      result.rows_lost += w.lost;
+      result.write_chunks_failed += w.chunks_failed;
+      for (const e of w.errors) if (result.errors.length < 8) result.errors.push(e);
       for (const r of rows) result.countries.add(r.country_code);
     } catch (e) {
       result.errors.push(`${ind.dataset}: ${(e as Error).message}`);
@@ -354,7 +362,7 @@ export async function ingestECB(): Promise<IngestResult> {
   const result: IngestResult = {
     source: 'ecb_sdw',
     indicators_attempted: 0,
-    rows_upserted: 0,
+    rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0,
     countries: new Set(),
     errors: [],
   };
@@ -362,8 +370,11 @@ export async function ingestECB(): Promise<IngestResult> {
     result.indicators_attempted++;
     try {
       const rows = await fetchECBSeries(s);
-      const written = await upsertRows(rows);
-      result.rows_upserted += written;
+      const w = await upsertRows(rows);
+      result.rows_upserted += w.written;
+      result.rows_lost += w.lost;
+      result.write_chunks_failed += w.chunks_failed;
+      for (const e of w.errors) if (result.errors.length < 8) result.errors.push(e);
       for (const r of rows) result.countries.add(r.country_code);
     } catch (e) {
       result.errors.push(`${s.dataflow}/${s.key}: ${(e as Error).message}`);
@@ -429,7 +440,7 @@ export async function ingestINESpain(): Promise<IngestResult> {
   const result: IngestResult = {
     source: 'ine_es',
     indicators_attempted: 0,
-    rows_upserted: 0,
+    rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0,
     countries: new Set(['ES']),
     errors: [],
   };
@@ -437,8 +448,11 @@ export async function ingestINESpain(): Promise<IngestResult> {
     result.indicators_attempted++;
     try {
       const rows = await fetchINETable(s.table, s.name, s.unit, s.freq);
-      const written = await upsertRows(rows);
-      result.rows_upserted += written;
+      const w = await upsertRows(rows);
+      result.rows_upserted += w.written;
+      result.rows_lost += w.lost;
+      result.write_chunks_failed += w.chunks_failed;
+      for (const e of w.errors) if (result.errors.length < 8) result.errors.push(e);
     } catch (e) {
       result.errors.push(`INE ${s.table}: ${(e as Error).message}`);
     }
@@ -502,13 +516,16 @@ async function fetchCBSTable(t: CBSTable): Promise<OfficialStatRow[]> {
 }
 
 export async function ingestCBS(): Promise<IngestResult> {
-  const result: IngestResult = { source: 'cbs', indicators_attempted: 0, rows_upserted: 0, countries: new Set(['NL']), errors: [] };
+  const result: IngestResult = { source: 'cbs', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0, countries: new Set(['NL']), errors: [] };
   for (const t of CBS_TABLES) {
     result.indicators_attempted++;
     try {
       const rows = await fetchCBSTable(t);
-      const written = await upsertRows(rows);
-      result.rows_upserted += written;
+      const w = await upsertRows(rows);
+      result.rows_upserted += w.written;
+      result.rows_lost += w.lost;
+      result.write_chunks_failed += w.chunks_failed;
+      for (const e of w.errors) if (result.errors.length < 8) result.errors.push(e);
     } catch (e) {
       result.errors.push(`CBS ${t.table}: ${(e as Error).message}`);
     }
@@ -575,13 +592,16 @@ async function fetchISTATSeries(s: ISTATSeries): Promise<OfficialStatRow[]> {
 }
 
 export async function ingestISTAT(): Promise<IngestResult> {
-  const result: IngestResult = { source: 'istat', indicators_attempted: 0, rows_upserted: 0, countries: new Set(['IT']), errors: [] };
+  const result: IngestResult = { source: 'istat', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0, countries: new Set(['IT']), errors: [] };
   for (const s of ISTAT_SERIES) {
     result.indicators_attempted++;
     try {
       const rows = await fetchISTATSeries(s);
-      const written = await upsertRows(rows);
-      result.rows_upserted += written;
+      const w = await upsertRows(rows);
+      result.rows_upserted += w.written;
+      result.rows_lost += w.lost;
+      result.write_chunks_failed += w.chunks_failed;
+      for (const e of w.errors) if (result.errors.length < 8) result.errors.push(e);
     } catch (e) {
       result.errors.push(`ISTAT ${s.dataflow}/${s.key}: ${(e as Error).message}`);
     }
@@ -596,7 +616,7 @@ export async function ingestISTAT(): Promise<IngestResult> {
 // We parse a subset relevant to our coverage.
 
 export async function ingestBIS(): Promise<IngestResult> {
-  const result: IngestResult = { source: 'bis', indicators_attempted: 1, rows_upserted: 0, countries: new Set(), errors: [] };
+  const result: IngestResult = { source: 'bis', indicators_attempted: 1, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0, countries: new Set(), errors: [] };
   const url = 'https://www.bis.org/statistics/pp_selected.csv';
   try {
     const res = await fetch(url, { headers: { Accept: 'text/csv' } });
@@ -641,8 +661,11 @@ export async function ingestBIS(): Promise<IngestResult> {
         result.countries.add(cc);
       }
     }
-    const written = await upsertRows(rows);
-    result.rows_upserted = written;
+    const w = await upsertRows(rows);
+    result.rows_upserted = w.written;
+    result.rows_lost = w.lost;
+    result.write_chunks_failed = w.chunks_failed;
+    for (const e of w.errors) if (result.errors.length < 8) result.errors.push(e);
   } catch (e) {
     result.errors.push(`BIS: ${(e as Error).message}`);
   }
@@ -651,18 +674,19 @@ export async function ingestBIS(): Promise<IngestResult> {
 
 // ─── Shared upsert ────────────────────────────────────────────────────────
 
-async function upsertRows(rows: OfficialStatRow[]): Promise<number> {
-  if (!supabase || rows.length === 0) return 0;
+async function upsertRows(rows: OfficialStatRow[]): Promise<ChunkWriteResult> {
+  const db = supabase;
+  if (!db || rows.length === 0) return emptyChunkWriteResult();
   // Chunk to stay under Supabase batch limits
-  let written = 0;
-  for (let i = 0; i < rows.length; i += 500) {
-    const chunk = rows.slice(i, i + 500);
-    const { error } = await supabase
-      .from('eu_official_stats')
-      .upsert(chunk, { onConflict: 'source,indicator_code,country_code,period' });
-    if (!error) written += chunk.length;
-  }
-  return written;
+  return chunkedWrite(
+    rows,
+    500,
+    (chunk) =>
+      db
+        .from('eu_official_stats')
+        .upsert(chunk, { onConflict: 'source,indicator_code,country_code,period' }),
+    { label: 'stats' },
+  );
 }
 
 function sleep(ms: number): Promise<void> {

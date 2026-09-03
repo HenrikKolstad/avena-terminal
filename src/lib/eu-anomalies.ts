@@ -9,6 +9,7 @@
  */
 
 import { supabase } from '@/lib/supabase';
+import { chunkedWrite, emptyChunkWriteResult, type ChunkWriteResult } from './chunked-write';
 
 export interface AnomalyRow {
   country_code: string;
@@ -116,17 +117,18 @@ export async function detectAnomalies(): Promise<AnomalyRow[]> {
   return anomalies;
 }
 
-export async function persistAnomalies(rows: AnomalyRow[]): Promise<number> {
-  if (!supabase || rows.length === 0) return 0;
-  let written = 0;
-  for (let i = 0; i < rows.length; i += 200) {
-    const chunk = rows.slice(i, i + 200);
-    const { error } = await supabase
-      .from('eu_anomalies')
-      .upsert(chunk, { onConflict: 'country_code,source,indicator_code,period' });
-    if (!error) written += chunk.length;
-  }
-  return written;
+export async function persistAnomalies(rows: AnomalyRow[]): Promise<ChunkWriteResult> {
+  const db = supabase;
+  if (!db || rows.length === 0) return emptyChunkWriteResult();
+  return chunkedWrite(
+    rows,
+    200,
+    (chunk) =>
+      db
+        .from('eu_anomalies')
+        .upsert(chunk, { onConflict: 'country_code,source,indicator_code,period' }),
+    { label: 'anomalies' },
+  );
 }
 
 export async function recentAnomalies(limit = 50, minSeverity?: 'watch' | 'alert' | 'critical'): Promise<AnomalyRow[]> {
