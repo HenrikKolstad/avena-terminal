@@ -38,13 +38,13 @@
   {
     "town": "Fuengirola",
     "costa": "Costa del Sol",
-    "n_listings": 96,
-    "median_price_eur": 720000,
-    "median_pm2_eur": 7372,
-    "p25_pm2_eur": 6205,
-    "p75_pm2_eur": 9701,
-    "median_built_m2": 89,
-    "villa_share_pct": 13,
+    "n_listings": 98,
+    "median_price_eur": 722500,
+    "median_pm2_eur": 7413,
+    "p25_pm2_eur": 6219,
+    "p75_pm2_eur": 9572,
+    "median_built_m2": 90,
+    "villa_share_pct": 14,
     "median_beach_km": 1.5
   },
   {
@@ -156,6 +156,18 @@
     "median_beach_km": 8
   },
   {
+    "town": "Benahavís",
+    "costa": "Costa del Sol",
+    "n_listings": 36,
+    "median_price_eur": 1279500,
+    "median_pm2_eur": 9961,
+    "p25_pm2_eur": 7494,
+    "p75_pm2_eur": 12783,
+    "median_built_m2": 131,
+    "villa_share_pct": 22,
+    "median_beach_km": 5.75
+  },
+  {
     "town": "Manilva",
     "costa": "Costa del Sol",
     "n_listings": 36,
@@ -166,18 +178,6 @@
     "median_built_m2": 94,
     "villa_share_pct": 11,
     "median_beach_km": 0.3
-  },
-  {
-    "town": "Benahavís",
-    "costa": "Costa del Sol",
-    "n_listings": 35,
-    "median_price_eur": 1249000,
-    "median_pm2_eur": 9421,
-    "p25_pm2_eur": 7487,
-    "p75_pm2_eur": 12530,
-    "median_built_m2": 125,
-    "villa_share_pct": 23,
-    "median_beach_km": 6
   },
   {
     "town": "Algorfa",
@@ -372,6 +372,18 @@
     "median_beach_km": 0.3
   },
   {
+    "town": "Fuente Álamo",
+    "costa": "Costa Calida - Inland",
+    "n_listings": 13,
+    "median_price_eur": 379845,
+    "median_pm2_eur": 3825,
+    "p25_pm2_eur": 3063,
+    "p75_pm2_eur": 5000,
+    "median_built_m2": 100,
+    "villa_share_pct": 85,
+    "median_beach_km": 23
+  },
+  {
     "town": "la Nucia",
     "costa": "Costa Blanca North",
     "n_listings": 13,
@@ -430,18 +442,6 @@
     "median_built_m2": 68,
     "villa_share_pct": 33,
     "median_beach_km": 0.55
-  },
-  {
-    "town": "Fuente Álamo",
-    "costa": "Costa Calida - Inland",
-    "n_listings": 12,
-    "median_price_eur": 387423,
-    "median_pm2_eur": 3992,
-    "p25_pm2_eur": 3279,
-    "p75_pm2_eur": 5098,
-    "median_built_m2": 102,
-    "villa_share_pct": 92,
-    "median_beach_km": 23
   },
   {
     "town": "Hondón de las Nieves",
