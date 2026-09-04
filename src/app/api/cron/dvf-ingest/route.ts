@@ -13,7 +13,7 @@
  */
 
 import { isAuthorizedCron } from '@/lib/cron-auth';
-import { chunkedWrite, mergeChunkWriteResults } from '@/lib/chunked-write';
+import { chunkedWrite, mergeChunkWriteResults, failedRowIndices } from '@/lib/chunked-write';
 import { NextRequest, NextResponse } from 'next/server';
 import { startCronLog, finishCronLog, finishCronLogDerived } from '@/lib/cron-log';
 import { supabase } from '@/lib/supabase';
@@ -121,15 +121,47 @@ export async function GET(req: NextRequest) {
     { label: 'registry' },
   );
 
+  // Which parent rows actually reached properties_registry? A transaction
+  // whose avn_prop_id has no registry row violates
+  // property_transactions_avn_prop_id_fkey and takes its whole 50-row chunk
+  // down with it, so this set is what keeps the child write honest.
+  const failedRegistryIdx = failedRowIndices(registryWrite, CHUNK);
+  const landedAvns = new Set<string>();
+  registryRows.forEach((r, i) => {
+    if (!failedRegistryIdx.has(i)) landedAvns.add(r.avn_prop_id as string);
+  });
+
   // Insert transaction rows — de-dupe by AVN to avoid duplicate transaction entries
   // for the same property/date (caused by repeated CSV rows for same parcel)
+  //
+  // THE ORPHAN CLASS (found 2026-09-04, cause of every FK failure this cron
+  // has ever had): the two dedupe keys disagree. The registry keys on
+  // source_listing_id, whose seed omits code_postal; the AVN id puts the
+  // postal code in its prefix. DVF publishes the same parcel twice with the
+  // postal code blank on one copy, so ONE listing_id mints TWO avn ids — the
+  // registry keeps the first, and the second transaction row references a
+  // parent that does not exist.
+  //
+  // Measured on the real feed 2026-09-04: Hyeres 2024 12 orphans, Nice 2024
+  // 12, Nice 2023 21; Cannes/Paris-8e/Vence 0 — which is exactly why this
+  // cron failed on some communes and not others. 12 orphan rows poisoned 11
+  // chunks and destroyed 550 good rows: a 46x amplification.
+  //
+  // Orphans are EXCLUDED and COUNTED, never silently dropped. Excluding them
+  // is not data loss: the transaction is unreachable either way, and keeping
+  // it costs the 49 valid rows sharing its chunk.
   const txSeen = new Set<string>();
   const txRows: Array<Record<string, unknown>> = [];
+  const orphanAvns: string[] = [];
   for (const row of rows) {
     const avn = mintAvnIdForDvf(row);
     const txKey = `${avn}|${row.date_mutation}`;
     if (txSeen.has(txKey)) continue;
     txSeen.add(txKey);
+    if (!landedAvns.has(avn)) {
+      orphanAvns.push(avn);
+      continue;
+    }
     txRows.push({
       avn_prop_id: avn,
       transacted_at: row.date_mutation,
@@ -162,8 +194,15 @@ export async function GET(req: NextRequest) {
     insee: commune.insee,
     year,
     transactions_fetched: rows.length,
-    transactions_deduped: txRows.length,
-    duplicate_rows_dropped: rows.length - txRows.length,
+    // fetched -> deduped -> (orphaned) -> written + lost. `deduped` counts the
+    // rows that survived de-duplication, BEFORE the orphan exclusion, so the
+    // funnel still reconciles:
+    //   deduped === orphaned + written + lost
+    transactions_deduped: txRows.length + orphanAvns.length,
+    transactions_orphaned: orphanAvns.length,
+    // A capped sample, like `errors`. `transactions_orphaned` is the count.
+    orphan_sample: orphanAvns.slice(0, 5),
+    duplicate_rows_dropped: rows.length - (txRows.length + orphanAvns.length),
     registry_candidates: registryRows.length,
     registry_upserted: registryWrite.written,
     registry_lost: registryWrite.lost,

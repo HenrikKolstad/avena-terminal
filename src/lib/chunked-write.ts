@@ -41,6 +41,17 @@ export interface ChunkWriteResult {
   errors: string[];
   /** The uncapped number of failed chunks. This is the number to trust. */
   errors_total: number;
+  /**
+   * Start index (into the input array) of every chunk the database rejected.
+   * Uncapped, like `errors_total` — the sample is `errors`, never this.
+   *
+   * A caller that writes a PARENT table and then a CHILD table that
+   * references it needs to know which parent rows actually landed, or it will
+   * hand the child writer foreign keys that do not exist. dvf-ingest is that
+   * caller. Indices rather than row copies so this stays cheap on a 20k-row
+   * ingest.
+   */
+  failed_chunk_starts: number[];
 }
 
 /** A Supabase-shaped write outcome: `{ error }`, null when it succeeded. */
@@ -55,7 +66,22 @@ export function emptyChunkWriteResult(): ChunkWriteResult {
     chunks_failed: 0,
     errors: [],
     errors_total: 0,
+    failed_chunk_starts: [],
   };
+}
+
+/**
+ * The input indices covered by the chunks that failed, given the chunk size
+ * the write used. Callers use this to exclude rows that never landed from
+ * whatever they derive next.
+ */
+export function failedRowIndices(r: ChunkWriteResult, chunkSize: number): Set<number> {
+  const out = new Set<number>();
+  for (const start of r.failed_chunk_starts) {
+    const end = Math.min(start + chunkSize, r.attempted);
+    for (let i = start; i < end; i++) out.add(i);
+  }
+  return out;
 }
 
 /**
@@ -101,6 +127,7 @@ export async function chunkedWrite<T>(
       result.lost += chunk.length;
       result.chunks_failed++;
       result.errors_total++;
+      result.failed_chunk_starts.push(i);
       if (result.errors.length < sampleLimit) {
         result.errors.push(`${label}chunk ${i}: ${message}`);
       }
@@ -129,6 +156,10 @@ export function mergeChunkWriteResults(
       if (out.errors.length < sampleLimit) out.errors.push(e);
     }
   }
+  // `failed_chunk_starts` is deliberately NOT merged: the indices belong to
+  // each part's own input array, so concatenating them would produce numbers
+  // that index nothing. A merged result is for reporting totals; read the
+  // per-part result when you need to know which rows landed.
   return out;
 }
 

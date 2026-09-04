@@ -14,6 +14,7 @@ import {
   mergeChunkWriteResults,
   chunkWriteSummary,
   emptyChunkWriteResult,
+  failedRowIndices,
   type ChunkWriteResult,
   type ChunkWriteOutcome,
 } from '../src/lib/chunked-write';
@@ -187,6 +188,62 @@ async function main() {
     const s = chunkWriteSummary(r, 'tx');
     ok('summary: names are prefixed', 'tx_lost' in s && 'tx_written' in s && 'tx_chunks_failed' in s);
     ok('summary: reports the loss', s.tx_lost === 100);
+  }
+
+  // ── failedRowIndices: which parent rows never landed ───────────────────
+  //
+  // dvf-ingest writes properties_registry and then property_transactions,
+  // which has an FK onto it. If it hands the child writer a key whose parent
+  // chunk failed, ONE bad row destroys its whole 50-row chunk — measured at a
+  // 46x amplification on the real feed (12 orphans -> 550 rows lost). These
+  // cases are the negative half: the helper must say nothing is missing when
+  // nothing is missing, or it becomes a false-alarm generator.
+  {
+    const r = await chunkedWrite(Array.from({ length: 250 }, (_, i) => i), 50, okWrite);
+    ok('failedRowIndices: clean write excludes nothing', failedRowIndices(r, 50).size === 0);
+    ok('failedRowIndices: clean write records no failed starts', r.failed_chunk_starts.length === 0);
+  }
+  {
+    const r = await chunkedWrite([], 50, failWrite);
+    ok('failedRowIndices: empty input excludes nothing', failedRowIndices(r, 50).size === 0);
+  }
+  {
+    // Fail only the second chunk (indices 50..99).
+    let call = 0;
+    const failSecond = async (): Promise<ChunkWriteOutcome> => {
+      call++;
+      return call === 2 ? { error: { message: 'FK violation' } } : { error: null };
+    };
+    const r = await chunkedWrite(Array.from({ length: 250 }, (_, i) => i), 50, failSecond);
+    const idx = failedRowIndices(r, 50);
+    ok('failedRowIndices: one failed chunk === 50 indices', idx.size === 50);
+    ok('failedRowIndices: names the right window', idx.has(50) && idx.has(99));
+    ok('failedRowIndices: excludes the chunks that landed', !idx.has(49) && !idx.has(100));
+    ok('failedRowIndices: start index recorded uncapped', r.failed_chunk_starts.join() === '50');
+    assertInvariants('fail-second', r);
+  }
+  {
+    // A short trailing chunk must not report indices past the end of input.
+    const r = await chunkedWrite(Array.from({ length: 120 }, (_, i) => i), 50, failWrite);
+    const idx = failedRowIndices(r, 50);
+    ok('failedRowIndices: short final chunk is not over-counted', idx.size === 120);
+    ok('failedRowIndices: no index beyond the input', !idx.has(120));
+  }
+  {
+    // The COUNT is uncapped even though the error SAMPLE is capped at 5.
+    const r = await chunkedWrite(Array.from({ length: 400 }, (_, i) => i), 10, failWrite);
+    ok('failedRowIndices: starts are uncapped while errors are sampled',
+      r.failed_chunk_starts.length === 40 && r.errors.length === 5);
+    ok('failedRowIndices: covers every lost row', failedRowIndices(r, 10).size === 400);
+  }
+  {
+    // merge must NOT carry indices across parts — they index different arrays.
+    const a = await chunkedWrite(Array.from({ length: 100 }, (_, i) => i), 50, failWrite);
+    const b = await chunkedWrite(Array.from({ length: 100 }, (_, i) => i), 50, failWrite);
+    const m = mergeChunkWriteResults([a, b]);
+    ok('merge: does not fabricate cross-array indices', m.failed_chunk_starts.length === 0);
+    ok('merge: still reports the totals', m.lost === 200 && m.errors_total === 4);
+    assertInvariants('merge-indices', m);
   }
 
   // ── A nonsense chunk size is a bug, not a silent no-op ─────────────────

@@ -100,15 +100,29 @@ function num(v: string | undefined): number | undefined {
 export async function fetchCommuneYear(insee: string, dept: string, year: number): Promise<DvfRow[]> {
   const url = `${DVF_BASE}/${year}/communes/${dept}/${insee}.csv`;
   let text: string;
+  // A dead upstream must NOT become `fetched: 0`. Both arms below used to
+  // `return []`, which the caller reports as a legitimately quiet commune and
+  // logs green — the exact shape that has bitten this repo repeatedly
+  // (parse-feed's 0MB download, citation-measure's fabricated 0.00%).
+  // Throwing hands the failure to the route's try/catch, which logs `error`.
+  //
+  // Safe against false alarms: all 28 scheduled commune-years (13 communes x
+  // 2023/2024) were verified 200 on 2026-09-04, so no healthy input reaches
+  // this path. An empty CSV that WAS served is still a legitimate zero and is
+  // returned as one below.
   try {
     const res = await fetch(url, {
       headers: { 'User-Agent': UA, 'Accept': 'text/csv' },
       next: { revalidate: 86400 * 30 }, // monthly
     });
-    if (!res.ok) return [];
+    if (!res.ok) {
+      throw new Error(`DVF fetch failed: HTTP ${res.status} for ${url}`);
+    }
     text = await res.text();
-  } catch {
-    return [];
+  } catch (e) {
+    throw new Error(
+      `DVF fetch failed for ${insee}/${year}: ${e instanceof Error ? e.message : String(e)}`,
+    );
   }
 
   const lines = text.split('\n').filter((l) => l.trim());
