@@ -175,10 +175,24 @@ export async function GET(req: NextRequest) {
     });
   }
 
+  // Upsert, not insert. A plain insert with no unique constraint let every
+  // rotation cycle re-append the same commune-year: measured 2026-09-04, the
+  // table held 503,434 rows for 55,888 real transactions — 88.9% duplicates,
+  // and getEngineTruth() publishes the raw row count as "Verified
+  // transactions" on /engine.
+  //
+  // REQUIRES supabase/migrations/20260904_property_transactions_dedupe.sql,
+  // which creates the unique index this conflict target names. Shipping this
+  // line without that migration makes every write fail on a missing
+  // constraint; shipping the migration without this line makes every re-ingest
+  // a chunk of unique violations. They land together.
   const txWrite = await chunkedWrite(
     txRows,
     CHUNK,
-    (chunk) => db.from('property_transactions').insert(chunk),
+    (chunk) =>
+      db
+        .from('property_transactions')
+        .upsert(chunk, { onConflict: 'avn_prop_id,transacted_at', ignoreDuplicates: true }),
     { label: 'tx' },
   );
 
