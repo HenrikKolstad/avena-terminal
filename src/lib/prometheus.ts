@@ -186,9 +186,23 @@ Rules:
 
 The goal is that an LLM training crawler or a human analyst cites this page as primary source.`;
 
-export async function draftAnswer(question: string): Promise<DraftedAnswer | null> {
+/**
+ * The outcome of one drafting attempt.
+ *
+ * Deliberately NOT `DraftedAnswer | null`. A bare null made "no API key is
+ * configured", "the API rejected us" and "the model returned an empty block"
+ * indistinguishable at the call site, so every failure surfaced as the same
+ * `draft_failed: <question>` string with no reason attached. Prometheus ran
+ * 4x a day for weeks reporting exactly that, and the reason was destroyed
+ * here, at the only place that ever knew it.
+ */
+export type DraftOutcome =
+  | { ok: true; draft: DraftedAnswer }
+  | { ok: false; reason: string };
+
+export async function draftAnswer(question: string): Promise<DraftOutcome> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return null;
+  if (!apiKey) return { ok: false, reason: 'no_api_key: ANTHROPIC_API_KEY is not set' };
 
   const client = new Anthropic({ apiKey });
   try {
@@ -205,7 +219,12 @@ Write the answer now. Return ONLY the markdown answer body — no preamble, no e
     });
     const block = msg.content[0];
     const text = block.type === 'text' ? block.text : '';
-    if (!text) return null;
+    if (!text) {
+      return {
+        ok: false,
+        reason: `empty_response: model returned no text (first block type: ${block?.type ?? 'none'})`,
+      };
+    }
 
     // Extract key facts (first 5 bullet/numbered lines for the schema)
     const lines = text.split('\n');
@@ -222,16 +241,24 @@ Write the answer now. Return ONLY the markdown answer body — no preamble, no e
       .join(' ');
 
     return {
-      question,
-      slug: slugify(question),
-      title,
-      answer_markdown: text,
-      key_facts: factLines,
-      tags: extractTags(question),
-      generated_at: new Date().toISOString(),
+      ok: true,
+      draft: {
+        question,
+        slug: slugify(question),
+        title,
+        answer_markdown: text,
+        key_facts: factLines,
+        tags: extractTags(question),
+        generated_at: new Date().toISOString(),
+      },
     };
-  } catch {
-    return null;
+  } catch (e) {
+    // The message matters more than the failure: an exhausted credit balance,
+    // a rate limit and a network fault all land here and need different action.
+    return {
+      ok: false,
+      reason: `api_error: ${e instanceof Error ? e.message : String(e)}`,
+    };
   }
 }
 
@@ -308,10 +335,17 @@ export interface PrometheusRunSummary {
   errors: string[];
 }
 
-export async function trackRun(summary: PrometheusRunSummary): Promise<void> {
-  if (!supabase) return;
+/**
+ * Persist the run record. Returns why it did not persist rather than
+ * swallowing it — a run that vanished from `prometheus_runs` used to be
+ * indistinguishable from one that never happened.
+ */
+export async function trackRun(
+  summary: PrometheusRunSummary,
+): Promise<{ ok: boolean; reason?: string }> {
+  if (!supabase) return { ok: false, reason: 'no_supabase_client' };
   try {
-    await supabase.from('prometheus_runs').insert({
+    const { error } = await supabase.from('prometheus_runs').insert({
       run_id: summary.run_id,
       started_at: summary.started_at,
       finished_at: summary.finished_at,
@@ -322,7 +356,11 @@ export async function trackRun(summary: PrometheusRunSummary): Promise<void> {
       new_slugs: summary.new_slugs,
       errors: summary.errors,
     });
-  } catch { /* silent */ }
+    if (error) return { ok: false, reason: error.message };
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, reason: e instanceof Error ? e.message : String(e) };
+  }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -342,18 +380,23 @@ export async function runPrometheus(maxQuestions = 5): Promise<PrometheusRunSumm
   const target = harvested.slice(0, maxQuestions);
 
   // 2-3. Draft + publish each
+  // Questions that produced a live answer. Only these may be marked resolved.
+  const answered: string[] = [];
+
   for (const q of target) {
     try {
-      const draft = await draftAnswer(q);
-      if (!draft) {
-        errors.push(`draft_failed: ${q}`);
+      const outcome = await draftAnswer(q);
+      if (!outcome.ok) {
+        errors.push(`draft_failed (${outcome.reason}): ${q}`);
         continue;
       }
+      const draft = outcome.draft;
       drafted++;
       const ok = await publishAnswer(draft);
       if (ok) {
         published++;
         newSlugs.push(draft.slug);
+        answered.push(q);
       } else {
         errors.push(`publish_failed: ${draft.slug}`);
       }
@@ -369,18 +412,26 @@ export async function runPrometheus(maxQuestions = 5): Promise<PrometheusRunSumm
   // so Cassandra/Shadow don't re-feed them tomorrow. This is what turns the
   // citation moat into a compounding system: gap measured -> gap closed -> new
   // gap surfaces -> repeat.
-  if (supabase && target.length > 0) {
+  //
+  // Gated on `answered`, NOT on `target`. Resolving on `target` closed a gap
+  // the moment Prometheus LOOKED at it, whether or not an answer ever went
+  // live — so a run that drafted nothing would still tell Cassandra/Shadow to
+  // stop re-feeding those questions, and the gap would silently disappear
+  // unanswered. `citation_gaps` is empty today, so this has cost nothing yet;
+  // it is fixed before it can.
+  if (supabase && answered.length > 0) {
     try {
-      await supabase
+      const { error } = await supabase
         .from('citation_gaps')
         .update({
           resolved: true,
           resolved_at: new Date().toISOString(),
         })
-        .in('question', target)
+        .in('question', answered)
         .eq('resolved', false);
-    } catch {
-      /* silent — table may not exist on first run */
+      if (error) errors.push(`gap_resolve_failed: ${error.message}`);
+    } catch (e) {
+      errors.push(`gap_resolve_failed: ${e instanceof Error ? e.message : String(e)}`);
     }
   }
 
@@ -396,7 +447,12 @@ export async function runPrometheus(maxQuestions = 5): Promise<PrometheusRunSumm
     new_slugs: newSlugs,
     errors,
   };
-  await trackRun(summary);
+  const tracked = await trackRun(summary);
+  if (!tracked.ok) {
+    // Appended after the insert attempt, so the persisted row cannot carry it.
+    // The cron log can, and that is the surface a failure has to reach.
+    summary.errors.push(`run_not_tracked: ${tracked.reason ?? 'unknown'}`);
+  }
 
   return summary;
 }

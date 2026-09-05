@@ -20,6 +20,12 @@ export async function GET(req: NextRequest) {
       published: summary.published,
       pinged: summary.pinged,
       error_count: summary.errors.length,
+      // `error_count` alone is a bare number and deriveStatusFromSummary does
+      // not — and deliberately should not — guess at numeric fields. The array
+      // is the marker it reads, so a run that fails every question now logs
+      // `error` instead of `success`. Capped for size; `error_count` above is
+      // the uncapped total, so the sample can never understate the failure.
+      errors: summary.errors.slice(0, 10),
     });
     return Response.json({
       agent: 'Prometheus',
