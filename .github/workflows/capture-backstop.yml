@@ -1,0 +1,98 @@
+name: Capture backstop
+
+# Retires "the capture depends on a human being awake".
+#
+# A day of listing history is unbackfillable — it is the entire moat — and on
+# 2026-09-05 it came within one manual dispatch of being lost. GitHub's
+# scheduler fired the nightly ON TIME (06:15:40) and RedSP's origin refused the
+# runner's egress; the run died in 61 seconds with nothing captured. A fresh
+# run dispatched by hand 43 minutes later fetched the same feed in 8 seconds.
+#
+# That 43-minute gap is the whole design. parse-feed's own error text says
+# retrying does not clear the block — 0 successes in 56 attempts across two
+# 120-minute budgets — and that is true of retries WITHIN one run on one
+# runner. It says nothing about a new run, and a new run demonstrably clears
+# it. So the mitigation is a delayed RE-RUN, not a longer retry budget.
+#
+# WHY THIS IS A SEPARATE WORKFLOW ON A SEPARATE SCHEDULE
+# A watchdog on the same scheduler as the thing it watches shares its failure.
+# This one only has to notice; it does not have to be punctual.
+#
+# WHY IT CHECKS BEFORE IT FIRES
+# The predecessor was an unconditional ~05:37 dispatch, run by hand for ten
+# mornings and retired on 2026-09-05 on evidence: diffing the day's three books
+# showed the early draw banked 2,033 refs where the scheduled draw held 2,037,
+# a strict superset. An eager backstop does not merely add a redundant run — it
+# banks a systematically earlier, less complete book, and where the two books
+# differ it unions them into one (ref, snapshot_date) key. So this fires only
+# when today is genuinely missing. The decision rule and its 37 tests live in
+# src/lib/capture-backstop.ts and scripts/test-capture-backstop.ts; the case
+# asserted hardest is the one where it must do NOTHING.
+#
+# TIMING
+# The nightly's 05:10 UTC slot has landed 06:15-06:43 for the last five nights
+# — GitHub's queue lag runs 65-93 minutes and is not improving. These two slots
+# are set so that, with the same lag, the first check lands around 08:00-08:35
+# and the second around 10:00-10:35: comfortably after the nightly has had its
+# chance, and with most of the UTC day still left to recover in. Missing the
+# capture entirely is what costs a day; being an hour late costs nothing.
+
+on:
+  schedule:
+    - cron: '0 7 * * *'   # first check
+    - cron: '0 9 * * *'   # second check, for a first that held or failed
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Decide and report, but never dispatch'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  # Needed to read feed-refresh's in-flight runs AND to dispatch it. Events
+  # triggered by GITHUB_TOKEN do not normally start a new workflow run;
+  # workflow_dispatch is the documented exception, which is why the backstop
+  # dispatches rather than pushing a commit.
+  actions: write
+
+concurrency:
+  group: capture-backstop
+  cancel-in-progress: false
+
+jobs:
+  backstop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main at its current tip
+        uses: actions/checkout@v4
+        with:
+          # Explicitly the tip, not the SHA this run was created from. The
+          # committed feed-meta.json is one of the two signals, and a stale
+          # checkout would report yesterday's book on a morning the nightly
+          # had already succeeded — i.e. it would make the backstop fire on a
+          # day it must not.
+          ref: main
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Prove the decision rule before trusting it
+        # The rule decides whether to write into price_snapshots. It runs here,
+        # every time, so a change that breaks it can never reach a dispatch.
+        run: npx tsx scripts/test-capture-backstop.ts
+
+      - name: Check today's capture, and re-dispatch the feed only if it is missing
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: npx tsx scripts/capture-backstop.ts ${{ inputs.dry_run && '--dry-run' || '' }}
