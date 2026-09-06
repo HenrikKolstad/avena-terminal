@@ -62,7 +62,7 @@ export async function GET() {
       summary.eurostat = r;
       await finishRun(runId, r, r.errors.length === 0 ? 'success' : 'partial');
     } catch (e) {
-      const empty: IngestResult = { source: 'eurostat', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0, countries: new Set(), errors: [(e as Error).message] };
+      const empty: IngestResult = { source: 'eurostat', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0, rows_duplicate_excluded: 0, rows_duplicate_collapsed: 0, rows_undecodable: 0, countries: new Set(), errors: [(e as Error).message] };
       summary.eurostat = empty;
       await finishRun(runId, empty, 'error', (e as Error).message);
     }
@@ -76,7 +76,7 @@ export async function GET() {
       summary.ecb_sdw = r;
       await finishRun(runId, r, r.errors.length === 0 ? 'success' : 'partial');
     } catch (e) {
-      const empty: IngestResult = { source: 'ecb_sdw', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0, countries: new Set(), errors: [(e as Error).message] };
+      const empty: IngestResult = { source: 'ecb_sdw', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0, rows_duplicate_excluded: 0, rows_duplicate_collapsed: 0, rows_undecodable: 0, countries: new Set(), errors: [(e as Error).message] };
       summary.ecb_sdw = empty;
       await finishRun(runId, empty, 'error', (e as Error).message);
     }
@@ -90,7 +90,7 @@ export async function GET() {
       summary.ine_es = r;
       await finishRun(runId, r, r.errors.length === 0 ? 'success' : 'partial');
     } catch (e) {
-      const empty: IngestResult = { source: 'ine_es', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0, countries: new Set(), errors: [(e as Error).message] };
+      const empty: IngestResult = { source: 'ine_es', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0, rows_duplicate_excluded: 0, rows_duplicate_collapsed: 0, rows_undecodable: 0, countries: new Set(), errors: [(e as Error).message] };
       summary.ine_es = empty;
       await finishRun(runId, empty, 'error', (e as Error).message);
     }
@@ -104,7 +104,7 @@ export async function GET() {
       summary.istat = r;
       await finishRun(runId, r, r.errors.length === 0 ? 'success' : 'partial');
     } catch (e) {
-      const empty: IngestResult = { source: 'istat', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0, countries: new Set(), errors: [(e as Error).message] };
+      const empty: IngestResult = { source: 'istat', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0, rows_duplicate_excluded: 0, rows_duplicate_collapsed: 0, rows_undecodable: 0, countries: new Set(), errors: [(e as Error).message] };
       summary.istat = empty;
       await finishRun(runId, empty, 'error', (e as Error).message);
     }
@@ -118,7 +118,7 @@ export async function GET() {
       summary.cbs = r;
       await finishRun(runId, r, r.errors.length === 0 ? 'success' : 'partial');
     } catch (e) {
-      const empty: IngestResult = { source: 'cbs', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0, countries: new Set(), errors: [(e as Error).message] };
+      const empty: IngestResult = { source: 'cbs', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0, rows_duplicate_excluded: 0, rows_duplicate_collapsed: 0, rows_undecodable: 0, countries: new Set(), errors: [(e as Error).message] };
       summary.cbs = empty;
       await finishRun(runId, empty, 'error', (e as Error).message);
     }
@@ -132,7 +132,7 @@ export async function GET() {
       summary.bis = r;
       await finishRun(runId, r, r.errors.length === 0 ? 'success' : 'partial');
     } catch (e) {
-      const empty: IngestResult = { source: 'bis', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0, countries: new Set(), errors: [(e as Error).message] };
+      const empty: IngestResult = { source: 'bis', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0, rows_duplicate_excluded: 0, rows_duplicate_collapsed: 0, rows_undecodable: 0, countries: new Set(), errors: [(e as Error).message] };
       summary.bis = empty;
       await finishRun(runId, empty, 'error', (e as Error).message);
     }
@@ -144,6 +144,13 @@ export async function GET() {
   const totalLost = Object.values(summary).reduce((acc, s) => acc + s.rows_lost, 0);
   const totalChunksFailed = Object.values(summary).reduce((acc, s) => acc + s.write_chunks_failed, 0);
   const totalAttempts = Object.values(summary).reduce((acc, s) => acc + s.indicators_attempted, 0);
+  // Rows we refused to write, and why. Excluded-conflicting and undecodable are
+  // REAL losses (a row that should exist and does not); collapsed-identical is
+  // lossless but is still reported, because a source that suddenly starts
+  // repeating itself is a change worth seeing.
+  const totalDupExcluded = Object.values(summary).reduce((acc, s) => acc + s.rows_duplicate_excluded, 0);
+  const totalDupCollapsed = Object.values(summary).reduce((acc, s) => acc + s.rows_duplicate_collapsed, 0);
+  const totalUndecodable = Object.values(summary).reduce((acc, s) => acc + s.rows_undecodable, 0);
   const totalErrors = Object.values(summary).reduce((acc, s) => acc + s.errors.length, 0);
 
   // The per-source error strings are already collected above; passing them on
@@ -157,10 +164,15 @@ export async function GET() {
 
   await finishCronLog(
     log,
-    totalErrors === 0 && totalLost === 0 ? 'success' : 'error',
+    totalErrors === 0 && totalLost === 0 && totalDupExcluded === 0 && totalUndecodable === 0
+      ? 'success'
+      : 'error',
     {
       rows_upserted: totalRows,
       rows_lost: totalLost,
+      rows_duplicate_excluded: totalDupExcluded,
+      rows_duplicate_collapsed: totalDupCollapsed,
+      rows_undecodable: totalUndecodable,
       write_chunks_failed: totalChunksFailed,
       indicators_attempted: totalAttempts,
       errors: totalErrors,
@@ -175,6 +187,9 @@ export async function GET() {
         indicators_attempted: v.indicators_attempted,
         rows_upserted: v.rows_upserted,
         rows_lost: v.rows_lost,
+        rows_duplicate_excluded: v.rows_duplicate_excluded,
+        rows_duplicate_collapsed: v.rows_duplicate_collapsed,
+        rows_undecodable: v.rows_undecodable,
         write_chunks_failed: v.write_chunks_failed,
         countries_covered: v.countries.size,
         errors: v.errors,
@@ -182,5 +197,8 @@ export async function GET() {
     ),
     total_rows_upserted: totalRows,
     total_rows_lost: totalLost,
+    total_rows_duplicate_excluded: totalDupExcluded,
+    total_rows_duplicate_collapsed: totalDupCollapsed,
+    total_rows_undecodable: totalUndecodable,
   });
 }

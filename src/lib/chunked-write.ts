@@ -178,3 +178,88 @@ export function chunkWriteSummary(r: ChunkWriteResult, prefix: string) {
     [`${prefix}_chunks_failed`]: r.chunks_failed,
   };
 }
+
+/**
+ * Split a batch on its upsert conflict key BEFORE the database sees it.
+ *
+ * Postgres rejects an entire `INSERT ... ON CONFLICT DO UPDATE` statement with
+ * "ON CONFLICT DO UPDATE command cannot affect row a second time" when the
+ * batch touches the same key twice. Through `chunkedWrite` that means one bad
+ * pair destroys its whole 500-row chunk — the same amplification that let 12
+ * orphan DVF rows take 550 good ones with them. eu-stats-ingest has been
+ * losing 4,480 rows a night, 100% of the INE Spain feed, to exactly this.
+ *
+ * The split is deliberately NOT a plain de-duplication, because two rows
+ * sharing a key are two different bugs and only one of them is safe to
+ * collapse:
+ *
+ *   - IDENTICAL values: the source listed the same observation twice. Keeping
+ *     one is lossless, so collapse it — but count it, because a source that
+ *     suddenly starts repeating itself is worth seeing.
+ *   - CONFLICTING values: the key does not identify what the caller thinks it
+ *     identifies. Picking a winner would publish one of two contradictory
+ *     numbers as fact, so ALL rows for that key are excluded and the key is
+ *     named. Excluding a handful of rows is recoverable; inventing a value is
+ *     not.
+ *
+ * `valueOf` should serialise everything that is NOT part of the key. Rows that
+ * differ only in a field the caller does not care about would otherwise be
+ * reported as conflicting.
+ */
+export interface KeySplitResult<T> {
+  /** Safe to write: one row per distinct key. */
+  rows: T[];
+  /** Rows dropped as exact repeats of a row already kept. */
+  collapsed_identical: number;
+  /** Rows excluded because their key carried more than one distinct value. */
+  excluded_conflicting: number;
+  /** A capped sample of the conflicting keys, for the error message. */
+  conflicting_keys: string[];
+  /** The uncapped number of distinct conflicting keys. Trust this one. */
+  conflicting_keys_total: number;
+}
+
+export function splitOnUpsertKey<T>(
+  rows: T[],
+  keyOf: (row: T) => string,
+  valueOf: (row: T) => string,
+  opts: { sampleLimit?: number } = {},
+): KeySplitResult<T> {
+  const sampleLimit = opts.sampleLimit ?? 5;
+  const byKey = new Map<string, { rows: T[]; values: Set<string> }>();
+  const order: string[] = [];
+
+  for (const row of rows) {
+    const k = keyOf(row);
+    let slot = byKey.get(k);
+    if (!slot) {
+      slot = { rows: [], values: new Set() };
+      byKey.set(k, slot);
+      order.push(k);
+    }
+    slot.rows.push(row);
+    slot.values.add(valueOf(row));
+  }
+
+  const out: KeySplitResult<T> = {
+    rows: [],
+    collapsed_identical: 0,
+    excluded_conflicting: 0,
+    conflicting_keys: [],
+    conflicting_keys_total: 0,
+  };
+
+  for (const k of order) {
+    const slot = byKey.get(k)!;
+    if (slot.values.size > 1) {
+      out.excluded_conflicting += slot.rows.length;
+      out.conflicting_keys_total++;
+      if (out.conflicting_keys.length < sampleLimit) out.conflicting_keys.push(k);
+      continue;
+    }
+    out.rows.push(slot.rows[0]);
+    out.collapsed_identical += slot.rows.length - 1;
+  }
+
+  return out;
+}

@@ -20,7 +20,7 @@
  */
 
 import { supabase } from '@/lib/supabase';
-import { chunkedWrite, emptyChunkWriteResult, type ChunkWriteResult } from './chunked-write';
+import { chunkedWrite, emptyChunkWriteResult, splitOnUpsertKey, type ChunkWriteResult } from './chunked-write';
 
 // ─── Types ────────────────────────────────────────────────────────────────
 
@@ -44,6 +44,15 @@ export interface IngestResult {
    *  "nothing to write" from "every write failed" — this is that difference. */
   rows_lost: number;
   write_chunks_failed: number;
+  /** Rows excluded because one upsert key carried two DIFFERENT values.
+   *  Picking a winner would publish one of two contradictory numbers as fact. */
+  rows_duplicate_excluded: number;
+  /** Rows dropped as exact repeats of a row already kept. Lossless, but a
+   *  source that starts repeating itself is worth seeing. */
+  rows_duplicate_collapsed: number;
+  /** Observations whose period could not be decoded and were refused rather
+   *  than guessed at. See ineQuarterPeriod. */
+  rows_undecodable: number;
   countries: Set<string>;
   errors: string[];
 }
@@ -207,6 +216,7 @@ export async function ingestEurostat(): Promise<IngestResult> {
     source: 'eurostat',
     indicators_attempted: 0,
     rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0,
+    rows_duplicate_excluded: 0, rows_duplicate_collapsed: 0, rows_undecodable: 0,
     countries: new Set(),
     errors: [],
   };
@@ -217,6 +227,8 @@ export async function ingestEurostat(): Promise<IngestResult> {
       const w = await upsertRows(rows);
       result.rows_upserted += w.written;
       result.rows_lost += w.lost;
+      result.rows_duplicate_excluded += w.duplicate_excluded;
+      result.rows_duplicate_collapsed += w.duplicate_collapsed;
       result.write_chunks_failed += w.chunks_failed;
       for (const e of w.errors) if (result.errors.length < 8) result.errors.push(e);
       for (const r of rows) result.countries.add(r.country_code);
@@ -363,6 +375,7 @@ export async function ingestECB(): Promise<IngestResult> {
     source: 'ecb_sdw',
     indicators_attempted: 0,
     rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0,
+    rows_duplicate_excluded: 0, rows_duplicate_collapsed: 0, rows_undecodable: 0,
     countries: new Set(),
     errors: [],
   };
@@ -373,6 +386,8 @@ export async function ingestECB(): Promise<IngestResult> {
       const w = await upsertRows(rows);
       result.rows_upserted += w.written;
       result.rows_lost += w.lost;
+      result.rows_duplicate_excluded += w.duplicate_excluded;
+      result.rows_duplicate_collapsed += w.duplicate_collapsed;
       result.write_chunks_failed += w.chunks_failed;
       for (const e of w.errors) if (result.errors.length < 8) result.errors.push(e);
       for (const r of rows) result.countries.add(r.country_code);
@@ -397,7 +412,53 @@ const INE_SPAIN_SERIES = [
   },
 ];
 
-async function fetchINETable(table: string, name: string, unit: string, freq: 'Q'): Promise<OfficialStatRow[]> {
+/**
+ * INE's Tempus period codes for a QUARTERLY series.
+ *
+ * Verified against the live table 25171 on 2026-09-06 by reading the `Fecha`
+ * each code carries, not from memory: FK_Periodo 19 stamps 2025-01-01,
+ * 20 stamps 2025-04-01, 21 stamps 2025-07-01, 22 stamps 2025-10-01 (Madrid
+ * local, which is why the raw epoch values read 23:00 the previous day in UTC
+ * — do not "fix" that by deriving the quarter from the UTC date).
+ *
+ * The previous code assumed 1-4 and fell back to `Math.ceil(fk / 3)` for
+ * anything else, which turned 19, 20 and 21 all into "Q7" and 22 into "Q8".
+ * Three of every four quarters collapsed onto one key and the periods it
+ * produced did not exist. The database rejecting those writes on the unique
+ * constraint is the ONLY reason `eu_official_stats` does not contain
+ * fabricated quarters today — so the fix is to decode the code correctly, and
+ * emphatically NOT to de-duplicate the batch until it is accepted.
+ */
+const INE_QUARTER_BY_PERIOD_CODE: Record<number, number> = { 19: 1, 20: 2, 21: 3, 22: 4 };
+
+/**
+ * Decode one observation's period, or say why it cannot be decoded.
+ *
+ * There is no arithmetic fallback on purpose. An unrecognised code means we do
+ * not know which quarter this value belongs to, and a guessed period is a
+ * fabricated fact — the expensive kind of wrong. Refusing costs one row and
+ * reports itself; guessing costs the table's credibility.
+ */
+export function ineQuarterPeriod(
+  obs: { Anyo: number; FK_Periodo: number },
+): { period: string } | { error: string } {
+  const q = INE_QUARTER_BY_PERIOD_CODE[obs.FK_Periodo];
+  if (!q) {
+    return { error: `unmapped FK_Periodo ${obs.FK_Periodo} for a quarterly series` };
+  }
+  if (!Number.isInteger(obs.Anyo) || obs.Anyo < 1900 || obs.Anyo > 2200) {
+    return { error: `implausible Anyo ${obs.Anyo}` };
+  }
+  return { period: `${obs.Anyo}-Q${q}` };
+}
+
+/** Rows we could build, plus the observations we refused to guess at. */
+interface INEFetch {
+  rows: OfficialStatRow[];
+  undecodable: string[];
+}
+
+async function fetchINETable(table: string, name: string, unit: string, freq: 'Q'): Promise<INEFetch> {
   const url = `https://servicios.ine.es/wstempus/js/EN/DATOS_TABLA/${table}?nult=20`;
   const res = await fetch(url, { headers: { Accept: 'application/json' } });
   if (!res.ok) throw new Error(`INE table ${table} HTTP ${res.status}`);
@@ -407,6 +468,7 @@ async function fetchINETable(table: string, name: string, unit: string, freq: 'Q
   }>;
 
   const out: OfficialStatRow[] = [];
+  const undecodable: string[] = [];
   // INE returns multiple sub-series. Ingest every series row, prefixing the
   // indicator_code with the series name so we don't collide on UNIQUE. This
   // is more honest than guessing which row is the "national total" — every
@@ -417,9 +479,13 @@ async function fetchINETable(table: string, name: string, unit: string, freq: 'Q
     for (const obs of series.Data) {
       if (obs.Valor == null) continue;
       // INE quarterly tables use FK_Periodo 1-4 for Q1-Q4; some monthly tables
-      // use 1-12. Default to Q encoding for HPI tables.
-      const quarter = obs.FK_Periodo >= 1 && obs.FK_Periodo <= 4 ? obs.FK_Periodo : Math.ceil(obs.FK_Periodo / 3);
-      const period = `${obs.Anyo}-Q${quarter}`;
+      const decoded = ineQuarterPeriod(obs);
+      if ('error' in decoded) {
+        // Counted, never guessed — see ineQuarterPeriod.
+        undecodable.push(`INE ${table}/${seriesSlug}: ${decoded.error}`);
+        continue;
+      }
+      const period = decoded.period;
       out.push({
         source: 'ine_es',
         indicator_code: `ine_${table}_${seriesSlug}`,
@@ -433,7 +499,7 @@ async function fetchINETable(table: string, name: string, unit: string, freq: 'Q
       });
     }
   }
-  return out;
+  return { rows: out, undecodable };
 }
 
 export async function ingestINESpain(): Promise<IngestResult> {
@@ -441,16 +507,23 @@ export async function ingestINESpain(): Promise<IngestResult> {
     source: 'ine_es',
     indicators_attempted: 0,
     rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0,
+    rows_duplicate_excluded: 0, rows_duplicate_collapsed: 0, rows_undecodable: 0,
     countries: new Set(['ES']),
     errors: [],
   };
   for (const s of INE_SPAIN_SERIES) {
     result.indicators_attempted++;
     try {
-      const rows = await fetchINETable(s.table, s.name, s.unit, s.freq);
-      const w = await upsertRows(rows);
+      const fetched = await fetchINETable(s.table, s.name, s.unit, s.freq);
+      // An observation whose period we refuse to guess at is a real loss and
+      // is reported as one — it is not allowed to look like a quiet source.
+      result.rows_undecodable += fetched.undecodable.length;
+      for (const e of fetched.undecodable) if (result.errors.length < 8) result.errors.push(e);
+      const w = await upsertRows(fetched.rows);
       result.rows_upserted += w.written;
       result.rows_lost += w.lost;
+      result.rows_duplicate_excluded += w.duplicate_excluded;
+      result.rows_duplicate_collapsed += w.duplicate_collapsed;
       result.write_chunks_failed += w.chunks_failed;
       for (const e of w.errors) if (result.errors.length < 8) result.errors.push(e);
     } catch (e) {
@@ -516,7 +589,8 @@ async function fetchCBSTable(t: CBSTable): Promise<OfficialStatRow[]> {
 }
 
 export async function ingestCBS(): Promise<IngestResult> {
-  const result: IngestResult = { source: 'cbs', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0, countries: new Set(['NL']), errors: [] };
+  const result: IngestResult = { source: 'cbs', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0,
+    rows_duplicate_excluded: 0, rows_duplicate_collapsed: 0, rows_undecodable: 0, countries: new Set(['NL']), errors: [] };
   for (const t of CBS_TABLES) {
     result.indicators_attempted++;
     try {
@@ -524,6 +598,8 @@ export async function ingestCBS(): Promise<IngestResult> {
       const w = await upsertRows(rows);
       result.rows_upserted += w.written;
       result.rows_lost += w.lost;
+      result.rows_duplicate_excluded += w.duplicate_excluded;
+      result.rows_duplicate_collapsed += w.duplicate_collapsed;
       result.write_chunks_failed += w.chunks_failed;
       for (const e of w.errors) if (result.errors.length < 8) result.errors.push(e);
     } catch (e) {
@@ -592,7 +668,8 @@ async function fetchISTATSeries(s: ISTATSeries): Promise<OfficialStatRow[]> {
 }
 
 export async function ingestISTAT(): Promise<IngestResult> {
-  const result: IngestResult = { source: 'istat', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0, countries: new Set(['IT']), errors: [] };
+  const result: IngestResult = { source: 'istat', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0,
+    rows_duplicate_excluded: 0, rows_duplicate_collapsed: 0, rows_undecodable: 0, countries: new Set(['IT']), errors: [] };
   for (const s of ISTAT_SERIES) {
     result.indicators_attempted++;
     try {
@@ -600,6 +677,8 @@ export async function ingestISTAT(): Promise<IngestResult> {
       const w = await upsertRows(rows);
       result.rows_upserted += w.written;
       result.rows_lost += w.lost;
+      result.rows_duplicate_excluded += w.duplicate_excluded;
+      result.rows_duplicate_collapsed += w.duplicate_collapsed;
       result.write_chunks_failed += w.chunks_failed;
       for (const e of w.errors) if (result.errors.length < 8) result.errors.push(e);
     } catch (e) {
@@ -616,7 +695,8 @@ export async function ingestISTAT(): Promise<IngestResult> {
 // We parse a subset relevant to our coverage.
 
 export async function ingestBIS(): Promise<IngestResult> {
-  const result: IngestResult = { source: 'bis', indicators_attempted: 1, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0, countries: new Set(), errors: [] };
+  const result: IngestResult = { source: 'bis', indicators_attempted: 1, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0,
+    rows_duplicate_excluded: 0, rows_duplicate_collapsed: 0, rows_undecodable: 0, countries: new Set(), errors: [] };
   const url = 'https://www.bis.org/statistics/pp_selected.csv';
   try {
     const res = await fetch(url, { headers: { Accept: 'text/csv' } });
@@ -664,6 +744,8 @@ export async function ingestBIS(): Promise<IngestResult> {
     const w = await upsertRows(rows);
     result.rows_upserted = w.written;
     result.rows_lost = w.lost;
+    result.rows_duplicate_excluded = w.duplicate_excluded;
+    result.rows_duplicate_collapsed = w.duplicate_collapsed;
     result.write_chunks_failed = w.chunks_failed;
     for (const e of w.errors) if (result.errors.length < 8) result.errors.push(e);
   } catch (e) {
@@ -674,19 +756,55 @@ export async function ingestBIS(): Promise<IngestResult> {
 
 // ─── Shared upsert ────────────────────────────────────────────────────────
 
-async function upsertRows(rows: OfficialStatRow[]): Promise<ChunkWriteResult> {
+/** The upsert's conflict key, written once so the guard and the write agree. */
+const STATS_CONFLICT_KEY = 'source,indicator_code,country_code,period';
+const statsKeyOf = (r: OfficialStatRow) =>
+  `${r.source} ${r.indicator_code} ${r.country_code} ${r.period}`;
+/** Everything the key does NOT cover. Two rows differing here genuinely conflict. */
+const statsValueOf = (r: OfficialStatRow) =>
+  `${r.value} ${r.unit} ${r.period_freq} ${r.indicator_name}`;
+
+type StatsWriteResult = ChunkWriteResult & {
+  duplicate_excluded: number;
+  duplicate_collapsed: number;
+};
+
+async function upsertRows(rows: OfficialStatRow[]): Promise<StatsWriteResult> {
   const db = supabase;
-  if (!db || rows.length === 0) return emptyChunkWriteResult();
-  // Chunk to stay under Supabase batch limits
-  return chunkedWrite(
-    rows,
+  if (!db || rows.length === 0) {
+    return { ...emptyChunkWriteResult(), duplicate_excluded: 0, duplicate_collapsed: 0 };
+  }
+
+  // Split BEFORE the database sees the batch. Postgres rejects an entire
+  // ON CONFLICT statement that touches one key twice, so a single bad pair
+  // used to destroy its whole 500-row chunk — that is how the INE feed lost
+  // 4,480 rows a night, 100% of itself, while the run reported "errors: 2".
+  const split = splitOnUpsertKey(rows, statsKeyOf, statsValueOf);
+
+  const w = await chunkedWrite(
+    split.rows,
     500,
     (chunk) =>
-      db
-        .from('eu_official_stats')
-        .upsert(chunk, { onConflict: 'source,indicator_code,country_code,period' }),
+      db.from('eu_official_stats').upsert(chunk, { onConflict: STATS_CONFLICT_KEY }),
     { label: 'stats' },
   );
+
+  // An excluded conflict is a loss and is reported as one. If it were left out
+  // of `errors[]` the run could lose rows and still derive a green status —
+  // the exact shape this repo keeps shipping.
+  if (split.excluded_conflicting > 0 && w.errors.length < 5) {
+    w.errors.push(
+      `stats: ${split.excluded_conflicting} rows excluded across ` +
+        `${split.conflicting_keys_total} conflicting upsert keys ` +
+        `(e.g. ${split.conflicting_keys.slice(0, 2).join(', ')})`,
+    );
+  }
+
+  return {
+    ...w,
+    duplicate_excluded: split.excluded_conflicting,
+    duplicate_collapsed: split.collapsed_identical,
+  };
 }
 
 function sleep(ms: number): Promise<void> {
