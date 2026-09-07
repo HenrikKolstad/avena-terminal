@@ -42,23 +42,39 @@ const jsonLd = {
  * null, never 0, when the read fails: a broken query must not be able to
  * publish "0 observations" as though it were a measurement.
  */
-async function officialStatsCoverage(): Promise<{ rows: number; countries: number } | null> {
+async function officialStatsCoverage(): Promise<{ rows: number; countries: number | null } | null> {
   if (!supabase) return null;
   try {
     const { count, error } = await supabase
       .from('eu_official_stats')
       .select('*', { count: 'exact', head: true });
     if (error || count == null) return null;
-    // country_code is small and low-cardinality; a distinct count over it is
-    // cheap, but if it fails we fall back to reporting rows alone rather than
-    // guessing at a country total.
-    const { data, error: cErr } = await supabase
-      .from('eu_official_stats')
-      .select('country_code')
-      .limit(20000);
-    if (cErr || !data) return null;
-    const countries = new Set(data.map((r) => (r as { country_code: string }).country_code)).size;
-    return { rows: count, countries };
+
+    // A distinct country count needs EVERY row's country_code, and PostgREST
+    // caps a plain select at 1,000 regardless of .limit(). The first version of
+    // this function asked for 20,000 rows, silently got 1,000, and published
+    // "7 countries" against a true 28 — a truncated read becoming a wrong
+    // number, which is this project's recurring bug in my own code.
+    //
+    // So: page explicitly, and if the scan does not COMPLETE, return null for
+    // countries rather than a count taken over part of the table. A partial
+    // distinct count is always an undercount and is indistinguishable from a
+    // real one.
+    const PAGE = 1000;
+    const MAX_PAGES = 40; // 40k rows; the table is ~8.8k and grows slowly
+    const seen = new Set<string>();
+    let complete = false;
+    for (let page = 0; page < MAX_PAGES; page++) {
+      const from = page * PAGE;
+      const { data, error: cErr } = await supabase
+        .from('eu_official_stats')
+        .select('country_code')
+        .range(from, from + PAGE - 1);
+      if (cErr || !data) return { rows: count, countries: null };
+      for (const r of data) seen.add((r as { country_code: string }).country_code);
+      if (data.length < PAGE) { complete = true; break; }
+    }
+    return { rows: count, countries: complete ? seen.size : null };
   } catch {
     return null;
   }
@@ -132,7 +148,7 @@ export default async function DefensibilityPage() {
             <PillarHeader number="02" title="Provenance chain" subtitle="Every published datapoint sources back to a primary URL" />
             <div className="grid lg:grid-cols-2 gap-6 mt-10">
               <Card title="Official statistics carry their source URL">
-                Every row in <Code>eu_official_stats</Code>{coverage ? ` (${coverage.rows.toLocaleString('en-GB')} observations, ${coverage.countries} countries)` : ''} stores the exact API endpoint that produced it. The API response at <Code>/api/v1/stats</Code> returns the <Code>source_url</Code> field alongside the value. Recipients can independently verify any Avena observation against Eurostat, ECB SDW, or INE Spain in one HTTP call.
+                Every row in <Code>eu_official_stats</Code>{coverage ? ` (${coverage.rows.toLocaleString('en-GB')} observations${coverage.countries != null ? `, ${coverage.countries} countries` : ''})` : ''} stores the exact API endpoint that produced it. The API response at <Code>/api/v1/stats</Code> returns the <Code>source_url</Code> field alongside the value. Recipients can independently verify any Avena observation against Eurostat, ECB SDW, or INE Spain in one HTTP call.
                 <Pointer href="/eu-official">EU official statistics layer →</Pointer>
               </Card>
               <Card title="AVN-IDs are cryptographically signed">
