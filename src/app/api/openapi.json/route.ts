@@ -180,10 +180,10 @@ const spec = {
       get: {
         tags: ['eu-stats'],
         summary: 'Query official EU residential statistics',
-        description: 'Long-format time-series query over eu_official_stats (Eurostat, ECB SDW, INE Spain, ISTAT, CBS, BIS). Filter by country, source, indicator, and period range. JSON or CSV.',
+        description: 'Long-format time-series query over eu_official_stats. Sources currently holding observations: Eurostat, ECB SDW, INE Spain. Adapters for ISTAT, CBS and BIS are wired but are not returning rows (ISTAT and BIS fail upstream; CBS returns an empty set), so they are not offered as filter values. Filter by country, source, indicator, and period range. JSON or CSV.',
         parameters: [
           { in: 'query', name: 'country',   schema: { type: 'string', example: 'ES' },           description: 'ISO 3166-1 alpha-2 or EU27_2020 / EA20.' },
-          { in: 'query', name: 'source',    schema: { type: 'string', enum: ['eurostat','ecb_sdw','ine_es','istat','cbs','bis'] } },
+          { in: 'query', name: 'source',    schema: { type: 'string', enum: ['eurostat','ecb_sdw','ine_es'] }, description: 'Only sources that actually hold observations are listed. See the endpoint description for adapters that are wired but dormant.' },
           { in: 'query', name: 'indicator', schema: { type: 'string', example: 'prc_hpi_q' },    description: 'Substring match against indicator_code.' },
           { in: 'query', name: 'from',      schema: { type: 'string', example: '2024-Q1' } },
           { in: 'query', name: 'to',        schema: { type: 'string', example: '2026-Q2' } },

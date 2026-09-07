@@ -50,15 +50,54 @@ async function finishRun(id: number | null, result: IngestResult, status: 'succe
   }
 }
 
+/**
+ * Wall-clock HTTP budget per source, in ms.
+ *
+ * The six adapters run SEQUENTIALLY inside one function capped at
+ * `maxDuration = 300`. Before 2026-09-07 no request had a timeout at all, so a
+ * single hung upstream could burn the entire budget and take every adapter
+ * behind it down with it — reported as nothing at all, because the function is
+ * killed before it can log. Retries (added the same day, after a transient
+ * "fetch failed" cost INE its whole daily load) make that risk strictly worse
+ * unless the time is bounded, so the two ship together.
+ *
+ * Sized by fetch count: eurostat and ecb make 8 requests each, the rest one.
+ * The sum (260s) plus write and logging headroom stays inside maxDuration.
+ */
+const SOURCE_BUDGET_MS: Record<string, number> = {
+  eurostat: 70_000,
+  ecb_sdw: 70_000,
+  ine_es: 45_000,
+  istat: 25_000,
+  cbs: 25_000,
+  bis: 25_000,
+};
+
+/** Leaves ~35s of the 300s function budget for writes, logging and the response. */
+const GLOBAL_HTTP_DEADLINE_MS = 265_000;
+
 export async function GET() {
   const log = await startCronLog('eu-stats-ingest', '/api/cron/eu-stats-ingest');
   const summary: Record<string, IngestResult> = {};
+  const runStarted = Date.now();
+  const globalDeadlineAt = runStarted + GLOBAL_HTTP_DEADLINE_MS;
+
+  /**
+   * An adapter gets its own slice, but never past the global wall. If an
+   * earlier source overran, this lands in the past and the adapter fails
+   * immediately with a named "budget exhausted" error — which is the point:
+   * an honest, attributable failure instead of the whole function being killed
+   * with nothing written to cron_logs.
+   */
+  const budgetFor = (source: string) => ({
+    deadlineAt: Math.min(Date.now() + (SOURCE_BUDGET_MS[source] ?? 25_000), globalDeadlineAt),
+  });
 
   // Eurostat
   {
     const runId = await logRun('eurostat');
     try {
-      const r = await ingestEurostat();
+      const r = await ingestEurostat(budgetFor('eurostat'));
       summary.eurostat = r;
       await finishRun(runId, r, r.errors.length === 0 ? 'success' : 'partial');
     } catch (e) {
@@ -72,7 +111,7 @@ export async function GET() {
   {
     const runId = await logRun('ecb_sdw');
     try {
-      const r = await ingestECB();
+      const r = await ingestECB(budgetFor('ecb_sdw'));
       summary.ecb_sdw = r;
       await finishRun(runId, r, r.errors.length === 0 ? 'success' : 'partial');
     } catch (e) {
@@ -86,7 +125,7 @@ export async function GET() {
   {
     const runId = await logRun('ine_es');
     try {
-      const r = await ingestINESpain();
+      const r = await ingestINESpain(budgetFor('ine_es'));
       summary.ine_es = r;
       await finishRun(runId, r, r.errors.length === 0 ? 'success' : 'partial');
     } catch (e) {
@@ -100,7 +139,7 @@ export async function GET() {
   {
     const runId = await logRun('istat');
     try {
-      const r = await ingestISTAT();
+      const r = await ingestISTAT(budgetFor('istat'));
       summary.istat = r;
       await finishRun(runId, r, r.errors.length === 0 ? 'success' : 'partial');
     } catch (e) {
@@ -114,7 +153,7 @@ export async function GET() {
   {
     const runId = await logRun('cbs');
     try {
-      const r = await ingestCBS();
+      const r = await ingestCBS(budgetFor('cbs'));
       summary.cbs = r;
       await finishRun(runId, r, r.errors.length === 0 ? 'success' : 'partial');
     } catch (e) {
@@ -128,7 +167,7 @@ export async function GET() {
   {
     const runId = await logRun('bis');
     try {
-      const r = await ingestBIS();
+      const r = await ingestBIS(budgetFor('bis'));
       summary.bis = r;
       await finishRun(runId, r, r.errors.length === 0 ? 'success' : 'partial');
     } catch (e) {

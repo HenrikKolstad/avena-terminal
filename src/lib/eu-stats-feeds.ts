@@ -21,6 +21,17 @@
 
 import { supabase } from '@/lib/supabase';
 import { chunkedWrite, emptyChunkWriteResult, splitOnUpsertKey, type ChunkWriteResult } from './chunked-write';
+import { fetchWithRetry, type FetchBudget } from './resilient-fetch';
+
+/**
+ * Every adapter takes a wall-clock budget it may not overrun.
+ *
+ * The route runs these six sequentially under `maxDuration = 300`. Without a
+ * per-adapter deadline, one hung upstream consumes the whole function budget
+ * and silently kills every adapter behind it — which would make the retries
+ * added on 2026-09-07 a net loss rather than a gain. See resilient-fetch.ts.
+ */
+export type IngestOptions = FetchBudget;
 
 // ─── Types ────────────────────────────────────────────────────────────────
 
@@ -156,12 +167,16 @@ const EUROSTAT_BASE = 'https://ec.europa.eu/eurostat/api/dissemination/statistic
  *     size: [27, 1, 1, 20]                                 // dimension cardinalities
  *   }
  */
-async function fetchEurostatIndicator(ind: EurostatIndicator): Promise<OfficialStatRow[]> {
+async function fetchEurostatIndicator(ind: EurostatIndicator, budget?: IngestOptions): Promise<OfficialStatRow[]> {
   const sinceYear = new Date().getUTCFullYear() - 5;
   const geoParams = TARGET_COUNTRIES.map((c) => `geo=${c}`).join('&');
   const url = `${EUROSTAT_BASE}/${ind.dataset}?format=JSON&lang=EN&sinceTimePeriod=${sinceYear}&${ind.filter}&${geoParams}`;
 
-  const res = await fetch(url, { headers: { Accept: 'application/json' } });
+  const res = await fetchWithRetry(url, {
+    headers: { Accept: 'application/json' },
+    label: `Eurostat ${ind.dataset}`,
+    deadlineAt: budget?.deadlineAt,
+  });
   if (!res.ok) throw new Error(`Eurostat ${ind.dataset} HTTP ${res.status}`);
   const data = await res.json() as {
     value: Record<string, number>;
@@ -211,7 +226,7 @@ async function fetchEurostatIndicator(ind: EurostatIndicator): Promise<OfficialS
   return out;
 }
 
-export async function ingestEurostat(): Promise<IngestResult> {
+export async function ingestEurostat(budget?: IngestOptions): Promise<IngestResult> {
   const result: IngestResult = {
     source: 'eurostat',
     indicators_attempted: 0,
@@ -223,7 +238,7 @@ export async function ingestEurostat(): Promise<IngestResult> {
   for (const ind of EUROSTAT_INDICATORS) {
     result.indicators_attempted++;
     try {
-      const rows = await fetchEurostatIndicator(ind);
+      const rows = await fetchEurostatIndicator(ind, budget);
       const w = await upsertRows(rows);
       result.rows_upserted += w.written;
       result.rows_lost += w.lost;
@@ -329,10 +344,14 @@ const ECB_SERIES: ECBSeries[] = [
   },
 ];
 
-async function fetchECBSeries(s: ECBSeries): Promise<OfficialStatRow[]> {
+async function fetchECBSeries(s: ECBSeries, budget?: IngestOptions): Promise<OfficialStatRow[]> {
   const startYear = new Date().getUTCFullYear() - 5;
   const url = `${ECB_BASE}/${s.dataflow}/${s.key}?format=jsondata&startPeriod=${startYear}`;
-  const res = await fetch(url, { headers: { Accept: 'application/json' } });
+  const res = await fetchWithRetry(url, {
+    headers: { Accept: 'application/json' },
+    label: `ECB ${s.dataflow}/${s.key}`,
+    deadlineAt: budget?.deadlineAt,
+  });
   if (!res.ok) {
     // ECB returns 404 for missing series — non-fatal
     if (res.status === 404) return [];
@@ -370,7 +389,7 @@ async function fetchECBSeries(s: ECBSeries): Promise<OfficialStatRow[]> {
   return out;
 }
 
-export async function ingestECB(): Promise<IngestResult> {
+export async function ingestECB(budget?: IngestOptions): Promise<IngestResult> {
   const result: IngestResult = {
     source: 'ecb_sdw',
     indicators_attempted: 0,
@@ -382,7 +401,7 @@ export async function ingestECB(): Promise<IngestResult> {
   for (const s of ECB_SERIES) {
     result.indicators_attempted++;
     try {
-      const rows = await fetchECBSeries(s);
+      const rows = await fetchECBSeries(s, budget);
       const w = await upsertRows(rows);
       result.rows_upserted += w.written;
       result.rows_lost += w.lost;
@@ -458,9 +477,13 @@ interface INEFetch {
   undecodable: string[];
 }
 
-async function fetchINETable(table: string, name: string, unit: string, freq: 'Q'): Promise<INEFetch> {
+async function fetchINETable(table: string, name: string, unit: string, freq: 'Q', budget?: IngestOptions): Promise<INEFetch> {
   const url = `https://servicios.ine.es/wstempus/js/EN/DATOS_TABLA/${table}?nult=20`;
-  const res = await fetch(url, { headers: { Accept: 'application/json' } });
+  const res = await fetchWithRetry(url, {
+    headers: { Accept: 'application/json' },
+    label: `INE ${table}`,
+    deadlineAt: budget?.deadlineAt,
+  });
   if (!res.ok) throw new Error(`INE table ${table} HTTP ${res.status}`);
   const data = await res.json() as Array<{
     Nombre: string;
@@ -502,7 +525,7 @@ async function fetchINETable(table: string, name: string, unit: string, freq: 'Q
   return { rows: out, undecodable };
 }
 
-export async function ingestINESpain(): Promise<IngestResult> {
+export async function ingestINESpain(budget?: IngestOptions): Promise<IngestResult> {
   const result: IngestResult = {
     source: 'ine_es',
     indicators_attempted: 0,
@@ -514,7 +537,7 @@ export async function ingestINESpain(): Promise<IngestResult> {
   for (const s of INE_SPAIN_SERIES) {
     result.indicators_attempted++;
     try {
-      const fetched = await fetchINETable(s.table, s.name, s.unit, s.freq);
+      const fetched = await fetchINETable(s.table, s.name, s.unit, s.freq, budget);
       // An observation whose period we refuse to guess at is a real loss and
       // is reported as one — it is not allowed to look like a quiet source.
       result.rows_undecodable += fetched.undecodable.length;
@@ -551,9 +574,13 @@ const CBS_TABLES: CBSTable[] = [
   { table: '83913NED', name: 'Netherlands — Existing dwellings price index (2020=100)', unit: 'index_2020=100', freq: 'Q', valueField: 'PrijsindexBestaandeKoopwoningen_1' },
 ];
 
-async function fetchCBSTable(t: CBSTable): Promise<OfficialStatRow[]> {
+async function fetchCBSTable(t: CBSTable, budget?: IngestOptions): Promise<OfficialStatRow[]> {
   const url = `https://opendata.cbs.nl/ODataApi/odata/${t.table}/TypedDataSet?$top=80&$orderby=Perioden desc&$format=json`;
-  const res = await fetch(url, { headers: { Accept: 'application/json' } });
+  const res = await fetchWithRetry(url, {
+    headers: { Accept: 'application/json' },
+    label: `CBS ${t.table}`,
+    deadlineAt: budget?.deadlineAt,
+  });
   if (!res.ok) throw new Error(`CBS ${t.table} HTTP ${res.status}`);
   const data = await res.json() as { value: Array<Record<string, string | number | null>> };
 
@@ -588,13 +615,13 @@ async function fetchCBSTable(t: CBSTable): Promise<OfficialStatRow[]> {
   return out;
 }
 
-export async function ingestCBS(): Promise<IngestResult> {
+export async function ingestCBS(budget?: IngestOptions): Promise<IngestResult> {
   const result: IngestResult = { source: 'cbs', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0,
     rows_duplicate_excluded: 0, rows_duplicate_collapsed: 0, rows_undecodable: 0, countries: new Set(['NL']), errors: [] };
   for (const t of CBS_TABLES) {
     result.indicators_attempted++;
     try {
-      const rows = await fetchCBSTable(t);
+      const rows = await fetchCBSTable(t, budget);
       const w = await upsertRows(rows);
       result.rows_upserted += w.written;
       result.rows_lost += w.lost;
@@ -628,10 +655,14 @@ const ISTAT_SERIES: ISTATSeries[] = [
   { dataflow: '729_1050', key: 'Q.IT.IPAB._T._T._T.N.B.', name: 'Italy — House Price Index, total (Q1 2010=100)', unit: 'index_2010=100', freq: 'Q' },
 ];
 
-async function fetchISTATSeries(s: ISTATSeries): Promise<OfficialStatRow[]> {
+async function fetchISTATSeries(s: ISTATSeries, budget?: IngestOptions): Promise<OfficialStatRow[]> {
   const startYear = new Date().getUTCFullYear() - 5;
   const url = `https://esploradati.istat.it/SDMXWS/rest/data/${s.dataflow}/${s.key}?format=jsondata&startPeriod=${startYear}`;
-  const res = await fetch(url, { headers: { Accept: 'application/vnd.sdmx.data+json;version=1.0.0-wd' } });
+  const res = await fetchWithRetry(url, {
+    headers: { Accept: 'application/vnd.sdmx.data+json;version=1.0.0-wd' },
+    label: `ISTAT ${s.dataflow}/${s.key}`,
+    deadlineAt: budget?.deadlineAt,
+  });
   if (!res.ok) {
     if (res.status === 404) return [];
     throw new Error(`ISTAT ${s.dataflow}/${s.key} HTTP ${res.status}`);
@@ -667,13 +698,13 @@ async function fetchISTATSeries(s: ISTATSeries): Promise<OfficialStatRow[]> {
   return out;
 }
 
-export async function ingestISTAT(): Promise<IngestResult> {
+export async function ingestISTAT(budget?: IngestOptions): Promise<IngestResult> {
   const result: IngestResult = { source: 'istat', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0,
     rows_duplicate_excluded: 0, rows_duplicate_collapsed: 0, rows_undecodable: 0, countries: new Set(['IT']), errors: [] };
   for (const s of ISTAT_SERIES) {
     result.indicators_attempted++;
     try {
-      const rows = await fetchISTATSeries(s);
+      const rows = await fetchISTATSeries(s, budget);
       const w = await upsertRows(rows);
       result.rows_upserted += w.written;
       result.rows_lost += w.lost;
@@ -694,12 +725,16 @@ export async function ingestISTAT(): Promise<IngestResult> {
 // BIS publishes a single CSV at https://www.bis.org/statistics/pp_selected.csv
 // We parse a subset relevant to our coverage.
 
-export async function ingestBIS(): Promise<IngestResult> {
+export async function ingestBIS(budget?: IngestOptions): Promise<IngestResult> {
   const result: IngestResult = { source: 'bis', indicators_attempted: 1, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0,
     rows_duplicate_excluded: 0, rows_duplicate_collapsed: 0, rows_undecodable: 0, countries: new Set(), errors: [] };
   const url = 'https://www.bis.org/statistics/pp_selected.csv';
   try {
-    const res = await fetch(url, { headers: { Accept: 'text/csv' } });
+    const res = await fetchWithRetry(url, {
+      headers: { Accept: 'text/csv' },
+      label: 'BIS pp_selected.csv',
+      deadlineAt: budget?.deadlineAt,
+    });
     if (!res.ok) throw new Error(`BIS HTTP ${res.status}`);
     const csv = await res.text();
     const lines = csv.split(/\r?\n/).filter((l) => l.trim().length > 0);

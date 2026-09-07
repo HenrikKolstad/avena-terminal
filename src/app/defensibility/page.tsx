@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 3600;
@@ -32,7 +33,39 @@ const jsonLd = {
   },
 };
 
-export default function DefensibilityPage() {
+/**
+ * The observation count, read live.
+ *
+ * It was hardcoded as "4,145 observations" until 2026-09-07, by which point
+ * the real figure was 8,825 — a table that grows nightly cannot carry a
+ * hardcoded count without becoming a false claim by construction. Returns
+ * null, never 0, when the read fails: a broken query must not be able to
+ * publish "0 observations" as though it were a measurement.
+ */
+async function officialStatsCoverage(): Promise<{ rows: number; countries: number } | null> {
+  if (!supabase) return null;
+  try {
+    const { count, error } = await supabase
+      .from('eu_official_stats')
+      .select('*', { count: 'exact', head: true });
+    if (error || count == null) return null;
+    // country_code is small and low-cardinality; a distinct count over it is
+    // cheap, but if it fails we fall back to reporting rows alone rather than
+    // guessing at a country total.
+    const { data, error: cErr } = await supabase
+      .from('eu_official_stats')
+      .select('country_code')
+      .limit(20000);
+    if (cErr || !data) return null;
+    const countries = new Set(data.map((r) => (r as { country_code: string }).country_code)).size;
+    return { rows: count, countries };
+  } catch {
+    return null;
+  }
+}
+
+export default async function DefensibilityPage() {
+  const coverage = await officialStatsCoverage();
   return (
     <div className="avena-v2 min-h-screen">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
@@ -99,7 +132,7 @@ export default function DefensibilityPage() {
             <PillarHeader number="02" title="Provenance chain" subtitle="Every published datapoint sources back to a primary URL" />
             <div className="grid lg:grid-cols-2 gap-6 mt-10">
               <Card title="Official statistics carry their source URL">
-                Every row in <Code>eu_official_stats</Code> (4,145 observations, 28 EU countries) stores the exact API endpoint that produced it. The API response at <Code>/api/v1/stats</Code> returns the <Code>source_url</Code> field alongside the value. Recipients can independently verify any Avena observation against Eurostat, ECB SDW, or INE Spain in one HTTP call.
+                Every row in <Code>eu_official_stats</Code>{coverage ? ` (${coverage.rows.toLocaleString('en-GB')} observations, ${coverage.countries} countries)` : ''} stores the exact API endpoint that produced it. The API response at <Code>/api/v1/stats</Code> returns the <Code>source_url</Code> field alongside the value. Recipients can independently verify any Avena observation against Eurostat, ECB SDW, or INE Spain in one HTTP call.
                 <Pointer href="/eu-official">EU official statistics layer →</Pointer>
               </Card>
               <Card title="AVN-IDs are cryptographically signed">
