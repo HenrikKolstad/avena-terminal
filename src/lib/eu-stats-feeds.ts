@@ -21,7 +21,7 @@
 
 import { supabase } from '@/lib/supabase';
 import { chunkedWrite, emptyChunkWriteResult, splitOnUpsertKey, type ChunkWriteResult } from './chunked-write';
-import { fetchWithRetry, type FetchBudget } from './resilient-fetch';
+import { fetchWithRetry, shareBudget, type FetchBudget } from './resilient-fetch';
 
 /**
  * Every adapter takes a wall-clock budget it may not overrun.
@@ -235,10 +235,11 @@ export async function ingestEurostat(budget?: IngestOptions): Promise<IngestResu
     countries: new Set(),
     errors: [],
   };
-  for (const ind of EUROSTAT_INDICATORS) {
+  for (const [i, ind] of EUROSTAT_INDICATORS.entries()) {
+    const slice = shareBudget(budget, EUROSTAT_INDICATORS.length - i);
     result.indicators_attempted++;
     try {
-      const rows = await fetchEurostatIndicator(ind, budget);
+      const rows = await fetchEurostatIndicator(ind, slice);
       const w = await upsertRows(rows);
       result.rows_upserted += w.written;
       result.rows_lost += w.lost;
@@ -398,10 +399,11 @@ export async function ingestECB(budget?: IngestOptions): Promise<IngestResult> {
     countries: new Set(),
     errors: [],
   };
-  for (const s of ECB_SERIES) {
+  for (const [i, s] of ECB_SERIES.entries()) {
+    const slice = shareBudget(budget, ECB_SERIES.length - i);
     result.indicators_attempted++;
     try {
-      const rows = await fetchECBSeries(s, budget);
+      const rows = await fetchECBSeries(s, slice);
       const w = await upsertRows(rows);
       result.rows_upserted += w.written;
       result.rows_lost += w.lost;
@@ -534,10 +536,11 @@ export async function ingestINESpain(budget?: IngestOptions): Promise<IngestResu
     countries: new Set(['ES']),
     errors: [],
   };
-  for (const s of INE_SPAIN_SERIES) {
+  for (const [i, s] of INE_SPAIN_SERIES.entries()) {
+    const slice = shareBudget(budget, INE_SPAIN_SERIES.length - i);
     result.indicators_attempted++;
     try {
-      const fetched = await fetchINETable(s.table, s.name, s.unit, s.freq, budget);
+      const fetched = await fetchINETable(s.table, s.name, s.unit, s.freq, slice);
       // An observation whose period we refuse to guess at is a real loss and
       // is reported as one — it is not allowed to look like a quiet source.
       result.rows_undecodable += fetched.undecodable.length;
@@ -618,10 +621,11 @@ async function fetchCBSTable(t: CBSTable, budget?: IngestOptions): Promise<Offic
 export async function ingestCBS(budget?: IngestOptions): Promise<IngestResult> {
   const result: IngestResult = { source: 'cbs', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0,
     rows_duplicate_excluded: 0, rows_duplicate_collapsed: 0, rows_undecodable: 0, countries: new Set(['NL']), errors: [] };
-  for (const t of CBS_TABLES) {
+  for (const [i, t] of CBS_TABLES.entries()) {
+    const slice = shareBudget(budget, CBS_TABLES.length - i);
     result.indicators_attempted++;
     try {
-      const rows = await fetchCBSTable(t, budget);
+      const rows = await fetchCBSTable(t, slice);
       const w = await upsertRows(rows);
       result.rows_upserted += w.written;
       result.rows_lost += w.lost;
@@ -701,10 +705,11 @@ async function fetchISTATSeries(s: ISTATSeries, budget?: IngestOptions): Promise
 export async function ingestISTAT(budget?: IngestOptions): Promise<IngestResult> {
   const result: IngestResult = { source: 'istat', indicators_attempted: 0, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0,
     rows_duplicate_excluded: 0, rows_duplicate_collapsed: 0, rows_undecodable: 0, countries: new Set(['IT']), errors: [] };
-  for (const s of ISTAT_SERIES) {
+  for (const [i, s] of ISTAT_SERIES.entries()) {
+    const slice = shareBudget(budget, ISTAT_SERIES.length - i);
     result.indicators_attempted++;
     try {
-      const rows = await fetchISTATSeries(s, budget);
+      const rows = await fetchISTATSeries(s, slice);
       const w = await upsertRows(rows);
       result.rows_upserted += w.written;
       result.rows_lost += w.lost;

@@ -41,6 +41,53 @@ export interface FetchBudget {
   deadlineAt?: number;
 }
 
+/**
+ * Split what is left of a source's budget evenly across the indicators that
+ * have not been tried yet.
+ *
+ * WHY THIS EXISTS — measured in production 2026-09-08, one night after the
+ * retries in this file went live. ECB's eight series share a single 70s
+ * source budget and are fetched serially. Two of them hung:
+ *
+ *   MIR/M.U2…  all 3 attempts failed in 48005ms  (3 × 15s timeout)
+ *   MIR/M.NL…  all 3 attempts failed in 16552ms
+ *   FM/…EURIBOR3MD_.HSTA: budget exhausted before attempt 1/3 (0ms elapsed)
+ *
+ * The third series was HEALTHY and got ZERO attempts, because two sick
+ * siblings ahead of it had eaten the whole source budget — 202 rows not
+ * refreshed. That is the 2026-09-07 lesson ("a fix that makes a failure less
+ * likely can make its blast radius worse") landing on the very change that
+ * lesson was written about: retrying multiplies a hung indicator's cost by
+ * three, and a shared serial budget passes that cost to everything behind it.
+ *
+ * Fair-share bounds the damage to the indicator that is actually sick. A slow
+ * one can spend at most its own slice, and the last one in the list still gets
+ * a slice. Unused time rolls forward automatically, because the remaining
+ * budget is re-read from the wall clock on every call — so on a healthy night
+ * (ECB fetches take ~0.5s) each successive indicator sees a LARGER slice than
+ * the last and nothing is constrained at all.
+ *
+ * The deliberate trade: a genuinely slow-but-working upstream now gets fewer
+ * retries than before. That is the intended direction. A hang is not a
+ * transient blip, and the failure mode these retries were added for — INE's
+ * "fetch failed" — returns immediately, so it still gets all three attempts
+ * inside its slice.
+ */
+export function shareBudget(
+  budget: FetchBudget | undefined,
+  remainingItems: number,
+  now: number = Date.now(),
+): FetchBudget | undefined {
+  // No deadline to divide, or nothing to protect from this item.
+  if (budget?.deadlineAt == null || remainingItems <= 1) return budget;
+  const left = budget.deadlineAt - now;
+  // Already overrun. Hand back the real deadline so the caller fails with the
+  // honest "budget exhausted" error rather than being given a fresh slice it
+  // has not earned.
+  if (left <= 0) return budget;
+  return { deadlineAt: now + Math.ceil(left / remainingItems) };
+}
+
 export interface ResilientFetchOptions extends FetchBudget {
   headers?: Record<string, string>;
   /** Per-attempt timeout. Applies to each attempt separately. */

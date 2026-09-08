@@ -20,6 +20,7 @@ import {
   fetchWithRetry,
   describeFetchError,
   isRetryableStatus,
+  shareBudget,
 } from '../src/lib/resilient-fetch';
 
 let passed = 0;
@@ -242,6 +243,64 @@ async function main() {
       label: 'ok', fetchImpl: impl, sleepImpl: noSleep,
     });
     ok('a healthy upstream costs exactly one request', res.status === 200 && calls.length === 1);
+  }
+
+
+  // ── shareBudget: no indicator may be starved by its siblings ──────────────
+  //
+  // Regression cases for a REAL production failure, 2026-09-08 04:15. ECB's
+  // eight series share one 70s budget serially; two hung for 48.0s and 16.6s
+  // between them, and the third — healthy — was refused with "budget exhausted
+  // before attempt 1/3 (0ms elapsed)". 202 rows went unrefreshed. The whole
+  // point of these tests is that the LAST item still gets time.
+  {
+    const t0 = 1_000_000;
+    const budget = { deadlineAt: t0 + 70_000 };
+
+    ok(
+      'the first of 8 gets an eighth of the budget, not all of it',
+      shareBudget(budget, 8, t0)!.deadlineAt === t0 + 8_750,
+    );
+    ok(
+      'a single remaining item gets the whole remaining budget',
+      shareBudget(budget, 1, t0)!.deadlineAt === t0 + 70_000,
+    );
+
+    // Replay the exact production sequence: items 0 and 1 burn their entire
+    // slice, then check that item 7 still has time on the clock.
+    let now = t0;
+    let starved = false;
+    let lastSlice = 0;
+    for (let i = 0; i < 8; i++) {
+      const slice = shareBudget(budget, 8 - i, now)!;
+      const room = slice.deadlineAt! - now;
+      if (room <= 0) starved = true;
+      lastSlice = room;
+      // items 0 and 1 are the two that hung; the rest are healthy (~500ms).
+      now += i < 2 ? room : 500;
+    }
+    ok('after two hung indicators, the eighth is NOT starved', !starved);
+    ok('the eighth still gets a usable slice (>5s)', lastSlice > 5_000);
+
+    // Unused time must roll forward, or fair-share would penalise a healthy run.
+    const healthy = shareBudget(budget, 7, t0 + 500)!;
+    ok(
+      'slack from a fast indicator rolls forward to the next',
+      healthy.deadlineAt! - (t0 + 500) > 8_750,
+    );
+
+    // An already-overrun source must fail honestly, not be handed a fresh slice.
+    const overrun = shareBudget(budget, 4, t0 + 80_000)!;
+    ok(
+      'an overrun budget is returned unchanged so the caller fails honestly',
+      overrun.deadlineAt === budget.deadlineAt,
+    );
+    ok('an absent budget stays absent', shareBudget(undefined, 8, t0) === undefined);
+    ok(
+      'a budget with no deadline is passed through untouched',
+      shareBudget({}, 8, t0)!.deadlineAt === undefined,
+    );
+
   }
 
   console.log(`\n${passed} passed, ${failed} failed`);
