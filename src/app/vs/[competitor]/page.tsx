@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const revalidate = 86400;
 
@@ -395,7 +396,7 @@ export default async function VsCompetitorPage({
                 Ready to invest <span className="italic text-gold">smarter</span>?
               </h2>
               <p className="font-light text-muted-foreground mb-8 max-w-xl mx-auto">
-                Avena Terminal scores 1,800+ new build properties across Spain&apos;s coastal regions.
+                Avena Terminal scores {getCorpusSizeLabel()} new build properties across Spain&apos;s coastal regions.
                 Investment scoring, rental yields, and AI memos — all free.
               </p>
               <Link

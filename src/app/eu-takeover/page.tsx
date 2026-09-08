@@ -11,6 +11,7 @@ import { MissionControlBar } from './MissionControlBar';
 import { DealFlowTicker } from './DealFlowTicker';
 import { totalFindings, findingsRecent, findingsByCountry, findingsByAgent, findingsLatest } from '@/lib/findings';
 import { supabase } from '@/lib/supabase';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 interface RegistryStats {
   total: number;
@@ -105,7 +106,7 @@ interface CampaignMilestone {
 }
 
 const CAMPAIGN: CampaignMilestone[] = [
-  { quarter: 'Q1 2026', label: 'Spain — 100% scored',         status: 'shipped',   detail: '1,881 new-builds · 30+ towns · daily refresh' },
+  { quarter: 'Q1 2026', label: 'Spain — 100% scored',         status: 'shipped',   detail: `${getCorpusSizeLabel()} new-builds · 30+ towns · daily refresh` },
   { quarter: 'Q2 2026', label: 'Portugal — onboarding',       status: 'in-flight', detail: 'Algarve · Lisbon · Porto · 51% indexed' },
   { quarter: 'Q2 2026', label: 'France beachhead',            status: 'in-flight', detail: 'Côte d\'Azur + Paris metro entering pipeline' },
   { quarter: 'Q3 2026', label: 'Cadastral Atlas v2',          status: 'planned',   detail: 'Catastro + AT join — every parcel in Iberia scored' },

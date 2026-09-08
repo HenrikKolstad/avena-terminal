@@ -1,14 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const revalidate = 86400;
+
+const CORPUS = getCorpusSizeLabel();
 
 const CATALOG = [
   {
     id: 'costa-blanca-scored-properties',
     name: 'Costa Blanca Scored Properties',
     description:
-      'Complete dataset of 1,881 scored properties across Costa Blanca with Avena composite scores, yield estimates, and risk metrics.',
+      `Complete dataset of ${CORPUS} scored properties across Costa Blanca with Avena composite scores, yield estimates, and risk metrics.`,
     price: 2000,
     currency: 'EUR',
     period: 'one-time',

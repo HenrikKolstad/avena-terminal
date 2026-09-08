@@ -1,4 +1,5 @@
 import { generateIntelligenceFeed } from '@/lib/intelligence';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,7 +22,7 @@ export async function GET() {
   <channel>
     <title>Avena Terminal Daily Intelligence</title>
     <link>https://avenaterminal.com/feed/intelligence</link>
-    <description>Daily property intelligence from Avena Terminal. Scored new build data for 1,881 properties across Costa Blanca, Costa Calida, and Costa del Sol.</description>
+    <description>Daily property intelligence from Avena Terminal. Scored new build data for ${getCorpusSizeLabel()} properties across Costa Blanca, Costa Calida, and Costa del Sol.</description>
     <language>en</language>
     <lastBuildDate>${now}</lastBuildDate>
     <atom:link href="https://avenaterminal.com/feed/intelligence.rss" rel="self" type="application/rss+xml"/>

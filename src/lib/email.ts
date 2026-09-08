@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 const FROM = 'Avena Terminal <hello@avenaterminal.com>';
 const REPLY_TO = 'henrik@xaviaestate.com';
@@ -89,7 +90,7 @@ export async function sendWelcomeEmail(email: string): Promise<{ sent: boolean; 
             <tr><td style="padding:10px 0;">
               <a href="https://avenaterminal.com/#deals" style="color:#F4EFE8;text-decoration:none;">
                 <div style="font-family:Georgia,serif;font-size:16px;margin-bottom:2px;">Full deal feed →</div>
-                <div style="font-size:12px;color:#8B827A;">1,881 scored new builds. No blur. Sort by score, yield, discount, or region.</div>
+                <div style="font-size:12px;color:#8B827A;">${getCorpusSizeLabel()} scored new builds. No blur. Sort by score, yield, discount, or region.</div>
               </a>
             </td></tr>
           </table>
@@ -138,7 +139,7 @@ export async function sendWelcomeEmail(email: string): Promise<{ sent: boolean; 
     `  Unlimited AI queries. 10 analytical tools.`,
     '',
     `→ Full deal feed: https://avenaterminal.com/#deals`,
-    `  1,881 scored new builds. No blur. Sort by score, yield, discount.`,
+    `  ${getCorpusSizeLabel()} scored new builds. No blur. Sort by score, yield, discount.`,
     '',
     `Need help? Reply to this email or ${contactUrl}.`,
     '',

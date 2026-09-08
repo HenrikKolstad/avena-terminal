@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getAllProperties, avg } from '@/lib/properties';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const revalidate = 86400;
 
@@ -115,7 +116,7 @@ export async function GET(req: Request) {
   return NextResponse.json({
     dataset: 'Avena Terminal Synthetic Property Dataset',
     version: '1.0.0',
-    source: 'Generated from statistical distributions of 1,881 real properties',
+    source: `Generated from statistical distributions of ${getCorpusSizeLabel()} real properties`,
     real_dataset_doi: '10.5281/zenodo.19520064',
     license: 'CC BY 4.0',
     total_records: synthetic.length,

@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { supabase } from '@/lib/supabase';
 import { getAllProperties, getUniqueTowns, avg } from '@/lib/properties';
 import { pingIndexNow } from '@/lib/indexnow';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const maxDuration = 60;
 
@@ -107,7 +108,7 @@ Generate EXACTLY this JSON structure (no markdown, just raw JSON):
       town_in_focus: focusTown.town.split(',')[0],
       town_analysis: parsed.town_analysis || '',
       deal_of_day: dealOfDay,
-      the_number_value: parsed.the_number_value || '1,881',
+      the_number_value: parsed.the_number_value || getCorpusSizeLabel(),
       the_number_label: parsed.the_number_label || 'Properties tracked by Avena Terminal',
       analyst_note: parsed.analyst_note || '',
       market_summary: parsed.market_summary || '',

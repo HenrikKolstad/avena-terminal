@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { supabase } from '@/lib/supabase';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 1800;
@@ -59,7 +60,7 @@ export default async function SovereignBriefingIndexPage() {
               Research for the <span className="italic text-gold">institutional</span> desk.
             </h1>
             <p className="max-w-3xl text-base text-muted-foreground font-light leading-relaxed">
-              Monthly quantitative research notes on European residential property. Delivered to central banks (ECB, Banco de España, Banca d&apos;Italia, Banco de Portugal), supranational bodies (ESMA, EIB, ESRB, OECD, Eurostat), and national statistical offices. Built from the live Avena dataset of 1,881 scored Spanish coastal properties plus the federated 27-country pipeline. CC BY 4.0, DOI-citable, archived at Zenodo.
+              Monthly quantitative research notes on European residential property. Delivered to central banks (ECB, Banco de España, Banca d&apos;Italia, Banco de Portugal), supranational bodies (ESMA, EIB, ESRB, OECD, Eurostat), and national statistical offices. Built from the live Avena dataset of {getCorpusSizeLabel()} scored Spanish coastal properties plus the federated 27-country pipeline. CC BY 4.0, DOI-citable, archived at Zenodo.
             </p>
             <div className="mt-8 inline-flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
               <span>Cadence <span className="text-foreground">monthly</span></span>

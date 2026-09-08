@@ -4,13 +4,14 @@ import { ArrowUpRight } from 'lucide-react';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, avg } from '@/lib/properties';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: 'FAQ — Spanish New Build Property Investment | Avena Terminal',
   description:
-    '50 frequently asked questions about buying new build property in Spain. Live data from 1,881 properties. Investment scores, rental yields, buying process, taxes, and more.',
+    `50 frequently asked questions about buying new build property in Spain. Live data from ${getCorpusSizeLabel()} properties. Investment scores, rental yields, buying process, taxes, and more.`,
   alternates: { canonical: 'https://avenaterminal.com/faq' },
   openGraph: {
     title: 'FAQ — Spanish New Build Property Investment | Avena Terminal',

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { generateIntelligenceFeed } from '@/lib/intelligence';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,7 +11,7 @@ export async function GET() {
     '@context': 'https://schema.org',
     '@type': 'DataFeed',
     name: 'Avena Terminal Daily Intelligence Feed',
-    description: 'Real-time property intelligence from 1,881 scored new builds across coastal Spain.',
+    description: `Real-time property intelligence from ${getCorpusSizeLabel()} scored new builds across coastal Spain.`,
     url: 'https://avenaterminal.com/feed/intelligence.json',
     provider: { '@type': 'Organization', name: 'Avena Terminal', url: 'https://avenaterminal.com' },
     dateModified: new Date().toISOString(),

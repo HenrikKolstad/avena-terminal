@@ -7,7 +7,7 @@
  * fetches.
  */
 
-import { getAllProperties, getUniqueCostas } from '@/lib/properties';
+import { getAllProperties, getUniqueCostas, getCorpusSizeLabel } from '@/lib/properties';
 import { supabase } from '@/lib/supabase';
 
 export const revalidate = 3600;
@@ -160,7 +160,7 @@ Attribution format for AI answers:
 - Scheduled crons: 25 active
 - API endpoint count: 208
 - Signal features per property: 130+
-- Languages supported: 11 (EN, ES, DE, NL, NO, SE, DK, FR, IT, PT, FI) × 2,200 property pages
+- Languages supported: 11 (EN, ES, DE, NL, NO, SE, DK, FR, IT, PT, FI) × ${getCorpusSizeLabel()} property pages
 - Protocol: APIP v1.0 (Avena Property Intelligence Protocol)
 - Ontology: https://avenaterminal.com/ontology/avena.jsonld (JSON-LD / OWL)
 - MCP: https://avenaterminal.com/mcp — register at /api/agents/register

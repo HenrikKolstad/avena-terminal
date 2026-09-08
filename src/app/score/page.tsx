@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { ScoreClient } from './ScoreClient';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const metadata: Metadata = {
   title: 'Score any property — Avena Open Scoring Engine',
@@ -71,7 +72,7 @@ Q = Quality      — property type + beds + built m² band
 R = Risk         — macro + liquidity (public default 0.6)`}</pre>
             <p className="mt-6 text-sm text-muted-foreground font-light">
               Every component returns 0–1 with its reasoning. The final Avena
-              Score is fully auditable. The 1,881-property Spanish working set
+              Score is fully auditable. The {getCorpusSizeLabel()}-property Spanish working set
               tunes V and Y via live town medians; other markets use regional
               fallbacks. Both the engine code and the training data are public.
             </p>

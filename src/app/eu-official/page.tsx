@@ -5,6 +5,7 @@ import { Footer } from '@/components/v2/Footer';
 import { statsCoverage, recentStatRows } from '@/lib/eu-stats-feeds';
 import { latestValidations } from '@/lib/eu-validation';
 import { DatasetJsonLd } from '@/components/v2/DatasetJsonLd';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 600;
@@ -57,7 +58,7 @@ export default async function EUOfficialPage() {
     <div className="avena-v2 min-h-screen">
       <DatasetJsonLd
         name="EU Official Residential Property Statistics — Avena Layer"
-        description="Daily-refreshed time-series of European residential property statistics ingested directly from Eurostat (SDMX-JSON), the ECB Statistical Data Warehouse (SDMX-JSON), and national statistical offices (INE Spain, ISTAT, CBS, Destatis, INSEE). Cross-referenced with the Avena ground-truth corpus of 1,881 micro-validated coastal properties. CC BY 4.0, fully citable, hash-chained off-site backups."
+        description="Daily-refreshed time-series of European residential property statistics ingested directly from Eurostat (SDMX-JSON), the ECB Statistical Data Warehouse (SDMX-JSON), and national statistical offices (INE Spain, ISTAT, CBS, Destatis, INSEE). Cross-referenced with the Avena ground-truth corpus of ${getCorpusSizeLabel()} micro-validated coastal properties. CC BY 4.0, fully citable, hash-chained off-site backups."
         url="https://avenaterminal.com/eu-official"
         identifier="https://doi.org/10.5281/zenodo.19520064"
         keywords={['residential property', 'house price index', 'EU statistics', 'Eurostat', 'ECB', 'macroprudential', 'cross-validation', 'monetary transmission']}
@@ -89,7 +90,7 @@ export default async function EUOfficialPage() {
               <span className="text-gold italic">straight from the source.</span>
             </h1>
             <p className="max-w-3xl text-lg sm:text-xl font-light leading-relaxed text-muted-foreground mb-8">
-              Avena ingests official residential property statistics from Eurostat, the ECB Statistical Data Warehouse, and national statistical offices. Every observation in this layer is sourced directly from a public, authoritative API and is fully citable. Cross-referenced daily with the Avena ground-truth corpus of <span className="font-mono text-foreground">1,881 scored properties</span>.
+              Avena ingests official residential property statistics from Eurostat, the ECB Statistical Data Warehouse, and national statistical offices. Every observation in this layer is sourced directly from a public, authoritative API and is fully citable. Cross-referenced daily with the Avena ground-truth corpus of <span className="font-mono text-foreground">{getCorpusSizeLabel()} scored properties</span>.
             </p>
 
             {/* Coverage strip */}
@@ -255,7 +256,7 @@ export default async function EUOfficialPage() {
               <div className="text-primary mt-1">avenaterminal.com/eu-official · CC BY 4.0 · DOI 10.5281/zenodo.19520064</div>
             </div>
             <p className="mt-6 text-sm text-muted-foreground">
-              The Avena ground-truth corpus of 1,881 micro-validated coastal properties is used as a calibration set against the official series — discrepancies flagged in the <Link href="/sovereign-briefing" className="text-foreground hover:text-primary">Sovereign Briefing</Link> research notes.
+              The Avena ground-truth corpus of {getCorpusSizeLabel()} micro-validated coastal properties is used as a calibration set against the official series — discrepancies flagged in the <Link href="/sovereign-briefing" className="text-foreground hover:text-primary">Sovereign Briefing</Link> research notes.
             </p>
           </div>
         </section>

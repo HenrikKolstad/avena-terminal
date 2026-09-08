@@ -1,9 +1,10 @@
 import { ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getCorpusSize } from '@/lib/properties';
 
 const regions = [
-  { code: 'ES', name: 'Spain', img: '/assets/v2/region-spain.jpg', deals: 1881, avgScore: 71, change: '+2.4%', up: true, blurb: 'Costa Blanca leads on yield', href: '/costas' },
+  { code: 'ES', name: 'Spain', img: '/assets/v2/region-spain.jpg', deals: getCorpusSize(), avgScore: 71, change: '+2.4%', up: true, blurb: 'Costa Blanca leads on yield', href: '/costas' },
   { code: 'PT', name: 'Portugal', img: '/assets/v2/region-portugal.jpg', deals: 312, avgScore: 68, change: '+1.1%', up: true, blurb: 'Algarve new-builds tighten', href: '/portugal' },
   { code: 'FR', name: 'France', img: '/assets/v2/region-france.jpg', deals: 188, avgScore: 64, change: '−0.6%', up: false, blurb: 'Riviera flat, inland softens', href: '/bubble-scanner/paris' },
   { code: 'IT', name: 'Italy', img: '/assets/v2/region-italy.jpg', deals: 343, avgScore: 66, change: '+0.9%', up: true, blurb: 'Tuscany rural premium widens', href: '/bubble-scanner/milan' },

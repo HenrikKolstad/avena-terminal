@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getCorpusSize } from '@/lib/properties';
 
 export const revalidate = 86400;
 
@@ -82,7 +83,7 @@ export async function GET() {
     coverage: {
       current: ['Spain (Costa Blanca, Costa del Sol, Barcelona, Madrid, Balearics)'],
       expanding: ['Portugal', 'France', 'Italy', 'Greece'],
-      properties_tracked: 1881,
+      properties_tracked: getCorpusSize(),
       developers_monitored: 23,
     },
     sdks: {

@@ -23,7 +23,9 @@ export default function MarketStatsWidget({
   const isDark = searchParams?.theme !== 'light';
 
   const properties = loadProperties();
-  const total = properties.length || 1881;
+  // No `|| 1881` fallback: substituting a plausible constant for an empty
+  // read is this project's recurring bug. An empty book must read as empty.
+  const total = properties.length;
 
   const withYield = properties.filter(p => p._yield);
   const avgYield = withYield.length

@@ -13,6 +13,40 @@ export function getAllProperties(): Property[] {
   return _cache;
 }
 
+/**
+ * How many listings the live book holds, derived from `public/data.json`.
+ *
+ * NEVER hardcode this number. It was published as the literal "1,881" on ~40
+ * server-rendered surfaces — including the site `<title>`, the site-wide meta
+ * description, and the JSON-LD `Dataset` description that AI crawlers ingest —
+ * while the real book had already grown to 2,034. It was wrong by 153 listings
+ * (7.5%) and grew more wrong every night the feed added a unit.
+ *
+ * That is the same defect as the hardcoded `eu_official_stats` observation
+ * count (O-81): a fixed number quoted against a nightly-growing table is a
+ * false claim BY CONSTRUCTION, not by accident. There is no version of it that
+ * stays true, so the fix is derivation, not a bigger literal.
+ *
+ * Two things this must NOT be used for, both deliberate:
+ *  - dated retrospectives (the Q1-2026 blog reviews, the changelog, the
+ *    2026-04-24 holdout snapshot on /challenge/score-2026). Those state what
+ *    the book held AT THE TIME and are true as written; deriving them would
+ *    make them false.
+ *  - a `?? 1881`-style fallback. A fallback that substitutes a plausible
+ *    number when the read fails is this project's recurring bug wearing a
+ *    friendly face — it publishes a wrong figure that looks exactly like a
+ *    right one. `getAllProperties()` throws if the book is unreadable, and
+ *    that is the correct behaviour: no book, no claim.
+ */
+export function getCorpusSize(): number {
+  return getAllProperties().length;
+}
+
+/** `getCorpusSize()` formatted the way every published surface writes it. */
+export function getCorpusSizeLabel(): string {
+  return getCorpusSize().toLocaleString('en-US');
+}
+
 let _feedUpdatedAt: Date | null = null;
 
 /**

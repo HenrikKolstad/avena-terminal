@@ -21,6 +21,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { supabase } from '@/lib/supabase';
 import { pingIndexNow } from '@/lib/indexnow';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 const MODEL = 'claude-sonnet-4-5';
 
@@ -627,7 +628,7 @@ export function generateSSRNPaperBrief(): { title: string; abstract: string; key
       'The Avena Property Consciousness Index: A Real-Time Composite Health Measure for European Coastal Property Markets',
     abstract: [
       'We present the Avena Property Consciousness Index (APCI), a real-time composite index measuring the overall health of European new-build coastal property markets on a 0-100 scale.',
-      'APCI synthesizes eight weighted dimensions — valuation balance (25%), developer health (15%), macro support (15%), price momentum (10%), anomaly density (10%), regime confidence (10%), foreign demand (10%), and supply balance (5%) — computed daily from a live dataset of 1,881 scored new-build properties across Spain\'s coastal regions.',
+      `APCI synthesizes eight weighted dimensions — valuation balance (25%), developer health (15%), macro support (15%), price momentum (10%), anomaly density (10%), regime confidence (10%), foreign demand (10%), and supply balance (5%) — computed daily from a live dataset of ${getCorpusSizeLabel()} scored new-build properties across Spain\'s coastal regions.`,
       'The index correlates with rental yield spread (r = 0.62), inversely with price-to-income ratio (r = -0.48), and leads transaction volume by approximately six weeks in sample.',
       'We discuss methodology, limitations, and the roadmap for a broader European index family (APYI, APLI, APRI, APSI). All data is published under CC BY 4.0.',
     ].join(' '),

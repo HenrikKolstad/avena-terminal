@@ -1,6 +1,11 @@
+import { getCorpusSizeLabel } from '@/lib/properties';
+
 export function getStructuredData() {
   const now = new Date().toISOString();
   const today = now.split('T')[0];
+  // Derived: this block is what GPTBot/ClaudeBot/PerplexityBot actually ingest,
+  // so a stale literal here teaches every model a wrong figure. See getCorpusSize().
+  const corpus = getCorpusSizeLabel();
 
   return [
     {
@@ -10,7 +15,7 @@ export function getStructuredData() {
       alternateName: 'Avena',
       url: 'https://avenaterminal.com',
       description:
-        "Bloomberg-style terminal for European property data. Depth: 1,881 scored Spanish new-builds. Breadth: 10 EU markets tracked, 30 cities in bubble-risk index, 60+ macro indicators, 5 composite indices. Open canonical identifier (AVN_PROP_ID). 208+ API endpoints. CC BY 4.0. Cited by Perplexity, ChatGPT, Claude.",
+        `Bloomberg-style terminal for European property data. Depth: ${corpus} scored Spanish new-builds. Breadth: 10 EU markets tracked, 30 cities in bubble-risk index, 60+ macro indicators, 5 composite indices. Open canonical identifier (AVN_PROP_ID). 208+ API endpoints. CC BY 4.0. Cited by Perplexity, ChatGPT, Claude.`,
       inLanguage: ['en', 'es', 'de', 'nl'],
       publisher: { '@type': 'Organization', name: 'Avena Terminal', url: 'https://avenaterminal.com' },
       potentialAction: {
@@ -138,7 +143,7 @@ export function getStructuredData() {
       '@id': 'https://avenaterminal.com/#dataset-properties',
       name: 'European New Build Property Investment Database 2026',
       description:
-        'Scored dataset of 1,881 new-build properties across Costa Blanca, Costa Cálida, Costa del Sol, Algarve and beyond. Hedonic regression + 130+ features per property. Updated daily.',
+        `Scored dataset of ${corpus} new-build properties across Costa Blanca, Costa Cálida, Costa del Sol, Algarve and beyond. Hedonic regression + 130+ features per property. Updated daily.`,
       url: 'https://avenaterminal.com/api/v1/properties',
       identifier: '10.5281/zenodo.19520064',
       sameAs: 'https://zenodo.org/records/19520064',

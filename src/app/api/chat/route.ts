@@ -1,18 +1,20 @@
 import { NextRequest } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { supabase } from '@/lib/supabase';
-import { getAllProperties, getUniqueTowns, getUniqueCostas, avg, slugify } from '@/lib/properties';
+import { getAllProperties, getUniqueTowns, getUniqueCostas, avg, slugify, getCorpusSizeLabel } from '@/lib/properties';
 import { detectAnomalies } from '@/lib/anomaly';
 
 export const maxDuration = 60;
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
+const CORPUS = getCorpusSizeLabel();
+
 // 10 tools — the Oracle accesses the ENTIRE Avena brain
 const tools: Anthropic.Tool[] = [
   {
     name: 'search_properties',
-    description: 'Search 1,881 scored new build properties. Filter by region, type, price, score, beach, yield, beds.',
+    description: `Search ${CORPUS} scored new build properties. Filter by region, type, price, score, beach, yield, beds.`,
     input_schema: {
       type: 'object' as const,
       properties: {

@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const metadata: Metadata = {
   title: 'Spain Property Investment Blog | Avena Terminal',
@@ -55,7 +56,7 @@ export default async function BlogPage() {
         {/* Hero */}
         <div className="py-12 md:py-16 text-center border-b" style={{ borderColor: 'hsl(var(--av-border))' }}>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3" style={{ background: 'linear-gradient(135deg, #00b9ff, #9fe870)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Spain Property Investment Insights</h1>
-          <p className="text-gray-400 text-sm md:text-base max-w-xl mx-auto">Data-driven analysis from 1,867 scored new builds across Costa Blanca, Costa del Sol, and Costa Calida.</p>
+          <p className="text-gray-400 text-sm md:text-base max-w-xl mx-auto">Data-driven analysis from {getCorpusSizeLabel()} scored new builds across Costa Blanca, Costa del Sol, and Costa Calida.</p>
         </div>
         <div className="py-10">
 

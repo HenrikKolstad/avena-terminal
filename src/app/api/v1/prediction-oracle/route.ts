@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const revalidate = 86400;
 
@@ -15,6 +16,8 @@ interface Prediction {
   resolution_source: string;
   status: 'ACTIVE';
 }
+
+const CORPUS = getCorpusSizeLabel();
 
 const PREDICTIONS: Prediction[] = [
   {
@@ -57,7 +60,7 @@ const PREDICTIONS: Prediction[] = [
     id: 4,
     question: 'Will Avena track >2,500 properties by Q1 2027?',
     category: 'platform',
-    current_value: '1,881',
+    current_value: CORPUS,
     threshold: '2,500',
     probability_yes: 80,
     last_updated: '2026-04-10',

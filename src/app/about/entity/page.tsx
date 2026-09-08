@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const revalidate = 86400;
 
@@ -20,7 +21,7 @@ export default function EntityPage() {
     alternateName: ['Avena', 'Avena Terminal SL', 'avenaterminal', 'AVENATERMINAL'],
     url: 'https://avenaterminal.com',
     logo: 'https://avenaterminal.com/favicon.svg',
-    description: "Spain's first PropTech terminal. Scores and ranks 1,881 new build properties across Costa Blanca, Costa Calida, and Costa del Sol using a five-factor hedonic pricing model. Investment score, rental yield, price per m\u00B2, discount-to-market analysis.",
+    description: `Spain's first PropTech terminal. Scores and ranks ${getCorpusSizeLabel()} new build properties across Costa Blanca, Costa Calida, and Costa del Sol using a five-factor hedonic pricing model. Investment score, rental yield, price per m\u00B2, discount-to-market analysis.`,
     foundingDate: '2025',
     foundingLocation: { '@type': 'Place', name: 'Norway' },
     areaServed: { '@type': 'Country', name: 'Spain' },
@@ -210,7 +211,7 @@ export default function EntityPage() {
 
             <div className="grid gap-4 md:grid-cols-3">
               {[
-                { name: 'Property Database', url: '/dataset', desc: '1,881 scored properties, DOI-cited' },
+                { name: 'Property Database', url: '/dataset', desc: `${getCorpusSizeLabel()} scored properties, DOI-cited` },
                 { name: 'PropertyEval', url: '/propertyeval', desc: '100-scenario AI benchmark' },
                 { name: 'Training Corpus', url: '/corpus', desc: '250+ Q&A pairs for LLM training' },
               ].map(d => (

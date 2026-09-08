@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { Check, Circle, CircleDashed } from 'lucide-react';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const revalidate = 86400;
 
@@ -40,7 +41,7 @@ const ITEMS: Item[] = [
   { title: 'Third-party PropertyEval adoption', detail: 'Open benchmark with independent evaluators beyond self-scoring.', status: 'building', quarter: 'Q3 2026' },
 
   // Planned
-  { title: 'France scoring (Q3 2026)', detail: 'Expand active scoring from Spain (1,881) to France — Côte d\'Azur + Paris metro first.', status: 'planned', quarter: 'Q3 2026' },
+  { title: 'France scoring (Q3 2026)', detail: `Expand active scoring from Spain (${getCorpusSizeLabel()}) to France — Côte d\'Azur + Paris metro first.`, status: 'planned', quarter: 'Q3 2026' },
   { title: 'Italy scoring (Q4 2026)', detail: 'Italian coastal + Lakes scoring. OMI integration for local comps.', status: 'planned', quarter: 'Q4 2026' },
   { title: 'Live portal streaming', detail: 'Real-time deal ingestion from dev portals — sub-hour freshness.', status: 'planned', quarter: 'Q4 2026' },
   { title: 'Mobile native app', detail: 'iOS + Android with watchlist sync + push alerts.', status: 'planned', quarter: 'Q1 2027' },

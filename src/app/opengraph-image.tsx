@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const alt = 'Avena Terminal — European Property Intelligence';
 export const size = { width: 1200, height: 630 };
@@ -173,7 +174,7 @@ export default function Image() {
           }}
         >
           {[
-            { value: '1,881', label: 'Properties scored' },
+            { value: getCorpusSizeLabel(), label: 'Properties scored' },
             { value: '14', label: 'Ingestion agents' },
             { value: '5', label: 'Countries live' },
             { value: '24/7', label: 'Cron pipeline' },

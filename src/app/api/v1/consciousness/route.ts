@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,6 +15,7 @@ interface AgentStatus {
 }
 
 export async function GET() {
+  const corpus = getCorpusSizeLabel();
   // Try to fetch live MCP call count
   let mcpCitationsThisMonth = 23;
   if (supabase) {
@@ -43,7 +45,7 @@ export async function GET() {
       status: 'active',
       primary_metric: 95,
       metric_label: 'data_quality',
-      secondary_metric: 'snapshots_today: 1881',
+      secondary_metric: `snapshots_today: ${corpus}`,
       last_activity: new Date().toISOString(),
     },
     {
@@ -79,7 +81,7 @@ export async function GET() {
       status: 'active',
       primary_metric: 81,
       metric_label: 'avg_confidence',
-      secondary_metric: 'valuations_available: 1881',
+      secondary_metric: `valuations_available: ${corpus}`,
       last_activity: new Date().toISOString(),
     },
     {

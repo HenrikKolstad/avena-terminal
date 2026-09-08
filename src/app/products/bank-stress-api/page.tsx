@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 3600;
@@ -45,7 +46,7 @@ export default function BankStressApiPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl">
               <Stat value="27" label="EU markets" />
               <Stat value="4,145" label="Official observations" />
-              <Stat value="1,881" label="Ground-truth properties" />
+              <Stat value={getCorpusSizeLabel()} label="Ground-truth properties" />
               <Stat value="HMAC" label="Signed outputs" />
             </div>
           </div>

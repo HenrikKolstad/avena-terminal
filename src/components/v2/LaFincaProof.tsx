@@ -1,5 +1,6 @@
 import { ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
+import { getCorpusSize } from '@/lib/properties';
 
 /**
  * La Finca proof block — the real case study that demonstrates Avena works.
@@ -137,7 +138,7 @@ export function LaFincaProof() {
             </div>
 
             <p className="mt-4 text-center font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground/70">
-              One trade. One data point. The engine runs daily on {1881} more.
+              One trade. One data point. The engine runs daily on {getCorpusSize()} more.
             </p>
           </div>
         </div>

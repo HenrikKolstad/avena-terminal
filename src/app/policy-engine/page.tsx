@@ -5,6 +5,7 @@ import { Footer } from '@/components/v2/Footer';
 import { DatasetJsonLd } from '@/components/v2/DatasetJsonLd';
 import { leverCatalogue, countryCatalogue } from '@/lib/policy-engine';
 import { PolicyEngineClient } from './PolicyEngineClient';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 3600;
@@ -81,7 +82,7 @@ export default function PolicyEnginePage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-12 max-w-4xl">
               <div className="policy-fade-up"><CapabilityTile value="6" label="Policy levers" sub="LTV · DSTI · Capital · CCyB · RW · FB levy" /></div>
               <div className="policy-fade-up-d1"><CapabilityTile value="27" label="EU member states" sub="ES calibrated full · 5 directional · 21 pending" /></div>
-              <div className="policy-fade-up-d2"><CapabilityTile value="1,881" label="Ground-truth properties" sub="Spain coastal corpus · daily refresh" /></div>
+              <div className="policy-fade-up-d2"><CapabilityTile value={getCorpusSizeLabel()} label="Ground-truth properties" sub="Spain coastal corpus · daily refresh" /></div>
               <div className="policy-fade-up-d3"><CapabilityTile value="36 mo" label="Forward projection" sub="Logistic transmission curve" /></div>
             </div>
           </div>

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 /* ────────────────────────────────────────────────────────── */
 /*  Directory list                                           */
@@ -51,7 +52,7 @@ const SUBMISSION_TEMPLATE = {
   name: 'Avena Terminal',
   tagline: "Europe's first AI-native property intelligence platform",
   description:
-    'Avena Terminal scores and ranks 1,881 new build properties across Spain. 5 market indices, MCP server, 19 AI agents, PropertyEval benchmark. Open data, CC BY 4.0.',
+    `Avena Terminal scores and ranks ${getCorpusSizeLabel()} new build properties across Spain. 5 market indices, MCP server, 19 AI agents, PropertyEval benchmark. Open data, CC BY 4.0.`,
   url: 'https://avenaterminal.com',
   categories: ['AI Tool', 'PropTech', 'Real Estate', 'Data Platform', 'API'],
   pricing: 'Free (PRO from \u20AC79/mo)',

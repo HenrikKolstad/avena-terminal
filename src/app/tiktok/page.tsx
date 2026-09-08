@@ -4,6 +4,7 @@ import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { TikTokLanding } from './TikTokLanding';
 import type { TikTokDeal } from './TikTokLanding';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const revalidate = 3600;
 
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Avena Terminal — Spanish property, scored',
     description:
-      "Find undervalued Spanish new builds in 60 seconds. 1,881 properties, AI-scored, yield-calculated.",
+      `Find undervalued Spanish new builds in 60 seconds. ${getCorpusSizeLabel()} properties, AI-scored, yield-calculated.`,
     url: 'https://avenaterminal.com/tiktok',
     siteName: 'Avena Terminal',
     images: [{ url: '/opengraph-image', width: 1200, height: 630 }],

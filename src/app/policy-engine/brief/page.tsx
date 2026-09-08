@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { simulateScenario, type PolicyLever } from '@/lib/policy-engine';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 // Cannot use both 'force-dynamic' and `revalidate` — they're mutually
 // exclusive in Next.js App Router. Brief renders per-request so it can
@@ -82,7 +83,7 @@ export default async function BriefPage({ searchParams }: PageProps) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6mm' }}>
             <Capability value="6"     label="Policy levers"          sub="LTV · DSTI · Capital · CCyB · Sectoral RW · FB levy" />
             <Capability value="27"    label="EU member states"       sub="Spain calibrated full · 5 directional · 21 pending" />
-            <Capability value="1,881" label="Ground-truth properties" sub="Spanish coastal corpus · daily refresh · signed" />
+            <Capability value={getCorpusSizeLabel()} label="Ground-truth properties" sub="Spanish coastal corpus · daily refresh · signed" />
             <Capability value="36 mo" label="Forward projection"     sub="Logistic transmission · cohort-weighted" />
           </div>
         </section>
@@ -136,7 +137,7 @@ export default async function BriefPage({ searchParams }: PageProps) {
             Central banks and supervisors currently perform residential property risk analysis through quarterly committee reports, internal Excel models, and stress test frameworks calibrated against national aggregates. The cohort-level questions that actually matter — &quot;what happens to coastal Spanish prices if we cap LTV at 75% for postcodes with foreign-buyer share above 25%?&quot; — cannot be answered with existing tools because the granular property data, the official-statistics layer, and the cross-validation infrastructure do not exist in any single product.
           </p>
           <p style={{ fontSize: '11pt', lineHeight: 1.55, color: '#333', marginTop: 10 }}>
-            Avena has built all three layers in a single open-licensed product. The Precision Policy Engine combines 4,145 official statistical observations (Eurostat, ECB SDW, INE Spain), 1,881 daily-scored Spanish coastal ground-truth properties, cryptographically-signed property identifiers (AVN-IDs), and a deterministic simulation engine calibrated against published methodology — to produce forward 12-36 month projections at the postcode level, with full audit trail.
+            Avena has built all three layers in a single open-licensed product. The Precision Policy Engine combines 4,145 official statistical observations (Eurostat, ECB SDW, INE Spain), {getCorpusSizeLabel()} daily-scored Spanish coastal ground-truth properties, cryptographically-signed property identifiers (AVN-IDs), and a deterministic simulation engine calibrated against published methodology — to produce forward 12-36 month projections at the postcode level, with full audit trail.
           </p>
         </section>
 

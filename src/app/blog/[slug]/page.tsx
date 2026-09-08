@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import { supabase } from '@/lib/supabase';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 interface BlogPost {
   id: string;
@@ -148,7 +149,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         {/* CTA */}
         <div className="py-10 text-center">
           <h2 className="text-xl font-bold text-white mb-3">Find the best deals in Spain</h2>
-          <p className="text-gray-400 text-sm mb-6">1,800+ new builds ranked by investment score, rental yield, and value.</p>
+          <p className="text-gray-400 text-sm mb-6">{getCorpusSizeLabel()} new builds ranked by investment score, rental yield, and value.</p>
           <a
             href="https://avenaterminal.com"
             className="block sm:inline-block px-8 py-3 rounded-xl font-bold text-sm shadow-lg hover:opacity-90 hover:scale-[1.02] transition-all w-full sm:w-auto text-center"

@@ -2,12 +2,13 @@ import { Metadata } from 'next';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, avg } from '@/lib/properties';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: 'MCP Server — Spanish Property Data for AI Agents | Avena Terminal',
-  description: 'Connect your AI assistant to live scored data for 1,881 new build properties in Spain via Model Context Protocol. Free, no auth required. Search, filter, and analyze properties by investment score, rental yield, and region.',
+  description: `Connect your AI assistant to live scored data for ${getCorpusSizeLabel()} new build properties in Spain via Model Context Protocol. Free, no auth required. Search, filter, and analyze properties by investment score, rental yield, and region.`,
   openGraph: {
     title: 'Avena Terminal MCP Server — Spanish Property Data for AI Agents',
     description: 'The first MCP server for European real estate. Connect Claude, Cursor, or any MCP-compatible AI to live Spanish property investment data.',

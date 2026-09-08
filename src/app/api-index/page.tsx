@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const revalidate = 86400;
 
@@ -18,7 +19,7 @@ const categories = [
   {
     title: 'Core data',
     items: [
-      ['Properties', '/api/v1/properties', 'Full dataset — 1,881 scored European new builds'],
+      ['Properties', '/api/v1/properties', `Full dataset — ${getCorpusSizeLabel()} scored European new builds`],
       ['Market aggregates', '/api/v1/market', 'Regional stats (price, yield, score)'],
       ['10-country comparison', '/api/v1/europe/comparison', 'Cross-EU snapshot'],
       ['Rankings', '/api/v1/europe/rankings', 'Ranked by yield / score / discount'],

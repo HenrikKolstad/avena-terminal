@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { NATIONALITY_PROFILES, getNationalityProfile } from '@/lib/nationality-guides';
-import { getAllProperties } from '@/lib/properties';
+import { getAllProperties, getCorpusSizeLabel } from '@/lib/properties';
 
 export const revalidate = 86400;
 
@@ -320,7 +320,7 @@ export default async function NationalityGuidePage({
               The rest of the <span className="italic text-gold">terminal</span>.
             </h2>
             <p className="text-muted-foreground font-light max-w-lg mx-auto mb-8">
-              1,881 scored Spanish new builds. 25 autonomous systems running daily. Start with the top deals or ask the Oracle.
+              {getCorpusSizeLabel()} scored Spanish new builds. 25 autonomous systems running daily. Start with the top deals or ask the Oracle.
             </p>
             <div className="flex flex-wrap gap-3 justify-center">
               <Link href="/#deals" className="group inline-flex items-center gap-2 rounded-sm px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold" style={{ background: 'var(--av-gradient-gold)' }}>

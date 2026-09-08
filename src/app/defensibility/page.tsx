@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { supabase } from '@/lib/supabase';
+import { getCorpusSizeLabel } from '@/lib/properties';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 3600;
@@ -135,7 +136,7 @@ export default async function DefensibilityPage() {
                 <Pointer href="/methodology">Methodology specification →</Pointer>
               </Card>
               <Card title="Reproducible from raw sources">
-                The 1,881-property Spanish ground-truth corpus is published as <Code>public/data.json</Code> in source control. The backfill endpoint <Code>/api/admin/backfill-registry</Code> regenerates the entire Supabase <Code>properties_registry</Code> table from this file. Official statistics regenerate from the Eurostat and ECB SDW public APIs via <Code>/api/cron/eu-stats-ingest</Code>. If the database is wiped, the dataset rebuilds itself.
+                The {getCorpusSizeLabel()}-property Spanish ground-truth corpus is published as <Code>public/data.json</Code> in source control. The backfill endpoint <Code>/api/admin/backfill-registry</Code> regenerates the entire Supabase <Code>properties_registry</Code> table from this file. Official statistics regenerate from the Eurostat and ECB SDW public APIs via <Code>/api/cron/eu-stats-ingest</Code>. If the database is wiped, the dataset rebuilds itself.
                 <Pointer href="/dataset">Open dataset →</Pointer>
               </Card>
             </div>
