@@ -17,12 +17,45 @@ import { getEngineStats } from '@/lib/deals';
 // into a fully static build.
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: 'The Avena Engine — the data infrastructure behind every score · Avena',
-  description:
-    'Every Avena score is backed by continuously collected property data, historical pricing, registered transactions and developer intelligence — recomputed every night. €265M in identified savings across 1,425 underpriced homes, 394,000+ price records, 396,000+ registered transactions.',
-  alternates: { canonical: 'https://avenaterminal.com/engine' },
-};
+/**
+ * The description used to carry four hardcoded figures. On 2026-09-09 all
+ * four were wrong:
+ *
+ *   "€265M in identified savings"      actual €278.5M — drifts nightly
+ *   "1,425 underpriced homes"          actual 1,464   — drifts nightly
+ *   "394,000+ price records"           394,000 is exactly the size of the
+ *                                      DEAD frozen backlog in
+ *                                      property_pricing_history (status
+ *                                      'listed', last written 2026-08-05),
+ *                                      i.e. a capped write loop's repeats
+ *   "396,000+ registered transactions" property_transactions holds 517,557
+ *                                      rows for 55,986 distinct properties
+ *                                      — the claim overstates by ~9x (O-77)
+ *
+ * The first two are DERIVED here: they come from the same book the page
+ * renders, so they cannot drift away from it again. The second two are
+ * DELETED rather than replaced. Removing a false claim needs no new number;
+ * replacing one does, and neither of those has a defensible replacement yet
+ * — the transactions figure is exactly what the odyssey/transactions-dedupe
+ * branch decides, and "price records" counted duplicates of a dead table.
+ *
+ * Do not put a literal back here. Same defect as the hardcoded corpus size
+ * (O-83): a fixed number describing a nightly-changing quantity is false by
+ * construction, not by accident.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const { savingsTotal, underpriced } = getEngineStats();
+  const savingsM = Math.round(savingsTotal / 1_000_000);
+  return {
+    title: 'The Avena Engine — the data infrastructure behind every score · Avena',
+    description:
+      'Every Avena score is backed by continuously collected property data, ' +
+      'historical pricing, registered transactions and developer intelligence ' +
+      `— recomputed every night. €${savingsM}M in identified savings across ` +
+      `${underpriced.toLocaleString('en-US')} underpriced homes.`,
+    alternates: { canonical: 'https://avenaterminal.com/engine' },
+  };
+}
 
 const jsonLd = {
   '@context': 'https://schema.org',

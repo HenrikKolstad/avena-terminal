@@ -77,13 +77,23 @@ async function fetchSnapshotWindow(since: string): Promise<SnapRow[]> {
  * Real price movements from the last `windowDays` days, derived from
  * price_snapshots — our own daily record of what each ref was priced at.
  *
- * This used to read the change events in property_pricing_history. That table
- * is not a usable source: it holds 394k rows and every single one is status
- * 'listed' — not one 'reduced' or 'increased' has ever been written, so this
- * function always returned [] and the "What moved this week" section on /deals
- * has never once rendered. (Root cause is in the pricing-history cron, fixed
- * separately.) price_snapshots is the ground truth either way: it is the thing
- * we actually captured, so a move here is a move we can prove we observed.
+ * This used to read the change events in property_pricing_history. When that
+ * was written the table held 394k rows of which every single one was status
+ * 'listed' — not one 'reduced' or 'increased' existed — so this function
+ * always returned [] and "What moved this week" on /deals never rendered.
+ *
+ * CORRECTED 2026-09-09: that is no longer true, and the old wording would
+ * have kept a stale fact load-bearing. The cron fix merged 2026-08-08 began
+ * writing real events on 2026-08-12; the table now holds 167 'increased' and
+ * 40 'reduced' alongside the 394,000 dead 'listed' rows (which stopped on
+ * 2026-08-05 and are a capped write loop's repeats, not observations).
+ *
+ * The conclusion is unchanged, but for the honest reason rather than the
+ * expired one: price_snapshots is COMPLETE, per-ref-per-day, and is the thing
+ * we actually captured, so a move derived here is a move we can prove we
+ * observed. property_pricing_history is now non-empty but is an event log
+ * whose agreement with price_snapshots has never been verified — do not point
+ * a read path at it on the strength of it having rows.
  *
  * "from" is the price held before the most recent change inside the window,
  * "to" is the latest price we snapshotted, and "date" is the day the change
