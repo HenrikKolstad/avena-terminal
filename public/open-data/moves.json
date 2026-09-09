@@ -2880,6 +2880,26 @@
     "type": "Penthouse"
   },
   {
+    "avn_id": "N8973",
+    "date": "2026-09-09",
+    "prev_date": "2026-09-08",
+    "prev_price_eur": 355900,
+    "new_price_eur": 356900,
+    "change_pct": 0.28,
+    "town": "Orihuela",
+    "type": "Townhouse"
+  },
+  {
+    "avn_id": "N8974",
+    "date": "2026-09-09",
+    "prev_date": "2026-09-08",
+    "prev_price_eur": 416900,
+    "new_price_eur": 417900,
+    "change_pct": 0.24,
+    "town": "Orihuela",
+    "type": "Villa"
+  },
+  {
     "avn_id": "N9026",
     "date": "2026-09-09",
     "prev_date": "2026-09-08",
@@ -2910,6 +2930,16 @@
     "type": "Apartment"
   },
   {
+    "avn_id": "N9718",
+    "date": "2026-09-09",
+    "prev_date": "2026-09-08",
+    "prev_price_eur": 253000,
+    "new_price_eur": 265000,
+    "change_pct": 4.74,
+    "town": "Guardamar del Segura",
+    "type": "Apartment"
+  },
+  {
     "avn_id": "N9803",
     "date": "2026-09-09",
     "prev_date": "2026-09-08",
@@ -2930,6 +2960,26 @@
     "type": "Townhouse"
   },
   {
+    "avn_id": "SP0601",
+    "date": "2026-09-09",
+    "prev_date": "2026-09-08",
+    "prev_price_eur": 850000,
+    "new_price_eur": 775000,
+    "change_pct": -8.82,
+    "town": "Estepona",
+    "type": "Townhouse"
+  },
+  {
+    "avn_id": "SP0942",
+    "date": "2026-09-09",
+    "prev_date": "2026-09-08",
+    "prev_price_eur": 695000,
+    "new_price_eur": 753000,
+    "change_pct": 8.35,
+    "town": "Estepona",
+    "type": "Penthouse"
+  },
+  {
     "avn_id": "SP1069",
     "date": "2026-09-09",
     "prev_date": "2026-09-08",
@@ -2938,6 +2988,16 @@
     "change_pct": 11.76,
     "town": "Marbella",
     "type": "Bungalow"
+  },
+  {
+    "avn_id": "SP1278",
+    "date": "2026-09-09",
+    "prev_date": "2026-09-08",
+    "prev_price_eur": 399360,
+    "new_price_eur": 399000,
+    "change_pct": -0.09,
+    "town": "Fuengirola",
+    "type": "Penthouse"
   },
   {
     "avn_id": "SP1650",
