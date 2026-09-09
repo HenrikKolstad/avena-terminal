@@ -725,63 +725,126 @@ export async function ingestISTAT(budget?: IngestOptions): Promise<IngestResult>
   return result;
 }
 
-// ─── BIS — Bank for International Settlements (CSV) ───────────────────────
-// Residential property prices, selected series across countries.
-// BIS publishes a single CSV at https://www.bis.org/statistics/pp_selected.csv
-// We parse a subset relevant to our coverage.
+// ─── BIS — Bank for International Settlements (SDMX CSV) ──────────────────
+// Residential property prices (WS_SPP), quarterly, ~57 countries.
+//
+// The old endpoint (www.bis.org/statistics/pp_selected.csv) has 404'd for
+// weeks — BIS moved its statistics onto the SDMX portal. We now read
+// stats.bis.org's SDMX v1 REST CSV, which is a long/tidy table (one
+// observation per line) rather than the wide period-by-country layout the
+// previous parser assumed.
+//
+// The slice we keep, and why:
+//   FREQ=Q            quarterly, the only frequency BIS publishes here
+//   VALUE=N           nominal (R is the CPI-deflated real series)
+//   UNIT_MEASURE=628  the index LEVEL (771 is the year-on-year % change)
+// Cross-validated when this was written: ES 2026-Q1 index 144.2233 against
+// 2025-Q1 127.8346 is +12.82%, which reproduces BIS's separately published
+// YoY figure (771) of 12.8202 for the same cell. Two independent series
+// agreeing is what tells us the dimension mapping is right.
+const BIS_SPP_URL = 'https://stats.bis.org/api/v1/data/WS_SPP/all/all?format=csv';
+
+/** BIS reference areas that are aggregates, not countries. `country_code`
+ *  feeds a published DISTINCT-COUNTRY count, so storing "euro area" or
+ *  "world" under it would be a false claim by construction, not a rounding
+ *  error. (4T/5R are already excluded by the ISO-2-letter test; XM/XW are
+ *  not, which is exactly why they need naming.) */
+const BIS_NON_COUNTRY_AREAS = new Set(['XM', 'XW', '4T', '5R']);
+
+/** Parse BIS WS_SPP SDMX CSV. Pure and exported so the layout contract and
+ *  the zero-row guard can be tested without a network. Throws rather than
+ *  returning empty: see the guard at the bottom. */
+export function parseBisSppCsv(
+  csv: string,
+  url: string = BIS_SPP_URL,
+): { rows: OfficialStatRow[]; undecodable: number } {
+  const lines = csv.split(/\r?\n/).filter((l) => l.trim().length > 0);
+  // The old parser skipped ~3 preamble rows, so it required 4 lines. The SDMX
+  // CSV has exactly ONE header row, and carrying that constant forward would
+  // have wrongly rejected a short-but-valid response. The floor is a header
+  // plus one observation; "enough lines, but none usable" is a different
+  // failure and gets the more specific error at the bottom of this function.
+  if (lines.length < 2) throw new Error(`BIS CSV too short (${lines.length} lines)`);
+
+  // Address columns BY NAME. The previous parser located them positionally
+  // and inferred country codes from `header.length === 2`, so a layout change
+  // would have yielded zero rows with an empty errors[] — a dead adapter
+  // indistinguishable from a dormant one.
+  const headers = lines[0].split(',').map((h) => h.trim());
+  const col = (name: string): number => {
+    const i = headers.indexOf(name);
+    if (i < 0) throw new Error(`BIS CSV missing column '${name}' (saw: ${headers.join('|')})`);
+    return i;
+  };
+  const iFreq = col('FREQ');
+  const iArea = col('REF_AREA');
+  const iValueType = col('VALUE');
+  const iUnit = col('UNIT_MEASURE');
+  const iPeriod = col('TIME_PERIOD');
+  const iObs = col('OBS_VALUE');
+  const widest = Math.max(iFreq, iArea, iValueType, iUnit, iPeriod, iObs);
+
+  const rows: OfficialStatRow[] = [];
+  let undecodable = 0;
+  const dataLines = lines.length - 1;
+
+  for (let n = 1; n < lines.length; n++) {
+    const f = lines[n].split(',');
+    if (f.length <= widest) { undecodable++; continue; }
+    if (f[iFreq].trim() !== 'Q') continue;
+    if (f[iValueType].trim() !== 'N') continue;
+    if (f[iUnit].trim() !== '628') continue;
+    const cc = f[iArea].trim().toUpperCase();
+    if (!/^[A-Z]{2}$/.test(cc) || BIS_NON_COUNTRY_AREAS.has(cc)) continue;
+    const period = f[iPeriod].trim();
+    if (!/^\d{4}-Q[1-4]$/.test(period)) { undecodable++; continue; }
+    const raw = f[iObs].trim();
+    if (!raw || raw === '..' || raw === 'NaN') continue;
+    const value = Number(raw);
+    if (!Number.isFinite(value)) { undecodable++; continue; }
+    rows.push({
+      source: 'bis',
+      indicator_code: 'bis_rppi_nominal',
+      indicator_name: 'BIS Residential Property Prices, nominal index',
+      country_code: cc,
+      period,
+      period_freq: 'Q',
+      value,
+      unit: 'index',
+      source_url: url,
+    });
+  }
+
+  // The guard this adapter never had. A successful fetch that parses to
+  // nothing is a BROKEN adapter, not an empty one, and it must not report
+  // `rows_upserted: 0` with `errors: []` — that is the shape every serious
+  // failure in this project has taken.
+  if (rows.length === 0) {
+    throw new Error(
+      `BIS parsed 0 usable rows from ${dataLines} data lines ` +
+        `(${undecodable} undecodable) — the layout or the Q/N/628 slice has moved`,
+    );
+  }
+
+  return { rows, undecodable };
+}
 
 export async function ingestBIS(budget?: IngestOptions): Promise<IngestResult> {
   const result: IngestResult = { source: 'bis', indicators_attempted: 1, rows_upserted: 0, rows_lost: 0, write_chunks_failed: 0,
     rows_duplicate_excluded: 0, rows_duplicate_collapsed: 0, rows_undecodable: 0, countries: new Set(), errors: [] };
-  const url = 'https://www.bis.org/statistics/pp_selected.csv';
+  const url = BIS_SPP_URL;
   try {
     const res = await fetchWithRetry(url, {
       headers: { Accept: 'text/csv' },
-      label: 'BIS pp_selected.csv',
+      label: 'BIS WS_SPP',
       deadlineAt: budget?.deadlineAt,
     });
     if (!res.ok) throw new Error(`BIS HTTP ${res.status}`);
-    const csv = await res.text();
-    const lines = csv.split(/\r?\n/).filter((l) => l.trim().length > 0);
-    if (lines.length < 4) throw new Error('BIS CSV too short');
+    const parsed = parseBisSppCsv(await res.text(), url);
+    result.rows_undecodable = parsed.undecodable;
+    for (const r of parsed.rows) result.countries.add(r.country_code);
 
-    // BIS CSV layout: first ~3 rows are headers, first column is period (e.g. 2026-Q1),
-    // remaining columns are country codes.
-    const headerRow = lines.find((l) => l.toLowerCase().includes('period')) ?? lines[0];
-    const headers = headerRow.split(',').map((h) => h.trim().replace(/"/g, ''));
-    const countryCols: Array<{ idx: number; cc: string }> = [];
-    for (let i = 1; i < headers.length; i++) {
-      const h = headers[i];
-      // Try to map column headers to ISO codes — BIS uses country names or codes
-      const cc = h.length === 2 ? h.toUpperCase() : null;
-      if (cc) countryCols.push({ idx: i, cc });
-    }
-
-    const rows: OfficialStatRow[] = [];
-    for (const line of lines) {
-      if (line === headerRow || !/^\d{4}/.test(line.trim())) continue;
-      const fields = line.split(',').map((f) => f.trim().replace(/"/g, ''));
-      const period = fields[0];
-      for (const { idx, cc } of countryCols) {
-        const raw = fields[idx];
-        if (!raw || raw === '..' || raw === 'NaN') continue;
-        const value = Number(raw);
-        if (!Number.isFinite(value)) continue;
-        rows.push({
-          source: 'bis',
-          indicator_code: 'bis_pp_selected',
-          indicator_name: 'BIS Residential Property Prices, nominal index',
-          country_code: cc,
-          period,
-          period_freq: 'Q',
-          value,
-          unit: 'index',
-          source_url: url,
-        });
-        result.countries.add(cc);
-      }
-    }
-    const w = await upsertRows(rows);
+    const w = await upsertRows(parsed.rows);
     result.rows_upserted = w.written;
     result.rows_lost = w.lost;
     result.rows_duplicate_excluded = w.duplicate_excluded;

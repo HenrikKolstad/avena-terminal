@@ -1,6 +1,77 @@
 import { NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
 
 export const revalidate = 86400;
+
+/**
+ * Which `eu_official_stats` sources actually hold observations, and the
+ * prose that describes them, are DERIVED — never written down here.
+ *
+ * They used to be a hardcoded list ("Eurostat, ECB SDW, INE Spain … ISTAT,
+ * CBS and BIS are wired but are not returning rows"). That was true when it
+ * was written and false the moment an adapter was repaired — which is what
+ * happened to BIS on 2026-09-09. A fixed list describing a nightly-changing
+ * table is a false claim by construction, not by accident; this is the same
+ * defect as the hardcoded corpus size (O-83) one table over.
+ *
+ * On a failed read we say we could not determine it. We do NOT fall back to
+ * a remembered list: a stale list is indistinguishable from a current one to
+ * every consumer of this spec, and this file is read by LLMs.
+ */
+const STATS_DESCRIPTION_PLACEHOLDER = '__stats_sources__';
+
+const STATS_BASE =
+  'Long-format time-series query over eu_official_stats. ' +
+  'Filter by country, source, indicator, and period range. JSON or CSV.';
+
+const SOURCE_LABELS: Record<string, string> = {
+  eurostat: 'Eurostat',
+  ecb_sdw: 'ECB SDW',
+  ine_es: 'INE Spain',
+  istat: 'ISTAT',
+  cbs: 'CBS Netherlands',
+  bis: 'BIS',
+};
+
+/**
+ * One cheap existence probe per wired adapter, run in parallel.
+ *
+ * Deliberately NOT `select('source')` over the table: that would pull every
+ * row across the wire to compute a six-element set, and `eu_official_stats`
+ * roughly doubled the night BIS was repaired. These are `head`-only counts —
+ * no row bodies.
+ *
+ * The candidate set is the adapters wired in eu-stats-feeds.ts. A source
+ * outside it could only arrive with a code change, which is the moment to
+ * add it here.
+ *
+ * If ANY probe errors we return null rather than a partial list. A partial
+ * list reads exactly like a complete one to every consumer of this spec, so
+ * a half-failed read must not be allowed to publish a shorter truth.
+ */
+async function liveStatsSources(): Promise<string[] | null> {
+  const db = supabase;
+  if (!db) return null;
+  try {
+    const probes = await Promise.all(
+      Object.keys(SOURCE_LABELS).map(async (source) => {
+        const { count, error } = await db
+          .from('eu_official_stats')
+          .select('source', { count: 'exact', head: true })
+          .eq('source', source);
+        return { source, count, error };
+      }),
+    );
+    if (probes.some((p) => p.error || p.count == null)) return null;
+    const held = probes.filter((p) => (p.count ?? 0) > 0).map((p) => p.source).sort();
+    // An empty result is a real answer (the table is empty) but is worth
+    // nothing to a caller and is easily confused with a broken read, so it
+    // is reported as "not determined" rather than "no sources".
+    return held.length > 0 ? held : null;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * OpenAPI 3.1 spec for the Avena Terminal public data API.
@@ -180,10 +251,10 @@ const spec = {
       get: {
         tags: ['eu-stats'],
         summary: 'Query official EU residential statistics',
-        description: 'Long-format time-series query over eu_official_stats. Sources currently holding observations: Eurostat, ECB SDW, INE Spain. Adapters for ISTAT, CBS and BIS are wired but are not returning rows (ISTAT and BIS fail upstream; CBS returns an empty set), so they are not offered as filter values. Filter by country, source, indicator, and period range. JSON or CSV.',
+        description: STATS_DESCRIPTION_PLACEHOLDER,
         parameters: [
           { in: 'query', name: 'country',   schema: { type: 'string', example: 'ES' },           description: 'ISO 3166-1 alpha-2 or EU27_2020 / EA20.' },
-          { in: 'query', name: 'source',    schema: { type: 'string', enum: ['eurostat','ecb_sdw','ine_es'] }, description: 'Only sources that actually hold observations are listed. See the endpoint description for adapters that are wired but dormant.' },
+          { in: 'query', name: 'source',    schema: { type: 'string', enum: [] as string[] }, description: 'Only sources that actually hold observations are listed. See the endpoint description for adapters that are wired but dormant.' },
           { in: 'query', name: 'indicator', schema: { type: 'string', example: 'prc_hpi_q' },    description: 'Substring match against indicator_code.' },
           { in: 'query', name: 'from',      schema: { type: 'string', example: '2024-Q1' } },
           { in: 'query', name: 'to',        schema: { type: 'string', example: '2026-Q2' } },
@@ -277,7 +348,27 @@ const spec = {
 };
 
 export async function GET() {
-  return NextResponse.json(spec, {
+  const sources = await liveStatsSources();
+
+  // Structured-clone the spec so the derived text never mutates the module
+  // constant across requests on a warm lambda.
+  const out = structuredClone(spec) as typeof spec & {
+    paths: Record<string, { get?: { description?: string; parameters?: Array<{ name: string; schema?: { enum?: string[] } }> } }>;
+  };
+  const stats = out.paths['/api/v1/stats']?.get;
+  if (stats) {
+    stats.description = sources
+      ? `${STATS_BASE} Sources currently holding observations: ` +
+        `${sources.map((s) => SOURCE_LABELS[s] ?? s).join(', ')}. ` +
+        `Any adapter not listed here is wired but is not returning rows.`
+      : `${STATS_BASE} The set of sources currently holding observations ` +
+        `could not be read at the time this spec was generated, so it is ` +
+        `not stated. Query /api/v1/stats itself for the authoritative list.`;
+    const sourceParam = stats.parameters?.find((p) => p.name === 'source');
+    if (sourceParam?.schema) sourceParam.schema.enum = sources ?? undefined;
+  }
+
+  return NextResponse.json(out, {
     headers: {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
