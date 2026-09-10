@@ -1,7 +1,20 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
-export const revalidate = 86400;
+/**
+ * One hour, not one day.
+ *
+ * This spec is a CACHED RENDER, so whatever it says about a nightly-changing
+ * table is a snapshot with an age. At 86400 that age reached 24h, and on
+ * 2026-09-10 it published a flatly false claim: BIS had held 8,700 rows since
+ * 04:15 — half of `eu_official_stats` — while the served spec still named
+ * three sources and asserted every other adapter "is not returning rows".
+ *
+ * Shortening the window bounds the error; only the timestamp below makes the
+ * claim TRUE. Both are needed: a fresher lie is still a lie.
+ */
+export const revalidate = 3600;
+const SPEC_MAX_AGE_SECONDS = 3600;
 
 /**
  * Which `eu_official_stats` sources actually hold observations, and the
@@ -13,6 +26,19 @@ export const revalidate = 86400;
  * happened to BIS on 2026-09-09. A fixed list describing a nightly-changing
  * table is a false claim by construction, not by accident; this is the same
  * defect as the hardcoded corpus size (O-83) one table over.
+ *
+ * Deriving it was necessary and NOT sufficient. A derived value rendered into
+ * a cached document is a snapshot, and this one was written in the present
+ * tense ("Sources CURRENTLY holding observations"), which is a claim the
+ * document cannot keep. So the observation is DATED at generation time and
+ * the reader is told the age bound. Same discipline as every other observation
+ * Avena publishes: say when it was true.
+ *
+ * The second sentence mattered more than the list. "Any adapter not listed
+ * here is wired but is not returning rows" converts absence-from-a-snapshot
+ * into a positive assertion of dormancy — so a stale list did not merely
+ * omit BIS, it actively denied it. Absence is now reported as absence at a
+ * stated time, which is all this document can honestly support.
  *
  * On a failed read we say we could not determine it. We do NOT fall back to
  * a remembered list: a stale list is indistinguishable from a current one to
@@ -347,32 +373,63 @@ const spec = {
   },
 };
 
+/**
+ * Exported for `scripts/test-openapi-stats-sources.ts`. Kept pure — no clock,
+ * no network — so the regression test can assert the exact prose for every
+ * branch instead of asserting that the route "looks right".
+ */
+export function statsSourcesDescription(
+  sources: string[] | null,
+  observedAt: string,
+): string {
+  if (!sources) {
+    return (
+      `${STATS_BASE} The set of sources currently holding observations ` +
+      `could not be read when this spec was generated (${observedAt}), so it is ` +
+      `not stated. Query /api/v1/stats itself for the authoritative list.`
+    );
+  }
+  return (
+    `${STATS_BASE} Sources holding observations as of ${observedAt}: ` +
+    `${sources.map((s) => SOURCE_LABELS[s] ?? s).join(', ')}. ` +
+    `This spec is a cached render regenerated at most ${SPEC_MAX_AGE_SECONDS / 3600}h ` +
+    `apart, so that list is an observation at that timestamp, not a live reading — ` +
+    `an adapter absent from it held no rows at that time and may hold rows now. ` +
+    `Query /api/v1/stats for the live set.`
+  );
+}
+
 export async function GET() {
   const sources = await liveStatsSources();
+  const observedAt = new Date().toISOString();
 
   // Structured-clone the spec so the derived text never mutates the module
   // constant across requests on a warm lambda.
   const out = structuredClone(spec) as typeof spec & {
-    paths: Record<string, { get?: { description?: string; parameters?: Array<{ name: string; schema?: { enum?: string[] } }> } }>;
+    paths: Record<string, { get?: { description?: string; parameters?: Array<{ name: string; description?: string; schema?: { enum?: string[] } }> } }>;
   };
   const stats = out.paths['/api/v1/stats']?.get;
   if (stats) {
-    stats.description = sources
-      ? `${STATS_BASE} Sources currently holding observations: ` +
-        `${sources.map((s) => SOURCE_LABELS[s] ?? s).join(', ')}. ` +
-        `Any adapter not listed here is wired but is not returning rows.`
-      : `${STATS_BASE} The set of sources currently holding observations ` +
-        `could not be read at the time this spec was generated, so it is ` +
-        `not stated. Query /api/v1/stats itself for the authoritative list.`;
+    stats.description = statsSourcesDescription(sources, observedAt);
     const sourceParam = stats.parameters?.find((p) => p.name === 'source');
     if (sourceParam?.schema) sourceParam.schema.enum = sources ?? undefined;
+    // The enum is the half a client actually validates against, and it carries
+    // no prose to date itself. Say so where the client will see it.
+    if (sourceParam) {
+      sourceParam.description = sources
+        ? `Sources observed to hold rows at ${observedAt}. Snapshot, not a live ` +
+          `reading — an omitted adapter may hold rows now. Not an allow-list: ` +
+          `/api/v1/stats accepts any wired source.`
+        : `Not stated — the source set could not be read when this spec was ` +
+          `generated (${observedAt}).`;
+    }
   }
 
   return NextResponse.json(out, {
     headers: {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
-      'Cache-Control': 'public, max-age=86400, s-maxage=86400',
+      'Cache-Control': `public, max-age=${SPEC_MAX_AGE_SECONDS}, s-maxage=${SPEC_MAX_AGE_SECONDS}`,
     },
   });
 }
