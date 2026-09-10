@@ -560,37 +560,115 @@ export async function ingestINESpain(budget?: IngestOptions): Promise<IngestResu
   return result;
 }
 
-// ─── CBS Netherlands adapter (OData v4) ───────────────────────────────────
-// Bestaande koopwoningen prijsindex (existing dwellings price index).
-// CBS table 83906NED — quarterly HPI for the Netherlands.
-// API: https://opendata.cbs.nl/ODataApi/odata/83906NED/TypedDataSet?$top=80&$orderby=Perioden desc
+// ─── CBS Netherlands adapter (OData) ──────────────────────────────────────
+// Bestaande koopwoningen verkoopprijzen prijsindex — the Dutch existing-
+// dwellings house price index, quarterly, national series.
+//
+// THIS ADAPTER RETURNED ZERO ROWS AND NO ERROR FOR MONTHS (O-82). Diagnosed
+// 2026-09-10; it was not one bug but four, and only the last one is why
+// nobody noticed the first three:
+//
+//  1. WRONG TABLE. It pointed at 83913NED, whose TableInfos reports
+//     `Frequency: Stopgezet` — discontinued, last modified 2024-01-22,
+//     ending 2023 Q4. The code comment named 83906NED, which is ALSO
+//     discontinued (ends December 2023). Both successors of both are
+//     85792NED: same regional shape, quarterly, base 2020=100 (which is
+//     what `unit` already claimed), live through 2026 Q2.
+//  2. WRONG FIELD NAME. `PrijsindexBestaandeKoopwoningen_1` does not exist
+//     in the payload; the field is `PrijsindexVerkoopprijzen_1`. Every row
+//     therefore hit `v == null` and was skipped — a complete silent zero.
+//  3. `$orderby` IS SILENTLY IGNORED BY THIS ENDPOINT. Verified live:
+//     `$orderby=Perioden desc` returns 1995KW01, 1995KW02, 1995KW03. So
+//     `$top=80` took the OLDEST 80 periods. Even with (1) and (2) fixed the
+//     adapter would have ingested 1995-2010 and never a current quarter,
+//     while reporting a healthy row count.
+//  4. NO REGION PIN. The table carries 21 RegioS values (national, four
+//     landsdelen, twelve provinces...). Every row was stamped
+//     `country_code: 'NL'` regardless, so regional indices would have been
+//     published as the national series.
+//
+// (3) is the lesson worth carrying: this endpoint accepts and ignores query
+// options rather than rejecting them. So the region filter below is NOT
+// trusted — it is verified against the rows that come back. A server-side
+// filter you cannot confirm applied is an assumption, not a constraint.
 
-interface CBSTable {
+export interface CBSTable {
   table: string;
   name: string;
   unit: string;
   freq: 'Q' | 'M' | 'A';
   valueField: string;
+  /** Dimension to pin, and the key selecting the national series. */
+  regionField: string;
+  regionKey: string;
 }
 
-const CBS_TABLES: CBSTable[] = [
-  { table: '83913NED', name: 'Netherlands — Existing dwellings price index (2020=100)', unit: 'index_2020=100', freq: 'Q', valueField: 'PrijsindexBestaandeKoopwoningen_1' },
+export const CBS_TABLES: CBSTable[] = [
+  {
+    table: '85792NED',
+    name: 'Netherlands — Existing dwellings price index (2020=100)',
+    unit: 'index_2020=100',
+    freq: 'Q',
+    valueField: 'PrijsindexVerkoopprijzen_1',
+    regionField: 'RegioS',
+    // Fixed-width six-character key; the trailing spaces are part of it.
+    regionKey: 'NL01  ',
+  },
 ];
 
-async function fetchCBSTable(t: CBSTable, budget?: IngestOptions): Promise<OfficialStatRow[]> {
-  const url = `https://opendata.cbs.nl/ODataApi/odata/${t.table}/TypedDataSet?$top=80&$orderby=Perioden desc&$format=json`;
-  const res = await fetchWithRetry(url, {
-    headers: { Accept: 'application/json' },
-    label: `CBS ${t.table}`,
-    deadlineAt: budget?.deadlineAt,
-  });
-  if (!res.ok) throw new Error(`CBS ${t.table} HTTP ${res.status}`);
-  const data = await res.json() as { value: Array<Record<string, string | number | null>> };
+type CBSRow = Record<string, string | number | null>;
+
+export function cbsUrl(t: CBSTable): string {
+  // No $top and no $orderby. $orderby does not work here (see (3) above), so
+  // $top would silently mean "the oldest N". The national series is ~157 rows
+  // for this table, so we take all of it and let the parser decide.
+  const filter = encodeURIComponent(`${t.regionField} eq '${t.regionKey}'`);
+  return `https://opendata.cbs.nl/ODataApi/odata/${t.table}/TypedDataSet?$format=json&$filter=${filter}`;
+}
+
+/**
+ * Exported and pure so `scripts/test-cbs-parse.ts` can assert the failure
+ * modes directly. Every path that could yield zero usable rows from a
+ * non-empty response THROWS instead of returning `[]` — that silence is the
+ * whole reason this adapter went unnoticed.
+ */
+export function parseCbsTypedDataSet(
+  body: unknown,
+  t: CBSTable,
+  url: string,
+): OfficialStatRow[] {
+  const value = (body as { value?: unknown } | null)?.value;
+  if (!Array.isArray(value)) {
+    throw new Error(`CBS ${t.table}: response has no 'value' array`);
+  }
+  if (value.length === 0) {
+    throw new Error(`CBS ${t.table}: 'value' array is empty (filter ${t.regionField} eq '${t.regionKey}')`);
+  }
+  const rows = value as CBSRow[];
+
+  // Address the value column BY NAME and fail loudly when it is absent. This
+  // single check is what turns "months of zeros" into "one night of errors":
+  // the wrong field name was defect (2) and produced no signal at all.
+  if (!Object.prototype.hasOwnProperty.call(rows[0], t.valueField)) {
+    throw new Error(
+      `CBS ${t.table}: missing field '${t.valueField}' (saw: ${Object.keys(rows[0]).join('|')})`,
+    );
+  }
+
+  // Verify the server actually APPLIED the filter. This endpoint ignores
+  // query options it does not like without complaining, so an unverified
+  // filter would let 20 regional series through stamped as national.
+  const regions = new Set(rows.map((r) => String(r[t.regionField] ?? '')));
+  if (regions.size !== 1 || !regions.has(t.regionKey)) {
+    throw new Error(
+      `CBS ${t.table}: region filter not applied — expected only '${t.regionKey}', got ${[...regions].map((r) => `'${r}'`).join(',')}`,
+    );
+  }
 
   const out: OfficialStatRow[] = [];
-  for (const row of data.value ?? []) {
-    const periodRaw = row['Perioden'] as string | undefined;
-    if (!periodRaw) continue;
+  for (const row of rows) {
+    const periodRaw = row['Perioden'];
+    if (typeof periodRaw !== 'string' || !periodRaw) continue;
     // CBS period format: '2026KW01' = 2026 Q1, '2026MM03' = March 2026, '2026JJ00' = annual
     let period: string | null = null;
     let freq: 'Q' | 'M' | 'A' = t.freq;
@@ -603,6 +681,8 @@ async function fetchCBSTable(t: CBSTable, budget?: IngestOptions): Promise<Offic
     if (!period) continue;
     const v = row[t.valueField];
     if (v == null) continue;
+    const n = Number(v);
+    if (!Number.isFinite(n)) continue;
     out.push({
       source: 'cbs',
       indicator_code: `cbs_${t.table}_${t.valueField}`,
@@ -610,12 +690,29 @@ async function fetchCBSTable(t: CBSTable, budget?: IngestOptions): Promise<Offic
       country_code: 'NL',
       period,
       period_freq: freq,
-      value: Number(v),
+      value: n,
       unit: t.unit,
       source_url: url,
     });
   }
+
+  // A non-empty body that decodes to nothing is a layout change, not a quiet
+  // day. Returning [] here is exactly what this adapter did for months.
+  if (out.length === 0) {
+    throw new Error(`CBS ${t.table}: ${rows.length} rows returned, none usable`);
+  }
   return out;
+}
+
+async function fetchCBSTable(t: CBSTable, budget?: IngestOptions): Promise<OfficialStatRow[]> {
+  const url = cbsUrl(t);
+  const res = await fetchWithRetry(url, {
+    headers: { Accept: 'application/json' },
+    label: `CBS ${t.table}`,
+    deadlineAt: budget?.deadlineAt,
+  });
+  if (!res.ok) throw new Error(`CBS ${t.table} HTTP ${res.status}`);
+  return parseCbsTypedDataSet(await res.json(), t, url);
 }
 
 export async function ingestCBS(budget?: IngestOptions): Promise<IngestResult> {
