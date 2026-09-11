@@ -117,19 +117,6 @@
     "still_listed": false
   },
   {
-    "avn_id": "SP0664",
-    "town": "Villajoyosa",
-    "region": "cb-north",
-    "type": "Apartment",
-    "beds": null,
-    "built_m2": null,
-    "last_price_eur": 389000,
-    "last_pm2_eur": 6078,
-    "last_seen_date": "2026-08-07",
-    "relisted_on": "2026-09-11",
-    "still_listed": true
-  },
-  {
     "avn_id": "SP1080",
     "town": "Estepona",
     "region": "costa-del-sol",
@@ -620,8 +607,8 @@
     "last_price_eur": 359000,
     "last_pm2_eur": 3989,
     "last_seen_date": "2026-08-14",
-    "relisted_on": null,
-    "still_listed": false
+    "relisted_on": "2026-09-11",
+    "still_listed": true
   },
   {
     "avn_id": "SP0788",
@@ -1820,6 +1807,19 @@
     "still_listed": false
   },
   {
+    "avn_id": "N8972",
+    "town": "Los Alcazares",
+    "region": "costa-calida",
+    "type": "Villa",
+    "beds": 3,
+    "built_m2": 90,
+    "last_price_eur": 550000,
+    "last_pm2_eur": 6111,
+    "last_seen_date": "2026-09-11",
+    "relisted_on": null,
+    "still_listed": true
+  },
+  {
     "avn_id": "N9188",
     "town": "Los Alcazares",
     "region": "costa-calida",
@@ -1857,6 +1857,19 @@
     "last_seen_date": "2026-09-11",
     "relisted_on": null,
     "still_listed": false
+  },
+  {
+    "avn_id": "SP0664",
+    "town": "Villajoyosa",
+    "region": "cb-north",
+    "type": "Apartment",
+    "beds": 2,
+    "built_m2": 64,
+    "last_price_eur": 397000,
+    "last_pm2_eur": 6203,
+    "last_seen_date": "2026-09-11",
+    "relisted_on": null,
+    "still_listed": true
   },
   {
     "avn_id": "SP1408",

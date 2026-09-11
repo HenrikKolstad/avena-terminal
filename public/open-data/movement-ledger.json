@@ -23,7 +23,7 @@
     "price_increases": 6,
     "price_reductions": 12,
     "median_abs_move_pct": 4.16,
-    "delistings": 18,
+    "delistings": 17,
     "relistings": 0
   },
   {
@@ -334,11 +334,11 @@
   },
   {
     "date": "2026-09-11",
-    "listings_observed": 2033,
-    "price_increases": 11,
-    "price_reductions": 9,
-    "median_abs_move_pct": 5.13,
-    "delistings": 7,
+    "listings_observed": 2035,
+    "price_increases": 13,
+    "price_reductions": 13,
+    "median_abs_move_pct": 4.59,
+    "delistings": 9,
     "relistings": 1
   }
 ]

@@ -3090,6 +3090,16 @@
     "type": "Apartment"
   },
   {
+    "avn_id": "N8507",
+    "date": "2026-09-11",
+    "prev_date": "2026-09-10",
+    "prev_price_eur": 258500,
+    "new_price_eur": 246000,
+    "change_pct": -4.84,
+    "town": "Aguilas",
+    "type": "Apartment"
+  },
+  {
     "avn_id": "N8777",
     "date": "2026-09-11",
     "prev_date": "2026-09-10",
@@ -3098,6 +3108,26 @@
     "change_pct": 25,
     "town": "Hondón de las Nieves",
     "type": "Penthouse"
+  },
+  {
+    "avn_id": "N8967",
+    "date": "2026-09-11",
+    "prev_date": "2026-08-13",
+    "prev_price_eur": 359000,
+    "new_price_eur": 379000,
+    "change_pct": 5.57,
+    "town": "Los Alcazares",
+    "type": "Apartment"
+  },
+  {
+    "avn_id": "N9014",
+    "date": "2026-09-11",
+    "prev_date": "2026-09-10",
+    "prev_price_eur": 410000,
+    "new_price_eur": 395000,
+    "change_pct": -3.66,
+    "town": "Mijas",
+    "type": "Apartment"
   },
   {
     "avn_id": "N9117",
@@ -3178,6 +3208,26 @@
     "change_pct": 1.22,
     "town": "Alfas del Pi",
     "type": "Penthouse"
+  },
+  {
+    "avn_id": "N9968",
+    "date": "2026-09-11",
+    "prev_date": "2026-09-10",
+    "prev_price_eur": 329000,
+    "new_price_eur": 319000,
+    "change_pct": -3.04,
+    "town": "Alhama De Murcia",
+    "type": "Townhouse"
+  },
+  {
+    "avn_id": "N9969",
+    "date": "2026-09-11",
+    "prev_date": "2026-09-10",
+    "prev_price_eur": 337000,
+    "new_price_eur": 369000,
+    "change_pct": 9.5,
+    "town": "Alhama De Murcia",
+    "type": "Townhouse"
   },
   {
     "avn_id": "N9997",
@@ -3277,6 +3327,16 @@
     "new_price_eur": 300500,
     "change_pct": 3.09,
     "town": "Alicante",
+    "type": "Apartment"
+  },
+  {
+    "avn_id": "SP1765",
+    "date": "2026-09-11",
+    "prev_date": "2026-09-10",
+    "prev_price_eur": 935000,
+    "new_price_eur": 895000,
+    "change_pct": -4.28,
+    "town": "Estepona",
     "type": "Apartment"
   }
 ]

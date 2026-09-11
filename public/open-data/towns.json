@@ -75,12 +75,12 @@
     "town": "Los Alcazares",
     "costa": "Costa Calida",
     "n_listings": 79,
-    "median_price_eur": 409000,
-    "median_pm2_eur": 4754,
-    "p25_pm2_eur": 4239,
-    "p75_pm2_eur": 5579,
+    "median_price_eur": 399900,
+    "median_pm2_eur": 4726,
+    "p25_pm2_eur": 4238,
+    "p75_pm2_eur": 5506,
     "median_built_m2": 85,
-    "villa_share_pct": 42,
+    "villa_share_pct": 41,
     "median_beach_km": 0.9
   },
   {
@@ -192,18 +192,6 @@
     "median_beach_km": 50
   },
   {
-    "town": "Villajoyosa",
-    "costa": "Costa Blanca North",
-    "n_listings": 31,
-    "median_price_eur": 440000,
-    "median_pm2_eur": 6350,
-    "p25_pm2_eur": 5655,
-    "p75_pm2_eur": 7417,
-    "median_built_m2": 70,
-    "villa_share_pct": 0,
-    "median_beach_km": 0.5
-  },
-  {
     "town": "Algorfa",
     "costa": "Costa Blanca South",
     "n_listings": 30,
@@ -214,6 +202,18 @@
     "median_built_m2": 88,
     "villa_share_pct": 77,
     "median_beach_km": 14
+  },
+  {
+    "town": "Villajoyosa",
+    "costa": "Costa Blanca North",
+    "n_listings": 30,
+    "median_price_eur": 442500,
+    "median_pm2_eur": 6509,
+    "p25_pm2_eur": 5618,
+    "p75_pm2_eur": 7458,
+    "median_built_m2": 71,
+    "villa_share_pct": 0,
+    "median_beach_km": 0.5
   },
   {
     "town": "San Miguel de Salinas",
@@ -456,6 +456,18 @@
     "median_beach_km": 0.3
   },
   {
+    "town": "Alhama De Murcia",
+    "costa": "Costa Calida - Inland",
+    "n_listings": 12,
+    "median_price_eur": 290500,
+    "median_pm2_eur": 4133,
+    "p25_pm2_eur": 3839,
+    "p75_pm2_eur": 4502,
+    "median_built_m2": 77,
+    "villa_share_pct": 75,
+    "median_beach_km": 20
+  },
+  {
     "town": "Hondón de las Nieves",
     "costa": "Costa Blanca South - Inland",
     "n_listings": 12,
@@ -490,18 +502,6 @@
     "median_built_m2": 90,
     "villa_share_pct": 25,
     "median_beach_km": 0.3
-  },
-  {
-    "town": "Alhama De Murcia",
-    "costa": "Costa Calida - Inland",
-    "n_listings": 11,
-    "median_price_eur": 294000,
-    "median_pm2_eur": 4122,
-    "p25_pm2_eur": 3823,
-    "p75_pm2_eur": 4297,
-    "median_built_m2": 77,
-    "villa_share_pct": 73,
-    "median_beach_km": 20
   },
   {
     "town": "Benissa",
