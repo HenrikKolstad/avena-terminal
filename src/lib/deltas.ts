@@ -91,9 +91,21 @@ async function fetchSnapshotWindow(since: string): Promise<SnapRow[]> {
  * The conclusion is unchanged, but for the honest reason rather than the
  * expired one: price_snapshots is COMPLETE, per-ref-per-day, and is the thing
  * we actually captured, so a move derived here is a move we can prove we
- * observed. property_pricing_history is now non-empty but is an event log
- * whose agreement with price_snapshots has never been verified — do not point
- * a read path at it on the strength of it having rows.
+ * observed.
+ *
+ * MEASURED 2026-09-12 — the agreement this comment used to call unverified.
+ * Over 2026-08-10 to date, price_snapshots yields 273 moves (same rule as
+ * below: a prior snapshot no more than 2 days earlier) and
+ * property_pricing_history holds 260 'reduced'/'increased' events. Every one
+ * of the 260 matches a snapshot-derived move on the same ref and the same
+ * day, with no orphan events; the 13 unmatched moves are all dated
+ * 2026-08-11, the day BEFORE the event log began writing. So the two agree
+ * exactly wherever both exist, and the event log is a strict subset.
+ *
+ * That is a reason to trust the event log's CONTENT, not a reason to read
+ * from it. It starts on 2026-08-12, it carries 394k dead 'listed' rows from
+ * the old capped write loop, and it is written by a second writer on its own
+ * schedule, so completeness is still only guaranteed here.
  *
  * "from" is the price held before the most recent change inside the window,
  * "to" is the latest price we snapshotted, and "date" is the day the change
@@ -199,9 +211,13 @@ export async function getEngineDeltas(): Promise<EngineDeltas> {
  *
  *   "1,881 today's score updates"  — the frozen properties_registry count;
  *                                    the live book is 1,996.
- *   "387,000+ price records"       — property_pricing_history, which contains
- *                                    ZERO price-move events. Every row is
- *                                    status 'listed'.
+ *   "387,000+ price records"       — property_pricing_history. Every row was
+ *                                    status 'listed' and not one was a price
+ *                                    move when this was written; it began
+ *                                    logging real moves on 2026-08-12, which
+ *                                    does not rescue a count of 387,000 that
+ *                                    is still ~99.9% repeats of a frozen
+ *                                    price.
  *   "380,435+ verified transactions, reconciled against market benchmarks"
  *                                  — French DVF open data. French, not
  *                                    Spanish, and reconciled against nothing.
