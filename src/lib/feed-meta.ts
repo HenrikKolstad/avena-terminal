@@ -29,3 +29,29 @@ export function getFeedGeneratedDate(): string | null {
   }
   return _cached;
 }
+
+/**
+ * The generation INSTANT of the deployed feed, as an ISO timestamp.
+ *
+ * The date above answers "which day's book am I holding". It cannot answer
+ * "which of today's books am I holding", and on 2026-09-11 three different
+ * books all carried `generated_date: 2026-09-11`. A route needs the instant to
+ * tell its own book apart from one that another writer has already banked.
+ *
+ * Same contract as the date: an absent or malformed stamp returns null, which
+ * callers must treat as "unknown" and never as evidence of staleness.
+ */
+let _cachedAt: string | null | undefined;
+
+export function getFeedGeneratedAt(): string | null {
+  if (_cachedAt !== undefined) return _cachedAt;
+  try {
+    const raw = readFileSync(path.join(process.cwd(), 'public', 'feed-meta.json'), 'utf8');
+    const parsed = JSON.parse(raw) as { generated_at?: unknown };
+    const t = parsed.generated_at;
+    _cachedAt = typeof t === 'string' && Number.isFinite(Date.parse(t)) ? t : null;
+  } catch {
+    _cachedAt = null;
+  }
+  return _cachedAt;
+}

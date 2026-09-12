@@ -61,3 +61,87 @@ export function findSupersededRefs(
   }
   return out.sort();
 }
+
+/**
+ * Split the refs `findSupersededRefs` returns into the two OPPOSITE conditions
+ * that produce them.
+ *
+ * WHY THIS EXISTS — measured on 2026-09-11, and it is the project's recurring
+ * bug wearing a new coat: one number standing for two conditions that point in
+ * opposite directions, with nothing in the value to say which.
+ *
+ * That day the route ran four times and reported `snapshot_superseded: 2` on
+ * two of them, naming DIFFERENT refs:
+ *
+ *   09:35  superseded_refs = [N8967, N9998]   ← both had been written 55s
+ *                                               earlier, by parse-feed, from a
+ *                                               NEWER book than this run held.
+ *                                               Nothing was stale but the run
+ *                                               itself: Vercel had not finished
+ *                                               redeploying the 09:34 commit.
+ *   14:30  superseded_refs = [N8972, SP0664]  ← genuinely gone. Stored at
+ *                                               06:35 from the morning book and
+ *                                               absent from every book since.
+ *
+ * Both were reported as "the stored day is no longer one book", which is true,
+ * and both were reported with the same field, which made them
+ * indistinguishable. The first is not a data defect at all — it is this run
+ * arriving late to its own pipeline. The second is the 08-31 union condition.
+ * Reading the first as the second overstates the damage to the ledger; reading
+ * the second as the first would hide it.
+ *
+ * THE DISCRIMINATOR is the stored row's `created_at` against the generation
+ * instant of the book this run is holding. A row banked AFTER my book was
+ * generated cannot have come from my book or any earlier one — so the ref is
+ * ahead of me, not behind. A row banked BEFORE it, and absent from my book,
+ * genuinely left the feed in between.
+ *
+ * UNKNOWN IS ITS OWN ANSWER. With no book stamp (a deploy predating
+ * feed-meta.json) or no `created_at`, the honest report is "cannot classify",
+ * never a default into either bucket. A fabricated classification here would
+ * be worse than the conflated count it replaces.
+ *
+ * STILL REPORT-ONLY. Nothing is retracted, skipped or repaired on the strength
+ * of this. It names the condition; what to DO about a run that finds itself
+ * holding a stale book (its snapshot write can overwrite newer prices with
+ * older ones under the same date) is a change to cron write logic and belongs
+ * on a branch, with evidence that it has actually cost something.
+ *
+ * @param storedToday  rows already banked under today's date, with created_at
+ * @param currentRefs  refs in the book this run is holding
+ * @param bookGeneratedAt ISO instant this run's book was generated, or null
+ */
+export type SupersededSplit = {
+  /** Banked before this book was generated and absent from it — really gone. */
+  stale: string[];
+  /** Banked after this book was generated — this RUN is the stale one. */
+  aheadOfThisBook: string[];
+  /** No book stamp or no created_at: not classifiable, and not guessed. */
+  unclassified: string[];
+};
+
+export function classifySupersededRefs(
+  storedToday: Iterable<{ ref: string; created_at?: string | null }>,
+  currentRefs: ReadonlySet<string>,
+  bookGeneratedAt: string | null
+): SupersededSplit {
+  const bookAt = bookGeneratedAt === null ? NaN : Date.parse(bookGeneratedAt);
+  const out: SupersededSplit = { stale: [], aheadOfThisBook: [], unclassified: [] };
+
+  for (const row of storedToday) {
+    if (currentRefs.has(row.ref)) continue;
+    const rowAt = row.created_at ? Date.parse(row.created_at) : NaN;
+    if (!Number.isFinite(bookAt) || !Number.isFinite(rowAt)) {
+      out.unclassified.push(row.ref);
+    } else if (rowAt > bookAt) {
+      out.aheadOfThisBook.push(row.ref);
+    } else {
+      out.stale.push(row.ref);
+    }
+  }
+
+  out.stale.sort();
+  out.aheadOfThisBook.sort();
+  out.unclassified.sort();
+  return out;
+}

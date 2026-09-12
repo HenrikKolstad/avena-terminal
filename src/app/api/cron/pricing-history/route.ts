@@ -38,8 +38,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { startCronLog, finishCronLog } from '@/lib/cron-log';
 import { supabase } from '@/lib/supabase';
 import { getAllProperties } from '@/lib/properties';
-import { getFeedGeneratedDate } from '@/lib/feed-meta';
-import { findSupersededRefs } from '@/lib/capture-integrity';
+import { getFeedGeneratedDate, getFeedGeneratedAt } from '@/lib/feed-meta';
+import { findSupersededRefs, classifySupersededRefs } from '@/lib/capture-integrity';
 
 /**
  * Hour (UTC) from which a book that is not today's stops being "the nightly is
@@ -227,7 +227,12 @@ export async function GET(req: NextRequest) {
   // observations too: when a re-run sees a price that differs from what we
   // banked this morning, that is a move we watched happen, and the old code
   // overwrote it into the snapshot without ever logging the event.
-  const todayRows = await selectAllPages<{ ref: string; price: number | null }>('ref, price', today);
+  // `created_at` is selected only so the superseded split below can tell a ref
+  // that left the feed from one banked by a writer that is AHEAD of this run.
+  const todayRows = await selectAllPages<{ ref: string; price: number | null; created_at: string | null }>(
+    'ref, price, created_at',
+    today
+  );
   const todayByRef = new Map((todayRows ?? []).map((r) => [r.ref, r]));
 
   // Is today's stored snapshot still ONE book? The `feedDate < today` guard
@@ -241,6 +246,11 @@ export async function GET(req: NextRequest) {
     (todayRows ?? []).map((r) => r.ref),
     currentRefs
   );
+  // ...and WHICH condition produced them. The count above conflates "this ref
+  // left the feed" with "this run is holding a book older than one already
+  // banked today", which are opposites. See classifySupersededRefs for the
+  // 2026-09-11 run pair that made the difference legible.
+  const supersededSplit = classifySupersededRefs(todayRows ?? [], currentRefs, getFeedGeneratedAt());
 
   const priorAgeDays = priorDate
     ? Math.round((Date.parse(today) - Date.parse(priorDate)) / 86_400_000)
@@ -450,6 +460,26 @@ export async function GET(req: NextRequest) {
     // in a summary that is read every morning, which is what it was missing.
     snapshot_superseded: supersededRefs.length,
     snapshot_superseded_refs: supersededRefs.length ? supersededRefs.slice(0, 25) : null,
+    // The split. `snapshot_superseded` above is kept as-is so the series stays
+    // comparable, but on its own it is not readable: on 2026-09-11 it said 2
+    // at 09:35 (two refs banked 55s earlier from a NEWER book — nothing stale
+    // but this run) and 2 again at 14:30 (two refs genuinely gone since
+    // 06:35). Only `stale` is the 08-31 union condition.
+    snapshot_superseded_stale: supersededSplit.stale.length,
+    snapshot_superseded_stale_refs: supersededSplit.stale.length
+      ? supersededSplit.stale.slice(0, 25)
+      : null,
+    // Non-zero means THIS RUN is behind: a newer book has already been banked
+    // under today's date while this one is still reading an older deploy. The
+    // capture is not damaged by it, but this run's diff — and its own snapshot
+    // write — are against a book that is no longer current.
+    snapshot_ahead_of_this_book: supersededSplit.aheadOfThisBook.length,
+    snapshot_ahead_of_this_book_refs: supersededSplit.aheadOfThisBook.length
+      ? supersededSplit.aheadOfThisBook.slice(0, 25)
+      : null,
+    // No book stamp or no created_at: not classifiable. Reported as its own
+    // number rather than folded into either side.
+    snapshot_superseded_unclassified: supersededSplit.unclassified.length,
     prior_date: priorDate,
     prior_age_days: priorAgeDays === Infinity ? null : priorAgeDays,
     trusted_prior: trustPrior,
