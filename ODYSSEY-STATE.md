@@ -124,8 +124,20 @@ real measurement is **2026-08-28**, so any experiment whose metric is the
 organic citation rate has had no after-data for 38 days.
 
 **The GSC re-export due 2026-09-14 did not happen either**, so
-CompareLedgerPulse joins the unmeasurable set. **I still have no Search
-Console connection and have never seen an impression number for any change I
+CompareLedgerPulse joins the unmeasurable set. **CORRECTED LATER THE SAME DAY — THAT CLAIM WAS FALSE AND I PUT IT IN THE BRIEF TWICE.**
+I wrote "no Search Console connection, never seen an impression number".
+**`gsc_daily` holds 147 days, 2026-05-10 → 2026-10-03, 13,375 impressions /
+124 clicks; `gsc_pages` holds 2,522 rows, 2026-08-07 → 2026-10-03.** The
+nightly GitHub-Actions capture ran right through the 21-day gap and is current
+to two days ago. What is genuinely missing is NARROWER: the Generative AI
+report (UI-only, no API) and `GOOGLE_SEARCH_CONSOLE_KEY` in Vercel, so no
+RUNTIME route can read GSC. **Section 6 of THIS FILE has said since 2026-08-09:
+"O-3: no Search Console access → connected; gsc_daily/gsc_pages backfilled 90
+days". I contradicted my own CLOSED entry.** The lesson is the one this project
+keeps charging me for — I asserted an absence without running the five-second
+query that refutes it, the same shape as O-13 and O-93. **Before writing "I
+have no X", SELECT from X.** Henrik opening the Search Console tab is what
+exposed it, not my own checking.
 have made.** Per the standing rule, this table stays EMPTY of new rows rather
 than being filled with proxies: no new SEO experiment is registered today,
 because registering one I cannot read out is the stunt this section exists to
@@ -148,6 +160,7 @@ Twelve of the thirteen are ≤ 665.** Clicks 1–10, mean ~6.
 
 | started | hypothesis | change | metric | read-out | result |
 |---|---|---|---|---|---|
+| 2026-08-05 | **THE 08-05 CANONICAL WORK — READ OUT AT LAST ON 2026-10-05, 33 days late, and the answer is NEGATIVE** | canonical + crawl-tree fixes | weekly impressions, decomposed into pages-with-impressions × impressions-per-page | **2026-10-05 — READ OUT, ON REAL AFTER-DATA** | **IT WORKED, THEN IT REVERSED PAST THE STARTING POINT.** Weekly impressions 509, 489, 697, **997 (peak, w/c 08-17)**, 884, 626, 605, 482, 310, **275** (w/c 09-28, 6 days — normalises to ~321, so not a partial-week artifact). The peak cleared the pre-change band (13 weeks, 427–758, mean 552); **the last two weeks sit BELOW that entire band.** **DECOMPOSED, AND THAT IS THE FINDING: it is COVERAGE, not RANK.** Pages drawing any impression went **285 (08-17) → 150 (09-21) → 77 (09-28, ~90 normalised)**, ~70% lost, while impressions PER surviving page moved only 3.94 → 2.43. Fewer pages surface; the survivors rank about as well. **Against a 2,680-URL sitemap, even the peak week was ~11% coverage.** **NOT diagnosed, and I will not guess between the candidates** (Aug→Oct seasonality, a core update, canonical decay, crawl-budget starvation, duplicate consolidation) — they need different fixes and picking one on vibes is how this project wastes a month. **Next step is the one measurement I cannot take myself: Search Console → Indeksering → Sider, indexed vs not-indexed WITH reasons. Requested from Henrik 2026-10-05.** |
 | 2026-08-05 | Removing the site-wide canonical lets sub-pages re-index, lifting impressions | canonical + crawl-tree fixes | weekly impressions vs the pre-change band | **2026-09-02 — READ OUT; MATERIALLY REVISED 2026-09-09** | **REVISED DOWNWARD, AND THE REVISION MATTERS MORE THAN THE ORIGINAL READING.** GSC refreshed today (max date 08-30 → **2026-09-06**) and delivered a FOURTH post-change week: **626 impressions for the week of 08-31.** Post-change now reads **697, 997, 884, 626** (mean **801**, was 859 on three weeks). **The 626 week sits INSIDE the pre-change band (427–758, mean 552) — so the lift is not holding.** And the two big weeks (997, 884) straddle the August spam update window (08-18..08-21), while the first clean post-update week is the one that fell back. **My 09-02 conclusion was "the site's impression surface grew materially in August"; on four weeks that is weaker than it looked, and I should have said so with more hedging on three.** Attribution was already impossible (I shipped ~6 SEO changes into the window, breaking my own one-change-at-a-time rule). **Clicks never moved and still have not: 4, 11, 5, 3 vs a pre-mean of ~6.** **Recorded as: a two-week spike overlapping a spam update, decaying toward baseline by week four. Cause unknown and now unknowable** |
 | 2026-08-05 | (sub-hypothesis) the PAGE-LEVEL half — did sub-pages actually re-index? | same | distinct pages with ≥1 impression | **2026-09-02 — READ OUT** | **UNMEASURABLE. NO PRE-CHANGE BASELINE — the identical failure as the 08-25 robots.txt read-out, on a different metric.** `gsc_pages` capture begins **2026-08-07**, two days AFTER the change. Post-change weeks read 241 / 285 / 221 distinct pages, but there is nothing to compare them to. **The 08-25 correction told me to confirm a baseline exists before dating an experiment; I dated this one anyway** |
 | 2026-08-11 | Closing `/_next/image` and `/enquire` to bulk training crawlers moves ~25% of their budget onto content | `4e96d3e` robots.txt, 14 bulk crawlers | distinct properties fetched per crawler per pass | **2026-08-25 — READ OUT** | **UNMEASURABLE AS DESIGNED.** `crawler_hits` begins 2026-08-11 11:46 — the same day as the change, so no pre-change baseline exists. Recorded as a design failure, not a null result. Partial: **AwarioBot frozen at exactly 1,988 in a third window (09-01). No crawler expanded its distinct-page reach.** Feeds O-14 |
