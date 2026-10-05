@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { CLIENT_CORPUS_SIZE_LABEL } from '@/lib/corpus-size-client';
 
 export default function CalculatorPage() {
   const [price, setPrice] = useState(250000);
@@ -194,7 +195,7 @@ export default function CalculatorPage() {
                 className="group inline-flex items-center gap-2 rounded-sm px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
                 style={{ background: 'var(--av-gradient-gold)' }}
               >
-                Browse 1,800+ Spanish New Builds →
+                Browse{CLIENT_CORPUS_SIZE_LABEL ? ` ${CLIENT_CORPUS_SIZE_LABEL}` : ''} Spanish New Builds →
               </Link>
             </div>
           </div>

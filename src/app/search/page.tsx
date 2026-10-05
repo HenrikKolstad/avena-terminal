@@ -15,6 +15,7 @@ import { Search, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { CLIENT_CORPUS_SIZE_LABEL } from '@/lib/corpus-size-client';
 
 interface SearchResult {
   ref: string;
@@ -111,7 +112,10 @@ export default function SemanticSearchPage() {
             <div className="mb-6 flex items-center justify-center gap-4">
               <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
               <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-gold">
-                Search the book · 1,999 scored new-builds
+                Search the book
+                {CLIENT_CORPUS_SIZE_LABEL
+                  ? ` · ${CLIENT_CORPUS_SIZE_LABEL} scored new-builds`
+                  : ''}
               </span>
               <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
             </div>

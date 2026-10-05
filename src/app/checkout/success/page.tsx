@@ -7,6 +7,7 @@ import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { useAuth } from '@/context/AuthContext';
 import { trackEvent, identifyUser } from '@/lib/tracking';
+import { CLIENT_CORPUS_SIZE_LABEL } from '@/lib/corpus-size-client';
 
 export default function CheckoutSuccessPage() {
   const { user, isPaid } = useAuth();
@@ -112,7 +113,11 @@ export default function CheckoutSuccessPage() {
               <ul className="space-y-2 text-sm text-muted-foreground font-light">
                 <li className="flex items-start gap-2">
                   <span className="text-primary mt-0.5">01</span>
-                  <span>Explore the full deal feed — 1,881 scored properties, sorted by alpha.</span>
+                  <span>
+                    Explore the full deal feed —{' '}
+                    {CLIENT_CORPUS_SIZE_LABEL ? `${CLIENT_CORPUS_SIZE_LABEL} ` : ''}scored
+                    properties, sorted by alpha.
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary mt-0.5">02</span>

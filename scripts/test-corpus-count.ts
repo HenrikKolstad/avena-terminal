@@ -93,15 +93,22 @@ const ALLOWED: Array<{ file: string; why: string }> = [
   { file: 'src/app/swarm/page.tsx', why: 'synthetic agent activity counters; tracked as fabricated output, not staleness' },
   { file: 'src/app/api/v1/swarm/messages/route.ts', why: 'synthetic agent message ("14 price changes detected" is invented too)' },
 
-  // Client components. The number is real and wrong, but reaching it needs a
-  // server parent to pass it down, which is a layout-touching change rather
-  // than a string edit. Deferred deliberately, not forgotten — these are the
-  // remaining known-stale published counts.
-  { file: 'src/app/tiktok/TikTokLanding.tsx', why: 'client component; needs the count as a prop (reads 1,881)' },
-  { file: 'src/app/chat/page.tsx', why: 'client component; needs the count as a prop (reads 1,881)' },
-  { file: 'src/app/checkout/success/page.tsx', why: 'client component; needs the count as a prop (reads 1,881)' },
-  { file: 'src/app/search/page.tsx', why: 'client component; needs the count as a prop (reads 1,999)' },
-  { file: 'src/app/calculator/page.tsx', why: 'client component; needs the count as a prop (reads 1,800+)' },
+  // UNREACHABLE pages. Both are intercepted by a permanent redirect in
+  // next.config.ts (`/chat` -> /terminal, `/tiktok` -> /), verified live
+  // 2026-10-05: both return 308 and neither literal appears in any served
+  // response. So these are dead code carrying a stale number, not published
+  // claims — a different and much smaller problem than the one this test was
+  // written for. Deriving the count here would only make dead copy look
+  // current; the exemption records that they were checked, not overlooked.
+  { file: 'src/app/tiktok/TikTokLanding.tsx', why: 'behind a permanent 308 redirect; literal is never served (reads 1,881)' },
+  { file: 'src/app/chat/page.tsx', why: 'behind a permanent 308 redirect; literal is never served (reads 1,881)' },
+
+  // The three LIVE client surfaces that used to sit here — /search (1,999),
+  // /calculator (1,800+) and /checkout/success (1,881) — were fixed on
+  // 2026-10-05 via `NEXT_PUBLIC_CORPUS_SIZE`, derived in next.config.ts from
+  // public/data.json and read through src/lib/corpus-size-client.ts. They are
+  // deliberately NOT exempt any more: the regex above now guards them like
+  // every server surface, so a literal cannot come back unnoticed.
 ];
 
 const allowedFiles = new Set(ALLOWED.map((a) => a.file));

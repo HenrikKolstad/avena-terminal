@@ -1,6 +1,40 @@
 import type { NextConfig } from "next";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
+/**
+ * The size of the property book, read from `public/data.json` at build time
+ * and inlined into the client bundle as `NEXT_PUBLIC_CORPUS_SIZE`.
+ *
+ * WHY IT IS HERE AND NOT IN A COMPONENT
+ * `getCorpusSize()` is an `fs` read, so `'use client'` surfaces cannot call
+ * it — which is why /search, /calculator and /checkout/success were still
+ * publishing 1,999, 1,800+ and 1,881 against a live book of 2,029. Deriving
+ * it once here gives every client component the real number without a
+ * server parent threading it down as a prop.
+ *
+ * IT THROWS RATHER THAN DEFAULTING. A missing or unparseable book must fail
+ * the build loudly; this project's recurring bug is exactly the opposite
+ * reflex — a failed read becoming a plausible number that then gets
+ * published. `public/data.json` is committed, so an exception here means
+ * something is genuinely wrong with the checkout, not with this code.
+ */
+function corpusSizeAtBuildTime(): number {
+  const book = JSON.parse(
+    readFileSync(join(__dirname, "public", "data.json"), "utf8"),
+  ) as unknown[];
+  if (!Array.isArray(book) || book.length === 0) {
+    throw new Error(
+      "public/data.json is not a non-empty array — refusing to inline a corpus size",
+    );
+  }
+  return book.length;
+}
 
 const nextConfig: NextConfig = {
+  env: {
+    NEXT_PUBLIC_CORPUS_SIZE: String(corpusSizeAtBuildTime()),
+  },
   // Explicit Turbopack workspace root — silences "inferred workspace root"
   // warning that fires when a lockfile exists up-tree (e.g. in HOME dir).
   turbopack: {
