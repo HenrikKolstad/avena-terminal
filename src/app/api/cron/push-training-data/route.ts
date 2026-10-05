@@ -153,13 +153,46 @@ export const GET = withCronLog('push-training-data', '/api/cron/push-training-da
       if (updateError) return Response.json({ error: updateError.message }, { status: 500 });
     }
 
-    return Response.json({
+    /**
+     * THE RUN STATUS MUST MATCH WHAT ACTUALLY LEFT THE BUILDING.
+     *
+     * Until 2026-10-05 every branch below returned a bare 200 with no `ok`
+     * and no `skipped`, so `withCronLog` recorded `success` — and this cron
+     * had reported `success` every day since 2026-08-09 while transmitting
+     * NOTHING, because HUGGINGFACE_TOKEN is unset. 57 consecutive green rows
+     * on a no-op. The payload said so in `details.reason`, but no aggregate
+     * view reads `details`: in a status rollup a dead push was indentical to
+     * a working one, which is exactly how the Hugging Face corpus surface
+     * drifted 57 days behind the site and the GitHub mirror unnoticed.
+     *
+     * `failed` was the worse half: a real HTTP rejection from Hugging Face
+     * also returned 200 with no `ok: false`, so an upload that the API
+     * refused would have been filed as a successful run too.
+     *
+     * - simulated -> `skipped` (deliberately dormant, no credential)
+     * - failed    -> `error` (the upload was attempted and rejected)
+     * - live      -> success, unchanged
+     */
+    const body: Record<string, unknown> = {
       message: `Training data push ${pushResult}`,
       count: typed.length,
       pushed: pushResult === 'live',
       jsonl_bytes: jsonlContent.length,
       details: pushDetails,
-    });
+    };
+    if (pushResult === 'simulated') {
+      body.ok = false;
+      body.skipped = true;
+    } else if (pushResult === 'failed') {
+      body.ok = false;
+      body.status = 'hf_upload_failed';
+      body.error = pushDetails.error ?? `HTTP ${String(pushDetails.status ?? 'unknown')}`;
+    }
+    // A failed ledger write is reported, not just console-logged: hf_pushes is
+    // the record of what was sent, and a silently missing row makes the record
+    // disagree with reality in the same direction as the bug above.
+    if (logError) body.hf_pushes_log_error = logError.message;
+    return Response.json(body);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Push training data cron failed';
     return Response.json({ error: message }, { status: 500 });
