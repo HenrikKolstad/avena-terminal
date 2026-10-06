@@ -102,11 +102,64 @@ async function main() {
     );
   }
 
+  // ── Per-query, same day ─────────────────────────────────────────────────
+  // ADDED 2026-10-06, and the reason is a question this capture could not
+  // answer. Weekly impressions have fallen six weeks running (953 → 647 →
+  // 635 → 497 → 322) from a pre-change band of 427–758. Decomposed from
+  // gsc_pages, BOTH factors fell — pages with an impression 221 → 150,
+  // impressions per page 4.31 → 2.15 — while average position IMPROVED,
+  // 24.7 → 17.8.
+  //
+  // Fewer impressions at BETTER positions is not the signature of a
+  // demotion; it is the signature of matching fewer queries. But "matched to
+  // fewer queries" and "same queries, less demand" are different diagnoses
+  // with opposite responses, and neither gsc_daily nor gsc_pages can tell
+  // them apart, because the query dimension was never captured. Search
+  // Console keeps 16 months, so every night without it is a night lost.
+  //
+  // Deliberately AFTER the two upserts above: if this half fails, the daily
+  // and page rows are already banked and only the query capture is missing.
+  // It still throws — a failure here must show a red run, never a quiet
+  // green one — but it fails having lost nothing.
+  // Asked as ['date', 'query'] over the SAME window as the daily series, not
+  // as ['query'] for one day: one call returns per-day-per-query rows, so the
+  // nightly run re-fetches a rolling week and a late or restated day fills
+  // itself in — the identical self-healing contract as gsc_daily. It also
+  // means `--backfill 90` backfills the query dimension too, in one request.
+  const queries = await searchAnalytics({
+    startDate: start, endDate: end, dimensions: ['date', 'query'], rowLimit: 25000,
+  });
+  const queryRows = queries.map((r) => ({
+    date: r.keys[0],
+    query: r.keys[1],
+    clicks: Math.round(r.clicks),
+    impressions: Math.round(r.impressions),
+    avg_position: Number(r.position.toFixed(2)),
+  }));
+  if (queryRows.length) {
+    for (let i = 0; i < queryRows.length; i += 500) {
+      const { error } = await db
+        .from('gsc_queries')
+        .upsert(queryRows.slice(i, i + 500), { onConflict: 'date,query' });
+      if (error) throw new Error(`gsc_queries upsert failed: ${error.message}`);
+    }
+  } else {
+    // Google withholds low-volume queries for privacy, so a day can
+    // legitimately return fewer query rows than page rows — but not zero
+    // alongside real daily totals. Say so rather than letting it pass as a
+    // measurement of nothing.
+    console.error(
+      `gsc-snapshot: WARNING — ${latestActual} has daily totals but returned ZERO ` +
+      'query rows. Anonymised-query filtering thins this dimension, it does not ' +
+      'empty it. Check the query-dimension quota and the property URL form.',
+    );
+  }
+
   const last = dailyRows.find((r) => r.date === latestActual)!;
   console.log(
     `gsc-snapshot: ${dailyRows.length} day(s) ${start}..${end} · latest ${last.date}: ` +
     `${last.clicks} clicks, ${last.impressions} impressions, pos ${last.avg_position} · ` +
-    `${pageRows.length} pages for ${latestActual}`,
+    `${pageRows.length} pages for ${latestActual}, ${queryRows.length} query-days over ${start}..${end}`,
   );
 }
 
