@@ -133,13 +133,29 @@ export const GET = withCronLog('push-training-data', '/api/cron/push-training-da
       pushDetails = { reason: 'HUGGINGFACE_TOKEN env var not set — payload formatted but not transmitted' };
     }
 
-    // Log every push (live, simulated, or failed) to hf_pushes
+    /**
+     * Log every push (live, simulated, or failed) to hf_pushes.
+     *
+     * 2026-10-06: this insert had NEVER SUCCEEDED. It wrote `pair_count`
+     * (the column is `pairs_count`), `status` (the column is `success`,
+     * boolean) and `jsonl_preview` (no such column), so Postgres rejected
+     * every row and `hf_pushes` held 0 rows for the table's whole life. The
+     * failure was console-only until yesterday's `047b40a`, which surfaced
+     * it as `hf_pushes_log_error` and is how it was found.
+     *
+     * That matters beyond tidiness: hf_pushes is the only record of what was
+     * sent to the corpus mirror and when. With it empty, Hugging Face sitting
+     * 57 days behind the site and the GitHub mirror was invisible from inside
+     * the system — there was nothing to compare against. The three-way
+     * `status` is kept in `details.push_result` as well as in the boolean,
+     * because `simulated` (no credential) and `failed` (HF refused) are the
+     * two conditions whose conflation caused that drift.
+     */
     const { error: logError } = await supabase.from('hf_pushes').insert({
-      pair_count: typed.length,
-      jsonl_preview: jsonlContent.slice(0, 2000),
+      pairs_count: typed.length,
       pushed_at: new Date().toISOString(),
-      status: pushResult,
-      details: pushDetails,
+      success: pushResult === 'live',
+      details: { ...pushDetails, push_result: pushResult, jsonl_bytes: jsonlContent.length },
     });
     if (logError) console.error('Failed to log HF push:', logError.message);
 

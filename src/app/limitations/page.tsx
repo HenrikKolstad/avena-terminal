@@ -150,7 +150,7 @@ export default async function LimitationsPage() {
           <div className="rounded-sm border p-6" style={{ borderColor: 'hsl(var(--av-border) / 0.4)', background: 'hsl(var(--av-surface) / 0.2)' }}>
             <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-2">How this page is generated</div>
             <p className="text-sm text-foreground/85 leading-relaxed max-w-3xl">
-              A cron job at 02:30 UTC daily walks four passes: per-country coverage counts vs threshold; failed cron runs in the last 24h; AVM confidence rolling-averaged by town over 30 days; and macro feed staleness vs schedule. Findings that no longer trigger are automatically resolved. The full compiler source lives at <span className="font-mono text-foreground">src/lib/limitations.ts</span> and is reproducible from the event store.
+              A cron job at 02:30 UTC daily walks three active passes: per-country coverage counts vs threshold; failed cron runs in the last 24h; AVM confidence rolling-averaged by town over 30 days. A fourth pass, macro feed staleness, is dormant: the only timestamp available to it records when a feed value was first stored rather than when it was last refreshed, so a feed-age finding derived from it would be false. Findings that no longer trigger are automatically resolved. The full compiler source lives at <span className="font-mono text-foreground">src/lib/limitations.ts</span> and is reproducible from the event store.
             </p>
             <div className="mt-4 flex flex-wrap gap-3 font-mono text-[10px] uppercase tracking-[0.22em]">
               <Link href="/timetravel?type=limitation" className="text-foreground/85 hover:text-primary">Replay limitation history →</Link>
