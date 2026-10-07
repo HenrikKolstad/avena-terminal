@@ -1,5 +1,5 @@
 town,costa,n_listings,median_price_eur,median_pm2_eur,p25_pm2_eur,p75_pm2_eur,median_built_m2,villa_share_pct,median_beach_km
-Estepona,Costa del Sol,221,725000,6755,5362,9016,103,13,1
+Estepona,Costa del Sol,221,725000,6755,5361,9016,103,13,1
 Mijas,Costa del Sol,197,570000,6731,5606,8309,86,17,2
 Torrevieja,Costa Blanca South,112,305000,4981,4283,5691,62,25,0.6
 Fuengirola,Costa del Sol,100,740500,7475,6295,9701,91,14,1.5
@@ -16,19 +16,19 @@ Manilva,Costa del Sol,40,490500,5934,4363,7841,92,13,0.6
 Benahavís,Costa del Sol,36,1279500,9961,7494,12783,131,22,5.75
 San Miguel de Salinas,Costa Blanca South,33,269900,4073,3599,4998,73,61,9
 Pinoso,Costa Blanca South - Inland,31,473500,3055,2914,3748,140,100,50
-Villajoyosa,Costa Blanca North,30,437500,6509,5601,7458,71,0,0.5
+Villajoyosa,Costa Blanca North,31,430000,6350,5513,7530,70,0,0.5
 Algorfa,Costa Blanca South,29,473000,4823,3383,5767,90,76,14
-Málaga,Costa del Sol,27,980000,10260,6509,15351,91,19,0.9
-Polop,Costa Blanca North,27,650650,6167,5938,6558,100,100,9
+Polop,Costa Blanca North,27,650650,6167,5938,6589,100,100,9
 Baños y Mendigo,Costa Calida,26,489900,4646,4211,5595,102,77,30
 Rojales,Costa Blanca South,25,529000,4843,4084,6487,100,100,6
+Málaga,Costa del Sol,24,945000,8180,5648,12884,91,29,1.35
 Orihuela Costa,Costa Blanca South,22,794950,6435,5159,7469,138,82,0.7
 Benalmádena,Costa del Sol,21,750000,6420,5620,8358,109,24,1.4
 Torremolinos,Costa del Sol,21,675000,7796,6344,8460,88,5,0.7
 Calpe,Costa Blanca North,19,730000,8202,5522,9885,109,26,0.4
 San Javier,Costa Calida,17,389000,4863,3899,6166,80,82,2.5
+Orihuela,Costa Blanca South,16,438450,4662,4432,6002,97,100,14
 San Roque,Costa del Sol (Cadiz),16,598250,5776,5248,7708,96,0,1.5
-Orihuela,Costa Blanca South,15,417900,4625,4418,6373,94,100,14
 Aguilas,Costa Calida,13,385000,5015,4170,6525,74,15,0.3
 Alicante,Costa Blanca North,13,301900,4697,4530,5212,66,0,3
 Fuente Álamo,Costa Calida - Inland,13,374900,3825,3063,5000,95,85,23

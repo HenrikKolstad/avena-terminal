@@ -6160,6 +6160,16 @@
     "type": "Apartment"
   },
   {
+    "avn_id": "N8682",
+    "date": "2026-10-07",
+    "prev_date": "2026-10-06",
+    "prev_price_eur": 785000,
+    "new_price_eur": 825000,
+    "change_pct": 5.1,
+    "town": "Marbella",
+    "type": "Apartment"
+  },
+  {
     "avn_id": "N9385",
     "date": "2026-10-07",
     "prev_date": "2026-10-06",
@@ -6170,6 +6180,16 @@
     "type": "Apartment"
   },
   {
+    "avn_id": "N9720",
+    "date": "2026-10-07",
+    "prev_date": "2026-10-06",
+    "prev_price_eur": 268900,
+    "new_price_eur": 271900,
+    "change_pct": 1.12,
+    "town": "Torre Pacheco",
+    "type": "Townhouse"
+  },
+  {
     "avn_id": "N9987",
     "date": "2026-10-07",
     "prev_date": "2026-10-06",
@@ -6177,6 +6197,16 @@
     "new_price_eur": 568000,
     "change_pct": -3.24,
     "town": "Ciudad Quesada",
+    "type": "Villa"
+  },
+  {
+    "avn_id": "SP0637",
+    "date": "2026-10-07",
+    "prev_date": "2026-10-06",
+    "prev_price_eur": 498500,
+    "new_price_eur": 525700,
+    "change_pct": 5.46,
+    "town": "Polop",
     "type": "Villa"
   },
   {
@@ -6200,14 +6230,44 @@
     "type": "Apartment"
   },
   {
-    "avn_id": "SP0848",
+    "avn_id": "SP0998",
     "date": "2026-10-07",
     "prev_date": "2026-10-06",
-    "prev_price_eur": 441000,
-    "new_price_eur": 415000,
-    "change_pct": -5.9,
-    "town": "Alicante",
-    "type": "Penthouse"
+    "prev_price_eur": 492000,
+    "new_price_eur": 442000,
+    "change_pct": -10.16,
+    "town": "Estepona",
+    "type": "Apartment"
+  },
+  {
+    "avn_id": "SP0999",
+    "date": "2026-10-07",
+    "prev_date": "2026-10-06",
+    "prev_price_eur": 608000,
+    "new_price_eur": 451000,
+    "change_pct": -25.82,
+    "town": "Estepona",
+    "type": "Apartment"
+  },
+  {
+    "avn_id": "SP1161",
+    "date": "2026-10-07",
+    "prev_date": "2026-10-06",
+    "prev_price_eur": 285000,
+    "new_price_eur": 240000,
+    "change_pct": -15.79,
+    "town": "Villajoyosa",
+    "type": "Apartment"
+  },
+  {
+    "avn_id": "SP1162",
+    "date": "2026-10-07",
+    "prev_date": "2026-10-06",
+    "prev_price_eur": 370000,
+    "new_price_eur": 325000,
+    "change_pct": -12.16,
+    "town": "Villajoyosa",
+    "type": "Apartment"
   },
   {
     "avn_id": "SP1340",
