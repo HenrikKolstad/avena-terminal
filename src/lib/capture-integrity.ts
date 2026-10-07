@@ -145,3 +145,162 @@ export function classifySupersededRefs(
   out.unclassified.sort();
   return out;
 }
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * The relisting blind spot in price-move detection.
+ *
+ * OBSERVED 2026-10-06/07. Diffing `price_snapshots` with a per-ref window
+ * function yields 553 real price moves since 2026-08-10. The event log
+ * `property_pricing_history` holds 522 of them. Zero orphans — every event the
+ * log holds is real — but 31 real moves have no event, and the gap GREW by 2
+ * in one day (540/511/29 on 10-06 → 553/522/31 on 10-07), so it is an ongoing
+ * miss, not a historical artifact.
+ *
+ * THE MECHANISM, and it is this project's signature bug shape. The detector
+ * builds its baseline from exactly ONE date — the single most recent
+ * `snapshot_date` before today — and then falls back:
+ *
+ *     const priorPrice = trustPrior ? priorByRef.get(ref)?.price ?? null : null;
+ *     const sameDayPrice = todayByRef.get(ref)?.price ?? null;
+ *     const observed = priorPrice ?? sameDayPrice;
+ *
+ * A ref that was ABSENT on the prior date — delisted and relisted — has no
+ * `priorPrice`, so `observed` becomes today's own banked row. That row was
+ * written by parse-feed from the SAME book this run is holding, so the
+ * comparison is a value against itself, `Math.abs(now - observed) < 1` is
+ * always true, and the move is dropped in silence. A missing value became a
+ * self-comparison became "nothing changed" — a broken path that looks exactly
+ * like a working one with nothing to report.
+ *
+ * The route's own comment already named this trap for the GLOBAL case ("every
+ * comparison was a value against itself") and fixed it by preferring the prior
+ * date. The `?? sameDayPrice` fallback silently reintroduces it per-ref, for
+ * precisely the refs whose history is worth the most.
+ *
+ * WHY THESE ARE THE EXPENSIVE ONES TO LOSE. All 18 non-startup unlogged moves
+ * are relistings, and they are large: N8648 547,690 → 725,000 (+32.4%),
+ * SP1484 525,000 → 650,000 (+23.8%), SP1018 552,000 → 492,000 (−10.9%). A unit
+ * that left the market and came back at a different price is the strongest
+ * motivated-seller / repricing signal the capture produces. The remaining 13
+ * fall on 2026-08-11, the day after the log began, where the prior date is
+ * 08-10 and the miss has a different cause.
+ *
+ * WHY THE EXISTING GUARDS DO NOT CATCH IT. `trustPrior` (MAX_PRIOR_AGE_DAYS,
+ * MIN_FEED_OVERLAP) judges the prior snapshot GLOBALLY — on every one of these
+ * days the prior was yesterday and trusted. Nothing asked whether the prior
+ * held a row for THIS ref. `baselineRefs` counts refs that resolved to some
+ * baseline and cannot distinguish a real one from a self-comparison, so it
+ * reported full coverage throughout.
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+/** Where a ref's move baseline came from. Reported so a zero stays readable. */
+export type BaselineSource = 'prior_date' | 'own_last_seen' | 'same_day';
+
+export interface MoveBaseline {
+  price: number;
+  source: BaselineSource;
+  /** snapshot_date the baseline price was observed on; null for `same_day`. */
+  observedOn: string | null;
+}
+
+export interface RelistLookbackPlan {
+  /** Refs in today's feed with no row on the trusted prior date. */
+  refs: string[];
+  /**
+   * Non-null when the lookback must NOT run. A partial prior capture leaves
+   * hundreds of refs with no prior row; diffing them all against older
+   * snapshots would mass-flag phantom moves. Refusing is the safe failure, and
+   * saying so is the difference between a refusal and a silent zero.
+   */
+  skipped: string | null;
+}
+
+/**
+ * Decide which refs need an own-last-seen lookback, and refuse outright when
+ * too many do.
+ *
+ * The cap is deliberately far tighter than MAX_MOVE_SHARE (0.2). Observed
+ * reality is 0–5 relisted refs per day against a ~2,030 ref feed (0.25% on the
+ * worst day, 2026-10-04). A 2% ceiling is ~8x headroom over the worst day
+ * observed and still refuses anything that looks like a partial prior capture.
+ * It also bounds the cost of the follow-up read: the lookback query is only
+ * cheap because the ref list is small.
+ *
+ * @param feedRefs    refs in the book this run is holding
+ * @param priorRefs   refs present on the trusted prior snapshot date
+ * @param maxShare    refuse if more than this share of the feed needs lookback
+ */
+export function planRelistLookback(
+  feedRefs: Iterable<string>,
+  priorRefs: ReadonlySet<string>,
+  maxShare: number
+): RelistLookbackPlan {
+  const all = [...feedRefs];
+  const refs = all.filter((ref) => !priorRefs.has(ref)).sort();
+  if (all.length === 0) {
+    return { refs: [], skipped: 'empty feed — no lookback attempted' };
+  }
+  const share = refs.length / all.length;
+  if (share > maxShare) {
+    return {
+      refs: [],
+      skipped:
+        `${refs.length} of ${all.length} refs (${(share * 100).toFixed(1)}%) are absent from the prior ` +
+        `snapshot, over the ${(maxShare * 100).toFixed(1)}% ceiling — the prior capture is probably ` +
+        `partial, refusing the relisting lookback rather than mass-flagging phantom moves`,
+    };
+  }
+  return { refs, skipped: null };
+}
+
+/**
+ * Resolve each feed ref's move baseline, in precedence order, carrying where
+ * it came from.
+ *
+ * `same_day` is kept — when there is no trusted prior it really is the oldest
+ * price available, and it catches a mid-day move written by an EARLIER run
+ * holding a DIFFERENT book. What it must never do is stand in for a missing
+ * prior-date row while a trusted prior exists, because then it is today's own
+ * book and the comparison is circular. That is the bug this function exists to
+ * make impossible: the precedence is explicit and the source is reported.
+ *
+ * @param feedRefs          refs in the book this run is holding
+ * @param priorByRef        ref → price on the trusted prior date (empty if untrusted)
+ * @param ownLastSeenByRef  ref → {price, date} of that ref's own most recent
+ *                          snapshot before the prior date (the lookback result)
+ * @param sameDayByRef      ref → price already banked under today's date
+ */
+export function resolveMoveBaselines(
+  feedRefs: Iterable<string>,
+  priorByRef: ReadonlyMap<string, { price: number | null }>,
+  ownLastSeenByRef: ReadonlyMap<string, { price: number | null; snapshot_date: string }>,
+  sameDayByRef: ReadonlyMap<string, { price: number | null }>
+): Map<string, MoveBaseline> {
+  const out = new Map<string, MoveBaseline>();
+  for (const ref of feedRefs) {
+    const prior = priorByRef.get(ref)?.price;
+    if (prior != null) {
+      out.set(ref, { price: Number(prior), source: 'prior_date', observedOn: null });
+      continue;
+    }
+    const own = ownLastSeenByRef.get(ref);
+    if (own && own.price != null) {
+      out.set(ref, { price: Number(own.price), source: 'own_last_seen', observedOn: own.snapshot_date });
+      continue;
+    }
+    const same = sameDayByRef.get(ref)?.price;
+    if (same != null) {
+      out.set(ref, { price: Number(same), source: 'same_day', observedOn: null });
+    }
+  }
+  return out;
+}
+
+/** Count baselines by provenance, so a reported zero is interpretable. */
+export function countBaselineSources(
+  baselines: ReadonlyMap<string, MoveBaseline>
+): Record<BaselineSource, number> {
+  const out: Record<BaselineSource, number> = { prior_date: 0, own_last_seen: 0, same_day: 0 };
+  for (const b of baselines.values()) out[b.source]++;
+  return out;
+}

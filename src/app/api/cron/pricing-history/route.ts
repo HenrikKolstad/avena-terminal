@@ -39,7 +39,13 @@ import { startCronLog, finishCronLog } from '@/lib/cron-log';
 import { supabase } from '@/lib/supabase';
 import { getAllProperties } from '@/lib/properties';
 import { getFeedGeneratedDate, getFeedGeneratedAt } from '@/lib/feed-meta';
-import { findSupersededRefs, classifySupersededRefs } from '@/lib/capture-integrity';
+import {
+  findSupersededRefs,
+  classifySupersededRefs,
+  planRelistLookback,
+  resolveMoveBaselines,
+  countBaselineSources,
+} from '@/lib/capture-integrity';
 
 /**
  * Hour (UTC) from which a book that is not today's stops being "the nightly is
@@ -77,6 +83,17 @@ const MIN_FEED_OVERLAP = 0.5;
 // something is wrong with the feed — refuse to write rather than pollute the
 // ledger with thousands of phantom moves. Reported loudly in the summary.
 const MAX_MOVE_SHARE = 0.2;
+
+// A ref in today's feed with no row on the trusted prior date was delisted and
+// relisted; its baseline is its OWN last-seen snapshot. See the relisting
+// blind spot in src/lib/capture-integrity.ts for the 2026-10-07 measurement.
+// This ceiling is far tighter than MAX_MOVE_SHARE on purpose: 0-5 refs a day
+// is normal, hundreds means the prior capture was partial.
+const MAX_RELIST_LOOKBACK_SHARE = 0.02;
+// How far back the own-last-seen lookback will reach. The longest genuine gap
+// observed is 52 days (N7504, last seen 2026-08-13, repriced 2026-10-04), so
+// 90 bounds the read without discarding real relistings.
+const RELIST_LOOKBACK_DAYS = 90;
 
 const townOf = (l?: string) => (l || '').split(',')[0].trim() || null;
 
@@ -310,19 +327,66 @@ export async function GET(req: NextRequest) {
   let movesLedgerBlocked: string | null = null;
   let baselineRefs = 0;
   const inserts: Array<{ avn_prop_id: string; price_eur: number; source_portal: string; status: string }> = [];
+  // A ref in the feed with no row on the trusted prior date was delisted and
+  // relisted. Its baseline is its own last-seen snapshot, NOT today's banked
+  // row — that row came from this same book, so comparing to it is circular
+  // and silently reports "no change". This is the relisting blind spot; see
+  // src/lib/capture-integrity.ts for the 31-move measurement behind it.
+  const relistPlan = trustPrior
+    ? planRelistLookback(
+        feed.map((p) => p.ref as string),
+        new Set(priorByRef.keys()),
+        MAX_RELIST_LOOKBACK_SHARE
+      )
+    : { refs: [], skipped: 'no trusted prior — relisting lookback not applicable' };
+
+  const ownLastSeen = new Map<string, { price: number | null; snapshot_date: string }>();
+  let relistLookbackError: string | null = null;
+  if (relistPlan.refs.length) {
+    const since = new Date(Date.parse(today) - RELIST_LOOKBACK_DAYS * 86_400_000)
+      .toISOString()
+      .slice(0, 10);
+    const { data: seenRows, error: seenErr } = await supabase
+      .from('price_snapshots')
+      .select('ref, price, snapshot_date')
+      .in('ref', relistPlan.refs)
+      .gte('snapshot_date', since)
+      .lt('snapshot_date', today)
+      .order('snapshot_date', { ascending: false });
+    // A failed lookback must never read as "these refs had no earlier price".
+    // That is the same shape as the bug this block exists to fix.
+    if (seenErr) {
+      relistLookbackError = `relist_lookback: ${seenErr.message}`;
+      errors.push(relistLookbackError);
+    } else {
+      // Rows arrive newest-first, so the first sighting of a ref is its latest.
+      for (const row of seenRows ?? []) {
+        if (!ownLastSeen.has(row.ref)) {
+          ownLastSeen.set(row.ref, { price: row.price, snapshot_date: row.snapshot_date });
+        }
+      }
+    }
+  }
+
+  const baselines = resolveMoveBaselines(
+    feed.map((p) => p.ref as string),
+    trustPrior ? priorByRef : new Map(),
+    ownLastSeen,
+    todayByRef
+  );
+  const baselineSources = countBaselineSources(baselines);
+
   for (const p of feed) {
-    const priorPrice = trustPrior ? priorByRef.get(p.ref as string)?.price ?? null : null;
-    const sameDayPrice = todayByRef.get(p.ref as string)?.price ?? null;
-    const observed = priorPrice ?? sameDayPrice;
-    if (observed == null) continue;
+    const baseline = baselines.get(p.ref as string);
+    if (!baseline) continue;
     baselineRefs++;
     const now = Math.round(p.pf);
-    if (Math.abs(now - Number(observed)) < 1) continue;
+    if (Math.abs(now - baseline.price) < 1) continue;
     inserts.push({
       avn_prop_id: p.ref as string,
       price_eur: now,
       source_portal: p.source_portal || 'redsp',
-      status: now < Number(observed) ? 'reduced' : 'increased',
+      status: now < baseline.price ? 'reduced' : 'increased',
     });
   }
 
@@ -367,15 +431,17 @@ export async function GET(req: NextRequest) {
         priceMoves += chunk.length;
         continue;
       }
-      // property_pricing_history.avn_prop_id carries a FOREIGN KEY to
-      // properties_registry(avn_prop_id) ON DELETE CASCADE. That registry
-      // froze on 2026-05-24 and is keyed in a different space entirely:
-      // 60,792 rows, and ZERO of the 1,999 live RedSP refs appear in it. So
-      // the table cannot accept a row for any property currently on the
-      // market — which is the real reason it has never held one single
-      // 'reduced' or 'increased' event, underneath the diff bug that was
-      // masking it. Dropping the constraint is a schema change and sits on
-      // branch odyssey/move-ledger-fk awaiting Henrik.
+      // HISTORICAL, AND NO LONGER TRUE — corrected 2026-10-07. This branch was
+      // written when property_pricing_history.avn_prop_id carried a FOREIGN KEY
+      // to the frozen properties_registry(avn_prop_id), which held none of the
+      // live RedSP refs and so rejected every event. That constraint is GONE:
+      // read 2026-10-07, pg_constraint lists only property_pricing_history_pkey,
+      // and the table now holds 522 real 'reduced'/'increased' events. The
+      // branch odyssey/move-ledger-fk is moot.
+      //
+      // The check is KEPT ON PURPOSE. It tests the live error string, not a
+      // hardcoded assumption, so it costs nothing while the constraint is
+      // absent and names the condition immediately if it is ever restored.
       //
       // Detected, named, and reported — never silently zeroed. It is kept
       // out of `errors` deliberately: the nightly capture is HEALTHY (every
@@ -442,6 +508,19 @@ export async function GET(req: NextRequest) {
     // "the market was quiet" only if this is large; if it is 0 while
     // trusted_prior is true, the diff is blind and the zero is a lie.
     moves_baseline_refs: baselineRefs,
+    // WHERE those baselines came from. `moves_baseline_refs` alone cannot tell
+    // a real baseline from a circular one: before 2026-10-07 a relisted ref
+    // resolved to today's own banked row and counted here while being
+    // structurally incapable of producing a move. A non-zero `same_day` while
+    // `trusted_prior` is true is the tell that that is happening again.
+    moves_baseline_sources: baselineSources,
+    // Relisted refs (absent from the prior date) whose own last-seen snapshot
+    // was looked up. Non-null `*_skipped` means the lookback REFUSED to run —
+    // a partial prior capture — which is a refusal, never a quiet zero.
+    relist_lookback_refs: relistPlan.refs.length,
+    relist_lookback_resolved: ownLastSeen.size,
+    relist_lookback_skipped: relistPlan.skipped,
+    relist_lookback_error: relistLookbackError,
     moves_skipped: movesSkipped,
     // A known structural block on the legacy event table, not a capture
     // failure: the moves themselves are in price_snapshots either way.

@@ -10,7 +10,13 @@
  *   npx tsx scripts/test-capture-integrity.ts
  */
 
-import { findSupersededRefs, classifySupersededRefs } from '../src/lib/capture-integrity';
+import {
+  findSupersededRefs,
+  classifySupersededRefs,
+  planRelistLookback,
+  resolveMoveBaselines,
+  countBaselineSources,
+} from '../src/lib/capture-integrity';
 import { isAtlasRunDay, ROLLUP_FAILURE_REASONS } from '../src/lib/citation-measure';
 
 let pass = 0;
@@ -249,6 +255,147 @@ check(
     split.stale.length + split.aheadOfThisBook.length + split.unclassified.length,
     findSupersededRefs(stored.map((r) => r.ref), book).length
   );
+}
+
+
+// ── The relisting blind spot ────────────────────────────────────────────────
+// The bug: a ref absent from the prior date fell back to today's own banked
+// row, which came from the same book, so the comparison was circular and the
+// move vanished. These tests pin the precedence that makes that impossible,
+// and — per the note at the top of this file — the NEGATIVE cases matter most:
+// a healthy day must not start producing relisting events.
+
+console.log('\nresolveMoveBaselines — precedence');
+{
+  const prior = new Map([['A', { price: 100 }]]);
+  const own = new Map([['B', { price: 200, snapshot_date: '2026-09-28' }]]);
+  const sameDay = new Map([
+    ['A', { price: 999 }],
+    ['B', { price: 999 }],
+    ['C', { price: 300 }],
+  ]);
+  const got = resolveMoveBaselines(['A', 'B', 'C'], prior, own, sameDay);
+  check(
+    'a ref on the prior date uses the prior date, never today',
+    got.get('A'),
+    { price: 100, source: 'prior_date', observedOn: null }
+  );
+  check(
+    'THE BUG: a relisted ref uses its own last-seen price, NOT today\'s book',
+    got.get('B'),
+    { price: 200, source: 'own_last_seen', observedOn: '2026-09-28' }
+  );
+  check(
+    'a ref with neither still falls back to same_day, which has its own use',
+    got.get('C'),
+    { price: 300, source: 'same_day', observedOn: null }
+  );
+}
+
+console.log('\nresolveMoveBaselines — the real 2026-10-06 miss');
+{
+  // N9949 341,500 -> 350,040, last seen 2026-09-28, absent from the 10-05
+  // prior. Under the old code `observed` became today's banked 350,040 and the
+  // move was dropped. The baseline must now be 341,500 so the diff is real.
+  const got = resolveMoveBaselines(
+    ['N9949'],
+    new Map(),
+    new Map([['N9949', { price: 341_500, snapshot_date: '2026-09-28' }]]),
+    new Map([['N9949', { price: 350_040 }]])
+  );
+  const b = got.get('N9949');
+  check('N9949 resolves to its last-seen price, not today\'s', b?.price, 341_500);
+  check('and a move is therefore detectable', b!.price !== 350_040, true);
+}
+
+console.log('\nresolveMoveBaselines — a ref with no baseline at all is skipped');
+{
+  const got = resolveMoveBaselines(['Z'], new Map(), new Map(), new Map());
+  check('no baseline means no entry, not a zero', got.has('Z'), false);
+  check(
+    'a null stored price is not a baseline either',
+    resolveMoveBaselines(['Z'], new Map([['Z', { price: null }]]), new Map(), new Map()).has('Z'),
+    false
+  );
+}
+
+console.log('\ncountBaselineSources — a circular baseline is now visible');
+{
+  const got = countBaselineSources(
+    resolveMoveBaselines(
+      ['A', 'B', 'C'],
+      new Map([['A', { price: 1 }]]),
+      new Map([['B', { price: 2, snapshot_date: '2026-09-01' }]]),
+      new Map([['C', { price: 3 }]])
+    )
+  );
+  check('provenance is counted, so a reported zero is readable', got, {
+    prior_date: 1,
+    own_last_seen: 1,
+    same_day: 1,
+  });
+}
+
+console.log('\nplanRelistLookback — the healthy day must stay silent');
+{
+  const feed = Array.from({ length: 2030 }, (_, i) => `R${i}`);
+  const priorAll = new Set(feed);
+  check(
+    'a full prior capture needs no lookback at all',
+    planRelistLookback(feed, priorAll, 0.02),
+    { refs: [], skipped: null }
+  );
+
+  // 2026-10-04, the worst real day: 5 relisted refs out of 2,030 = 0.25%.
+  const priorMinus5 = new Set(feed.slice(5));
+  const worstReal = planRelistLookback(feed, priorMinus5, 0.02);
+  check('the worst day observed is allowed through', worstReal.refs.length, 5);
+  check('and is not reported as skipped', worstReal.skipped, null);
+}
+
+console.log('\nplanRelistLookback — a partial prior capture must be REFUSED');
+{
+  const feed = Array.from({ length: 1000 }, (_, i) => `R${i}`);
+  // Prior held only 400 of 1,000 refs: 60% would need a lookback.
+  const partial = new Set(feed.slice(0, 400));
+  const got = planRelistLookback(feed, partial, 0.02);
+  check('no refs are looked back', got.refs.length, 0);
+  check('the refusal is reported, never a quiet zero', got.skipped !== null, true);
+  check(
+    'and it says why, in numbers',
+    /600 of 1000 refs \(60\.0%\)/.test(got.skipped ?? ''),
+    true
+  );
+}
+
+console.log('\nplanRelistLookback — boundary and degenerate inputs');
+{
+  const feed = Array.from({ length: 100 }, (_, i) => `R${i}`);
+  // Exactly at the 2% ceiling: allowed (the guard refuses only ABOVE it).
+  check(
+    'exactly at the ceiling is allowed',
+    planRelistLookback(feed, new Set(feed.slice(2)), 0.02).skipped,
+    null
+  );
+  // One more than the ceiling: refused.
+  check(
+    'one ref over the ceiling is refused',
+    planRelistLookback(feed, new Set(feed.slice(3)), 0.02).skipped !== null,
+    true
+  );
+  check(
+    'an empty feed is a refusal, not a silent pass',
+    planRelistLookback([], new Set<string>(), 0.02).skipped !== null,
+    true
+  );
+  check(
+    'an empty prior refuses rather than treating every ref as relisted',
+    planRelistLookback(feed, new Set<string>(), 0.02).refs.length,
+    0
+  );
+  check('refs come back sorted and deduped by the feed', planRelistLookback(
+    ['B', 'A'], new Set(['X']), 1
+  ).refs, ['A', 'B']);
 }
 
 console.log(`\n${fail === 0 ? 'ALL PASS' : 'FAILURES'} — ${pass} passed, ${fail} failed\n`);
