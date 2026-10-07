@@ -4,23 +4,45 @@ import { supabase } from '@/lib/supabase';
 export const dynamic = 'force-dynamic';
 
 // POST — log an event
+//
+// `ok: true` USED TO BE UNCONDITIONAL, and it was a false success report.
+// The insert result was discarded, the catch returned `{ ok: true }` under a
+// `// never fail` comment, and `analytics_events` DOES NOT EXIST (swept
+// 2026-10-06; supabase-js returns `{data:null,error}` rather than throwing).
+// So every event this route has ever been sent was dropped while the route
+// reported success — the project's recurring shape, in a route whose only job
+// is to record what happened.
+//
+// Still always HTTP 200, deliberately: analytics must never break a page, and
+// the client (src/lib/analytics.ts) is fire-and-forget. What changed is that
+// the body now distinguishes "stored" from "accepted and dropped", so the
+// failure is legible to anyone who looks instead of being asserted away.
 export async function POST(req: NextRequest) {
   try {
     const { event_type, payload, user_email, session_id } = await req.json();
     if (!event_type) return NextResponse.json({ error: 'event_type required' }, { status: 400 });
 
-    if (supabase) {
-      await supabase.from('analytics_events').insert({
-        event_type,
-        payload: payload || {},
-        user_email: user_email || null,
-        session_id: session_id || null,
-      });
+    if (!supabase) {
+      return NextResponse.json({ ok: true, stored: false, reason: 'no supabase client configured' });
     }
 
-    return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json({ ok: true }); // never fail
+    const { error } = await supabase.from('analytics_events').insert({
+      event_type,
+      payload: payload || {},
+      user_email: user_email || null,
+      session_id: session_id || null,
+    });
+    if (error) {
+      return NextResponse.json({ ok: true, stored: false, reason: error.message });
+    }
+
+    return NextResponse.json({ ok: true, stored: true });
+  } catch (e) {
+    return NextResponse.json({
+      ok: true,
+      stored: false,
+      reason: e instanceof Error ? e.message : 'malformed request',
+    });
   }
 }
 
@@ -35,7 +57,7 @@ export async function GET(req: NextRequest) {
   if (!supabase) return NextResponse.json({ error: 'No Supabase' }, { status: 503 });
 
   // Oracle queries
-  const { data: oracleRaw } = await supabase
+  const { data: oracleRaw, error: oracleRawErr } = await supabase
     .from('analytics_events')
     .select('payload, user_email, created_at')
     .eq('event_type', 'oracle_query')
@@ -43,7 +65,7 @@ export async function GET(req: NextRequest) {
     .limit(200);
 
   // PRO gate hits
-  const { data: gateRaw } = await supabase
+  const { data: gateRaw, error: gateRawErr } = await supabase
     .from('analytics_events')
     .select('payload, user_email, created_at')
     .eq('event_type', 'pro_gate_hit')
@@ -51,7 +73,7 @@ export async function GET(req: NextRequest) {
     .limit(200);
 
   // Semantic searches
-  const { data: searchRaw } = await supabase
+  const { data: searchRaw, error: searchRawErr } = await supabase
     .from('analytics_events')
     .select('payload, created_at')
     .eq('event_type', 'semantic_search')
@@ -59,7 +81,7 @@ export async function GET(req: NextRequest) {
     .limit(200);
 
   // Property views
-  const { data: viewsRaw } = await supabase
+  const { data: viewsRaw, error: viewsRawErr } = await supabase
     .from('analytics_events')
     .select('payload, created_at')
     .eq('event_type', 'property_view')
@@ -67,7 +89,7 @@ export async function GET(req: NextRequest) {
     .limit(500);
 
   // Deal alerts
-  const { data: alertsRaw } = await supabase
+  const { data: alertsRaw, error: alertsRawErr } = await supabase
     .from('analytics_events')
     .select('payload, user_email, created_at')
     .eq('event_type', 'deal_alert_created')
@@ -142,6 +164,20 @@ export async function GET(req: NextRequest) {
     .slice(0, 20)
     .map(([ref, d]) => ({ ref, ...d }));
 
+  // Every `?.length || 0` above turns a FAILED read into a confident zero, and
+  // `analytics_events` does not exist, so this dashboard has been reporting
+  // "no user activity" when the truth is "no table". Name what could not be
+  // read; a zero beside an empty `degraded` list is a real zero.
+  const readErrors = [
+    ['oracle', oracleRawErr],
+    ['pro_gates', gateRawErr],
+    ['searches', searchRawErr],
+    ['property_views', viewsRawErr],
+    ['alerts', alertsRawErr],
+  ]
+    .filter(([, err]) => err)
+    .map(([key, err]) => `${key}: ${(err as { message: string }).message}`);
+
   return NextResponse.json({
     oracle: { total: oracleRaw?.length || 0, top: topOracle },
     pro_gates: { total: gateRaw?.length || 0, top: topGates },
@@ -151,5 +187,8 @@ export async function GET(req: NextRequest) {
     citations: { total: mcpTotal || 0, this_month: mcpMonth || 0 },
     agents: { registered: agentCount || 0 },
     webhooks: { active: webhookCount || 0 },
+    // Empty = every count above is a measurement. Non-empty = the zeros
+    // beside it are unread, not observed.
+    degraded: readErrors,
   });
 }
