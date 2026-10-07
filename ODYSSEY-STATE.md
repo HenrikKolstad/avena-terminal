@@ -53,6 +53,40 @@ it.
 | 2026-10-06 | `7316345` **`scripts/test-db-tables.ts` + `scripts/db-tables.json`** — sweeps every literal `.from('<table>')` against a committed schema snapshot | run it; must be ALL PASS | **VERIFIED, ALL PASS (21). Now 147 distinct tables referenced, 12 documented absent — down from 148/14 yesterday, so two names resolved (`gsc_queries` among them). It is now a standing gate.** → CLOSED |
 | 2026-10-06 | `941785b` **`gsc_queries` — the Search Console query dimension, captured nightly** | `count(*)`, `min(date)`, `max(date)` must be > 0 and span the window, not one day | **VERIFIED AND IT IMMEDIATELY PAID. 95 rows · 6 distinct dates 2026-09-28 → 2026-10-03 · 56 distinct queries.** The request shape is right and the dimension is not quota-blocked. **See BASELINES for the two findings it produced on day one — one of them is a methodological trap I would otherwise have walked into.** → CLOSED |
 
+**CAPTURE CONFIRMED 2026-10-07 08:29 UTC (self-scheduled check-in).** Today's
+feed had not landed when the daily run wrote this file at 06:02, so the capture
+was recorded as PENDING rather than captured. It landed at **07:41:20** and is
+clean:
+
+- `pricing-history`: feed **2,029** · `feed_generated_date: 2026-10-07` ·
+  snapshotted **2,029** · `moves_detected: 15` · `price_moves: 0` ·
+  `moves_already_logged: 15` (idempotent re-run — the scheduled run had already
+  logged them) · `moves_baseline_refs: 2,029` (full coverage) · `delisted: 0` ·
+  `trusted_prior: true` · `overlap: 0.997` · **`errors: null`** ·
+  `snapshot_superseded: 0`.
+- `price_snapshots` for today: **2,029 rows / 2,029 distinct refs**, and
+  `min(created_at) == max(created_at) == 07:41:15.034737+00` — **a SINGLE
+  write, one book. Not a union day (O-74/O-92), so today's listing count IS
+  quotable.** Per O-92 this is stated at 08:29 and remains subject to a later
+  same-day second write.
+- `81bc53b` **held**: POST `/api/analytics` still returns
+  `{"ok":true,"stored":false,"reason":"Could not find the table
+  'public.analytics_events' in the schema cache"}`.
+
+**A CORRECTION I OWE, SAME DAY — I said this morning the O-96 gap was "growing
+~2/day". TODAY IT GREW BY ZERO, and the rate framing was wrong.** Re-measured
+08:29: **568 real moves · 537 logged · 31 unlogged · 0 orphans** (was
+553/522/31 at 06:00). So +15 real and +15 logged, and the unlogged count did
+**not** move. The reason is mechanical and I should have said it this way the
+first time: the gap grows only on a day when a **relisted** unit reprices, and
+that is intermittent — 0 on most days, 5 on 10-04, 2 on 10-06, **0 today**. It
+is not a steady ~2/day drip. **The branch is still needed and the case is
+unchanged** — 31 real moves are permanently absent from the event log, the
+mechanism that drops them is untouched, and the next relisting-with-reprice is
+lost the same way — but "compounding daily" overstated it and the brief sent to
+Henrik carries that overstatement. **The honest line: a bounded, recurring
+loss that resumes whenever a relisted unit reprices, not a daily bleed.**
+
 ### Shipped today — verify 2026-10-08
 
 | shipped | what | how to verify |
