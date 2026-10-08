@@ -24,6 +24,7 @@
  * Run: npx tsx scripts/capture-quality.ts [--since YYYY-MM-DD] [--json]
  */
 import { createClient } from '@supabase/supabase-js';
+import { judgeDayBook } from '../src/lib/capture-integrity';
 import {
   deriveMoves,
   reconcileMoves,
@@ -110,8 +111,18 @@ async function main() {
     .order('started_at', { ascending: true });
   if (runs.error) throw new Error(`cron_logs: ${runs.error.message}`);
   const writingRuns = (runs.data ?? []).filter((r) => r.status === 'success');
-  const staleOverwrites = writingRuns.reduce(
-    (n, r) => n + Number((r.output_summary as Record<string, unknown>)?.snapshot_superseded_stale ?? 0), 0);
+  // The verdict is NOT the run count — see judgeDayBook for the two ways I got
+  // this wrong. An idempotent re-run of the same book is not a union.
+  const verdict = judgeDayBook(
+    writingRuns.map((r) => {
+      const o = (r.output_summary ?? {}) as Record<string, unknown>;
+      return {
+        bookDate: (o.feed_generated_date as string | undefined) ?? null,
+        supersededRefs: Number(o.snapshot_superseded ?? 0),
+        staleOverwrites: Number(o.snapshot_superseded_stale ?? 0),
+      };
+    })
+  );
 
   const out = {
     window: { since: argSince, latest },
@@ -119,12 +130,12 @@ async function main() {
       rows: latestRows.length,
       distinct_refs: new Set(latestRows.map((r) => r.ref)).size,
       insert_batches: [...batches.entries()].sort().map(([at, n]) => ({ at, rows: n })),
-      writing_runs: writingRuns.length,
-      // The question I got wrong on 2026-10-07. A day is one book only if
-      // exactly one run wrote it; created_at alone cannot tell you.
-      single_book: writingRuns.length === 1,
-      stale_overwrites: staleOverwrites,
-      quotable_as_a_listing_count: writingRuns.length === 1 && staleOverwrites === 0,
+      writing_runs: verdict.writingRuns,
+      distinct_books: verdict.distinctBooks,
+      single_book: verdict.oneBook,
+      stale_overwrites: verdict.staleOverwrites,
+      quotable_as_a_listing_count: verdict.quotable,
+      verdict: verdict.reason,
     },
     moves: {
       event_log_start: report.eventLogStart,
@@ -160,6 +171,7 @@ async function main() {
   console.log(`  stale-book overwrites reported: ${out.latest_day.stale_overwrites}`);
   console.log(`  ONE BOOK: ${out.latest_day.single_book ? 'yes' : 'NO — this day is a union'}`);
   console.log(`  quotable as a listing count: ${out.latest_day.quotable_as_a_listing_count ? 'yes' : 'NO'}`);
+  console.log(`  verdict: ${out.latest_day.verdict}`);
   console.log(`\nMOVES (event log began ${report.eventLogStart}; the two classes are never summed)`);
   console.log(`  consecutive (<=2d gap, what deltas.ts reads):`);
   console.log(`    ${report.consecutive.total} derived · ${report.consecutive.logged} logged · ${report.consecutive.unloggedLive} unlogged LIVE · ${report.consecutive.unloggedPreLog} unlogged pre-log`);

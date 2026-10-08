@@ -10,7 +10,7 @@
  *   npx tsx scripts/test-capture-integrity.ts
  */
 
-import { findSupersededRefs, classifySupersededRefs } from '../src/lib/capture-integrity';
+import { findSupersededRefs, classifySupersededRefs, judgeDayBook } from '../src/lib/capture-integrity';
 import { isAtlasRunDay, ROLLUP_FAILURE_REASONS } from '../src/lib/citation-measure';
 
 let pass = 0;
@@ -250,6 +250,71 @@ check(
     findSupersededRefs(stored.map((r) => r.ref), book).length
   );
 }
+
+// ── judgeDayBook: is the stored day one book, and is its count quotable? ──
+// Both of my WRONG criteria are pinned here as regressions, in both directions.
+check(
+  'one run of one book is quotable',
+  judgeDayBook([{ bookDate: '2026-10-08', supersededRefs: 0, staleOverwrites: 0 }]).quotable,
+  true
+);
+
+// THE REAL 2026-10-08 CASE. The scheduled run wrote at 07:58 and my own
+// idempotent re-run wrote at 08:21 — same feed (2,034), same book date,
+// snapshot_superseded 0, the re-run finding all 4 moves already logged.
+// My first replacement criterion ("exactly one writing run") called this a
+// union. It is not one, and crying wolf on every re-run makes the tool useless.
+{
+  const sameBookTwice = judgeDayBook([
+    { bookDate: '2026-10-08', supersededRefs: 0, staleOverwrites: 0 },
+    { bookDate: '2026-10-08', supersededRefs: 0, staleOverwrites: 0 },
+  ]);
+  check('two idempotent re-runs of the SAME book are still one book', sameBookTwice.oneBook, true);
+  check('and that day stays quotable', sameBookTwice.quotable, true);
+  check('the run count is reported but is not the verdict', sameBookTwice.writingRuns, 2);
+  check('one distinct book across both runs', sameBookTwice.distinctBooks, 1);
+}
+
+// THE REAL 2026-10-07 CASE: four runs, superseded refs, and a stale overwrite.
+// I published that this day was "a SINGLE write, one book, quotable".
+{
+  const unionDay = judgeDayBook([
+    { bookDate: '2026-10-07', supersededRefs: 0, staleOverwrites: 0 },
+    { bookDate: '2026-10-07', supersededRefs: 4, staleOverwrites: 0 },
+    { bookDate: '2026-10-07', supersededRefs: 5, staleOverwrites: 5 },
+  ]);
+  check('2026-10-07 is NOT one book', unionDay.oneBook, false);
+  check('2026-10-07 is NOT quotable — the claim I published was false', unionDay.quotable, false);
+  check('and the reason names two books wearing one date', /same date/.test(unionDay.reason), true);
+}
+
+check(
+  'two different book dates is a union',
+  judgeDayBook([
+    { bookDate: '2026-10-07', supersededRefs: 0, staleOverwrites: 0 },
+    { bookDate: '2026-10-08', supersededRefs: 0, staleOverwrites: 0 },
+  ]).distinctBooks,
+  2
+);
+
+{
+  const stale = judgeDayBook([{ bookDate: '2026-10-08', supersededRefs: 0, staleOverwrites: 3 }]);
+  check('a stale overwrite leaves the day one book', stale.oneBook, true);
+  check('but not quotable', stale.quotable, false);
+}
+
+{
+  const nothing = judgeDayBook([]);
+  check('no successful write is NOT quotable', nothing.quotable, false);
+  check('and says NOT CAPTURED, which must never read the same as unquotable',
+    /not captured/.test(nothing.reason), true);
+}
+
+check(
+  'a run with no feed_generated_date refuses a verdict rather than assuming one',
+  judgeDayBook([{ bookDate: null, supersededRefs: 0, staleOverwrites: 0 }]).quotable,
+  false
+);
 
 console.log(`\n${fail === 0 ? 'ALL PASS' : 'FAILURES'} — ${pass} passed, ${fail} failed\n`);
 process.exit(fail === 0 ? 0 : 1);

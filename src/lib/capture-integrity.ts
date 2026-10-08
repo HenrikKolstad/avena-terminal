@@ -145,3 +145,82 @@ export function classifySupersededRefs(
   out.unclassified.sort();
   return out;
 }
+
+/**
+ * Is a stored day ONE BOOK, and is its listing count safe to quote?
+ *
+ * WHY THIS IS A NAMED FUNCTION AND NOT AN INLINE COMPARISON — I got this wrong
+ * twice in two days, in opposite directions.
+ *
+ * On 2026-10-07 I read `min(created_at) == max(created_at)` as "one write" and
+ * published that the day was quotable. It was not: four runs wrote, one holding
+ * a stale book. `created_at` is set on INSERT only and the write is an upsert on
+ * (ref, snapshot_date), so a run that REWRITES every row leaves every
+ * `created_at` untouched. It is a FLOOR on the number of writes, never a count.
+ *
+ * So on 2026-10-08 I replaced it with "exactly one successful run wrote today".
+ * That is wrong the other way, and the very next clean day proved it: the
+ * scheduled run wrote at 07:58 and my own idempotent re-run wrote at 08:21 —
+ * same feed (2,034), same `feed_generated_date`, `snapshot_superseded: 0`, the
+ * second run finding all 4 moves `already_logged`. Two writes of the SAME book
+ * is not a union, and calling it one would cry wolf on every re-run, which is a
+ * tool nobody would keep using.
+ *
+ * The honest test is neither count. A day is one book when every run that wrote
+ * it held the same book AND no run saw refs the others did not:
+ *   - `feed_generated_date` identical across the writing runs, and
+ *   - `snapshot_superseded` zero — because two genuinely different books CAN
+ *     wear the same date (the 2026-08-31 case in findSupersededRefs above), and
+ *     the superseded split is the only thing that catches that.
+ */
+export interface WritingRun {
+  /** `feed_generated_date` from the run summary — the book's own stamp. */
+  bookDate: string | null;
+  /** `snapshot_superseded`: refs stored under today that this book lacks. */
+  supersededRefs: number;
+  /** `snapshot_superseded_stale`: this run held a book OLDER than one banked. */
+  staleOverwrites: number;
+}
+
+export interface DayBookVerdict {
+  writingRuns: number;
+  distinctBooks: number;
+  oneBook: boolean;
+  staleOverwrites: number;
+  /** Safe to quote as "N listings on this date". */
+  quotable: boolean;
+  reason: string;
+}
+
+export function judgeDayBook(runs: WritingRun[]): DayBookVerdict {
+  const staleOverwrites = runs.reduce((n, r) => n + r.staleOverwrites, 0);
+  const supersededTotal = runs.reduce((n, r) => n + r.supersededRefs, 0);
+  const books = new Set(runs.map((r) => r.bookDate).filter((d): d is string => !!d));
+
+  const base = { writingRuns: runs.length, distinctBooks: books.size, staleOverwrites };
+
+  if (runs.length === 0) {
+    return { ...base, oneBook: false, quotable: false,
+      reason: 'no successful write recorded for this date — the day is not captured, not merely unquotable' };
+  }
+  if (runs.some((r) => !r.bookDate)) {
+    return { ...base, oneBook: false, quotable: false,
+      reason: 'a writing run reported no feed_generated_date, so the books cannot be compared' };
+  }
+  if (books.size > 1) {
+    return { ...base, oneBook: false, quotable: false,
+      reason: `${books.size} different books wrote this date (${[...books].sort().join(', ')}) — the stored day is a union` };
+  }
+  if (supersededTotal > 0) {
+    return { ...base, oneBook: false, quotable: false,
+      reason: `${supersededTotal} superseded ref(s): two books wearing the same date ${[...books][0]}` };
+  }
+  if (staleOverwrites > 0) {
+    return { ...base, oneBook: true, quotable: false,
+      reason: `one book, but ${staleOverwrites} row(s) were overwritten from a STALE book — prices for those refs are not the best observed` };
+  }
+  return { ...base, oneBook: true, quotable: true,
+    reason: runs.length === 1
+      ? 'one book, written once'
+      : `one book, written ${runs.length}x (idempotent re-runs — not a union)` };
+}
