@@ -6390,16 +6390,6 @@
     "type": "Apartment"
   },
   {
-    "avn_id": "N8618",
-    "date": "2026-10-09",
-    "prev_date": "2026-10-08",
-    "prev_price_eur": 274780,
-    "new_price_eur": 284780,
-    "change_pct": 3.64,
-    "town": "Fuente Álamo",
-    "type": "Villa"
-  },
-  {
     "avn_id": "N8619",
     "date": "2026-10-09",
     "prev_date": "2026-10-08",
