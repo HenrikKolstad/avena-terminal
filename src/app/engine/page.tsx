@@ -35,9 +35,19 @@ export const revalidate = 3600;
  * The first two are DERIVED here: they come from the same book the page
  * renders, so they cannot drift away from it again. The second two are
  * DELETED rather than replaced. Removing a false claim needs no new number;
- * replacing one does, and neither of those has a defensible replacement yet
- * — the transactions figure is exactly what the odyssey/transactions-dedupe
- * branch decides, and "price records" counted duplicates of a dead table.
+ * replacing one does.
+ *
+ * 2026-10-09: both now HAVE a defensible replacement, and the page body uses
+ * it. The transaction figure is the deduplicated count from
+ * engine_transaction_truth() — 57,306 distinct registered sales, against the
+ * 652,848 physical rows the card used to publish as "Verified transactions"
+ * (an 11.4x overstatement that grew every night, since the row count rose
+ * 28,429 in four days while the distinct count did not move). The price-record
+ * figure now reads price_snapshots, the ground truth CLAUDE.md names, instead
+ * of the dead property_pricing_history backlog. Pinned by
+ * scripts/test-engine-truth.ts. Note this does NOT make
+ * odyssey/transactions-dedupe moot: that branch fixes the INGEST that mints
+ * two identities for one sale. This fixes only what is published about it.
  *
  * Do not put a literal back here. Same defect as the hardcoded corpus size
  * (O-83): a fixed number describing a nightly-changing quantity is false by

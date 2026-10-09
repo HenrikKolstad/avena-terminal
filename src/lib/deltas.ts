@@ -234,8 +234,8 @@ export interface EngineTruth {
   liveListings: number | null;         // scored new-builds in tonight's feed
   dailyUpdates: number | null;         // score writes on the latest day
   indexed: number | null;              // properties_registry
-  priceRecords: number | null;         // property_pricing_history
-  transactions: number | null;         // property_transactions (registered, DVF France)
+  priceRecords: number | null;         // price_snapshots — genuine per-ref-per-day price observations
+  transactions: number | null;         // DISTINCT registered transactions (DVF France), never the raw row count
   scoreRevisions: number | null;       // score_history
   findings: number | null;             // findings
   observationSince: string | null;     // first date in score_history
@@ -270,6 +270,45 @@ async function countOf(table: string): Promise<number | null> {
   return null;
 }
 
+/**
+ * Honest transaction count.
+ *
+ * `property_transactions` is DVF open data ingested with two different id
+ * minting rules (O-76), so the same registered sale lands many times over:
+ * on 2026-10-09 the table held 652,848 rows for 57,306 distinct
+ * (avn_prop_id, transacted_at, price_eur) identities — 91.2% duplicates. The
+ * page published the row count under the label "Verified transactions", an
+ * 11.4x overstatement, and the distinct count has not moved in four days
+ * while the row count grew by 28,429. Growth in that table is duplication,
+ * not coverage.
+ *
+ * A request-time `count(distinct ...)` is not an option — 44s, because the
+ * index's heap fetches pull the wide jsonb `raw` column. `engine_transaction_truth()`
+ * (migration 20261009) does it as a loose index scan: index-only, ~1.7s, the
+ * identical figure.
+ *
+ * Returns null on any failure. NEVER a number — the caller must render an
+ * absence. An unavailable figure rendered as a plausible constant is the
+ * recurring bug this whole page was rewritten to remove.
+ */
+async function transactionCount(): Promise<number | null> {
+  const client = supabaseAdmin ?? supabase;
+  if (!client) return null;
+  const { data, error } = await client.rpc('engine_transaction_truth');
+  if (error) {
+    console.error(`[engine] engine_transaction_truth failed: ${error.message} — the transaction figure will be omitted, not estimated`);
+    return null;
+  }
+  const row = Array.isArray(data) ? data[0] : data;
+  const distinct = row?.distinct_properties;
+  if (distinct == null) {
+    console.error('[engine] engine_transaction_truth returned no distinct_properties — omitting the transaction figure');
+    return null;
+  }
+  const n = Number(distinct);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
 export async function getEngineTruth(): Promise<EngineTruth> {
   const liveListings = getAllProperties().length;
   const empty: EngineTruth = {
@@ -282,8 +321,14 @@ export async function getEngineTruth(): Promise<EngineTruth> {
   try {
     const [indexed, priceRecords, transactions, scoreRevisions, findings] = await Promise.all([
       countOf('properties_registry'),
-      countOf('property_pricing_history'),
-      countOf('property_transactions'),
+      // price_snapshots, not property_pricing_history. CLAUDE.md names
+      // price_snapshots as the ground truth for price movement; ~394,000 of
+      // property_pricing_history's 394,548 rows are the dead capped-write-loop
+      // backlog, the same frozen price re-inserted ~229x per property and last
+      // written 2026-08-05. Publishing those as "historical price records"
+      // overstated the record by ~3x with duplicates of a dead table.
+      countOf('price_snapshots'),
+      transactionCount(),
       countOf('score_history'),
       countOf('findings'),
     ]);
