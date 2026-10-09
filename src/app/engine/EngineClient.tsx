@@ -74,8 +74,32 @@ const eur = (n: number) => '€' + grp(n);
 // degraded one. An absence is honest; a plausible number is not.
 const ABSENT = '—';
 
+/**
+ * The count-up flourish — and the reason its initial state is the TARGET and
+ * not 0.
+ *
+ * With useState(0) the SERVER HTML carried a zero for every animated figure.
+ * Measured on prod 2026-10-09, the markup a non-JS client receives read:
+ *
+ *   <div ...>0<!-- -->+</div><div ...>Historical price records</div>
+ *
+ * eight times over, plus "€0 Identified savings". Googlebot renders JS and saw
+ * the real numbers; the AI training and retrieval crawlers that largely do not
+ * — and that are the one distribution channel still open to us — were being
+ * served the "Verified scale" section of the Avena Engine page as eight zeros.
+ * The page whose entire job is to establish that the data exists was telling
+ * every text-extracting crawler that it does not. That is this project's
+ * signature bug in its most expensive location: a real value rendering as a
+ * zero, with nothing failing.
+ *
+ * Starting at the target fixes the server HTML and keeps hydration consistent
+ * (server and first client render agree, so there is no mismatch). The human
+ * experience is unchanged: the first animation frame after `run` flips true
+ * computes target * (1 - (1-p)^3) with p ~ 0, i.e. ~0, so the count-up still
+ * runs from zero — the true value is on screen for at most one frame.
+ */
 function useCountUp(target: number, run: boolean, ms = 1500) {
-  const [v, setV] = useState(0);
+  const [v, setV] = useState(target);
   useEffect(() => {
     if (!run) { return; }
     let raf = 0; const t0 = performance.now();

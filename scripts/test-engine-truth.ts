@@ -142,6 +142,22 @@ ok(
   /truth\?\.transactions == null \? ABSENT/.test(client),
 );
 
+// ── 6. the server HTML must carry the figure, not a zero ───────────────────
+// Measured on prod 2026-10-09: with useState(0) the markup served to a non-JS
+// client read `0<!-- -->+` next to "Historical price records", eight times
+// over, plus "€0 Identified savings". Googlebot renders JS; the AI training
+// and retrieval crawlers largely do not, so the page whose job is to prove the
+// data exists was telling them it does not.
+ok(
+  'useCountUp starts at the target, so the server HTML carries the real number',
+  /const \[v, setV\] = useState\(target\);/.test(client),
+  'useState(0) serves a literal 0 to every crawler that does not execute JS',
+);
+ok(
+  'no count-up initialises at zero anywhere in EngineClient',
+  !/useState\(0\)[^;]*;\s*\n\s*useEffect\(\(\) => \{\s*\n\s*if \(!run\)/.test(client),
+);
+
 // ── result ─────────────────────────────────────────────────────────────────
 
 console.log('');
