@@ -159,6 +159,51 @@ jobs:
             echo "Pushed corpus artifacts."
           fi
 
+      - name: Refresh the Hugging Face corpus surface
+        # The third corpus surface. The site (/open-data/) and the avena-data
+        # GitHub mirror both refresh automatically every night; Hugging Face
+        # does NOT, because scripts/push-corpus-surfaces.py has never had an
+        # automated caller — it is a manual script, and the dataset has sat at
+        # v2026-08-09 ever since someone last ran it by hand. Measured
+        # 2026-10-10: site v2026-10-09, mirror v2026-10-09, HF v2026-08-09 —
+        # 62 days behind. That is not a cosmetic gap. The corpus claim rests on
+        # cross-source agreement, so a surface serving two-month-old prices as
+        # current actively weakens it.
+        #
+        # The token is Henrik's to add (repo secret HF_TOKEN); the wiring is
+        # ours. Until the secret exists this step SKIPS and prints how far
+        # behind the surface has fallen, so the dormancy gets louder every
+        # night rather than settling into a marker nobody reads. Once the
+        # secret is set, a failed push turns the run red via the gate below.
+        #
+        # --hf only, deliberately. The script also supports --zenodo, which
+        # mints a new DOI version — an irreversible outward publication that
+        # is not run unattended.
+        id: hf
+        continue-on-error: true
+        if: steps.corpus.outcome == 'success'
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          set -uo pipefail
+          if [ -z "${HF_TOKEN:-}" ]; then
+            LIVE=$(curl -sfL -m 60 "https://huggingface.co/datasets/AVENATERMINAL/spain-new-build-properties-2026/resolve/main/data/dataset.json" \
+              | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{console.log(JSON.parse(d).version||'unknown')}catch{console.log('unreadable')}})" || echo 'unreachable')
+            OURS=$(node -e "console.log(require('./public/open-data/dataset.json').version)")
+            # LIVE comes off the network, so it is passed as an argument, not
+            # interpolated into the script body.
+            DAYS=$(node -e '
+              const a = process.argv[1].replace(/^v/, ""), b = process.argv[2].replace(/^v/, "");
+              const d = (Date.parse(b) - Date.parse(a)) / 86400000;
+              console.log(Number.isFinite(d) ? Math.round(d) : "unknown");
+            ' "$LIVE" "$OURS")
+            echo "::warning title=Hugging Face corpus surface is stale::HF serves ${LIVE}, we publish ${OURS} — ${DAYS} days behind. Set the HF_TOKEN repo secret and this step refreshes it nightly. Two of three corpus surfaces agree; this one does not."
+            echo "Skipped: no HF_TOKEN. HF=${LIVE} ours=${OURS} behind=${DAYS}d"
+            exit 0
+          fi
+          pip3 install --quiet huggingface_hub
+          python3 scripts/push-corpus-surfaces.py --hf
+
       - name: Capture price moves against the book we just published
         # The move-event ledger (property_pricing_history) is written only by
         # the pricing-history route, which reads the DEPLOYED data.json. Its
@@ -270,7 +315,7 @@ jobs:
         # The feed is committed by now, so failing here loses nothing but
         # still shows Henrik a red run. A silently-green enrichment failure
         # is the bug shape this whole repo keeps getting bitten by.
-        if: steps.avm.outcome != 'success' || steps.corpus.outcome != 'success' || steps.gsc.outcome != 'success' || steps.capture.outcome != 'success' || steps.answers.outcome != 'success' || steps.scores.outcome != 'success'
+        if: steps.avm.outcome != 'success' || steps.corpus.outcome != 'success' || steps.gsc.outcome != 'success' || steps.capture.outcome != 'success' || steps.answers.outcome != 'success' || steps.scores.outcome != 'success' || steps.hf.outcome == 'failure'
         run: |
           echo "avm-backtest: ${{ steps.avm.outcome }}"
           echo "open-dataset: ${{ steps.corpus.outcome }}"
@@ -278,5 +323,6 @@ jobs:
           echo "move-capture: ${{ steps.capture.outcome }}"
           echo "change-answers: ${{ steps.answers.outcome }}"
           echo "score-capture: ${{ steps.scores.outcome }}"
+          echo "hf-corpus-push: ${{ steps.hf.outcome }}"
           echo "The feed itself was committed; the step(s) above still need fixing."
           exit 1
