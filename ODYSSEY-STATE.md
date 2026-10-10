@@ -23,11 +23,12 @@ cannot run an experiment, only a stunt.
 
 ## 1. VERIFY TODAY (yesterday's work — did it hold?)
 
-**2026-10-09 — Odyssey ran. Yesterday's shipped item VERIFIED. Three fixes
-shipped today, all three verified LIVE on production before this file was
-written. The day's theme: I stopped reading the rendered page and started
-reading the markup, and found that the page carrying Avena's credibility was
-serving eight zeros to every crawler that does not execute JavaScript.**
+**2026-10-10 — Odyssey ran at 05:43 UTC, BEFORE today's feed (O-109: the book
+lands 07:00–08:02). So today's capture is not yet verifiable; 2026-10-09's is,
+and it is clean. All three of yesterday's fixes HELD. The day's find is not in
+the pipeline at all: `/counterpart` has been publishing fabricated credit
+distress against real, publicly-listed Spanish developers, and the mechanism
+was a nightly countdown dressed as a measurement.**
 
 **Kept because section 1 is overwritten daily and this is the most important
 durable fact in the file:** Odyssey did not run for the 21 days 2026-09-14 →
@@ -37,83 +38,71 @@ date since. The backstop workflow (`47fc0b4`) is why. Every EXPERIMENT read-out
 due in that window was MISSED, not "no detectable effect": there was no
 observer, not no signal.
 
-**TWO METHOD RULES EARNED THE HARD WAY, BOTH STILL BINDING.**
+**THREE METHOD RULES EARNED THE HARD WAY, ALL STILL BINDING.**
 (1) `created_at` is set on INSERT only and the write is an upsert on
 `(ref, snapshot_date)`, so `min(created_at) == max(created_at)` is only ever a
 FLOOR on the number of writes — never a one-book verdict. `cron_logs` is the
 honest source. (2) The run COUNT is not a verdict either: two runs can hold the
-same book. Both wrong criteria are pinned as regression tests in
+same book. Both wrong criteria are pinned in
 `scripts/test-capture-integrity.ts` (ALL PASS, 47, re-run today).
-**NEW TODAY, same family: a WINDOW TOTAL is not a RATE.** See O-107 — two
-consecutive mornings I told Henrik something false about the same crawler
-because I summed a 7-day window instead of looking at the daily series.
+(3) A WINDOW TOTAL IS NOT A RATE (O-107).
+**NEW TODAY, and it cost me a wrong ask to Henrik: ABSENCE OF EVIDENCE IN ONE
+PLACE IS NOT EVIDENCE OF ABSENCE.** I concluded the GitHub corpus mirror had
+never been pushed automatically because nothing in *this* repo's
+`.github/workflows/` referenced it. The pusher lives in the OTHER repo and
+pulls. I searched one of two places and reported a negative. See CLOSED/O-112.
+
+**AND A RULE THIS FILE ENFORCED ON ME TODAY, WHICH IS EXACTLY WHAT IT IS FOR.**
+My new route-shape guard failed red on its first run by matching my own doc
+comment quoting the old buggy line — so I made it strip comments, saw green, and
+moved on. **While rewriting this file I read the 2026-09-11 CLOSED row and found
+past-me had hit the IDENTICAL situation, fixed it the IDENTICAL way, and
+recorded the step I had just skipped: verify the guard still goes RED on a
+genuine reintroduction.** I had only ever seen it pass. So I did it:
+reintroduced all three bug shapes one at a time — the always-true event
+condition (2 assertions red), the swallowed update error (1 red), the removed
+alert de-duplication (1 red) — and confirmed ALL PASS 34 on restore with a clean
+diff. **A test I have only ever seen pass is not evidence of anything.** This is
+the second occurrence; it is now a standing step, not a lesson.
 
 | shipped | what | how to verify | verified |
 |---|---|---|---|
-| 2026-10-08 | `0f6a6ae` **`judgeDayBook()` — the one-book verdict** | `npx tsx scripts/test-capture-integrity.ts` ALL PASS | **VERIFIED 2026-10-09: ALL PASS, 47 passed, 0 failed. Moved to CLOSED.** |
-| 2026-10-08 | **BRANCH `odyssey/relisting-move-detection` (`8cf6713`), day 3, awaiting Henrik** | nothing to verify until merged | **Unchanged. Still awaiting. The corrected figure in BLOCKED stands: consecutive 532/532/0 unlogged, relisting 18 derived / 0 logged / 18 unlogged, window from 2026-08-12.** |
+| 2026-10-09 | `41c0c75` `/engine` published 652,848 "verified transactions" against 57,306 real | `/engine` shows 57,306-ish, "652 848" absent, `test-engine-truth.ts` 20/20 | **VERIFIED 2026-10-10: page publishes `57 306+`, string "652 848" absent, test 20/20.** Moved to CLOSED |
+| 2026-10-09 | `4eef473` a crawler window total is not a crawl rate — `src/lib/crawler-shape.ts` + tests | `test-crawler-shape.ts` 20/20 | **VERIFIED 2026-10-10: 20/20.** The report script still has NOT been run end-to-end — it needs `SUPABASE_SERVICE_ROLE_KEY`, which this container does not hold. Reporting from direct SQL, and saying so. Stays OPEN as O-107b |
+| 2026-10-09 | `abf6391` `/engine` served EIGHT ZEROS to non-JS crawlers | `curl /engine \| grep -o '0<!-- -->+'` must find nothing | **VERIFIED 2026-10-10: `0<!-- -->+` occurs ZERO times in the served HTML.** Moved to CLOSED |
+| 2026-10-08 | BRANCH `odyssey/relisting-move-detection` (`8cf6713`), **day 4, awaiting Henrik** | nothing to verify until merged | **Unchanged. Still awaiting.** |
 
-### Shipped today — verify 2026-10-10
+**CAPTURE 2026-10-09 — CONFIRMED CLEAN. 2,039 IS QUOTABLE.**
+`price_snapshots` for 2026-10-09: **2,039 rows / 2,039 distinct refs**, and the
+series is unbroken 10-04 → 10-09 (2,030 / 2,030 / 2,033 / 2,034 / 2,039).
+`cron_logs` for `/api/cron/pricing-history`: **4 `success` + 7 `skipped`** over
+30h, the skips all correctly `stale feed`. Today's 05:43 probe skipped
+`stale feed — deployed book predates today`, `feed_generated_date: 2026-10-09`,
+`feed_age_days: 1`, `overdue: false` — **correct behaviour at 05:43, not a
+failure.** `public/data.json` committed 2026-10-09T11:50 (17.9h old, inside the
+~30h bound).
+
+**TODAY'S CAPTURE IS NOT YET VERIFIED AND THAT IS A STRUCTURAL GAP, NOT AN
+OVERSIGHT.** Odyssey wakes ~05:43; the feed lands 07:00–08:02 (O-109); so every
+morning run verifies *yesterday*. Yesterday this was closed with a
+self-scheduled 08:18 check-in. **TODO tomorrow: make that check-in routine
+rather than ad-hoc, or accept and document the one-day lag explicitly.**
+
+### Shipped today — verify 2026-10-11
 
 | shipped | what | how to verify |
 |---|---|---|
-| 2026-10-09 | `41c0c75` **`/engine` published 652,848 "Verified transactions" against 57,306 real ones.** Raw row count of `property_transactions` rendered under a label saying "verified", in three places, on the page institutions and AI crawlers read. 11.4x overstatement, growing nightly (+28,429 rows in four days, +0 distinct). Fixed with an additive read-only SQL function doing a loose index scan (1.66s index-only vs 44.2s for `count(distinct ...)`), plus `price_snapshots` replacing the dead `property_pricing_history` backlog for "price records", plus the DELETION of six April fallback constants that were published under the line "Verified from production · updated Ns ago" whenever a live read failed | **ALREADY VERIFIED LIVE 2026-10-09:** `/engine` publishes **"57 306+"** and the string **"652 848" is absent from the page**. Tomorrow: confirm it is still 57,306-ish and that nothing re-introduced a constant — `npx tsx scripts/test-engine-truth.ts` must be 20/20 |
-| 2026-10-09 | `4eef473` **a crawler window total is not a crawl rate.** `src/lib/crawler-shape.ts` (pure) + `scripts/test-crawler-shape.ts` (20 assertions against the real series) + `scripts/crawler-reality.ts` (the report, which also probes the crawled URL set for what it actually returns) | `npx tsx scripts/test-crawler-shape.ts` 20/20. **The script itself has NOT been run end-to-end — it needs `SUPABASE_SERVICE_ROLE_KEY`, which this container does not hold; anon reads `crawler_hits` as zero rows under RLS and the script correctly refused to report that as a quiet crawl.** Tomorrow: either run it with the key or keep reporting from direct SQL, and say which |
-| 2026-10-09 | `abf6391` **`/engine` served EIGHT ZEROS to every crawler that does not run JS.** `useCountUp` initialised at 0, so the server HTML carried `0<!-- -->+` next to "Historical price records", "Registered transactions", "Score revisions", "Findings logged", "Records indexed", "Score updates / day", "Underpriced homes", plus `€0 Identified savings`. One-line fix: initial state is the target | **ALREADY VERIFIED, and verified the honest way — `next build` + `next start` with every secret unset, then read the SERVED HTML, not the rendered page.** Before: `€0` / `0`. After: `€280 965 902 Identified savings` / `1 476 Underpriced homes`. Tomorrow: `curl -s https://avenaterminal.com/engine | grep -o '0<!-- -->+'` must find NOTHING |
+| 2026-10-10 | `d6a3652` **Counterpart graded real listed developers by a nightly COUNTDOWN, not a measurement.** `counterpart-scan` re-applied a signal-derived drift every night to stress signals nothing in the codebase updates, so the drift was a CONSTANT and every developer with a static signal walked to the zero floor. Fixed with `src/lib/counterpart-drift.ts` (pure, 34 tests) + an additive `signals_fingerprint` column: a scan may move a score only when its inputs changed. Also fixed three same-family write bugs in the same route (see OPEN notes) | **ALREADY VERIFIED LIVE 2026-10-10 on production data.** First run: `scanned 10, baselined 10, score_updated 0, alerts_created 0, write_failures 0`. Second run: `baselined 0, held_signals_unchanged 10, score_updated 0`. DB: 10/10 fingerprinted, **0 new `grade_revised` events and 0 new alerts** in the 40min since (was ~7 events + ~5 alerts/day). **Tomorrow: confirm the 04:00 cron run reports `held_signals_unchanged: 10, score_updated: 0`, and that `events` gained no `counterpart.grade_revised` row overnight** |
+| 2026-10-10 | `6c7676b` **Hugging Face corpus surface is 61 days stale and nothing automated has ever pushed it.** `scripts/push-corpus-surfaces.py` is a manual script with no caller. Wired as an enrichment step in `feed-refresh.yml`: skips with an ESCALATING day-count warning while `HF_TOKEN` is unset, turns the run red if the push fails once it is set. `--hf` only (Zenodo mints a DOI — not unattended) | Skip path **already executed locally against the live HF surface**: `HF serves v2026-08-09, we publish v2026-10-09 — 61 days behind`, exit 0. **Tomorrow: confirm the nightly run shows the `hf` step as `success` (skip) with the warning, and that the day-count has incremented to 62.** Once Henrik sets the secret, verify HF version == site version |
+| 2026-10-10 | **BRANCH `odyssey/counterpart-decay-remediation`, day 1, awaiting Henrik.** Retracts the 726 ratchet-minted alerts (rows kept, `status: 'retracted'`; nothing deleted) and labels each score's provenance. Writes NO score, deliberately | nothing to verify until merged. The case is in BLOCKED |
 
-**CAPTURE 2026-10-09 — CONFIRMED CLEAN at 08:18 UTC via the self-scheduled
-check-in. ONE BOOK. 2,039 IS QUOTABLE.** The book landed **07:57:34** (2,039
-listings, up from 2,034) and the capture ran **07:59:18**.
-
-- `pricing-history`: feed **2,039** · `feed_generated_date: 2026-10-09` ·
-  snapshotted **2,039** · `moves_detected: 10` · `price_moves: 10` logged by
-  the 07:59 run, `moves_already_logged: 10` on my 08:17 idempotent re-run ·
-  `moves_baseline_refs: 2,039` (full coverage, so "10 moves" is a real quiet
-  market and not the baseline bug) · `delisted: 0` · `trusted_prior: true` ·
-  `prior_date: 2026-10-08`, age 1 day · `overlap: 0.998` ·
-  `snapshot_superseded: 0`, stale 0, ahead 0 · **`errors: null`**.
-- `price_snapshots` for 2026-10-09: **2,039 rows / 2,039 distinct refs.**
-- **Book judged from `cron_logs`, not from `created_at` and not from the run
-  count.** Seven runs today: five `skipped` on `stale feed` (02:20, 05:42,
-  06:18, 07:58:16, 07:58:47) and **two writing runs — 07:59:18 and my 08:17:49
-  — both holding `feed_generated_date: 2026-10-09`, both feed 2,039, both
-  `snapshot_superseded: 0`. ONE BOOK, written twice.**
-- **The stale guard worked visibly today and it is worth recording how
-  narrowly.** The 07:58:16 and 07:58:47 runs still saw book `2026-10-08` — the
-  commit had landed but the deployment had not propagated. Both skipped rather
-  than banking a stale book. **44 seconds later the 07:59:18 run had the new
-  book and captured it.** Two refusals and a success inside 63 seconds.
-- **And it confirms O-108 exactly: the run that banked the day was the backstop
-  workflow firing after the feed, not a Vercel cron.** The 02:20 Vercel slot
-  skipped `stale feed` for the FOURTH consecutive day.
-
-**TODAY'S THREE FIXES RE-VERIFIED LIVE at 08:19 UTC, after the nightly deploy:**
-
-- `/engine` coverage card publishes **57 306+**; the string **"652 848" does
-  not appear on the page**.
-- **`0<!-- -->+` occurs ZERO times in the served HTML** (it was eight).
-  Identified savings **€281 688 239**, Historical price records **135 704**
-  (correctly up from 133,665 — today's 2,039 rows), Registered transactions
-  **57 306**, Underpriced homes **1 474**. All real numbers in the markup a
-  non-JS crawler receives.
-- Prod all 200: `/`, `/deals` (all three sections render), `/engine`, `/no`,
-  `/sitemap.xml` (**2,690 locs**, valid XML), `/robots.txt`,
-  `/open-data/dataset.json`.
-
-**A CORRECTION I OWE FROM THREE HOURS AGO, AND IT CHANGES AN ASK I ALREADY
-SENT HENRIK.** At 06:40 I wrote in this file that the site and the GitHub
-mirror "BOTH read `v2026-10-08` ... those two agree perfectly". **They agreed
-by coincidence of lag, not by design.** At 06:40 the site had not yet rebuilt,
-so both happened to hold yesterday's artifact. By 08:19 the site served
-**`v2026-10-09`** and the mirror still served **`v2026-10-08`** (confirmed with
-a cache-buster, so not CDN). **Chasing it found something worse: nothing
-automated has EVER pushed the GitHub mirror.** See O-112.
 
 ## 2. OPEN — found, not yet fixed
 
 | # | what | evidence | why deferred | priority |
 |---|---|---|---|---|
-| O-112 | **NEW — `/api/cron/github-snapshot` has NEVER SUCCEEDED. 50 runs, 50 `skipped`, from 2026-08-22 to today, every one `GITHUB_DATA_TOKEN not set`. So TWO of the three corpus surfaces have no working automated push, not one.** The route exists to mirror the daily corpus into `github.com/HenrikKolstad/avena-data` — the comment above it calls GitHub "the most heavily crawled corpus on the web". It has never written a byte. The mirror's current `market/dataset.json` (`v2026-10-08`, `generated_at 2026-10-08T11:59:02.179Z`) was put there by hand, and it is already a day behind the site. **Left to itself it becomes a second Hugging Face: a public surface quietly diverging from the truth while the claim of cross-source agreement rests on it.** | `cron_logs` grouped by status, 2026-10-09: one group, `skipped`, 50 runs, first 2026-08-22 05:52, last today 07:15. Mirror re-read with a cache-buster to rule out CDN | **Fixed by a token, not by code — raised under NEEDS HENRIK, and it corrects this morning's ask from one token to two.** **Three hypotheses I formed and killed by checking, recorded so they are not re-run:** (1) *the 07:15 schedule is simply too early for the 07:58 rebuild* — plausible and WRONG, the route never ran at all; (2) *the feed-refresh workflow pushes the mirror* — nothing in `.github/workflows/` references `avena-data`; (3) *`scripts/push-corpus-surfaces.py` does it* — no, that script targets Hugging Face and Zenodo. **THE CODE-SIDE DEFECT WORTH FIXING SEPARATELY (O-95 family): 50 consecutive no-ops logged as `skipped` never escalated.** A dormancy marker that never changes tone is indistinguishable from a feature that works, and it is why this went unnoticed for 48 days | **HIGH — corpus credibility** |
+| O-112 | **~~`/api/cron/github-snapshot` has NEVER SUCCEEDED, so TWO corpus surfaces have no automated push~~ — REFUTED BY ME 2026-10-10, SAME-DAY CORRECTION, and it withdraws an ask I sent Henrik yesterday.** The GitHub mirror **is** pushed automatically every single day, by `avena-bot <actions@avenaterminal.com>` — an unbroken daily series, 12/12 days in a shallow clone (10-09 14:20, 10-08 14:33, 10-07 14:28, …). The pusher is `.github/workflows/daily-snapshot.yml` living in **the avena-data repo ITSELF**, cron `15 7 * * *`, which **PULLS** from avenaterminal.com. **My error: I checked that nothing in *this* repo's `.github/workflows/` referenced `avena-data` and reported that as proof none existed. I searched one of two places and concluded a negative.** The "divergence" was LAG: the mirror pulls after the site rebuilds, so for part of each day it legitimately holds yesterday's artifact. Read 05:43 today with a cache-buster: site **v2026-10-09**, mirror **v2026-10-09** — they agree. `/api/cron/github-snapshot` is not broken-needing-a-token, it is **REDUNDANT** with a working workflow, and giving it a token would put two writers on the same files. **`GITHUB_DATA_TOKEN` IS NO LONGER NEEDED — removed from BLOCKED.** | avena-data `git log` (12 commits, all avena-bot); its own `daily-snapshot.yml`; both surfaces re-read with cache-busters 2026-10-10 05:4x | **Moved to CLOSED as refuted. The one surviving code-side point is real and stays as O-95b: 50 consecutive `skipped` no-ops never escalated in tone. That lesson is what shaped today's HF step, which prints an ESCALATING day count instead of a fixed marker.** | **CLOSED — refuted** |
+| O-113 | **NEW — `/counterpart` publishes credit grades and distress alerts for named real companies on unsourced risk data, and it is still live.** `d6a3652` stopped the ratchet that MOVED the scores, but the underlying figures were never sourced: Metrovacesa carries `legal_disputes_active: 3, court_judgements_against: 1` and there is **no ingest path for any of it** — no Registro Mercantil, no BORME; `counterpart-scan`'s own comment calls it "future v2". Four of the ten seeded developers ("Alicante Coastal Build", "Mediterranean Build Group", "Torreve Residential", "Alegría Torrevieja S.L.") look like invented demo names; five are real, listed companies. `/counterpart` is public and in the sitemap, so crawlers and AI assistants have been ingesting it. **`/governance` separately publishes an SLA for `Counterpart discovery` — "New developers ingested from listings" — that has NEVER been met once** (O-41). | `counterpart_developers` read 2026-10-10 (10 rows, `data_sources` null on all ten, nothing from discovery); live `/counterpart` HTML served score `0` for Neinor Homes and Realia Patrimonio; no BORME/Registro string anywhere in `src/` | **Deferred to Henrik DELIBERATELY, not forgotten. Whether a buyer-facing page should publish credit grades for named real companies is a publication decision on a surface fence 2 puts out of my reach, and it carries legal exposure for a registered Spanish agency that is his to weigh, not mine.** Raised under BLOCKED with my recommendation (take the real-company rows out of publication until there is a source). | **HIGHEST — published claim + legal exposure** |
 | O-108 | **NEW, AND IT IS ABOUT THE CAPTURE'S LOAD PATH — the 02:20 UTC `pricing-history` cron is DEAD BY CONSTRUCTION, and the backstop WORKAROUND has silently become the primary capture mechanism.** `cron_logs` for the 02:20 slot: **skipped `stale feed — deployed book predates today` on 2026-10-07, 10-08 and 10-09 — 3 for 3.** It cannot do otherwise: the feed book does not land until 07:01–08:02 UTC (O-109), so at 02:20 the deployed book is always yesterday's. **The run that actually banks the day is the one fired right after the feed refresh** (07:42:46 on 10-07, 07:58:53 on 10-08) — that is the `capture-backstop` workflow, not a Vercel cron. The 14:30 Vercel slot is a second, later writer. **So of the two DESIGNED Vercel slots, one is wasted every single day, and a workaround built as a watchdog is now load-bearing.** | `cron_logs` for `/api/cron/pricing-history`, read 2026-10-09; 25 runs 10-06 → 10-09 | **NOT FIXED TODAY, deliberately.** The obvious move — add a Vercel slot in the 08:00–09:00 window — increases same-day write count and therefore union-day exposure (O-74/O-104), and the capture is the one thing in this project where a clever change can cost a permanent day. Redundancy is NOT currently down to one: backstop (2 runs) + the 14:30 Vercel slot both work. **Proposal for tomorrow, written down so it is not re-derived:** make the capture event-driven off the feed-refresh workflow's own completion rather than off a clock, so there is no window to miss and no extra same-day book | **HIGH — capture load path** |
 | O-109 | **NEW — the GitHub Actions scheduler lag has grown roughly FIVE-FOLD since O-61 measured it, and it is why O-108 exists.** The `feed-refresh` workflow is scheduled `37 1 * * *` and `10 5 * * *`. Measured delivery, 7 days: primary slot 10-02 07:28 · 10-03 07:01 · 10-04 07:20 · 10-05 07:37 · 10-06 08:02 · 10-07 07:40 · 10-08 07:56 = **lag 5h24m–6h25m**. Secondary slot 11:02 · 10:21 · 11:04 · 12:12 · 11:58 · 11:43 · 11:57 = **lag 5h11m–7h02m**. **O-61 recorded 65–93 minutes in early September.** | `gh api .../workflows/feed-refresh.yml/runs`, 14 runs, read 2026-10-09 | **Do NOT "fix" by moving the cron earlier to compensate — that is a bet that someone else's queue lag persists, and the lag is variable by ~1h50m. If it normalised back, the feed would start landing at 19:30 the previous day and every downstream assumption would shift again.** Keep O-109 and O-27 apart: the scheduler firing late and RedSP refusing the runner are different failures | **HIGH** |
 | O-110 | **NEW, AND IT IS THE FIRST MEASURED CROSS-TABLE DISAGREEMENT BETWEEN TWO MOAT TABLES — a union day makes `score_history` and `price_snapshots` tell different stories about the same ref on the same date.** Tested on the refs that actually moved, where the two prices differ: **2026-10-06 (clean, one book): 11 of 11 agree. 2026-10-08 (clean, one book): 4 of 4 agree. 2026-10-07 (the union day, 4 writing runs, books 2029/2029/2029/2028): 12 of 20 agree, 8 hold the PREVIOUS day's price** — N8682, N9720, SP0637, SP0998, SP0999, SP1161, SP1162 and one more. **This is independent of O-105's single SP0848 case and it is a second, larger measurement of what a union day costs.** It also REFUTES a hypothesis I formed today and should have checked before believing: that `scribe` running at 03:05 UTC, before the feed lands, must be writing yesterday's book into today's `score_history` row every day. It is not — on clean days the agreement is exact, 15 of 15 | direct SQL 2026-10-09. Query kept verbatim so it is not re-derived: join `price_snapshots a` to `price_snapshots b` on `b.snapshot_date = a.snapshot_date - 1` where `a.price <> b.price`, then left join `score_history` on `(property_ref, snapshot_date)` and compare `price_eur` to both | **Not fixed. The fix is the union-day repair (O-74), not a patch here. BUILD TOMORROW: this is a cheap daily integrity check and there is no reason it should not run every morning as part of `capture-quality.ts` — on a clean day it should be 100% agreement, and anything less is a union day announcing itself** | **HIGH** |
@@ -164,7 +153,7 @@ automated has EVER pushed the GitHub mirror.** See O-112.
 | O-44 | **`/api/sync-snapshots` writes columns that do not exist, and discards every write result** | route read 08-19 | Dead-and-broken rather than harmful. Confirm it writes nothing, then remove it + its browser caller | medium |
 | O-40 | **`causal-update` would stamp 92-day-old values as fresh if its bump ever landed** | `runCausalUpdate()` sets `last_updated=now()` on every row | **DO NOT "fix" by reviving the bump** — nine indicators would flip from honest `stale:true` to fabricated `live:true`. Mass-mutates 20 rows → branch | **high** |
 | O-34 | **Nine indicators have no live source at all** | `age_days` **102** today | Honestly labelled stale → a coverage gap, not a credibility bug | high |
-| O-41 | **ONE chronic red left: `counterpart-discover`, and it is FULLY DIAGNOSED — `column properties_registry.market does not exist | code=42703`, identical on 09-04, 09-05 and 09-06** | `cron_logs.error` 09-06 | **CORRECTION, same day: I wrote in this row earlier today that it fails "with nothing recorded about why". WRONG — the reason is in the `error` column; only `output_summary` is null, because the route bails before it builds one. I read one field and concluded about the row.** The real reason not to fix it in one line: it queries `properties_registry`, **frozen 2026-05-24**, so correcting the column name only makes it successfully mine a dead snapshot. **The honest fix repoints it at the live feed (`getAllProperties`), which is a real piece of work, not a rename.** **CORRECTION, 2026-09-06: this item also recorded `eu-stats-ingest` as "upstream and degrades per-source as it should". That was WRONG and I carried it for weeks — half its loss was OUR bug, fixed today in `3a55753`; the upstream remainder is O-82.** dvf-ingest was root-caused 09-04 | high — actionable, but not a one-liner |
+| O-41 | **`counterpart-discover` — 140 runs, 140 errors, ZERO successes EVER, from 2026-05-24 to today. Still unfixed, and now I know what it was hiding.** `column properties_registry.market does not exist | code=42703`. It reads `properties_registry`, **frozen 2026-05-24** — the same date its first failure is stamped. It is meant to mine every Spanish promoter from the corpus (~300–600 expected) into `counterpart_developers`; that table holds **10 hand-seeded rows and not one row from discovery**. **`/governance` publishes "Counterpart discovery · 03:30 UTC daily · New developers ingested from listings" — an SLA never met once in 139 days.** | `cron_logs` grouped by status: 140 `error`, 0 `success`, first 2026-05-24 04:19, last 2026-10-10 03:30. `counterpart_developers`: 10 rows, all `created_at 2026-05-21`, `from_discovery` = 0 | **STILL DEFERRED, and the reason got stronger today.** Repointing it at `getAllProperties` is the honest fix, but its FIRST successful run inserts hundreds of rows and touches the 10 curated ones — the branch-and-approve category. **Worse, two latent bugs would bite on that first run and both must be fixed in the same change:** (1) the seeded rows use `country = 'Spain'` while the route filters `.eq('country','ES')` and derives ids as `DEV-ES-<hash>`, so discovery would never match a seeded developer and would mint DUPLICATE rows for AEDAS, Metrovacesa, Neinor and Taylor Wimpey under different ids; (2) `select('developer_id')` for the existing-id set is UNPAGINATED and caps at 1000, so past 1,000 developers existing rows read as new and **curated scores get overwritten**. **Blocked behind O-113 anyway: there is no point populating 600 developers into a surface whose publication is under question.** | high — but correctly behind O-113 |
 | O-77 | **THE PUBLISHED HALF IS FIXED AND VERIFIED LIVE 2026-10-09 (`41c0c75`). THE INGEST HALF IS NOT, AND THE RATIO GOT WORSE AGAIN.** `/engine` published **652,848** "Verified transactions"; `property_transactions` holds **57,306** distinct `(avn_prop_id, transacted_at, price_eur)` identities — **91.2% duplicates, an 11.4x overstatement**. It now publishes **57 306+** and the string "652 848" is gone from the page. **The growth is pure duplication: 624,419 → 652,848 rows in the four days to 10-09 (+28,429) while distinct properties did not move from 57,306 at all.** Note `distinct properties == distinct (ref, date, price)` exactly, so every one of those 652k rows collapses to one sale per property | direct SQL 2026-10-09; prior reads 517,557/55,986 (09-09) and 624,419/57,306 (10-05) | **Still open because the CAUSE is open: O-76's two id-minting rules are still writing duplicates every night, and `odyssey/transactions-dedupe` (`2fb0c3d`) still awaits Henrik. Fixing what is published is not fixing what is stored — do not close this on the page being right** | **high — published half closed, ingest half open** |
 | O-76 | **NEW — `dvf-ingest` de-duplicates by two keys that mint different identities, and this class is not unique to DVF.** `mintAvnIdForDvf` puts `code_postal` in the id prefix; `mintSourceListingIdForDvf` omits it entirely | measured 09-04 against the live feed; 12/12/21 orphans on Hyeres 2024 / Nice 2024 / Nice 2023, 0 on Cannes/Vence/Paris 8e | **The SYMPTOM is fixed (`141bf2e` excludes and counts orphans). The CAUSE — two seeds for one entity — is not, and `parse-feed-eu.js` and the EU ingest paths mint ids the same way.** Deliberately not chased today: **re-keying identity mass-mutates historical rows and is branch-only.** The grep that pays: **any two `mint*Id*` helpers whose seeds differ in even one field** | medium |
 | O-26 | **Audit the rest of `/api/v1/*` for invented constants. 18 audited to date, 18 defective** | route reads to 08-31; **O-75 found today makes 19 read, 19 defective** | Greps that keep paying: **`.ilike(` on an indicator key**, **`?? <number>` on a published field**, **`X \|\| 'DEFAULT'` on a categorical**, **any second copy of a centralised helper**, **a top-level `const` array carrying `authority`/`source`/`date`**, and now **`catch {}` around the only query that populates a published count**. 158 route files, 14 carrying `cite_as` | **high — highest hit rate of anything I have** |
@@ -396,6 +385,19 @@ attribute.
 description and JSON-LD corpus figure from 1,881 to a derived value on ~40
 surfaces.
 
+### Weekly search scan — NOT DUE 2026-10-10
+
+Last scan 2026-10-08, two days ago; the cadence is weekly, so the next is due
+~2026-10-15. **No scan was run today and none is reported.** Nothing was shipped
+to the sitemap, metadata, structured data or internal linking today either, so
+**section 3 gains no row** — today's two commits are a data-integrity fix and a
+corpus-pipeline fix, neither of which is an SEO experiment.
+
+**The standing constraint, repeated because it is repeated in every brief:
+there is still no Search Console connection available at runtime, so every SEO
+change here is made blind.** `gsc_queries` captures nightly via the Actions
+secret; Vercel lacks the key, so no route can read it.
+
 ### Weekly search scan, 2026-10-08
 
 **Nothing material.** First scan since 2026-09-09 — the 21-day outage swallowed
@@ -477,6 +479,42 @@ genuine daily series started 2026-08-05. Drafts with named data slots live in
 | 2026-11-09 | Release 2 proposed fire | Henrik's explicit go |
 
 ## 4. BASELINES — what the numbers were, so drift is detectable
+
+### Re-measured 2026-10-10
+
+Read at 05:43 UTC, i.e. BEFORE today's feed landed (O-109). Everything dated
+2026-10-09 is a complete day; nothing here is today's capture.
+
+| thing | value | note |
+|---|---|---|
+| `price_snapshots` 2026-10-09 | **2,039 rows / 2,039 distinct refs** | unbroken 10-04→10-09: 2,030 / 2,030 / 2,033 / 2,034 / 2,039 |
+| feed / `data.json` | **2,039 listings**, committed 2026-10-09T11:50Z | 17.9h old at read time, inside the ~30h bound |
+| `pricing-history` 30h | **4 success + 7 skipped**, skips all `stale feed` | 05:43 probe correctly skipped; `feed_age_days: 1`, `overdue: false` |
+| prod endpoints | **all 200**: `/` `/deals` `/engine` `/no` `/sitemap.xml` `/robots.txt` `/open-data/dataset.json` | `/deals` renders all three sections incl. "New this week" + "What moved this week" |
+| sitemap | **2,690 `<loc>`**, parses as XML | unchanged from 10-09 |
+| 5 random refs | **5/5 → 200** | N8962, N9531, N9909, SP1431, SP0625 |
+| `POST /api/concierge` `{"messages":[]}` | **ok:true**, greeting question, 4 missing prefs | deterministic engine |
+| AVM backtest | **median \|err\| 15.79% · MAPE 21.79% · RMSE 43.24% · n=2,039 · bias +3.05%** | **identical to committed `model-stats.json`** — only `computed_at` differed; reverted |
+| gates | tsc clean · concierge ALL PASS · backtest unchanged · `build:preview-sim` **compiled in 23.2s** | |
+| test battery | capture-integrity **47** · crawler-shape **20** · engine-truth **20** · move-reconciliation **24** · cron-coverage **99** · db-tables **21** · **counterpart-drift 34 (new)** · **counterpart-remediation 19 (new, branch)** | all pass |
+| build health | **`gh run list`: 12/12 most recent runs `success`, no red on any branch.** No run yet today at 05:43 — normal for the O-109 window | feed-refresh ran twice on both 10-08 and 10-09 (two scheduled slots) |
+| **corpus surfaces — CORRECTED** | site **v2026-10-09** · GitHub mirror **v2026-10-09** · **Hugging Face v2026-08-09 (61 days behind)** | **Site and mirror AGREE and both are automated.** Yesterday's claim that the mirror had no automated push was WRONG (O-112). HF is the only stale surface |
+| `counterpart_developers` | **10 rows**, all seeded 2026-05-21, **0 from discovery**; 7 of 10 at score **0 / grade DV** before the fix | after `d6a3652`: 10/10 fingerprinted, 0 scores moved |
+| `counterpart_stress_alerts` | **726 `status='active'`**, incl. **137 "high financial_distress" against Metrovacesa** | was growing ~5/day; **0 new since the fix** |
+| `counterpart.grade_revised` events | **122 per developer × 7**, every one with `min(drift) == max(drift)` | **0 new since the fix** (was ~7/day) |
+| citation engine | **NOT a measurement day** (Sat; bank runs Mon/Wed/Fri). Friday 2026-10-09 FAILED 3× — `Perplexity HTTP 401 "exceeded your current quota"` | **last real measurement 2026-08-28 — 43 days.** Standing blocker |
+| `citation-measure` | `error`: *"citation rollup produced no measurement on 1 day(s): 2026-10-09 raw_rows_absent_on_a_run_day"* | **this is the guard WORKING** — refusing to publish a fabricated 0.00%. Exactly the fix that was made after the six-day 0.00% incident |
+
+**Chronic cron reds, all attributed, read 2026-10-10 over 30h:** `prometheus` ×5,
+`predictions/generate`, `generate-briefs` (**Anthropic balance — day 49**);
+`citation-agent` ×3 (**Perplexity balance — day 42**); `auto-post` ×3
+(147 errors since 08-22, `Unexpected end of JSON input` — O-53);
+`pulse` (49 errors since 08-22, `generate-pulse failed: HTTP 500`);
+`counterpart-discover` ×2 (**140 errors, 0 successes ever** — O-41);
+`eu-stats-ingest` ×2 (ISTAT HTTP 500, upstream — O-82);
+`causal-update` (`debate_null: costa_blanca`, Anthropic balance).
+**No red is unexplained and none is new today.**
+
 
 ### Re-measured 2026-10-09
 
@@ -1486,6 +1524,8 @@ is detecting drift is the last place to silently correct a number.
 
 | what | why it matters | what is needed |
 |---|---|---|
+| **NEW 2026-10-10, AND IT IS THE MOST IMPORTANT THING IN THIS FILE — `/counterpart` is publishing fabricated credit distress against real, publicly-listed Spanish developers, and two of the three things needed to fix it are yours** | **What is live right now:** `/counterpart` (public, in the sitemap, crawled) publishes **score 0 / grade DV** for **Neinor Homes** and **Realia Patrimonio**, and **Metrovacesa** carries **137 active "high financial distress" alerts**. 726 active alerts in total. **None of it is a measurement.** `counterpart-scan` applied a CONSTANT negative drift every night to stress signals nothing in the codebase updates, so every developer with a static signal ratcheted down ~1–3 points/night and pinned at the zero floor. Proof: 122 `grade_revised` events per developer with `min(drift) == max(drift)` — Metrovacesa −3 every single night, 122 nights. Neinor 59→0, Realia 49→0, Metrovacesa 13→0. **The underlying litigation figures have no ingest path at all** — no Registro Mercantil, no BORME; the route calls it "future v2". **I have stopped the bleeding** (`d6a3652`, verified live: 0 new events, 0 new alerts). | **THREE THINGS. (1) APPROVE BRANCH `odyssey/counterpart-decay-remediation`** — retracts the 726 alerts (rows kept, `status: 'retracted'` + reason; nothing deleted) and labels each score's provenance. It writes NO score, because **there is no true score to restore**: the scores were hand-seeded 2026-05-21 and began decaying immediately, but the event log only starts 2026-06-11, by which point four were already at 0. "Restore Neinor to 59" would be inventing a number. **(2) DECIDE whether `/counterpart` should publish credit grades for named real companies at all** while the risk data behind them is unsourced. **My recommendation: take the real-company rows out of publication until there is a source.** That is a buyer-facing publication call, so it is yours, not mine. **(3) Note the exposure:** this is a registered Spanish estate agency publishing adverse credit assessments of named listed competitors' developers. I am not a lawyer and am not guessing at the liability — but you should know it exists and that AI crawlers have been ingesting it. |
+| **NEW 2026-10-10 — `HF_TOKEN` as a GitHub Actions repo secret. This is now the ONLY corpus blocker, and I am CORRECTING yesterday's ask from two tokens to one.** | **Yesterday I asked you for `GITHUB_DATA_TOKEN`. WITHDRAW THAT — I was wrong.** The GitHub mirror is pushed automatically every day by a workflow living in the avena-data repo itself; I had only looked in this repo's workflows and reported a negative from one of two places. Site and mirror both serve **v2026-10-09** and agree. **The real gap is Hugging Face: v2026-08-09, 61 days behind**, because `scripts/push-corpus-surfaces.py` has never had an automated caller — it is a manual script someone last ran by hand. A surface serving two-month-old prices as current actively weakens the cross-source-agreement claim the corpus rests on. | **Set `HF_TOKEN` as a repo secret on avena-terminal** (a huggingface.co write token for the AVENATERMINAL org). The wiring is already shipped (`6c7676b`): the nightly workflow will pick it up with no further change from me. Until it exists the step skips and prints an escalating day count. **Not Vercel env — a GitHub Actions secret**, same lane as the feed secrets. |
 | **NEW 2026-10-09 — one decision I want from you about the capture, and it is not urgent today** | The 02:20 UTC price-capture cron has skipped `stale feed` three days out of three, because GitHub's scheduler is now delivering the nightly feed 5–7 HOURS late (it was 65–93 minutes in early September). The capture still happens — the backstop workflow catches it right after the feed lands, and the 14:30 cron catches it again — but **a workaround built as a watchdog is now the primary capture path, and one of the two designed slots is wasted every day** (O-108/O-109). | **Nothing from you to unblock it; I want your read on the approach.** I want to make the capture fire off the feed-refresh workflow's own completion instead of off a clock, so there is no window to miss. That is a change to the capture chain, which is the one place a clever change can cost a permanent day, so I would rather you knew it was coming than find it done. |
 | **NEW 2026-10-09 — Vercel log drain / runtime log access** | The brief names "crawler reality" as one of three advantages no commercial SEO platform has, and includes *"whether a bot is being served an error or a redirect chain"*. I got the useful half today without any access: all 30 most-crawled paths return 200 (I probe the crawled URL set myself). **What I cannot see is the per-hit status for the long tail** — `crawler_hits` structurally cannot hold it, because the middleware writes before the response exists. | **Either Vercel log-drain access, or confirmation that probing the crawled URL set is good enough and I should stop asking.** I lean toward the latter; the probe answers the question that matters. |
 | **BRANCH AWAITING APPROVAL: `odyssey/relisting-move-detection` (`8cf6713`), DAY 3** | Three sentences: a relisted unit — one that left the market and came back at a different price — could never log a price move, because the detector compared today's price against today's own banked row and always saw "no change". **Re-measured from committed code (`src/lib/move-reconciliation.ts`), window from 2026-08-12, the event log's own start: consecutive 532 derived / 532 logged / 0 unlogged · relisting 18 derived / 0 logged / 18 unlogged.** State the window with this figure always — the same measurement from 2026-08-05 gives 609 consecutive, because it includes the 66 pre-log moves. A number without its window is how this figure wandered for three mornings. | **Say merge or say no.** It is a change to cron write logic, so I will not push it to main on my own judgement. |
@@ -1503,7 +1543,6 @@ is detecting drift is the last place to silently correct a number.
 | **`/api/cron/auto-post` is publicly callable with no authentication** (O-51) | Anyone who finds the URL can trigger an outbound post, 3× scheduled daily. `pulse` has the same hole. Separately auto-post fails all three daily runs — and **`auto_posts` holds 0 rows ever, so it has never once succeeded** (O-53). | **One question, unchanged for fourteen days: does any of your buttons call `/api/cron/auto-post` directly?** If not, I add `isAuthorizedCron` to both and the hole closes. If yes, tell me which and I keep that path open. |
 | **A whole blog post is premised on the Golden Visa still being open** | `src/lib/blog-posts.ts:942–1014`, "Spain Golden Visa and Property Investment: 2026 Status Update", stating "as of early 2026, the program remains active". Also `content/pr/spain-property-report-2025.md`, `content/parasite/linkedin-newbuild-investment.md`, `public/linkedin/10-what-i-wish-i-knew.md`. | **An article whose thesis is a false fact cannot be repaired by the "smallest possible edit" exception — the edit is the whole piece.** Your call: **(a) unpublish it**, or **(b) tell me to rewrite it as a status-update piece leading with the abolition** — genuinely the stronger SEO position, since most of the web still answers this question wrongly and the query has steady volume. |
 | **CLAUDE.md carries a fact that has been false for FIVE weeks — and it is your file, so I have not edited it** (O-87, day 6 of asking) | CLAUDE.md's AUDIT 2026-08-08 block says **"`property_pricing_history` has never held a move event … not one `reduced`/`increased` exists"**. **As of today it holds 167 `increased` (from 2026-08-12) and 40 `reduced` (from 08-14)** — the cron fix merged 08-08 started working four days later. The surrounding guidance is still right (`price_snapshots` IS the ground truth, because it is complete and per-ref-per-day) but the stated REASON has expired. I corrected the same claim in `src/lib/deltas.ts` today. | **One line from you, or permission to edit CLAUDE.md myself.** **The suggested wording is now STRONGER than it was, because I measured the reconciliation today:** *"`property_pricing_history` held no move events until 2026-08-12; it now logs them, and as of 2026-09-12 its 260 move events all match a `price_snapshots`-derived move on the same ref and day, with no orphans. `price_snapshots` is still the ground truth for price movement, because it is complete and per-ref-per-day while the event log starts 08-12 and is written by a second writer — read moves from `price_snapshots`."* |
-| **TWO TOKENS IN VERCEL ENV, NOT ONE — I UNDERSTATED THIS IN THIS MORNING'S BRIEF AND I AM CORRECTING IT THE SAME DAY (`HUGGINGFACE_TOKEN` day 5, `GITHUB_DATA_TOKEN` day 1)** | **Re-measured 2026-10-09 08:19. The corpus has THREE surfaces and NO two of them agree.** Site `/open-data/dataset.json` **`v2026-10-09`** (automated, nightly, healthy). GitHub `avena-data/market/dataset.json` **`v2026-10-08`** — and `/api/cron/github-snapshot` has **never succeeded, 50 runs / 50 skipped since 2026-08-22**, so that surface is hand-maintained and drifting (O-112). Hugging Face `AVENATERMINAL/spain-new-build-properties-2026` **frozen at `lastModified 2026-08-09`, 61 days, widening by one per day**. **Corpus filters resolve conflicts by cross-source agreement, so two stale surfaces do not merely fail to help — they actively argue against the fresh one.** | **Two pastes into Vercel env vars: (1) a write-scoped `HUGGINGFACE_TOKEN`, (2) a fine-grained `GITHUB_DATA_TOKEN` with `contents:write` on `avena-data`.** Both routes already have the upload code and both run daily; `push-training-data` skipped again at 05:00 and `github-snapshot` at 07:15. **If you would rather retire a surface than feed it, say which and I will stop claiming it** — an abandoned corpus surface that nobody reads is cheaper than a stale one that models do. |
 | **Domain prose in snippet-answers is unverified** (O-30) | Qualitative claims I cannot source ("most popular region for foreign buyers", tax/NIE/mortgage figures). Built to be quoted verbatim by AI assistants. | Either confirm the remaining prose accurate as written, or point me at a source. |
 | **NEW — AwarioBot: do you still want it crawling at this volume?** (O-88) | **26,725 hits over 7 days across 2,276 paths — 2.8x Googlebot, and the largest single consumer of the origin by a wide margin.** Awario is brand-monitoring SaaS: it contributes nothing to search ranking or AI citation. **I was going to block it today and stopped, because `robots.ts` records your explicit yes on 2026-08-12 to its current treatment, with the rationale "mention-monitoring value survives at any crawl volume". A full `Disallow: /` overturns a call you personally made, so it is yours, not mine.** | **One line: (a) block it entirely — one-line change, instantly reversible, and I get a real experiment out of it (does Awario even honour robots.txt? nobody publishes that); (b) leave it exactly as is; or (c) tell me the monitoring matters and I will stop raising it.** **I have no Vercel cost figure, so I cannot tell you what it is costing you — if you can read that off the dashboard it would settle the question immediately.** |
 | Bing Webmaster Tools read | Henrik claimed avenaterminal.com 2026-08-13. **The IndexNow read-out came due 09-09 and I could only report the secondary proxy** (OAI-SearchBot 292 hits / 123 paths — hits up 32%, distinct paths DOWN from 130; ChatGPT-User flat). **The primary metric — whether Bing is actually indexing what we submit — is the one that answers the experiment, and it is the one I cannot see.** | **Read Bing's index coverage + IndexNow submission status and paste me the numbers. If the IndexNow key shows rejected, say so loudly — that would mean 28 nightly submission runs have been no-ops.** No Bing API access, so this is a manual read. |
@@ -1511,6 +1550,11 @@ is detecting drift is the last place to silently correct a number.
 | `GOOGLE_SEARCH_CONSOLE_KEY` in Vercel | GitHub Actions secret set, so nightly capture works; Vercel lacks it, so no runtime route can read GSC. | Paste the same service-account JSON into Vercel env vars. Low priority. |
 
 ## 6. CLOSED — resolved, kept so the same ground is not re-dug
+
+| 2026-10-10 | **The Counterpart decay ratchet — `/counterpart` graded real listed developers by a nightly countdown** | `d6a3652`. `src/lib/counterpart-drift.ts` + additive `signals_fingerprint` + 34 tests. Verified live on production: first run `baselined 10 / score_updated 0 / alerts_created 0`, second run `held_signals_unchanged 10`, and **0 new events + 0 new alerts** in the DB since. The 726 pre-existing alerts are the branch's job, tracked in BLOCKED. Three same-family write bugs fixed in the same route: (a) the score update sat in `try/catch` with `updated++` inside the try — **the Supabase client RESOLVES on a failed write, so the catch never fired and a rejected update counted as a success**; (b) the event condition was `Math.abs(delta) >= 1 \|\| newGrade !== undefined`, whose right-hand side is ALWAYS TRUE, so a "grade_revised" event was written on every scan including 0→0 — 122 phantom revisions per developer in the audit trail; (c) alerts were inserted unconditionally |
+| 2026-10-10 | **O-112 REFUTED BY ME, same-day correction** | The GitHub corpus mirror **is** pushed automatically every day by `.github/workflows/daily-snapshot.yml` **in the avena-data repo itself**, which PULLS from the site. Yesterday I reported it had never been pushed automatically, having checked only *this* repo's workflows. Site and mirror both serve v2026-10-09. `/api/cron/github-snapshot` is REDUNDANT, not broken — a token for it would put two writers on the same files. **`GITHUB_DATA_TOKEN` ask withdrawn.** The lesson — absence of evidence in one place is not evidence of absence — is pinned in section 1 |
+| 2026-10-10 | **`/engine` published 652,848 "verified transactions" against 57,306 real** (shipped `41c0c75` 10-09) | Verified 2026-10-10: page publishes `57 306+`, "652 848" absent, `test-engine-truth.ts` 20/20 |
+| 2026-10-10 | **`/engine` served EIGHT ZEROS to every crawler that does not run JS** (shipped `abf6391` 10-09) | Verified 2026-10-10: `0<!-- -->+` occurs ZERO times in the served HTML |
 
 **2026-10-09 — `0f6a6ae` `judgeDayBook()`: VERIFIED AND CLOSED.**
 `scripts/test-capture-integrity.ts` ALL PASS, 47 passed, 0 failed, re-run
