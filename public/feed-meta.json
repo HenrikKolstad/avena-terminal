@@ -1,6 +1,9 @@
 {
-  "generated_at": "2026-10-10T11:07:31.616Z",
-  "generated_date": "2026-10-10",
+  "generated_at": "2026-10-11T08:15:39.206Z",
+  "generated_date": "2026-10-11",
   "listings": 2039,
-  "source": "redsp"
+  "source": "redsp",
+  "source_sha256": "1422f2d98d4699adbfdd626468045ee51e96bb21b4e3ce0296feadefc25283bb",
+  "source_bytes": 97801138,
+  "source_first_seen_at": "2026-10-11T08:15:39.206Z"
 }
