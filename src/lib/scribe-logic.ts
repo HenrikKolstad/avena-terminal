@@ -88,3 +88,53 @@ export function deriveStatus(t: WriteTally): {
   }
   return { status: 'success', reason: null };
 }
+
+export interface WriteCounts {
+  /** Rows the database did not reject. COMPUTED — not evidence of a write. */
+  rowsAccepted: number;
+  /** Rows the date actually gained. MEASURED. Null when either count failed. */
+  rowsInserted: number | null;
+  /** Rows dropped by `ignoreDuplicates` because the date already held them. */
+  rowsIgnored: number | null;
+  /** True when the run sent a book and changed nothing. Null when unknown. */
+  noOp: boolean | null;
+}
+
+/**
+ * Separate what scribe COMPUTED from what it MEASURED.
+ *
+ * scribe writes score_history with `ignoreDuplicates: true`, which is
+ * deliberate — a banked observation is never rewritten (see the route header).
+ * The consequence nobody logged is that a run whose rows were all ignored is
+ * indistinguishable, in `cron_logs`, from a run that banked the whole book:
+ * `rows_accepted` is `rowsSent - rowsFailed` and knows nothing about the
+ * database's answer.
+ *
+ * 2026-10-05 12:14:10 logged `rows_sent: 2030, rows_accepted: 2030,
+ * rows_failed: 0` and inserted zero rows. The 07:40 run had already banked that
+ * date from a book that still carried the PREVIOUS day's prices for twelve
+ * refs; the 12:13 book held the real moves. price_snapshots rewrites and has
+ * the corrected prices, score_history does not and still has the stale ones.
+ * All twelve disagree and both logs read clean.
+ *
+ * CONTRACT: unknown is null, never 0. `rowsInserted` is a subtraction of two
+ * counts, and if either read failed the answer is "we do not know" — which is a
+ * different fact from "nothing was written" and must not be collapsed into it.
+ * That collapse is this project's recurring bug.
+ */
+export function deriveWriteCounts(
+  rowsSent: number,
+  rowsFailed: number,
+  preExisting: number | null,
+  postExisting: number | null,
+): WriteCounts {
+  const rowsAccepted = rowsSent - rowsFailed;
+  const rowsInserted =
+    preExisting !== null && postExisting !== null ? postExisting - preExisting : null;
+  return {
+    rowsAccepted,
+    rowsInserted,
+    rowsIgnored: rowsInserted !== null ? rowsAccepted - rowsInserted : null,
+    noOp: rowsInserted === null ? null : rowsSent > 0 && rowsInserted === 0,
+  };
+}

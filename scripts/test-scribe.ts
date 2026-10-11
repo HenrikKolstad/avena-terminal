@@ -10,7 +10,7 @@
  * Run: npx tsx scripts/test-scribe.ts
  */
 
-import { resolveSnapshotDate, daysBetween, deriveStatus } from '../src/lib/scribe-logic';
+import { resolveSnapshotDate, daysBetween, deriveStatus, deriveWriteCounts } from '../src/lib/scribe-logic';
 
 let passed = 0;
 let failed = 0;
@@ -90,6 +90,68 @@ console.log('\nderiveStatus — a failed write must never read as a green run');
   const s = deriveStatus({ rowsSent: 0, rowsFailed: 0, errors: [] });
   check('an empty book is an error, not a quiet success', s.status === 'error');
   check('the reason names the feed', (s.reason ?? '').includes('feed'), s.reason ?? '');
+}
+
+
+// ── deriveWriteCounts — separating what was computed from what was measured ──
+//
+// Added 2026-10-11. The real run that motivated it: 2026-10-05 12:14:10 logged
+// rows_sent 2030 / rows_accepted 2030 / rows_failed 0 and inserted ZERO rows,
+// because the 07:40 run had already banked that date — from a book that still
+// carried the previous day's prices for twelve refs. Both logs read clean while
+// score_history permanently held stale prices that price_snapshots corrected.
+
+{
+  // THE REAL CASE: a full book sent, the date already complete, nothing written.
+  const c = deriveWriteCounts(2030, 0, 2030, 2030);
+  check('a complete no-op is reported as rows_inserted 0', c.rowsInserted === 0);
+  check('…and every row is reported as ignored', c.rowsIgnored === 2030);
+  check('…and no_op is true', c.noOp === true);
+  check('…while rows_accepted still says 2030, which is why it is not evidence', c.rowsAccepted === 2030);
+}
+
+{
+  // A genuine first write for the date.
+  const c = deriveWriteCounts(2039, 0, 0, 2039);
+  check('a fresh date inserts the whole book', c.rowsInserted === 2039);
+  check('…ignores nothing', c.rowsIgnored === 0);
+  check('…and is not a no-op', c.noOp === false);
+}
+
+{
+  // A second run after the book grew: 9 new refs land, the rest are ignored.
+  const c = deriveWriteCounts(2039, 0, 2030, 2039);
+  check('a partial top-up measures only the rows that landed', c.rowsInserted === 9);
+  check('…and reports the rest as ignored', c.rowsIgnored === 2030);
+  check('…and is not a no-op', c.noOp === false);
+}
+
+{
+  // The contract that matters most: unknown is null, NEVER 0.
+  const a = deriveWriteCounts(2030, 0, null, 2030);
+  check('a failed PRE count yields null, not 0', a.rowsInserted === null);
+  check('…and null rowsIgnored, not a fabricated figure', a.rowsIgnored === null);
+  check('…and null no_op, because we cannot know', a.noOp === null);
+  const b = deriveWriteCounts(2030, 0, 2030, null);
+  check('a failed POST count yields null too', b.rowsInserted === null);
+  const d = deriveWriteCounts(2030, 0, null, null);
+  check('both counts failing yields null', d.rowsInserted === null && d.noOp === null);
+}
+
+{
+  // Rejected rows must not be counted as ignored duplicates: different causes,
+  // different fixes. 200 rejected, 1830 accepted, 1830 landed -> 0 ignored.
+  const c = deriveWriteCounts(2030, 200, 0, 1830);
+  check('rejections are excluded from rows_ignored', c.rowsIgnored === 0);
+  check('…and rows_accepted nets off the failures', c.rowsAccepted === 1830);
+  check('…and a run that landed rows is not a no-op', c.noOp === false);
+}
+
+{
+  // An empty book that writes nothing is NOT the no-op this flag is for: it is
+  // the louder empty-book error deriveStatus already raises.
+  const c = deriveWriteCounts(0, 0, 100, 100);
+  check('sending nothing is not reported as a no-op', c.noOp === false);
 }
 
 console.log(`\n${failed === 0 ? 'ALL PASS' : 'FAILURES'} — ${passed} passed, ${failed} failed`);

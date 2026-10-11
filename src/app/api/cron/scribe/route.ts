@@ -37,7 +37,7 @@ import { startCronLog, finishCronLog, describeError } from '@/lib/cron-log';
 import { supabase } from '@/lib/supabase';
 import { getAllProperties } from '@/lib/properties';
 import { getFeedGeneratedDate } from '@/lib/feed-meta';
-import { resolveSnapshotDate, deriveStatus, type WriteTally } from '@/lib/scribe-logic';
+import { resolveSnapshotDate, deriveStatus, deriveWriteCounts, type WriteTally } from '@/lib/scribe-logic';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 120;
@@ -110,8 +110,51 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  // How many rows the date actually holds AFTER the write.
+  //
+  // WHY (2026-10-11). `rows_accepted` below is `rowsSent - rowsFailed`, a
+  // COMPUTED number, and with `ignoreDuplicates: true` it is indistinguishable
+  // from the truth on a run that wrote nothing at all. 2026-10-05 12:14:10
+  // logged `rows_sent: 2030, rows_accepted: 2030, rows_failed: 0` and inserted
+  // ZERO rows: the 07:40 run had already banked that date, so every row was
+  // ignored. It also logged `rows_pre_existing: null`, because the pre-count
+  // read failed — honest, but it left the log with no way at all to tell a
+  // banked book from a complete no-op.
+  //
+  // That mattered the same day. The 07:40 book still carried the previous day's
+  // prices for twelve refs (N10009, N7520, N8076, N8461, N9462, N9482, SP0817,
+  // SP0887, SP0888, SP0890, SP0891, SP1876); the 12:13 book carried the real
+  // moves, which persisted into 10-06. price_snapshots rewrites and holds the
+  // corrected prices; score_history ignored the correction and still holds the
+  // stale ones. All twelve disagree, and nothing in either log said so.
+  //
+  // So this counts instead of computing. `rows_inserted` is a MEASUREMENT
+  // (after - before) and is null — never 0 — when either count is unavailable,
+  // because "we could not count" and "nothing was written" are different facts
+  // and collapsing them is the bug this whole file keeps re-learning.
+  //
+  // Read-only: two count queries. The write path above is untouched, and
+  // `ignoreDuplicates` stays — not rewriting a banked observation is deliberate
+  // (see the header). What was missing was saying so out loud.
+  let postExisting: number | null = null;
+  try {
+    const { count, error } = await supabase
+      .from('score_history')
+      .select('*', { count: 'exact', head: true })
+      .eq('snapshot_date', snapshotDate);
+    if (!error) postExisting = count ?? null;
+  } catch {
+    postExisting = null;
+  }
+
+  const { rowsAccepted, rowsInserted, rowsIgnored, noOp } = deriveWriteCounts(
+    tally.rowsSent,
+    tally.rowsFailed,
+    preExisting,
+    postExisting,
+  );
+
   const { status, reason } = deriveStatus(tally);
-  const rowsAccepted = tally.rowsSent - tally.rowsFailed;
 
   const summary = {
     date: snapshotDate,
@@ -120,9 +163,19 @@ export async function GET(req: NextRequest) {
     book_lag_days: lagDays,
     total: all.length,
     rows_sent: tally.rowsSent,
+    // Computed: rows the database did not reject. Kept because the series is
+    // long and comparable, but it is NOT evidence that anything was written.
     rows_accepted: rowsAccepted,
     rows_failed: tally.rowsFailed,
     rows_pre_existing: preExisting,
+    // Measured: what the date held after the write, and the difference.
+    rows_post_existing: postExisting,
+    rows_inserted: rowsInserted,
+    // Rows this run sent that the date already held, so `ignoreDuplicates`
+    // dropped them. A full-book value here means the run changed NOTHING, and
+    // any price this book corrected is still stale in score_history.
+    rows_ignored: rowsIgnored,
+    no_op: noOp,
     errors: tally.errors.length ? tally.errors : null,
     reason,
   };
