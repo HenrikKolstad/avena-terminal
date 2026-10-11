@@ -1225,13 +1225,45 @@ async function main() {
   // and refs the stale run resurrected read as fresh delistings the next day.
   // The stamp lets a consumer refuse to observe a book it cannot date to today.
   const META = 'public/feed-meta.json';
+
+  // Fingerprint the payload we were HANDED, not the book we wrote from it.
+  //
+  // 2026-10-10: the book was byte-identical to 2026-10-09's and the capture
+  // published `0 price moves` for the day. Nothing here could say whether the
+  // market was quiet or RedSP had served the same file twice — every field in
+  // this file was something WE stamped. A frozen upstream and a quiet market
+  // read the same, which is this project's recurring bug (a missing value
+  // becoming a measurement) on the one artifact that reaches the corpus.
+  //
+  // `source_first_seen_at` is carried forward while the hash is unchanged, so
+  // "identical bytes across a UTC date boundary" becomes directly readable.
+  // See src/lib/feed-provenance.ts for the two contracts this upholds.
+  const prevMeta = (() => {
+    try { return JSON.parse(fs.readFileSync(META, 'utf8')); } catch { return null; }
+  })();
+  const fingerprint = {
+    source_sha256: require('crypto').createHash('sha256').update(xml).digest('hex'),
+    source_bytes: Buffer.byteLength(xml),
+  };
+  const prevSha = prevMeta && typeof prevMeta.source_sha256 === 'string' ? prevMeta.source_sha256 : null;
+  const prevSeen = prevMeta && typeof prevMeta.source_first_seen_at === 'string' ? prevMeta.source_first_seen_at : null;
+  const nowIso = new Date().toISOString();
+  const carriedForward = prevSha === fingerprint.source_sha256 && prevSeen !== null && Number.isFinite(Date.parse(prevSeen));
+
   fs.writeFileSync(META, JSON.stringify({
-    generated_at: new Date().toISOString(),
+    generated_at: nowIso,
     generated_date: today,
     listings: unique.length,
     source: 'redsp',
+    ...fingerprint,
+    source_first_seen_at: carriedForward ? prevSeen : nowIso,
   }, null, 2));
   console.log(`Wrote ${META} (generated_date=${today}, ${unique.length} listings)`);
+  console.log(
+    `Upstream payload sha256=${fingerprint.source_sha256.slice(0, 12)}… ` +
+    `${(fingerprint.source_bytes / 1024 / 1024).toFixed(1)}MB ` +
+    `first_seen=${carriedForward ? prevSeen : nowIso}${carriedForward ? ' (UNCHANGED from the previous run)' : ' (new payload)'}`
+  );
 
   // --- DISCOUNT SANITY CAP REPORT ---
   // Replicate initProperty cap logic inline (parse-feed is plain JS, not TS)

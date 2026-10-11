@@ -93,6 +93,29 @@ jobs:
       # refresh down with it, discarding two days of successfully parsed feed.)
       # ---------------------------------------------------------------------
 
+      - name: Judge whether the upstream payload actually changed
+        # 2026-10-10: the capture ran perfectly and the day was empty. The book
+        # was byte-identical to 2026-10-09's, three pricing-history runs agreed
+        # on moves_detected: 0, and movement-ledger.csv published
+        # `2026-10-10,2039,0,0,,0,0` to the site, the avena-data mirror and
+        # (once HF_TOKEN lands) Hugging Face. Nothing in the pipeline could say
+        # whether the coast was quiet or RedSP had served the same file twice —
+        # every field in feed-meta.json was something WE stamped.
+        #
+        # parse-feed now fingerprints the payload it was handed, and this step
+        # grades it: quiet on a repeat within the same UTC day (the second
+        # nightly run legitimately sees the same bytes), a warning on one
+        # unchanged calendar day (weekend zeros in this ledger are real), red at
+        # two. Red also if the fingerprint is missing, because parse-feed has
+        # just written it and a broken instrument reporting nothing is the shape
+        # this repo keeps getting bitten by.
+        #
+        # Enrichment rules apply: it cannot stop the feed being committed. A
+        # frozen upstream is RedSP's behaviour, not a reason to drop a book.
+        id: upstream
+        continue-on-error: true
+        run: npx tsx scripts/report-upstream-provenance.ts
+
       - name: Re-measure the AVM against the refreshed book
         # Accuracy figures quoted on the site come from here and nowhere else.
         # If the model drifts, model-stats.json drifts with it in the same commit.
@@ -315,7 +338,7 @@ jobs:
         # The feed is committed by now, so failing here loses nothing but
         # still shows Henrik a red run. A silently-green enrichment failure
         # is the bug shape this whole repo keeps getting bitten by.
-        if: steps.avm.outcome != 'success' || steps.corpus.outcome != 'success' || steps.gsc.outcome != 'success' || steps.capture.outcome != 'success' || steps.answers.outcome != 'success' || steps.scores.outcome != 'success' || steps.hf.outcome == 'failure'
+        if: steps.avm.outcome != 'success' || steps.corpus.outcome != 'success' || steps.gsc.outcome != 'success' || steps.capture.outcome != 'success' || steps.answers.outcome != 'success' || steps.scores.outcome != 'success' || steps.hf.outcome == 'failure' || steps.upstream.outcome == 'failure'
         run: |
           echo "avm-backtest: ${{ steps.avm.outcome }}"
           echo "open-dataset: ${{ steps.corpus.outcome }}"
@@ -324,5 +347,6 @@ jobs:
           echo "change-answers: ${{ steps.answers.outcome }}"
           echo "score-capture: ${{ steps.scores.outcome }}"
           echo "hf-corpus-push: ${{ steps.hf.outcome }}"
+          echo "upstream-provenance: ${{ steps.upstream.outcome }}"
           echo "The feed itself was committed; the step(s) above still need fixing."
           exit 1

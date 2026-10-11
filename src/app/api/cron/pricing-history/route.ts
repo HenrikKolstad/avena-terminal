@@ -38,7 +38,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { startCronLog, finishCronLog } from '@/lib/cron-log';
 import { supabase } from '@/lib/supabase';
 import { getAllProperties } from '@/lib/properties';
-import { getFeedGeneratedDate, getFeedGeneratedAt } from '@/lib/feed-meta';
+import { getFeedGeneratedDate, getFeedGeneratedAt, getFeedMeta } from '@/lib/feed-meta';
+import { judgeUpstream, describeUpstream } from '@/lib/feed-provenance';
 import { findSupersededRefs, classifySupersededRefs } from '@/lib/capture-integrity';
 
 /**
@@ -443,6 +444,28 @@ export async function GET(req: NextRequest) {
     // trusted_prior is true, the diff is blind and the zero is a lie.
     moves_baseline_refs: baselineRefs,
     moves_skipped: movesSkipped,
+    // Was this book capable of telling us anything new?
+    //
+    // `moves_baseline_refs` above answers "could we SEE a move" — it catches a
+    // blind diff. This answers the question one layer upstream: "was there a
+    // move to see at all". 2026-10-10 banked 2,039 rows from a payload RedSP
+    // had already served the previous day, detected 0 moves, and published
+    // `0,0` into the open-data movement ledger. Every number in that run was
+    // correct and the day still carried no information, and nothing in this
+    // summary said so.
+    //
+    // `frozen` means identical upstream bytes across a UTC date boundary, so
+    // the zeros are inherited rather than observed. `unknown` means the deploy
+    // carries no fingerprint — never read it as fresh (see feed-provenance.ts).
+    upstream: (() => {
+      const v = judgeUpstream(getFeedMeta(), new Date().toISOString());
+      return {
+        level: v.level,
+        days_spanned: v.days_spanned,
+        hours_unchanged: v.hours_unchanged,
+        note: describeUpstream(v),
+      };
+    })(),
     // A known structural block on the legacy event table, not a capture
     // failure: the moves themselves are in price_snapshots either way.
     moves_ledger_blocked: movesLedgerBlocked,

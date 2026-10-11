@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs';
 import path from 'path';
+import type { FeedMetaShape } from './feed-provenance';
 
 /**
  * The generation date of the deployed feed (public/data.json).
@@ -54,4 +55,31 @@ export function getFeedGeneratedAt(): string | null {
     _cachedAt = null;
   }
   return _cachedAt;
+}
+
+/**
+ * The whole deployed feed-meta.json, unvalidated.
+ *
+ * Added 2026-10-11 so a caller can read the upstream PAYLOAD provenance
+ * (`source_sha256` / `source_bytes` / `source_first_seen_at`) that parse-feed
+ * began stamping that day. The fields above describe the book we wrote; those
+ * describe the file RedSP handed us, which is the only way to tell a quiet
+ * market from an upstream that did not regenerate.
+ *
+ * Returns null when the file is missing or unparseable — same contract as the
+ * getters above. Validation belongs to `src/lib/feed-provenance.ts`, which
+ * grades a missing stamp as `unknown` and never as fresh.
+ */
+let _cachedMeta: FeedMetaShape | null | undefined;
+
+export function getFeedMeta(): FeedMetaShape | null {
+  if (_cachedMeta !== undefined) return _cachedMeta;
+  try {
+    const raw = readFileSync(path.join(process.cwd(), 'public', 'feed-meta.json'), 'utf8');
+    const parsed: unknown = JSON.parse(raw);
+    _cachedMeta = parsed && typeof parsed === 'object' ? (parsed as FeedMetaShape) : null;
+  } catch {
+    _cachedMeta = null;
+  }
+  return _cachedMeta;
 }
