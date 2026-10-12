@@ -142,6 +142,84 @@ was still serving the pre-deploy body. `/` `/deals` `/engine` `/no`
 check-in.**
 
 
+### CAPTURE CONFIRMATION 2026-10-12 (08:20 check-in) — CAPTURED CLEAN, BOTH COMMITS VERIFIED ON THE REAL NIGHTLY, AND THE NEW INSTRUMENT'S ALARM FIRED FOR REAL
+
+**TODAY'S CAPTURE IS COMPLETE, CLEAN AND ONE BOOK.** `price_snapshots` 2026-10-12:
+**2,039 rows / 2,039 distinct refs**, a single `created_at` batch at 07:55:57.
+`cron_logs` for `/api/cron/pricing-history` at **07:59:51 `success`**: `feed 2039 ·
+feed_generated_date 2026-10-12 · snapshotted 2039 · moves_detected 0 ·
+moves_baseline_refs 2039` (FULL coverage, so the zero is measured) `· delisted 0 ·
+snapshot_superseded 0 · snapshot_ahead_of_this_book 0 · trusted_prior true ·
+overlap 1 · errors null`. The two 07:58/07:59 `skipped` rows are the pre-deploy
+book and are correct. **The nightly went GREEN — no O-27 instance today**, and the
+feed landed 07:55:59, inside the O-109 window.
+
+**RULE 6 WAS SATISFIED THE SAME DAY IT WAS WRITTEN. THE ALARM PATH IS VERIFIED ON
+PRODUCTION DATA, NOT JUST THE HEALTHY PATH.** The nightly's `upstream` step:
+
+```
+observable content sha256=fe0834fd8839bfab… refs=2039 first_seen=2026-10-09T11:50:22.792Z
+raw payload       sha256=c938e76ec551c059… bytes=97801134 first_seen=2026-10-12T07:55:59.079Z
+verdict: unusual (content_days=3 payload_days=0 liveness=regenerating zeros_inherited=true)
+::warning Observable market data unchanged for 3 days
+OK (warned) — unusual: recorded, not escalated.
+```
+
+parse-feed printed both new lines, the second verbatim: **`Observable content
+sha256=fe0834fd8839… 2039 refs first_seen=2026-10-09T11:50:22.792Z (UNCHANGED —
+this book can produce no move, arrival or departure)`**. The carry-forward held:
+`content_first_seen_at` still reads the seeded `2026-10-09T11:50:22.792Z` after a
+real run, which is the thing that would have been broken if `e042b36` were wrong.
+`cron_logs` carries the whole block. **So the capture now reports
+`moves_detected: 0` and says in the same breath that the zero is inherited rather
+than observed — exactly the defect O-114 named on 10-10, fixed and demonstrated
+on production within one day.**
+
+**AND THE DIAGNOSIS IS NOW SETTLED BEYOND THE TWO-SAMPLE INFERENCE. A THIRD
+DISTINCT PAYLOAD HASH, AND THIS TIME A DIFFERENT BYTE LENGTH.**
+
+| run | payload sha256 | bytes | content sha256 |
+|---|---|---|---|
+| 10-11 08:15 | `1422f2d9…` | 97,801,138 | `fe0834fd…` |
+| 10-11 11:21 | `06ced78b…` | 97,801,138 | `fe0834fd…` |
+| **10-12 07:55** | **`c938e76e…`** | **97,801,134** | **`fe0834fd…`** |
+
+Three fetches, three hashes, **two different byte lengths**, one unchanged
+observable map. This morning I inferred a fixed-width volatile field from two
+samples of equal length; the third sample is 4 bytes shorter, so the volatile
+part is not fixed-width. **The conclusion is unchanged and now stronger: the raw
+payload axis could never have detected a freeze, and the content axis is the only
+one that can.** `liveness: regenerating` on a payload first seen today is the
+healthy reading — we are not being served a cached file.
+
+**THE LEDGER NOW PUBLISHES A THIRD INHERITED ZERO:**
+`2026-10-12,2039,0,0,,0,0`, after 10-10 and 10-11. **O-114 half (b) — whether an
+inherited-provenance day should be annotated in the published artifact — stays at
+its 2026-10-18 revisit date rather than being pulled forward: adding a column to a
+published CSV is a schema change for consumers and three days of fingerprints is
+still not a week.** The honest statement exists in `cron_logs` today.
+
+**TOMORROW IS THE PRE-REGISTERED INCIDENT, AND IT IS WRITTEN HERE SO IT IS NOT
+RE-DERIVED OR SOFTENED.** If 2026-10-13's `content_sha256` is still
+`fe0834fd8839bfab…`, then `content_days = 4`, the verdict is **`stalled`**, and
+**the nightly feed run WILL GO RED. That is the instrument working, not a broken
+workflow.** Four unchanged days has no precedent in the ledger's 68 (nine zero
+days, all Sat/Sun/Mon, longest run two). **At that point escalate to Henrik.** Do
+NOT relax `CONTENT_RED_DAYS`; the threshold was fixed in prose on 10-11, before
+the data that would decide it.
+
+**OTHER CHECKS.** `/api/v1/plab` deployed and verified live: `days_since_run: 46`,
+`measurement_current: false`, `contestants.attempted_without_a_score:
+["Claude Sonnet 4.5","Claude Haiku 4.5"]`, and the standings note naming them. `/`
+`/deals` `/engine` `/no` `/sitemap.xml` `/robots.txt` `/open-data/dataset.json`
+`/property/N9535` all 200; concierge `ok:true`. **One honest caveat:
+`/open-data/dataset.json` was still serving `v2026-10-11` at 08:25 while the
+committed artifact reads `v2026-10-12` (69 days) — ordinary Vercel deploy lag on a
+static file, the same lag O-112 records for the GitHub mirror, not a corpus
+defect.** `plab-run`'s honest `ok:false` cannot appear until tomorrow's 05:30 run:
+today's 05:30 predates the deploy, so today's `success` is not a refutation. The
+`hf` step warned as designed — Hugging Face still 63 days behind, `HF_TOKEN`.
+
 ## 2. OPEN — found, not yet fixed
 
 | # | what | evidence | why deferred | priority |
