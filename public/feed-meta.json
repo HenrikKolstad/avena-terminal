@@ -5,5 +5,8 @@
   "source": "redsp",
   "source_sha256": "06ced78bafd902bbdffaf2f7c248df1a7e8ccc67250641852e51cea058e39601",
   "source_bytes": 97801138,
-  "source_first_seen_at": "2026-10-11T11:21:50.722Z"
+  "source_first_seen_at": "2026-10-11T11:21:50.722Z",
+  "content_sha256": "fe0834fd8839bfab5c8f6da43ecf2d202b5153760f37bc23199b42231e7b5b7c",
+  "content_refs": 2039,
+  "content_first_seen_at": "2026-10-09T11:50:22.792Z"
 }

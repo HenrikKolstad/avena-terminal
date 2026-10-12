@@ -454,15 +454,23 @@ export async function GET(req: NextRequest) {
     // correct and the day still carried no information, and nothing in this
     // summary said so.
     //
-    // `frozen` means identical upstream bytes across a UTC date boundary, so
-    // the zeros are inherited rather than observed. `unknown` means the deploy
-    // carries no fingerprint — never read it as fresh (see feed-provenance.ts).
+    // Two axes since 2026-10-12, because grading the raw payload hash could
+    // never fire: RedSP serves a different hash on every fetch with the byte
+    // length unchanged, so the first-seen stamp reset every run. `content_days`
+    // counts UTC boundaries crossed with the observable {ref → price} map
+    // unchanged — when it is >=1, `zeros_inherited` is true and THIS RUN'S
+    // `moves_detected: 0` is arithmetic rather than an observation. `liveness`
+    // is the independent question of whether the upstream is regenerating at
+    // all. `unknown` means the deploy carries no fingerprint — never read it as
+    // fresh (see feed-provenance.ts).
     upstream: (() => {
       const v = judgeUpstream(getFeedMeta(), new Date().toISOString());
       return {
         level: v.level,
-        days_spanned: v.days_spanned,
-        hours_unchanged: v.hours_unchanged,
+        content_days: v.content_days,
+        payload_days: v.payload_days,
+        liveness: v.liveness,
+        zeros_inherited: v.zeros_inherited,
         note: describeUpstream(v),
       };
     })(),

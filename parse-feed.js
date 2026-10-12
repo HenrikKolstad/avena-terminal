@@ -1250,6 +1250,43 @@ async function main() {
   const nowIso = new Date().toISOString();
   const carriedForward = prevSha === fingerprint.source_sha256 && prevSeen !== null && Number.isFinite(Date.parse(prevSeen));
 
+  // --- CONTENT FINGERPRINT (2026-10-12) ---
+  //
+  // The payload hash above cannot detect a freeze, and one day of real data is
+  // what showed it. On 2026-10-11 RedSP served us the feed twice:
+  //   08:15:39Z sha256 1422f2d9... 97,801,138 bytes
+  //   11:21:50Z sha256 06ced78b... 97,801,138 bytes
+  // Two hashes, the same byte length to the byte, and a parsed book identical to
+  // the one published on 10-09 at 11:50. The upstream rewrites a fixed-width
+  // field (a generation timestamp, almost certainly) on every regeneration, so
+  // `source_first_seen_at` resets on EVERY run and the `frozen` verdict is
+  // unreachable. A detector that can only ever report health is this project's
+  // recurring bug in the costume of a fix.
+  //
+  // So hash what the capture actually observes: the {ref -> price} map. Every
+  // row the moat banks is a function of it (a move = a price changed, an arrival
+  // = a ref appeared, a departure = a ref vanished), so an unchanged map across
+  // a UTC date boundary means the day's zeros are inherited BY CONSTRUCTION
+  // rather than by inference. The filter mirrors the snapshot write above
+  // (`p.ref && p.pf > 0`) deliberately: the hash must cover exactly the rows
+  // that reach price_snapshots. src/lib/feed-provenance.ts holds the canonical
+  // TypeScript implementation and scripts/test-feed-provenance.ts asserts the
+  // two agree by recomputing it over the committed book.
+  const contentLines = unique
+    .filter(p => typeof p.ref === 'string' && p.ref.length > 0 && typeof p.pf === 'number' && Number.isFinite(p.pf) && p.pf > 0)
+    .map(p => `${p.ref}:${p.pf}`)
+    .sort();
+  const contentFingerprint = {
+    content_sha256: require('crypto').createHash('sha256').update(contentLines.join('\n')).digest('hex'),
+    content_refs: contentLines.length,
+  };
+  const prevContentSha = prevMeta && typeof prevMeta.content_sha256 === 'string' ? prevMeta.content_sha256 : null;
+  const prevContentSeen = prevMeta && typeof prevMeta.content_first_seen_at === 'string' ? prevMeta.content_first_seen_at : null;
+  const contentCarriedForward =
+    prevContentSha === contentFingerprint.content_sha256 &&
+    prevContentSeen !== null &&
+    Number.isFinite(Date.parse(prevContentSeen));
+
   fs.writeFileSync(META, JSON.stringify({
     generated_at: nowIso,
     generated_date: today,
@@ -1257,12 +1294,20 @@ async function main() {
     source: 'redsp',
     ...fingerprint,
     source_first_seen_at: carriedForward ? prevSeen : nowIso,
+    ...contentFingerprint,
+    content_first_seen_at: contentCarriedForward ? prevContentSeen : nowIso,
   }, null, 2));
   console.log(`Wrote ${META} (generated_date=${today}, ${unique.length} listings)`);
   console.log(
     `Upstream payload sha256=${fingerprint.source_sha256.slice(0, 12)}… ` +
     `${(fingerprint.source_bytes / 1024 / 1024).toFixed(1)}MB ` +
     `first_seen=${carriedForward ? prevSeen : nowIso}${carriedForward ? ' (UNCHANGED from the previous run)' : ' (new payload)'}`
+  );
+  console.log(
+    `Observable content sha256=${contentFingerprint.content_sha256.slice(0, 12)}… ` +
+    `${contentFingerprint.content_refs} refs ` +
+    `first_seen=${contentCarriedForward ? prevContentSeen : nowIso}` +
+    `${contentCarriedForward ? ' (UNCHANGED — this book can produce no move, arrival or departure)' : ' (the map moved — new facts in this book)'}`
   );
 
   // --- DISCOUNT SANITY CAP REPORT ---
