@@ -2,7 +2,48 @@ const fs = require('fs');
 const { XMLParser } = require('fast-xml-parser');
 require('dotenv').config({ path: '.env.production' });
 
-const FEED_URL = process.env.FEED_URL || 'https://xml.redsp.net/files/915/89215pmi61h/ella-properties-spain-redsp_v4.xml';
+/**
+ * The RedSP feed URL. REQUIRED — there is deliberately no fallback.
+ *
+ * WHY THERE IS NO LITERAL HERE ANY MORE
+ * Until 2026-10-13 this line carried the full URL as a fallback. The path
+ * segment in it is not a path, it is the credential: the feed has no other
+ * authentication, so anyone holding that URL can pull the entire book. This
+ * repository is PUBLIC, so the credential was public with it.
+ *
+ * The fallback was also the recurring bug in a new costume. GitHub passes an
+ * UNSET secret as an empty string, and `process.env.FEED_URL || '<literal>'`
+ * treats empty as absent — so if `secrets.FEED_URL` was never set, every run
+ * silently used the hardcoded URL and looked identical to a correctly
+ * configured one. A missing credential must be loud, not substituted.
+ *
+ * NOTE, and it is the part the code cannot fix: removing the literal does not
+ * remove it from git history. The old value stays readable in any clone until
+ * RedSP rotates the path. The rotation is the actual remedy; this is what
+ * stops the new one from being committed again.
+ */
+const FEED_URL = process.env.FEED_URL;
+if (!FEED_URL) {
+  throw new Error(
+    'FEED_URL is not set. The RedSP feed URL is a credential and is no longer ' +
+    'hardcoded. Set it as a GitHub Actions repository secret named FEED_URL ' +
+    '(Settings -> Secrets and variables -> Actions), or export it locally / in ' +
+    '.env.production. Refusing to run rather than guess at a feed.'
+  );
+}
+
+/**
+ * Strip the feed credential out of anything that might be logged.
+ *
+ * `curl --fail` writes messages like "Could not resolve host: ..." to stderr,
+ * and some of its failure modes echo the whole URL back. CI logs are readable
+ * by anyone who can read the repo, so a failing download must not be the thing
+ * that publishes the credential the line above just stopped publishing.
+ */
+function redactFeedUrl(text) {
+  const str = String(text ?? '');
+  return FEED_URL ? str.split(FEED_URL).join('<FEED_URL redacted>') : str;
+}
 const OUTPUT = 'public/data.json';
 
 // Xavia Estate location IDs — maps town name → search URL
@@ -619,7 +660,7 @@ function downloadViaCurl(timeoutMs) {
       (err, stdout, stderr) => {
         if (err) {
           try { fs.unlinkSync(tmp); } catch { /* nothing to clean */ }
-          return reject(new Error(`curl fallback failed: ${String(stderr || err.message).trim().slice(0, 200)}`));
+          return reject(new Error(`curl fallback failed: ${redactFeedUrl(stderr || err.message).trim().slice(0, 200)}`));
         }
         try {
           const xml = fs.readFileSync(tmp, 'utf8');
