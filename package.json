@@ -8,7 +8,8 @@
     "start": "next start",
     "feed": "node parse-feed.js",
     "backtest": "tsx scripts/avm-backtest.ts",
-    "build:preview-sim": "env -u NEXT_PUBLIC_SUPABASE_URL -u SUPABASE_SERVICE_ROLE_KEY -u NEXT_PUBLIC_SUPABASE_ANON_KEY -u ANTHROPIC_API_KEY -u PERPLEXITY_API_KEY -u STRIPE_SECRET_KEY -u RESEND_API_KEY next build"
+    "build:preview-sim": "env -u NEXT_PUBLIC_SUPABASE_URL -u SUPABASE_SERVICE_ROLE_KEY -u NEXT_PUBLIC_SUPABASE_ANON_KEY -u ANTHROPIC_API_KEY -u PERPLEXITY_API_KEY -u STRIPE_SECRET_KEY -u RESEND_API_KEY next build",
+    "test": "npx tsx scripts/run-tests.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.82.0",

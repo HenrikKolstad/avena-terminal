@@ -1,0 +1,73 @@
+name: Tests
+
+# Runs the repo's own test suites on every push and pull request.
+#
+# WHY THIS WORKFLOW DID NOT EXIST UNTIL 2026-10-13, AND WHY IT DOES NOW.
+#
+# The repo holds 25 hand-written suites — roughly 660 assertions over the
+# capture pipeline, the scribe, move reconciliation, the corpus artifacts, PLAB
+# honesty, the EU stats adapters and the feed-provenance instruments. Exactly
+# ONE of them ran in CI: test-capture-backstop.ts, invoked by
+# capture-backstop.yml. The other 24 ran only when someone typed their names.
+#
+# A test nobody runs is not a safety net, it is a comment that compiles — and it
+# rots. That is measured, not asserted: on the morning this file was written,
+# three fixtures added to test-feed-provenance.ts an hour earlier stamped a
+# time-of-day on TODAY, so they would have passed only when the suite ran
+# between 07:00 and midnight UTC, and failed every morning before that. They
+# were caught because the suite happened to be run twice within the hour. Luck
+# is not a process.
+#
+# NO SECRETS, DELIBERATELY. All 25 suites were run twice on 2026-10-13 — once
+# normally and once with every secret this repo uses unset (Supabase URL and
+# both keys, Anthropic, Perplexity, Stripe, Resend, Search Console, HF_TOKEN,
+# FEED_URL). 25/25 passed both times, so this job needs no secrets at all. That
+# also makes it meaningful on a FORK and on a preview branch, which is where the
+# project's history says breakage hides: production carries env vars previews do
+# not, so prod being green has never proved a branch was sound.
+#
+# The typecheck step is the same `tsc --noEmit` gate used before every push to
+# main, here so it cannot be skipped by whoever is in a hurry.
+
+# Push on every branch, which in a single-contributor repo already covers every
+# PR's head. `pull_request` is deliberately NOT listed: it would double-run each
+# branch for no extra coverage here. Add it the day a fork PR arrives.
+on:
+  push:
+    branches: ['**']
+  workflow_dispatch:
+
+# A later push supersedes an in-flight run on the same ref; main is excluded so
+# every commit that lands on the deploy branch is actually checked.
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Typecheck
+        # The same gate as every push to main. Not continue-on-error: a repo
+        # that does not typecheck has nothing else worth reporting.
+        run: npx tsc --noEmit
+
+      - name: Test suites
+        # scripts/run-tests.ts refuses to report a clean result when discovery
+        # finds fewer than 20 suites, so a broken glob fails loudly instead of
+        # printing "0 failures" and going green on nothing executed.
+        run: npm test
