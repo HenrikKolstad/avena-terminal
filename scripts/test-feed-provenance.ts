@@ -20,19 +20,24 @@
  * with `days_spanned: null` — NEVER 0, and never a claim of freshness.
  */
 
+import { spawnSync } from 'child_process';
 import { createHash } from 'crypto';
-import { readFileSync } from 'fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'fs';
+import { tmpdir } from 'os';
 import path from 'path';
 import {
   CONTENT_RED_DAYS,
   CONTENT_UNPRECEDENTED_DAYS,
+  ORIGIN_RED_DAYS,
   PAYLOAD_RED_DAYS,
   carryForwardContent,
   carryForwardProvenance,
   contentLines,
   describeUpstream,
   judgeUpstream,
+  normaliseHttpDate,
   readContentProvenance,
+  readOriginProvenance,
   readProvenance,
   type FeedMetaShape,
 } from '../src/lib/feed-provenance';
@@ -583,6 +588,422 @@ ok(
   '…and refuses a prior content stamp that will not parse',
   /Number\.isFinite\(Date\.parse\(prevContentSeen\)\)/.test(metaWriteBlock),
 );
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// THE ORIGIN AXIS (2026-10-13) — RedSP's own Last-Modified claim
+// ══════════════════════════════════════════════════════════════════════════════
+//
+// WHY THESE ASSERTIONS EXIST, AND WHAT MADE THEM NECESSARY. The pre-registered
+// content criterion came due this morning and fired correctly: the deployed book
+// graded `stalled`, content_days=4, exit 1. Then ONE HEAD request against the
+// feed URL settled in under a second what the two existing axes had circled for
+// three days — `last-modified: Mon, 12 Oct 2026 16:56:30 GMT`, i.e. the origin
+// rebuilt AFTER our own last fetch of 10-12, so RedSP is alive and the four
+// quiet days are the market.
+//
+// METHOD RULE 6 APPLIES TO THIS AXIS TOO: it is not verified until it has
+// emitted its alarm. So every state below is exercised with the input that
+// produces it, and the `frozen` branch is asserted on a fixture, not merely
+// hoped for. Rule 5's corollary is the next block down: each assertion is also
+// checked by DELIBERATELY REINTRODUCING the bug it guards, so none of these can
+// be a test I have only ever seen pass.
+
+/** Real header, verbatim from the 2026-10-13 05:48Z HEAD request. */
+const ORIGIN_HEADER_1012 = 'Mon, 12 Oct 2026 16:56:30 GMT';
+const ORIGIN_ISO_1012 = '2026-10-12T16:56:30.000Z';
+
+const WITH_ORIGIN: FeedMetaShape = {
+  ...CONTENT_0909,
+  origin_last_modified: ORIGIN_HEADER_1012,
+  origin_content_length: 97_801_138,
+};
+
+ok('an RFC-7231 HTTP-date normalises to an ISO instant', normaliseHttpDate(ORIGIN_HEADER_1012) === ORIGIN_ISO_1012);
+ok('an ISO string in the field is accepted too', normaliseHttpDate(ORIGIN_ISO_1012) === ORIGIN_ISO_1012);
+ok('an unparseable header is null, not a guess', normaliseHttpDate('soon') === null);
+ok('an empty header is null', normaliseHttpDate('   ') === null);
+ok('a non-string header is null', normaliseHttpDate(1_760_000_000_000) === null);
+ok('a null header is null', normaliseHttpDate(null) === null);
+
+ok('a meta with no origin header reads as null', readOriginProvenance(CONTENT_0909) === null);
+ok('the real header reads back normalised', readOriginProvenance(WITH_ORIGIN)?.origin_last_modified === ORIGIN_ISO_1012);
+ok('the advertised length reads back', readOriginProvenance(WITH_ORIGIN)?.origin_content_length === 97_801_138);
+ok(
+  'a missing content-length does NOT invalidate the block — it grades nothing',
+  readOriginProvenance({ ...WITH_ORIGIN, origin_content_length: undefined })?.origin_last_modified === ORIGIN_ISO_1012,
+);
+ok(
+  'a zero content-length reads as absent rather than as a zero-byte file',
+  readOriginProvenance({ ...WITH_ORIGIN, origin_content_length: 0 })?.origin_content_length === null,
+);
+ok(
+  'a garbage last-modified kills the block rather than half-reading it',
+  readOriginProvenance({ ...WITH_ORIGIN, origin_last_modified: 'whenever' }) === null,
+);
+
+// ── The three origin states, each with the input that produces it ──────────
+
+// Healthy: we fetch at 07:55 on 10-13 and the origin rebuilt 16:56 the evening
+// before. One boundary, and this is what EVERY healthy morning looks like.
+const originHealthy = judgeUpstream(WITH_ORIGIN, '2026-10-13T07:55:00.000Z');
+ok('the real 10-13 reading grades the origin as regenerating', originHealthy.origin_state === 'regenerating');
+ok('…one UTC boundary since the rebuild', originHealthy.origin_days === 1);
+ok('…and it does NOT make the origin the cause of the red', originHealthy.cause === 'content');
+ok('…the content axis still carries the verdict', originHealthy.level === 'stalled' && originHealthy.content_days === 4);
+ok(
+  '…and the sentence says the upstream is alive, so a reader is not sent chasing RedSP',
+  /ORIGIN itself reports rebuilding/.test(describeUpstream(originHealthy)),
+);
+
+// A same-day rebuild is zero boundaries — the healthiest reading there is.
+ok(
+  'a rebuild earlier the same UTC day is 0 boundaries and regenerating',
+  judgeUpstream(WITH_ORIGIN, '2026-10-12T23:59:59.000Z').origin_days === 0,
+);
+
+// THE ALARM. Two boundaries with no rebuild is the origin having stopped.
+const originFrozen = judgeUpstream(WITH_ORIGIN, '2026-10-14T07:55:00.000Z');
+ok('TWO boundaries with no rebuild grades the origin FROZEN', originFrozen.origin_state === 'frozen');
+ok('…which is red', originFrozen.level === 'stalled');
+ok('…and names the ORIGIN as the cause, not the map', originFrozen.cause === 'origin');
+ok('…reporting the real boundary count', originFrozen.origin_days === ORIGIN_RED_DAYS);
+ok(
+  '…and says plainly that this is the upstream stopping rather than a quiet market',
+  /THE ORIGIN ITSELF REPORTS NO REBUILD/.test(describeUpstream(originFrozen)),
+);
+
+// A frozen origin is red EVEN WHEN THE MAP MOVED. If RedSP stopped rebuilding,
+// today's book is last week's book, and a hash that happens to differ from our
+// stored one does not date it to today.
+const movedMapFrozenOrigin = judgeUpstream(
+  { ...WITH_ORIGIN, content_sha256: CONTENT_B, content_first_seen_at: '2026-10-14T07:55:00.000Z' },
+  '2026-10-14T07:55:00.000Z',
+);
+ok('a frozen origin is red even when the map moved today', movedMapFrozenOrigin.level === 'stalled');
+ok('…attributed to the origin', movedMapFrozenOrigin.cause === 'origin');
+ok('…with content_days 0, so the two readings are not conflated', movedMapFrozenOrigin.content_days === 0);
+ok(
+  '…and it does NOT claim the zeros are inherited, because the map did move',
+  movedMapFrozenOrigin.zeros_inherited === false,
+);
+ok(
+  '…and refuses to say "identical for 0 calendar days", which would be nonsense as a measurement',
+  !/identical for 0 calendar days/.test(describeUpstream(movedMapFrozenOrigin)),
+);
+
+// UNKNOWN IS NEVER HEALTH. An absent header must not read as a freeze, and must
+// not read as liveness either — contract 1, the whole module's spine.
+const noOrigin = judgeUpstream(CONTENT_0909, '2026-10-13T07:55:00.000Z');
+ok('no origin header reads as origin_state unknown', noOrigin.origin_state === 'unknown');
+ok('…with origin_days NULL, never 0', noOrigin.origin_days === null);
+ok('…and origin_last_modified null', noOrigin.origin_last_modified === null);
+ok('…and it does NOT become the cause of anything', noOrigin.cause === 'content');
+ok(
+  '…and the sentence says the schedule is unknown rather than implying health',
+  /sent no usable Last-Modified/.test(describeUpstream(noOrigin)),
+);
+ok(
+  'a garbage origin header reads unknown, NOT frozen — a broken header is not evidence of a freeze',
+  judgeUpstream({ ...WITH_ORIGIN, origin_last_modified: 'whenever' }, '2026-10-20T00:00:00.000Z').origin_state === 'unknown',
+);
+// A future rebuild stamp is a clock problem. It must not read as `regenerating`
+// — which a bare `originDays >= ORIGIN_RED_DAYS ? frozen : regenerating` would
+// have done, since a negative day count is less than 2.
+const futureOrigin = judgeUpstream(
+  { ...WITH_ORIGIN, origin_last_modified: 'Wed, 01 Jan 2031 00:00:00 GMT' },
+  '2026-10-13T07:55:00.000Z',
+);
+ok('a FUTURE rebuild stamp refuses to grade rather than reading as healthy', futureOrigin.origin_state === 'unknown');
+ok('…with a null day count, not a negative one', futureOrigin.origin_days === null);
+
+// ── `cause` must track the measurement, which is the bug of 2026-10-13 ─────
+
+ok('level current has no cause', judgeUpstream({ ...WITH_ORIGIN, content_first_seen_at: '2026-10-13T07:00:00.000Z' }, '2026-10-13T07:55:00.000Z').cause === null);
+ok('level quiet has no cause', judgeUpstream(CONTENT_0909, '2026-10-10T07:41:00.000Z').cause === null);
+ok('level unusual is attributed to content', judgeUpstream(CONTENT_0909, '2026-10-12T07:55:00.000Z').cause === 'content');
+ok('level unknown has no cause', judgeUpstream(LEGACY_META, '2026-10-13T07:55:00.000Z').cause === null);
+// THE EXACT MISREPORT. On 10-13 content_days was 4 and payload liveness was
+// byte_identical at 1 boundary — one short of PAYLOAD_RED_DAYS. The old code
+// titled that `Upstream payload byte-identical across 1 days`.
+ok(
+  'the 10-13 case is attributed to CONTENT, not to a payload axis that never tripped',
+  judgeUpstream(
+    { ...CONTENT_0909, generated_at: '2026-10-12T13:03:26.493Z', source_first_seen_at: '2026-10-12T07:55:59.079Z' },
+    '2026-10-13T05:48:00.000Z',
+  ).cause === 'content',
+);
+// PRECEDENCE WHEN BOTH AXES HAVE TRIPPED, and this assertion exists because the
+// deliberate-reintroduction pass caught me without it: swapping the two checks
+// left every other assertion in this file passing. The fixture below is the one
+// that can tell them apart — content at 5 boundaries AND a confirmed
+// byte-identical re-fetch at 2, i.e. both red at once.
+//
+// The unchanged MAP is the finding in that case (the moat banked another empty
+// day); identical bytes are a corroborating detail. Reporting it the other way
+// round is the 2026-10-13 misreport in a different costume.
+const bothRed = judgeUpstream(
+  {
+    ...CONTENT_0909,
+    content_first_seen_at: '2026-10-08T00:00:00.000Z',
+    generated_at: '2026-10-13T07:00:00.000Z',
+    source_first_seen_at: '2026-10-11T07:00:00.000Z',
+  },
+  '2026-10-13T07:00:00.000Z',
+);
+ok('both axes red at once: content_days is past red', (bothRed.content_days ?? 0) >= CONTENT_RED_DAYS);
+ok('…and the payload axis is genuinely red too, not merely stale', bothRed.liveness === 'byte_identical' && (bothRed.payload_days ?? 0) >= PAYLOAD_RED_DAYS);
+ok('…and the CONTENT axis is named as the cause, because the empty day is the finding', bothRed.cause === 'content');
+
+// And when the payload axis genuinely IS the only thing that tripped, it is
+// named — so the fix did not simply hard-wire 'content'.
+const payloadOnly = judgeUpstream(
+  {
+    ...CONTENT_0909,
+    content_first_seen_at: '2026-10-12T00:00:00.000Z',
+    generated_at: '2026-10-13T07:00:00.000Z',
+    source_first_seen_at: '2026-10-11T07:00:00.000Z',
+  },
+  '2026-10-13T07:00:00.000Z',
+);
+ok('a payload-only red is attributed to the payload axis', payloadOnly.cause === 'payload' && payloadOnly.level === 'stalled');
+ok('…on a content axis that had NOT reached red', (payloadOnly.content_days ?? 0) < CONTENT_RED_DAYS);
+
+
+// ── parse-feed.js's own header capture, EXECUTED rather than grepped ───────
+//
+// `headerFromCurlJson` lives in parse-feed.js because that file is plain JS and
+// cannot import this module. Asserting it with a regex would be a test I could
+// only ever see pass (method rule 5), so the real shipped function is extracted
+// from the real file and RUN. If it is renamed or deleted, the extraction fails
+// and so does this suite.
+
+const PARSE_FEED_SRC = readFileSync(path.join(process.cwd(), 'parse-feed.js'), 'utf8');
+
+/** Lift one top-level `function name(...) {...}` out of a source file verbatim. */
+function extractFn(src: string, name: string): string {
+  const start = src.indexOf(`function ${name}(`);
+  if (start < 0) throw new Error(`parse-feed.js no longer defines ${name}()`);
+  let depth = 0;
+  let seenBrace = false;
+  for (let i = start; i < src.length; i++) {
+    if (src[i] === '{') { depth++; seenBrace = true; }
+    else if (src[i] === '}') { depth--; if (seenBrace && depth === 0) return src.slice(start, i + 1); }
+  }
+  throw new Error(`could not find the end of ${name}() in parse-feed.js`);
+}
+
+const headerFromCurlJson = new Function(
+  `${extractFn(PARSE_FEED_SRC, 'headerFromCurlJson')}; return headerFromCurlJson;`,
+)() as (stdout: unknown, name: string) => string | null;
+
+// The real shape, verbatim from curl 8.5.0 against the live origin on 2026-10-13.
+const REAL_HEADER_JSON = '{"server":["nginx"],"content-length":["97801138"],"last-modified":["Mon, 12 Oct 2026 16:56:30 GMT"]}';
+
+ok(
+  "curl's header_json yields the origin's last-modified",
+  headerFromCurlJson(REAL_HEADER_JSON, 'last-modified') === ORIGIN_HEADER_1012,
+);
+ok('…and the advertised length', headerFromCurlJson(REAL_HEADER_JSON, 'content-length') === '97801138');
+ok('a header curl did not send is null', headerFromCurlJson(REAL_HEADER_JSON, 'etag') === null);
+ok(
+  'under --location the LAST response in the chain wins',
+  headerFromCurlJson('{"last-modified":["Sun, 11 Oct 2026 00:00:00 GMT","Mon, 12 Oct 2026 16:56:30 GMT"]}', 'last-modified')
+    === ORIGIN_HEADER_1012,
+);
+// An old curl prints the literal format string instead of JSON. That must read
+// as unknown, not crash the download and not invent a value.
+ok("a curl too old for header_json reads null", headerFromCurlJson('%{header_json}', 'last-modified') === null);
+ok('an empty stdout reads null', headerFromCurlJson('', 'last-modified') === null);
+ok('a JSON array instead of an object reads null', headerFromCurlJson('[]', 'last-modified') === null);
+ok('a non-array header value reads null', headerFromCurlJson('{"last-modified":"Mon, 12 Oct 2026 16:56:30 GMT"}', 'last-modified') === null);
+ok('an empty header array reads null', headerFromCurlJson('{"last-modified":[]}', 'last-modified') === null);
+ok('a blank header value reads null rather than empty-string', headerFromCurlJson('{"last-modified":["   "]}', 'last-modified') === null);
+ok('null stdout reads null', headerFromCurlJson(null, 'last-modified') === null);
+
+// And the end-to-end contract: whatever curl said has to survive normalisation
+// into the instant the grader actually compares.
+ok(
+  'the captured header normalises to the instant the grader grades',
+  normaliseHttpDate(headerFromCurlJson(REAL_HEADER_JSON, 'last-modified')) === ORIGIN_ISO_1012,
+);
+
+// ── Where the capture is wired, which execution cannot show ───────────────
+
+ok(
+  'the observation is CLEARED at the top of downloadFeed, so a retry cannot leave an earlier attempt’s headers on a later body',
+  /async function downloadFeed\(\)\s*\{[\s\S]{0,400}?recordOriginObservation\(null, null\)/.test(PARSE_FEED_SRC),
+);
+ok(
+  'the fetch client records the headers it already received',
+  /recordOriginObservation\(res\.headers\.get\('last-modified'\), res\.headers\.get\('content-length'\)\)/.test(PARSE_FEED_SRC),
+);
+ok(
+  'the curl fallback records them too — the refused-egress nights are exactly when we need the origin axis',
+  /recordOriginObservation\(\s*headerFromCurlJson\(stdout, 'last-modified'\),/.test(PARSE_FEED_SRC),
+);
+ok(
+  'curl is asked for header_json, and the body still goes to a file so stdout stays small',
+  /'-o', tmp, '-w', '%\{header_json\}'/.test(PARSE_FEED_SRC),
+);
+ok(
+  'the origin keys are OMITTED when the origin said nothing — never written as nulls, which would store an observation that no observation was made',
+  /originObservation\.origin_last_modified !== null\s*\?\s*\{[\s\S]{0,260}?\}\s*:\s*\{\}/.test(PARSE_FEED_SRC),
+);
+ok(
+  '…and the block is spread into feed-meta.json',
+  /\.\.\.originBlock,/.test(PARSE_FEED_SRC),
+);
+ok(
+  'parse-feed does NOT write an origin first-seen stamp — the origin states an absolute instant, so storing one would add a field nothing reads and under-report a freeze on run one',
+  !/origin_last_modified_first_seen_at/.test(PARSE_FEED_SRC),
+);
+
+
+// ── THE ANNOTATION TITLE, END TO END — the exact thing that misreported ───
+//
+// This block exists because the deliberate-reintroduction pass put the old
+// `verdict.liveness === 'byte_identical' ? ...` title back and EVERY assertion
+// in this file still passed. The bug of 2026-10-13 was in the reporter, and the
+// reporter had no test at all. A fix whose own regression is invisible is not a
+// fix.
+//
+// So run the real script, in a scratch directory holding a fixture
+// feed-meta.json, and assert on what it actually prints and on its exit code.
+
+const REPORTER = path.join(process.cwd(), 'scripts', 'report-upstream-provenance.ts');
+
+function runReporter(meta: Record<string, unknown>): { code: number; out: string } {
+  const dir = mkdtempSync(path.join(tmpdir(), 'avena-prov-'));
+  mkdirSync(path.join(dir, 'public'), { recursive: true });
+  writeFileSync(path.join(dir, 'public', 'feed-meta.json'), JSON.stringify(meta, null, 2));
+  const r = spawnSync('npx', ['tsx', REPORTER], { cwd: dir, encoding: 'utf8' });
+  rmSync(dir, { recursive: true, force: true });
+  return { code: r.status ?? -1, out: `${r.stdout ?? ''}${r.stderr ?? ''}` };
+}
+
+// FIXTURES ARE RELATIVE TO THE REAL CLOCK, ON PURPOSE. The reporter reads
+// `new Date()` and has no injectable clock — correctly, since an env var that
+// can shift the clock of an alarm is a foot-gun in production. Absolute dates
+// here would have made this suite report "4 unchanged days" only on
+// 2026-10-13 and then rot silently every day after, which is the same class of
+// defect as the bug it is pinning. So each fixture is built at a day offset and
+// reproduces the SHAPE of the real case on any day it runs.
+const DAY_MS = 86_400_000;
+/**
+ * An instant `days` UTC days before today, at the given UTC time of day.
+ * `days` must be >= 1: a time-of-day on TODAY can land in the future depending
+ * on when the suite runs, and the grader rightly refuses to grade a
+ * future-dated stamp — which made three of these fixtures pass only between
+ * 07:00 and midnight UTC. Use `minutesAgo` for "earlier today".
+ */
+function daysAgoAt(days: number, hh: number, mm: number, ss = 0): string {
+  if (days < 1) throw new Error('daysAgoAt: use minutesAgo() for today — a time-of-day today may be in the future');
+  const d = new Date(Date.now() - days * DAY_MS);
+  d.setUTCHours(hh, mm, ss, 0);
+  return d.toISOString();
+}
+/** An instant a few minutes ago — always in the past, whatever the hour. */
+function minutesAgo(mins: number): string {
+  return new Date(Date.now() - mins * 60_000).toISOString();
+}
+
+// THE REAL 2026-10-13 SHAPE, from the deployed public/feed-meta.json that
+// morning: the observable map unchanged for FOUR calendar days, while the
+// payload was byte-identical across only ONE boundary — one short of
+// PAYLOAD_RED_DAYS. The old reporter headlined that
+// `Upstream payload byte-identical across 1 days`, naming an axis that had not
+// tripped and burying the finding that had.
+const real1013 = runReporter({
+  generated_at: daysAgoAt(1, 13, 3, 26),
+  generated_date: 'fixture',
+  listings: 2039,
+  source: 'redsp',
+  source_sha256: 'c938e76ec551c059cbd9a5b046f2b23f00d9afdf905e1d466038ab10354315dd',
+  source_bytes: 97_801_134,
+  source_first_seen_at: daysAgoAt(1, 7, 55, 59),
+  content_sha256: 'fe0834fd8839bfab5c8f6da43ecf2d202b5153760f37bc23199b42231e7b5b7c',
+  content_refs: 2039,
+  content_first_seen_at: daysAgoAt(4, 11, 50, 22),
+});
+ok('the real 10-13 shape exits 1 — the pre-registered alarm fires', real1013.code === 1);
+ok(
+  '…and the annotation TITLE names the content axis, which is what tripped',
+  /::error title=Observable market data unchanged for 4 days::/.test(real1013.out),
+);
+ok(
+  '…and does NOT headline a payload axis whose own threshold was never crossed',
+  !/title=Upstream payload byte-identical/.test(real1013.out),
+);
+ok('…reporting the cause in the failure line too', /cause=content/.test(real1013.out));
+ok(
+  '…and reading the origin axis as unknown on a meta written before it existed',
+  /origin claim\s+NO USABLE Last-Modified/.test(real1013.out),
+);
+ok(
+  '…while the payload axis is still reported for the record, one boundary short of its own red',
+  /payload_days=1/.test(real1013.out),
+);
+
+// A genuinely payload-driven red must still be titled as one — the fix must not
+// have simply deleted the branch. Content quiet for one boundary (normal),
+// payload byte-identical across three (not normal).
+const payloadRedRun = runReporter({
+  generated_at: minutesAgo(1),
+  generated_date: 'fixture',
+  listings: 2039,
+  source: 'redsp',
+  source_sha256: 'd'.repeat(64),
+  source_bytes: 97_801_134,
+  source_first_seen_at: daysAgoAt(3, 7, 0),
+  content_sha256: 'e'.repeat(64),
+  content_refs: 2039,
+  content_first_seen_at: daysAgoAt(1, 0, 30),
+});
+ok('a payload-driven red is titled as a payload freeze', /::error title=Upstream payload byte-identical across 3 days::/.test(payloadRedRun.out));
+ok('…and exits 1', payloadRedRun.code === 1);
+ok('…on a content axis that was merely quiet', /cause=payload/.test(payloadRedRun.out));
+
+// A frozen ORIGIN gets its own title, naming RedSP rather than our own hashes —
+// and it is red even though the map moved today and the payload is fresh.
+const originRedRun = runReporter({
+  generated_at: minutesAgo(1),
+  generated_date: 'fixture',
+  listings: 2039,
+  source: 'redsp',
+  source_sha256: 'f'.repeat(64),
+  source_bytes: 97_801_134,
+  source_first_seen_at: minutesAgo(1),
+  content_sha256: 'a'.repeat(64),
+  content_refs: 2039,
+  content_first_seen_at: minutesAgo(2),
+  origin_last_modified: new Date(Date.now() - 3 * DAY_MS).toUTCString(),
+  origin_content_length: 97_801_138,
+});
+ok('a frozen origin is titled as RedSP not rebuilding', /::error title=RedSP itself reports no rebuild for 3 days::/.test(originRedRun.out));
+ok('…and exits 1 even though the map moved today and the payload is fresh', originRedRun.code === 1);
+ok('…attributing the cause to the origin', /cause=origin/.test(originRedRun.out));
+
+// And the healthy direction, so this is not three alarms and no all-clear:
+// the map changed today AND the origin rebuilt yesterday evening — which is
+// exactly what every good morning looks like.
+const healthyRun = runReporter({
+  generated_at: minutesAgo(1),
+  generated_date: 'fixture',
+  listings: 2039,
+  source: 'redsp',
+  source_sha256: 'b'.repeat(64),
+  source_bytes: 97_801_138,
+  source_first_seen_at: minutesAgo(1),
+  content_sha256: 'c'.repeat(64),
+  content_refs: 2039,
+  content_first_seen_at: minutesAgo(1),
+  origin_last_modified: new Date(Date.now() - 1 * DAY_MS).toUTCString(),
+  origin_content_length: 97_801_138,
+});
+ok('a book whose map moved against a live origin exits 0', healthyRun.code === 0);
+ok('…with no error annotation at all', !/::error/.test(healthyRun.out));
+ok('…and reports the origin as regenerating', /origin=regenerating/.test(healthyRun.out));
 
 console.log('');
 if (failures.length) {

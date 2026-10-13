@@ -463,13 +463,26 @@ export async function GET(req: NextRequest) {
     // is the independent question of whether the upstream is regenerating at
     // all. `unknown` means the deploy carries no fingerprint — never read it as
     // fresh (see feed-provenance.ts).
+    // THREE axes since 2026-10-13. `origin_state` / `origin_days` /
+    // `origin_last_modified` are RedSP's OWN Last-Modified claim, captured by
+    // parse-feed from the response it already receives — the only one of the
+    // three that is not a diff of our own fetch history, and therefore the only
+    // one that can distinguish a quiet market from a dead feed on a single
+    // observation. `cause` names the axis that actually tripped the verdict,
+    // because the first morning the red path ran it was headlined with the
+    // wrong one. `unknown` on any axis means we do not know; never read it as
+    // fresh (see feed-provenance.ts).
     upstream: (() => {
       const v = judgeUpstream(getFeedMeta(), new Date().toISOString());
       return {
         level: v.level,
+        cause: v.cause,
         content_days: v.content_days,
         payload_days: v.payload_days,
         liveness: v.liveness,
+        origin_days: v.origin_days,
+        origin_state: v.origin_state,
+        origin_last_modified: v.origin_last_modified,
         zeros_inherited: v.zeros_inherited,
         note: describeUpstream(v),
       };

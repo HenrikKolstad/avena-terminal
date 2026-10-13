@@ -56,6 +56,7 @@ import {
   describeUpstream,
   judgeUpstream,
   readContentProvenance,
+  readOriginProvenance,
   readProvenance,
   type FeedMetaShape,
 } from '../src/lib/feed-provenance';
@@ -89,6 +90,7 @@ if (readError) {
 const verdict = judgeUpstream(meta, new Date().toISOString());
 const payload = readProvenance(meta);
 const content = readContentProvenance(meta);
+const origin = readOriginProvenance(meta);
 const sentence = describeUpstream(verdict);
 
 console.log(`feed-meta.json  generated_date=${String(meta?.generated_date ?? 'unknown')} listings=${String(meta?.listings ?? 'unknown')}`);
@@ -108,9 +110,19 @@ if (payload) {
 } else {
   console.log('raw payload       NO USABLE FINGERPRINT');
 }
+if (origin) {
+  console.log(
+    `origin claim      last_modified=${origin.origin_last_modified} ` +
+      `content_length=${origin.origin_content_length ?? 'absent'}`,
+  );
+} else {
+  console.log('origin claim      NO USABLE Last-Modified (unknown, neither healthy nor frozen)');
+}
 console.log(
-  `verdict: ${verdict.level} (content_days=${String(verdict.content_days)} payload_days=${String(verdict.payload_days)} ` +
-    `liveness=${verdict.liveness} zeros_inherited=${verdict.zeros_inherited}) — ${sentence}`,
+  `verdict: ${verdict.level} (cause=${String(verdict.cause)} content_days=${String(verdict.content_days)} ` +
+    `payload_days=${String(verdict.payload_days)} liveness=${verdict.liveness} ` +
+    `origin_days=${String(verdict.origin_days)} origin=${verdict.origin_state} ` +
+    `zeros_inherited=${verdict.zeros_inherited}) — ${sentence}`,
 );
 
 if (verdict.level === 'unknown') {
@@ -130,17 +142,38 @@ if (verdict.level === 'current') {
 }
 
 if (verdict.level === 'stalled') {
+  // THE TITLE NAMES THE AXIS THAT ACTUALLY TRIPPED, AND IT HAS TO BE
+  // `verdict.cause` RATHER THAN A RE-DERIVATION HERE.
+  //
+  // 2026-10-13, the first morning the red path ever ran: the finding was the
+  // observable map unchanged for FOUR calendar days, no precedent in 68. This
+  // block headlined it `Upstream payload byte-identical across 1 days` — an
+  // axis whose own threshold (PAYLOAD_RED_DAYS = 2) had not been crossed and
+  // which had contributed nothing to the verdict — because it chose the title
+  // from `liveness` alone. The body sentence was right the whole time; the
+  // headline named the wrong cause, and the headline is what a reader sees in a
+  // run summary or a failure email.
+  //
+  // A derived label that does not reflect its own measurement is this project's
+  // recurring bug one step along from a zero standing in for a missing value.
+  // The verdict now carries its cause so no caller re-derives it — and so no
+  // caller can re-derive it differently.
+  const title =
+    verdict.cause === 'origin'
+      ? `RedSP itself reports no rebuild for ${verdict.origin_days} days`
+      : verdict.cause === 'payload'
+        ? `Upstream payload byte-identical across ${verdict.payload_days} days`
+        : `Observable market data unchanged for ${verdict.content_days} days`;
   annotate(
     'error',
-    verdict.liveness === 'byte_identical'
-      ? `Upstream payload byte-identical across ${verdict.payload_days} days`
-      : `Observable market data unchanged for ${verdict.content_days} days`,
-    `${sentence}. Check whether RedSP is still regenerating the file before trusting any zero in the movement ` +
-      `ledger for those days. Red at ${CONTENT_RED_DAYS} unchanged days is the criterion pre-registered on ` +
-      `2026-10-11, from a ledger whose longest genuine zero run is two days.`,
+    title,
+    `${sentence}. Red at ${CONTENT_RED_DAYS} unchanged days is the criterion pre-registered on 2026-10-11, ` +
+      `from a ledger whose longest genuine zero run is two days. The origin axis above is RedSP's own ` +
+      `Last-Modified claim and is the fastest way to tell a quiet market from a dead feed.`,
   );
   console.error(
-    `FAIL — stalled (content unchanged ${String(verdict.content_days)} days, payload ${verdict.liveness})`,
+    `FAIL — stalled (cause=${String(verdict.cause)} content_days=${String(verdict.content_days)} ` +
+      `payload=${verdict.liveness} origin=${verdict.origin_state})`,
   );
   process.exit(1);
 }

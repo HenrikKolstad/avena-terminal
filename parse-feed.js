@@ -482,6 +482,84 @@ const FEED_ATTEMPT_TIMEOUT_MS = Number(process.env.FEED_ATTEMPT_TIMEOUT_MS || 60
 const CHALLENGE_MAX_ATTEMPTS = Number(process.env.FEED_CHALLENGE_MAX_ATTEMPTS || 4);
 
 /**
+ * WHAT THE ORIGIN ITSELF SAID ABOUT THE FILE IT HANDED US (2026-10-13).
+ *
+ * The two fingerprints above are both diffs of OUR OWN fetch history: we hash
+ * what we were given and compare it to what we were given last time. That makes
+ * both of them hostages to our fetch schedule — `not_refetched` exists only
+ * because a day-old stamp cannot distinguish a frozen origin from an origin
+ * nobody has asked yet, and `byte_identical` can only ever speak about the two
+ * moments we happened to sample.
+ *
+ * On 2026-10-13 the pre-registered content criterion came due and fired
+ * correctly (four unchanged calendar days, no precedent in 68). One HEAD request
+ * then answered, in under a second, the question the other two axes had spent
+ * three days circling:
+ *
+ *   last-modified: Mon, 12 Oct 2026 16:56:30 GMT
+ *   content-length: 97801138
+ *
+ * The origin rebuilt at 16:56 on 10-12 — after our own last fetch of that day
+ * (07:55, plus a 13:03 re-fetch handed the identical 97,801,134 bytes) — and
+ * advertised a length different from the one we hold. RedSP is demonstrably
+ * alive; the four quiet days are the market. THE POINT IS NOT THAT THE ANSWER
+ * WAS REASSURING. It is that the answer arrives free with every download we
+ * already perform and nothing was reading it.
+ *
+ * So record it. Both download clients fill this in; `null` means the header was
+ * absent or unreadable, which src/lib/feed-provenance.ts grades as UNKNOWN and
+ * never as health. Capturing it must never be able to break the download, so
+ * every read here is defensive and nothing it does affects control flow.
+ */
+let originObservation = { origin_last_modified: null, origin_content_length: null };
+
+function recordOriginObservation(lastModified, contentLength) {
+  try {
+    const lm = typeof lastModified === 'string' && lastModified.trim().length > 0 ? lastModified.trim() : null;
+    const len = Number(contentLength);
+    originObservation = {
+      origin_last_modified: lm,
+      origin_content_length: Number.isFinite(len) && len > 0 ? len : null,
+    };
+  } catch {
+    // Deliberately NOT a silent substitution: nulls make the axis read
+    // "unknown", which is the honest answer when the headers could not be read.
+    // The one thing this must never do is leave a stale observation from an
+    // earlier attempt looking like this download's.
+    originObservation = { origin_last_modified: null, origin_content_length: null };
+  }
+}
+
+/**
+ * Read one header out of curl's own `%{header_json}` serialisation.
+ *
+ * Deliberately NOT a hand-rolled parse of a `-D` dump: curl already serialises
+ * the response headers as JSON (8.5.0 on this runner, and on ubuntu-latest),
+ * with keys lower-cased and each value an ARRAY, so there is no line-splitting,
+ * continuation-folding or case-matching left to get wrong. Verified against the
+ * live origin 2026-10-13: `{"last-modified":["Mon, 12 Oct 2026 16:56:30 GMT"]}`.
+ *
+ * Takes the LAST element: under `--location` the object can carry a value per
+ * response in the chain, and the one we read the body from is the final one.
+ *
+ * Returns null for anything unexpected — an old curl that prints the literal
+ * `%{header_json}`, a missing header, a non-array value. Null makes the axis
+ * read UNKNOWN, which is the honest answer; it must never read as health.
+ */
+function headerFromCurlJson(stdout, name) {
+  try {
+    const parsed = JSON.parse(String(stdout));
+    if (!parsed || typeof parsed !== 'object') return null;
+    const values = parsed[name];
+    if (!Array.isArray(values) || values.length === 0) return null;
+    const last = values[values.length - 1];
+    return typeof last === 'string' && last.trim().length > 0 ? last.trim() : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Fetch the feed with curl instead of node's fetch.
  *
  * Measured 2026-08-14, same container, same minute, same URL:
@@ -507,12 +585,25 @@ function downloadViaCurl(timeoutMs) {
   const os = require('os');
   const path = require('path');
   const tmp = path.join(os.tmpdir(), `avena-feed-${process.pid}-${Date.now()}.xml`);
+  // The curl path records the same origin observation the fetch path does, via
+  // curl's own `%{header_json}` on stdout. A fallback download that loses the
+  // header would make the axis read "unknown" on exactly the nights the primary
+  // client was refused — i.e. the nights we most need to know whether RedSP is
+  // alive at all.
   return new Promise((resolve, reject) => {
     execFile(
       'curl',
-      ['-sS', '--fail', '--location', '--max-time', String(Math.ceil(timeoutMs / 1000)), '-o', tmp, FEED_URL],
-      { timeout: timeoutMs + 30_000 },
-      (err, _stdout, stderr) => {
+      [
+        '-sS', '--fail', '--location', '--max-time', String(Math.ceil(timeoutMs / 1000)),
+        // The body goes to the file; stdout therefore carries only the header
+        // JSON, so this cannot collide with a 94MB payload.
+        '-o', tmp, '-w', '%{header_json}',
+        FEED_URL,
+      ],
+      // Headers only on stdout, so a small buffer is ample — but set it
+      // explicitly rather than relying on the 1MB default staying generous.
+      { timeout: timeoutMs + 30_000, maxBuffer: 2_000_000 },
+      (err, stdout, stderr) => {
         if (err) {
           try { fs.unlinkSync(tmp); } catch { /* nothing to clean */ }
           return reject(new Error(`curl fallback failed: ${String(stderr || err.message).trim().slice(0, 200)}`));
@@ -520,6 +611,11 @@ function downloadViaCurl(timeoutMs) {
         try {
           const xml = fs.readFileSync(tmp, 'utf8');
           fs.unlinkSync(tmp);
+          // Observational only: this must never be able to fail the download.
+          recordOriginObservation(
+            headerFromCurlJson(stdout, 'last-modified'),
+            headerFromCurlJson(stdout, 'content-length'),
+          );
           resolve(xml);
         } catch (readErr) {
           reject(new Error(`curl fallback wrote no readable body: ${readErr.message}`));
@@ -530,6 +626,9 @@ function downloadViaCurl(timeoutMs) {
 }
 
 async function downloadFeed() {
+  // Clear first: a retry must never leave a previous attempt's headers attached
+  // to the body we end up using. Stale-but-plausible is the worst reading here.
+  recordOriginObservation(null, null);
   const startedAt = Date.now();
   const deadline = startedAt + FEED_WAIT_MINUTES * 60_000;
   let attempt = 0;
@@ -607,6 +706,7 @@ async function downloadFeed() {
         // evidence for ever retuning the schedule has to come from somewhere.
         console.log(`Feed complete on attempt ${attempt} after waiting ${waited}min.`);
       }
+      recordOriginObservation(res.headers.get('last-modified'), res.headers.get('content-length'));
       return xml;
     } catch (err) {
       // Name the hang so the log says what happened rather than "The operation
@@ -1287,6 +1387,29 @@ async function main() {
     prevContentSeen !== null &&
     Number.isFinite(Date.parse(prevContentSeen));
 
+  // --- ORIGIN OBSERVATION (2026-10-13) ---
+  //
+  // NO CARRY-FORWARD HERE, AND THE ASYMMETRY WITH THE TWO BLOCKS ABOVE IS THE
+  // POINT. `source_sha256` and `content_sha256` are opaque digests: they say a
+  // value changed but not when, so measuring a run length means remembering
+  // when we first saw each one. `Last-Modified` is already an absolute instant
+  // — the origin states its rebuild time outright — so a first-seen stamp would
+  // store a field nothing reads AND make the axis strictly worse: on the first
+  // run after this ships it would report 0 boundaries for an origin that had in
+  // fact been frozen for a week. The grader reads the origin's own timestamp
+  // directly, so a freeze is visible immediately, run one included.
+  //
+  // Written only when the origin actually told us something. Omitting the keys
+  // is what makes the axis read "unknown"; writing nulls would be a stored
+  // observation that no observation was made, which later reads as data.
+  const originBlock =
+    originObservation.origin_last_modified !== null
+      ? {
+          origin_last_modified: originObservation.origin_last_modified,
+          origin_content_length: originObservation.origin_content_length,
+        }
+      : {};
+
   fs.writeFileSync(META, JSON.stringify({
     generated_at: nowIso,
     generated_date: today,
@@ -1296,6 +1419,7 @@ async function main() {
     source_first_seen_at: carriedForward ? prevSeen : nowIso,
     ...contentFingerprint,
     content_first_seen_at: contentCarriedForward ? prevContentSeen : nowIso,
+    ...originBlock,
   }, null, 2));
   console.log(`Wrote ${META} (generated_date=${today}, ${unique.length} listings)`);
   console.log(
@@ -1308,6 +1432,14 @@ async function main() {
     `${contentFingerprint.content_refs} refs ` +
     `first_seen=${contentCarriedForward ? prevContentSeen : nowIso}` +
     `${contentCarriedForward ? ' (UNCHANGED — this book can produce no move, arrival or departure)' : ' (the map moved — new facts in this book)'}`
+  );
+  console.log(
+    originObservation.origin_last_modified !== null
+      ? `Origin says last-modified=${originObservation.origin_last_modified} ` +
+        `content-length=${originObservation.origin_content_length ?? 'absent'} ` +
+        `(the origin's OWN rebuild claim — the only axis here that is not a diff of our fetch history)`
+      : `Origin sent no usable Last-Modified — its rebuild schedule is UNKNOWN for this run, ` +
+        `not healthy and not frozen.`
   );
 
   // --- DISCOUNT SANITY CAP REPORT ---
