@@ -138,7 +138,7 @@ the pipeline had one instrument pointed at both.
 
 | shipped | what | how to verify — INCLUDING THE INPUT THAT WOULD MAKE IT FIRE (rule 6) |
 |---|---|---|
-| 2026-10-13 | `12d9370` **the third axis + the misattributed cause.** parse-feed records the origin's own `Last-Modified`/`Content-Length` in BOTH download clients (fetch reads `res.headers`; the curl fallback asks curl for `%{header_json}` on stdout, body still to a file). No carry-forward and that asymmetry is deliberate — `Last-Modified` is an absolute instant, so a first-seen stamp would store a field nothing reads AND under-report a freeze on run one. `ORIGIN_RED_DAYS = 2`. Verdict carries `cause`; a frozen origin is red on its own account even when the map moved. 202 assertions, up from 122 | **`public/feed-meta.json` on main must carry `origin_last_modified` + `origin_content_length` after tonight's nightly; the `upstream` step must print the `origin claim` line; `cron_logs` for pricing-history must carry `cause`, `origin_days`, `origin_state`, `origin_last_modified`.** **THE FIRING INPUT, per rule 6: the `origin_state: frozen` path has NEVER run on real data and cannot be produced on demand — it needs RedSP to stop rebuilding for two UTC boundaries. It is pinned by fixtures and by an end-to-end run of the real reporter script (title `RedSP itself reports no rebuild for 3 days`, exit 1, `cause=origin`), but UNTIL RedSP actually freezes, THE ORIGIN ALARM IS UNVERIFIED AGAINST PRODUCTION AND SAYS SO HERE. The `regenerating` path verifies tonight; do not report the frozen path as held on the strength of it.** |
+| 2026-10-13 | `12d9370` **the third axis + the misattributed cause.** parse-feed records the origin's own `Last-Modified`/`Content-Length` in BOTH download clients (fetch reads `res.headers`; the curl fallback asks curl for `%{header_json}` on stdout, body still to a file). No carry-forward and that asymmetry is deliberate — `Last-Modified` is an absolute instant, so a first-seen stamp would store a field nothing reads AND under-report a freeze on run one. `ORIGIN_RED_DAYS = 2`. Verdict carries `cause`; a frozen origin is red on its own account even when the map moved. 202 assertions, up from 122 | **VERIFIED SAME DAY on the real 08:21 nightly — see the capture-confirmation block below: `feed-meta.json` carries `origin_last_modified`, the `upstream` step printed the `origin claim` line, and `cron_logs` carries `cause`/`origin_days`/`origin_state`/`origin_last_modified`. `origin_content_length` came back null by construction and was REMOVED the same day in `d81e4cc`.** **THE FIRING INPUT, per rule 6: the `origin_state: frozen` path has NEVER run on real data and cannot be produced on demand — it needs RedSP to stop rebuilding for two UTC boundaries. It is pinned by fixtures and by an end-to-end run of the real reporter script (title `RedSP itself reports no rebuild for 3 days`, exit 1, `cause=origin`), but UNTIL RedSP actually freezes, THE ORIGIN ALARM IS UNVERIFIED AGAINST PRODUCTION AND SAYS SO HERE. The `regenerating` path verifies tonight; do not report the frozen path as held on the strength of it.** |
 | 2026-10-13 | `aeba9ee` **24 of 25 test suites never ran in CI.** `scripts/run-tests.ts` + `.github/workflows/tests.yml` (typecheck + `npm test` on every push to every branch, no secrets). The runner REFUSES to report a clean result below 20 discovered suites, or when ran ≠ discovered; a suite that could not be spawned reads -1, not 0 | **The `Tests` workflow must appear on github.com and conclude `success` on `19c17e8`.** **THE FIRING INPUT, and both halves were exercised before committing: a deliberately failing canary suite made the runner exit 1, name it and print its tail; pointing the runner at a directory with no suites produced `REFUSING TO REPORT A RESULT — found only 0 suite(s), expected at least 20`, exit 1. Tomorrow: confirm the workflow is still green and that it runs on a BRANCH push too, which no push has yet tested.** |
 | 2026-10-13 | `19c17e8` **Google redefined "Web" under our GSC series.** `searchAnalytics()` now always sends `type`, defaulting to `'web'` instead of omitting it | **`gsc_daily` must keep gaining a row per day with no step change attributable to this commit (it is a no-op against today's API — that is the point).** **THE FIRING INPUT: there is none I can produce, and that is the honest statement. This is a PIN, not a detector: it makes a future change of meaning require a change in this file rather than arriving silently from Google's default. The thing that would reveal it — the text-based/multimodal split — is UI-only and is in section 5 as an ask.** |
 
@@ -146,6 +146,98 @@ the pipeline had one instrument pointed at both.
 `/engine` `/no` `/sitemap.xml` `/robots.txt` `/open-data/dataset.json` all 200
 pre-push; concierge `ok:true`. Deploy confirmation and the `Tests` workflow
 conclusion are items 3 and 4 of the 08:20 check-in.**
+
+### CAPTURE CONFIRMATION 2026-10-13 (08:25 check-in) — CAPTURED CLEAN, THE NIGHTLY WENT RED EXACTLY AS PRE-REGISTERED, THE NEW AXIS WORKS END TO END, AND IT EXPOSED A DEAD FIELD IN MY OWN MORNING COMMIT
+
+**TODAY'S CAPTURE IS COMPLETE, CLEAN AND ONE BOOK.** `price_snapshots` 2026-10-13:
+**2,039 rows / 2,039 distinct refs**, a single `created_at` batch at 08:21:07.
+`cron_logs` for `/api/cron/pricing-history` at **08:23:06 `success`**: `feed 2039 ·
+feed_generated_date 2026-10-13 · snapshotted 2039 · moves_detected 0 ·
+moves_baseline_refs 2039` (FULL coverage, so the zero is measured) `· delisted 0 ·
+snapshot_superseded 0 · snapshot_ahead_of_this_book 0 · trusted_prior true ·
+overlap 1 · errors null`. The two 08:22 `skipped` rows are the pre-deploy book and
+are correct. **A quiet market still banks a full day of history — nothing was
+lost today.**
+
+**THE NIGHTLY WENT RED, AND IT WENT RED FOR EXACTLY ONE REASON AND NO OTHER.**
+`Nightly feed refresh` concluded `failure` at 08:20:47. The only failing step is
+`Re-raise enrichment failures`, and its log says `upstream-provenance: failure`
+with nothing else listed. **The feed was committed (`7e06d75`), the corpus
+rebuilt (`61beb9a`), the capture completed.** This is the instrument working. Do
+not "fix" it by relaxing the threshold.
+
+**ARITHMETIC CORRECTION I OWE MY OWN CHECK-IN PROMPT: `content_days` IS 4 TODAY,
+NOT 5.** I wrote "then `content_days = 5`" into the 08:25 prompt this morning and
+that was simply wrong: `utcDay(2026-10-13) − utcDay(2026-10-09) = 4`. It was 4 at
+05:48 and it is 4 now. **It becomes 5 tomorrow, 10-14, if the map still has not
+moved.** So what Henrik was told at 06:30 — four days — was correct, and the
+notification discipline's trigger (b) "the freeze reached five days" was NOT met.
+
+**THE THIRD AXIS SHIPPED THIS MORNING AND WORKS END TO END ON THE REAL NIGHTLY,
+WITHIN THREE HOURS OF THE COMMIT.** The `upstream` step printed:
+
+```
+origin claim      last_modified=2026-10-12T16:56:30.000Z content_length=absent
+verdict: stalled (cause=content content_days=4 payload_days=0 liveness=regenerating
+         origin_days=1 origin=regenerating zeros_inherited=true)
+```
+
+and `cron_logs` carries `cause`, `origin_days`, `origin_state` and
+`origin_last_modified`. **The published note now states the diagnosis in the same
+breath as the zeros:** *"…every zero move, zero arrival and zero departure this
+book produces is inherited, not observed — NO PRECEDENT … (the ORIGIN itself
+reports rebuilding the file at 2026-10-12T16:56:30.000Z (1 UTC boundary ago), so
+the upstream is alive and a quiet map is the market rather than a dead feed)."*
+That sentence is the whole point of the axis and it could not have been written
+yesterday. **`cause=content` is also the fix verified: this is precisely the run
+that would have been headlined with the payload axis before `12d9370`.**
+
+**AND IT SURFACED A FACT WORTH MORE THAN THE FIELD IT COST: RedSP DID NOT REBUILD
+FOR 10-13 AT ALL.** The 08:21 fetch was handed the file built at
+**16:56:30 on 10-12** — the same one I measured by HEAD at 05:48, 06:19 and 07:00.
+`origin_days = 1`, which is `regenerating` and correct (we fetch at ~08:21; a
+previous-evening rebuild is one boundary old every healthy morning). **BUT IF
+TOMORROW'S FETCH STILL REPORTS 16:56:30, `origin_days = 2` AND THE ORIGIN ALARM
+FIRES FOR REAL — which would close O-122 by production evidence rather than by
+fixture.** Written down before the fact, so it is not re-derived: do not treat a
+`frozen` reading tomorrow as a bug in the new axis.
+
+**THE DEFECT IN MY OWN MORNING COMMIT, FOUND BY READING ITS FIRST REAL OUTPUT.**
+`feed-meta.json` came back with **`"origin_content_length": null`** while
+`source_bytes` read 97,801,138 — so the header was plainly obtainable, and I had
+measured it myself by HEAD four hours earlier. Measured rather than guessed at:
+
+| request | response |
+|---|---|
+| `Accept-Encoding: gzip, deflate, br` | `content-encoding: gzip`, **no content-length at all** |
+| `Accept-Encoding: identity` | `content-length: 97801138` |
+
+node's fetch always sends the first, so **the field was null BY CONSTRUCTION on
+every normal night, and non-null ONLY on the nights the curl fallback ran** (curl
+sends no `Accept-Encoding` by default). That is worse than a permanently empty
+field: its presence would have become an accidental proxy for "the primary client
+was refused", and someone eventually reads that as signal. It also bought
+nothing — `source_bytes` already measures the decompressed payload and is the
+better number. **Removed the same day it shipped (`d81e4cc`), with the
+measurement pinned in a test so it is not helpfully re-added.** The honest note
+is that my own guard behaved correctly — it wrote `null`, not a fabricated `0`,
+which is the contract holding — but shipping a field that can never populate is
+the dead-scaffolding hazard this repo already carries at table scale (O-97).
+
+**OTHER CHECKS.** `Tests` workflow green twice (`19c17e8` 06:20, `bde367a` 06:25),
+`Discovered 25 suite(s)` → `ALL SUITES PASS — 25/25` in the log. **Still no BRANCH
+push has exercised it — only main.** Prod `/` `/deals` `/engine` `/no`
+`/sitemap.xml` `/robots.txt` `/open-data/dataset.json` all 200; concierge
+`ok:true`. **`/open-data/dataset.json` serves `v2026-10-13` /
+`generated_at 2026-10-13T08:22:00.547Z`, byte-matching the committed artifact —
+no deploy lag today, unlike 10-12.** The `hf` step warned as designed: Hugging
+Face still 65 days behind, `HF_TOKEN`.
+
+**NO SECOND NOTIFICATION SENT, and the reason is on the record: none of the five
+escalation conditions was met.** Capture complete, freeze still at four days not
+five, the red attributable solely to the pre-registered criterion, all three
+commits landed with production green, `Tests` green. Henrik was told the right
+thing at 06:30 and nothing today contradicts it.
 
 ## 2. OPEN — found, not yet fixed
 
