@@ -616,7 +616,6 @@ const ORIGIN_ISO_1012 = '2026-10-12T16:56:30.000Z';
 const WITH_ORIGIN: FeedMetaShape = {
   ...CONTENT_0909,
   origin_last_modified: ORIGIN_HEADER_1012,
-  origin_content_length: 97_801_138,
 };
 
 ok('an RFC-7231 HTTP-date normalises to an ISO instant', normaliseHttpDate(ORIGIN_HEADER_1012) === ORIGIN_ISO_1012);
@@ -628,14 +627,18 @@ ok('a null header is null', normaliseHttpDate(null) === null);
 
 ok('a meta with no origin header reads as null', readOriginProvenance(CONTENT_0909) === null);
 ok('the real header reads back normalised', readOriginProvenance(WITH_ORIGIN)?.origin_last_modified === ORIGIN_ISO_1012);
-ok('the advertised length reads back', readOriginProvenance(WITH_ORIGIN)?.origin_content_length === 97_801_138);
+// THE ORIGIN'S Content-Length IS DELIBERATELY NOT CAPTURED, and this assertion
+// pins the reason so it is not "helpfully" re-added. It shipped on 2026-10-13
+// and was removed the same day: the first real nightly wrote it null, because
+// the origin gzips for any client advertising it and then sends no
+// content-length at all (`Accept-Encoding: identity` gets
+// `content-length: 97801138`; node's fetch never sends identity). So it was
+// null by construction every normal night and non-null ONLY when the curl
+// fallback ran — an accidental proxy for an unrelated failure, which is worse
+// than always-empty. `source_bytes` already measures the decompressed payload.
 ok(
-  'a missing content-length does NOT invalidate the block — it grades nothing',
-  readOriginProvenance({ ...WITH_ORIGIN, origin_content_length: undefined })?.origin_last_modified === ORIGIN_ISO_1012,
-);
-ok(
-  'a zero content-length reads as absent rather than as a zero-byte file',
-  readOriginProvenance({ ...WITH_ORIGIN, origin_content_length: 0 })?.origin_content_length === null,
+  'the origin block carries ONLY the rebuild claim',
+  JSON.stringify(Object.keys(readOriginProvenance(WITH_ORIGIN) ?? {})) === '["origin_last_modified"]',
 );
 ok(
   'a garbage last-modified kills the block rather than half-reading it',
@@ -832,15 +835,15 @@ ok(
 
 ok(
   'the observation is CLEARED at the top of downloadFeed, so a retry cannot leave an earlier attempt’s headers on a later body',
-  /async function downloadFeed\(\)\s*\{[\s\S]{0,400}?recordOriginObservation\(null, null\)/.test(PARSE_FEED_SRC),
+  /async function downloadFeed\(\)\s*\{[\s\S]{0,400}?recordOriginObservation\(null\)/.test(PARSE_FEED_SRC),
 );
 ok(
-  'the fetch client records the headers it already received',
-  /recordOriginObservation\(res\.headers\.get\('last-modified'\), res\.headers\.get\('content-length'\)\)/.test(PARSE_FEED_SRC),
+  'the fetch client records the rebuild claim it already received',
+  /recordOriginObservation\(res\.headers\.get\('last-modified'\)\)/.test(PARSE_FEED_SRC),
 );
 ok(
-  'the curl fallback records them too — the refused-egress nights are exactly when we need the origin axis',
-  /recordOriginObservation\(\s*headerFromCurlJson\(stdout, 'last-modified'\),/.test(PARSE_FEED_SRC),
+  'the curl fallback records it too — the refused-egress nights are exactly when we need the origin axis',
+  /recordOriginObservation\(headerFromCurlJson\(stdout, 'last-modified'\)\)/.test(PARSE_FEED_SRC),
 );
 ok(
   'curl is asked for header_json, and the body still goes to a file so stdout stays small',
@@ -853,6 +856,10 @@ ok(
 ok(
   '…and the block is spread into feed-meta.json',
   /\.\.\.originBlock,/.test(PARSE_FEED_SRC),
+);
+ok(
+  'parse-feed does not capture the origin content-length either — it is null by construction behind gzip, and non-null only on curl-fallback nights',
+  !/origin_content_length:/.test(PARSE_FEED_SRC),
 );
 ok(
   'parse-feed does NOT write an origin first-seen stamp — the origin states an absolute instant, so storing one would add a field nothing reads and under-report a freeze on run one',
@@ -978,7 +985,6 @@ const originRedRun = runReporter({
   content_refs: 2039,
   content_first_seen_at: minutesAgo(2),
   origin_last_modified: new Date(Date.now() - 3 * DAY_MS).toUTCString(),
-  origin_content_length: 97_801_138,
 });
 ok('a frozen origin is titled as RedSP not rebuilding', /::error title=RedSP itself reports no rebuild for 3 days::/.test(originRedRun.out));
 ok('…and exits 1 even though the map moved today and the payload is fresh', originRedRun.code === 1);
@@ -999,7 +1005,6 @@ const healthyRun = runReporter({
   content_refs: 2039,
   content_first_seen_at: minutesAgo(1),
   origin_last_modified: new Date(Date.now() - 1 * DAY_MS).toUTCString(),
-  origin_content_length: 97_801_138,
 });
 ok('a book whose map moved against a live origin exits 0', healthyRun.code === 0);
 ok('…with no error annotation at all', !/::error/.test(healthyRun.out));

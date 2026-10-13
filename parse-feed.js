@@ -510,23 +510,36 @@ const CHALLENGE_MAX_ATTEMPTS = Number(process.env.FEED_CHALLENGE_MAX_ATTEMPTS ||
  * absent or unreadable, which src/lib/feed-provenance.ts grades as UNKNOWN and
  * never as health. Capturing it must never be able to break the download, so
  * every read here is defensive and nothing it does affects control flow.
+ *
+ * ONLY Last-Modified, AND THE ORIGIN'S Content-Length IS DELIBERATELY NOT HERE.
+ * The first version of this shipped `origin_content_length` alongside it. The
+ * same night's real nightly wrote it as `null`, and measuring why settled it:
+ * the origin gzips for any client that advertises it and then sends NO
+ * content-length at all.
+ *
+ *   Accept-Encoding: gzip,deflate,br  ->  content-encoding: gzip, NO content-length
+ *   Accept-Encoding: identity         ->  content-length: 97801138
+ *
+ * node's fetch always sends the former, so the field was null by construction
+ * on every normal night — and non-null ONLY on the nights the curl fallback ran
+ * (curl sends no Accept-Encoding by default). A field whose presence correlates
+ * with an unrelated failure mode is worse than one that is merely always empty:
+ * someone eventually reads it as signal. It also bought nothing, because
+ * `source_bytes` already measures the decompressed payload ourselves and is the
+ * better number. Removed the same day it shipped.
  */
-let originObservation = { origin_last_modified: null, origin_content_length: null };
+let originObservation = { origin_last_modified: null };
 
-function recordOriginObservation(lastModified, contentLength) {
+function recordOriginObservation(lastModified) {
   try {
     const lm = typeof lastModified === 'string' && lastModified.trim().length > 0 ? lastModified.trim() : null;
-    const len = Number(contentLength);
-    originObservation = {
-      origin_last_modified: lm,
-      origin_content_length: Number.isFinite(len) && len > 0 ? len : null,
-    };
+    originObservation = { origin_last_modified: lm };
   } catch {
-    // Deliberately NOT a silent substitution: nulls make the axis read
-    // "unknown", which is the honest answer when the headers could not be read.
+    // Deliberately NOT a silent substitution: null makes the axis read
+    // "unknown", which is the honest answer when the header could not be read.
     // The one thing this must never do is leave a stale observation from an
     // earlier attempt looking like this download's.
-    originObservation = { origin_last_modified: null, origin_content_length: null };
+    originObservation = { origin_last_modified: null };
   }
 }
 
@@ -612,10 +625,7 @@ function downloadViaCurl(timeoutMs) {
           const xml = fs.readFileSync(tmp, 'utf8');
           fs.unlinkSync(tmp);
           // Observational only: this must never be able to fail the download.
-          recordOriginObservation(
-            headerFromCurlJson(stdout, 'last-modified'),
-            headerFromCurlJson(stdout, 'content-length'),
-          );
+          recordOriginObservation(headerFromCurlJson(stdout, 'last-modified'));
           resolve(xml);
         } catch (readErr) {
           reject(new Error(`curl fallback wrote no readable body: ${readErr.message}`));
@@ -628,7 +638,7 @@ function downloadViaCurl(timeoutMs) {
 async function downloadFeed() {
   // Clear first: a retry must never leave a previous attempt's headers attached
   // to the body we end up using. Stale-but-plausible is the worst reading here.
-  recordOriginObservation(null, null);
+  recordOriginObservation(null);
   const startedAt = Date.now();
   const deadline = startedAt + FEED_WAIT_MINUTES * 60_000;
   let attempt = 0;
@@ -706,7 +716,7 @@ async function downloadFeed() {
         // evidence for ever retuning the schedule has to come from somewhere.
         console.log(`Feed complete on attempt ${attempt} after waiting ${waited}min.`);
       }
-      recordOriginObservation(res.headers.get('last-modified'), res.headers.get('content-length'));
+      recordOriginObservation(res.headers.get('last-modified'));
       return xml;
     } catch (err) {
       // Name the hang so the log says what happened rather than "The operation
@@ -1404,10 +1414,7 @@ async function main() {
   // observation that no observation was made, which later reads as data.
   const originBlock =
     originObservation.origin_last_modified !== null
-      ? {
-          origin_last_modified: originObservation.origin_last_modified,
-          origin_content_length: originObservation.origin_content_length,
-        }
+      ? { origin_last_modified: originObservation.origin_last_modified }
       : {};
 
   fs.writeFileSync(META, JSON.stringify({
@@ -1436,7 +1443,6 @@ async function main() {
   console.log(
     originObservation.origin_last_modified !== null
       ? `Origin says last-modified=${originObservation.origin_last_modified} ` +
-        `content-length=${originObservation.origin_content_length ?? 'absent'} ` +
         `(the origin's OWN rebuild claim — the only axis here that is not a diff of our fetch history)`
       : `Origin sent no usable Last-Modified — its rebuild schedule is UNKNOWN for this run, ` +
         `not healthy and not frozen.`

@@ -87,8 +87,6 @@ export interface FeedMetaShape {
   content_first_seen_at?: unknown;
   /** The origin's own `Last-Modified`. See THE ORIGIN AXIS below. */
   origin_last_modified?: unknown;
-  /** The origin's advertised `Content-Length`. Recorded; grades nothing. */
-  origin_content_length?: unknown;
 }
 
 const SHA256_HEX = /^[0-9a-f]{64}$/;
@@ -360,12 +358,24 @@ export function carryForwardContent(
  *     chunking), so letting it drive a verdict would invent a failure.
  */
 
-/** What the origin itself said about the payload it handed us. */
+/**
+ * What the origin itself said about the payload it handed us.
+ *
+ * ONE FIELD, AND THE ORIGIN'S Content-Length IS DELIBERATELY NOT IN IT. The
+ * first version of this interface carried `origin_content_length` "for the
+ * record". The first real nightly wrote it null, and measuring why settled it:
+ * the origin gzips for any client advertising it and then sends no
+ * content-length at all, while `Accept-Encoding: identity` gets
+ * `content-length: 97801138`. node's fetch always sends the former, so the
+ * field was null by construction every normal night and non-null ONLY on the
+ * nights the curl fallback ran — making its presence an accidental proxy for an
+ * unrelated failure, which is worse than always-empty because someone
+ * eventually reads it as signal. `source_bytes` already measures the
+ * decompressed payload and is the better number. Removed the same day.
+ */
 export interface OriginObservation {
   /** The origin's `Last-Modified`, normalised to an ISO instant. */
   origin_last_modified: string;
-  /** The origin's advertised `Content-Length`, for the record. Grades nothing. */
-  origin_content_length: number | null;
 }
 
 /**
@@ -409,18 +419,13 @@ export function normaliseHttpDate(raw: unknown): string | null {
  * had in fact been frozen for a week. Read the origin's own timestamp directly
  * and the freeze is visible immediately, including on run one.
  *
- * `origin_content_length` is allowed to be absent because it grades nothing.
  */
 export function readOriginProvenance(meta: FeedMetaShape | null | undefined): OriginObservation | null {
   if (!meta || typeof meta !== 'object') return null;
   const m = meta as Record<string, unknown>;
   const lastMod = normaliseHttpDate(m.origin_last_modified);
   if (lastMod === null) return null;
-  const len = m.origin_content_length;
-  return {
-    origin_last_modified: lastMod,
-    origin_content_length: typeof len === 'number' && Number.isFinite(len) && len > 0 ? len : null,
-  };
+  return { origin_last_modified: lastMod };
 }
 /* -------------------------------------------------------------------------- */
 /* The verdict                                                                 */

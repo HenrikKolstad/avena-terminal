@@ -111,10 +111,7 @@ if (payload) {
   console.log('raw payload       NO USABLE FINGERPRINT');
 }
 if (origin) {
-  console.log(
-    `origin claim      last_modified=${origin.origin_last_modified} ` +
-      `content_length=${origin.origin_content_length ?? 'absent'}`,
-  );
+  console.log(`origin claim      last_modified=${origin.origin_last_modified}`);
 } else {
   console.log('origin claim      NO USABLE Last-Modified (unknown, neither healthy nor frozen)');
 }
