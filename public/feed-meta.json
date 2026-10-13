@@ -1,14 +1,13 @@
 {
-  "generated_at": "2026-10-13T08:21:08.888Z",
+  "generated_at": "2026-10-13T12:38:30.496Z",
   "generated_date": "2026-10-13",
   "listings": 2039,
   "source": "redsp",
-  "source_sha256": "4efe92bb2a0d4f854c0f87aa0171b10afbe549c602f299c74a8bbeddb69d624d",
+  "source_sha256": "dac40d55cee43921217cf4aa8a7946bf9c5f9deb6a8e9dca4dfb53ad3ac62a79",
   "source_bytes": 97801138,
-  "source_first_seen_at": "2026-10-13T08:21:08.888Z",
-  "content_sha256": "fe0834fd8839bfab5c8f6da43ecf2d202b5153760f37bc23199b42231e7b5b7c",
+  "source_first_seen_at": "2026-10-13T12:38:30.496Z",
+  "content_sha256": "a8ee062a9a5e832e3be7615785b3661bf90d1e33460b40fc0911d1c82bd5620e",
   "content_refs": 2039,
-  "content_first_seen_at": "2026-10-09T11:50:22.792Z",
-  "origin_last_modified": "Mon, 12 Oct 2026 16:56:30 GMT",
-  "origin_content_length": null
+  "content_first_seen_at": "2026-10-13T12:38:30.496Z",
+  "origin_last_modified": "Tue, 13 Oct 2026 08:52:26 GMT"
 }
