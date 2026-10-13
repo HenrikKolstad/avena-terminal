@@ -114,7 +114,24 @@ export async function searchAnalytics(opts: {
         endDate: opts.endDate,
         dimensions: opts.dimensions ?? [],
         rowLimit: opts.rowLimit ?? 25000,
-        ...(opts.type ? { type: opts.type } : {}),
+        // ALWAYS SEND `type` EXPLICITLY, even for the default.
+        //
+        // 2026-10-13: Google split the Performance report's "Web" search type
+        // into "Web: text-based" and "Web: multimodal" on 2026-09-24 (Lens,
+        // Circle to Search, image uploads, Chrome's search-this-image), and
+        // reported that the multimodal traffic had NOT previously been counted.
+        // The Search Analytics API still exposes only `web` — no multimodal
+        // value — so `gsc_daily` cannot decompose the two, and the stored series
+        // has a possible DEFINITIONAL BREAK at 2026-09-24 that no row records.
+        //
+        // That is the recurring bug in its quietest form: nothing failed, no
+        // zero appeared, and a 16-month-retention series I can never backfill
+        // may have changed meaning mid-flight. Omitting `type` and relying on
+        // the server's default is what makes that invisible — if Google ever
+        // repoints the default at text-only, the series would silently change
+        // meaning again and the only evidence would be a step in the numbers.
+        // Pinning it means a change of meaning has to come from a change here.
+        type: opts.type ?? 'web',
       }),
     },
   );
