@@ -16,7 +16,7 @@
 import { isAuthorizedCron } from '@/lib/cron-auth';
 import { withCronLog } from '@/lib/cron-log';
 import { NextRequest } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
