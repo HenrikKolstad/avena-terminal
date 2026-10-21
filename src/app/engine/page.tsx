@@ -11,6 +11,7 @@ import type { Metadata } from 'next';
 import EngineClient from './EngineClient';
 import { getEngineDeltas, getEngineTruth } from '@/lib/deltas';
 import { getEngineStats } from '@/lib/deals';
+import { getHealth } from '@/lib/health-collect';
 
 // Revalidate hourly: the Delta Layer (live price moves + sell-outs from the
 // moat tables) refreshes after each nightly capture instead of being frozen
@@ -77,12 +78,14 @@ const jsonLd = {
 };
 
 export default async function EnginePage() {
-  const [deltas, truth] = await Promise.all([getEngineDeltas(), getEngineTruth()]);
+  // The status badge reads measured health (src/lib/health.ts), never a literal:
+  // it said "Operational" through the whole 2026-10-14..21 outage.
+  const [deltas, truth, health] = await Promise.all([getEngineDeltas(), getEngineTruth(), getHealth().catch(() => null)]);
   const stats = getEngineStats();
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <EngineClient deltas={deltas} stats={stats} truth={truth} />
+      <EngineClient deltas={deltas} stats={stats} truth={truth} health={health ? { status: health.status, checked_at: health.checked_at } : null} />
     </>
   );
 }

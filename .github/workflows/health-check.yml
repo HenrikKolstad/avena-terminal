@@ -1,0 +1,37 @@
+name: Engine health check
+
+# Reads https://avenaterminal.com/api/health and goes red when the engine is
+# not operational, so a broken feed or a paused database shows up as a failed
+# run (and GitHub's failure notification) the same morning, instead of eight
+# days later as it did 2026-10-14..21. Reads only; writes nothing.
+
+on:
+  schedule:
+    - cron: '30 8 * * *'   # after the nightly (01:37/05:10 UTC) and the first backstop (07:00)
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check /api/health
+        run: |
+          set -o pipefail
+          CODE=$(curl -sS -m 60 -o health.json -w '%{http_code}' https://avenaterminal.com/api/health || echo 000)
+          echo "HTTP $CODE"
+          if [ ! -s health.json ]; then echo "No health report returned."; exit 1; fi
+          node -e '
+            const r = JSON.parse(require("fs").readFileSync("health.json", "utf8"));
+            for (const c of r.checks) console.log(`${c.status.padEnd(9)} ${c.critical ? "*" : " "} ${c.name.padEnd(34)} ${c.detail}`);
+            console.log(`\nEngine status: ${r.status} (checked ${r.checked_at})`);
+            const bad = r.checks.filter((c) => c.status !== "ok");
+            if (bad.length) {
+              const lines = bad.map((c) => `- **${c.name}** (${c.status}): ${c.detail}`).join("\n");
+              require("fs").appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Engine ${r.status}\n\n${lines}\n`);
+            }
+            process.exit(r.status === "operational" ? 0 : 1);
+          '
