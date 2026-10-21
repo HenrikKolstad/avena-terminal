@@ -455,6 +455,7 @@ export const METHODOLOGY: string[] = [
   'Absorption (30d) = exits in the window, scaled to 30 days, divided by live listings plus window exits. Months of supply = live listings divided by exits per 30 days.',
   'Price move = change in a listing\'s asking price between two snapshots. Asking prices only; no transaction prices are claimed.',
   'Project = RedSP development_ref, joined from the git history of the published feed (data/ref-dev-map.json). Developer names are not part of the feed.',
+  'The feed price is the listing\'s asking price, which for a unit type spanning several dwellings is the "from" price. A rise can therefore mean the cheapest unit sold, and a large cut can mean a cheaper unit was added; moves above ~20% should be read against the listing before being quoted as a repricing.',
   'Price per m2 uses usable living area where the feed provides it, otherwise built area.',
   'Known gap: no snapshots 2026-10-14 to 2026-10-20 (feed outage). Listings last seen 2026-10-13 and absent on 2026-10-21 are exits with an unknown date in that gap (flag EXIT_IN_GAP).',
   'Days listed are measured from the first time Avena saw the listing (earliest 2026-03-31), so older listings are understated.',
