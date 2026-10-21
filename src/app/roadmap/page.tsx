@@ -32,7 +32,7 @@ const ITEMS: Item[] = [
   { title: 'Score history + deltas', detail: 'Daily snapshots, 7d/30d deltas on every property.', status: 'shipped', quarter: 'Q2 2026' },
   { title: 'Dynamic per-property OG images', detail: 'Rich preview cards for every shared link.', status: 'shipped', quarter: 'Q2 2026' },
   { title: 'Terminal v2', detail: 'Bloomberg-style keyboard interface with 12 commands.', status: 'shipped', quarter: 'Q2 2026' },
-  { title: 'Honest cron logging', detail: 'Real cron_logs table; /swarm shows real task counts.', status: 'shipped', quarter: 'Q2 2026' },
+  { title: 'Honest cron logging', detail: 'Real cron_logs table; /live shows real task counts.', status: 'shipped', quarter: 'Q2 2026' },
   { title: 'Portugal intelligence hub', detail: 'NHR, Golden Visa, IMT brackets, buying process, ES-vs-PT table.', status: 'shipped', quarter: 'Q2 2026' },
 
   // Building

@@ -90,7 +90,6 @@ const ALLOWED: Array<{ file: string; why: string }> = [
   // Fabricated demo activity — a DIFFERENT defect. Refreshing the number here
   // would only make invented agent telemetry look more current, so it stays
   // tracked as fabrication rather than laundered into a derived figure.
-  { file: 'src/app/swarm/page.tsx', why: 'synthetic agent activity counters; tracked as fabricated output, not staleness' },
   { file: 'src/app/api/v1/swarm/messages/route.ts', why: 'synthetic agent message ("14 price changes detected" is invented too)' },
 
   // UNREACHABLE pages. Both are intercepted by a permanent redirect in
@@ -100,8 +99,6 @@ const ALLOWED: Array<{ file: string; why: string }> = [
   // claims — a different and much smaller problem than the one this test was
   // written for. Deriving the count here would only make dead copy look
   // current; the exemption records that they were checked, not overlooked.
-  { file: 'src/app/tiktok/TikTokLanding.tsx', why: 'behind a permanent 308 redirect; literal is never served (reads 1,881)' },
-  { file: 'src/app/chat/page.tsx', why: 'behind a permanent 308 redirect; literal is never served (reads 1,881)' },
 
   // The three LIVE client surfaces that used to sit here — /search (1,999),
   // /calculator (1,800+) and /checkout/success (1,881) — were fixed on
