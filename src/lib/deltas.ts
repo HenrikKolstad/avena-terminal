@@ -12,6 +12,7 @@
 import { supabase } from './supabase';
 import { supabaseAdmin } from './supabase-admin';
 import { getAllProperties } from './properties';
+import { LEDGER_START } from './observations';
 
 export interface PriceMove {
   ref: string;
@@ -353,7 +354,12 @@ export async function getEngineTruth(): Promise<EngineTruth> {
       dailyUpdates = count ?? null;
     }
     if (oldest?.[0]?.snapshot_date && newest?.[0]?.snapshot_date) {
-      observationSince = String(oldest[0].snapshot_date);
+      // Clamp to the start of the DAILY ledger. score_history holds rows from
+      // 2026-04-25, but until 2026-08-05 they were a frozen snapshot rewritten
+      // nightly (see the audit note above), so "since Apr 2026" under the
+      // label "daily observations" overstated the record by three months.
+      const first = String(oldest[0].snapshot_date);
+      observationSince = first < LEDGER_START ? LEDGER_START : first;
       observationDays = Math.round(
         (Date.parse(String(newest[0].snapshot_date)) - Date.parse(observationSince)) / 86_400_000,
       ) + 1;
