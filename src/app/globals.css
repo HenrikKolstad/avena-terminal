@@ -217,6 +217,27 @@ body > * {
   -webkit-text-fill-color: transparent;
 }
 
+/* Print routes stay on paper even before the print dialog, so Save as PDF
+   matches what is on screen. */
+.avena-v2.rpt-paper {
+  --av-background: 40 33% 97%;
+  --av-foreground: 30 12% 12%;
+  --av-surface: 40 28% 94%;
+  --av-border: 35 14% 80%;
+  --av-muted-foreground: 30 8% 36%;
+  --av-primary: 38 42% 32%;
+  background: #f6f3ee;
+  color: #1c1916;
+}
+.avena-v2.rpt-paper .text-foreground { color: #1c1916; }
+.avena-v2.rpt-paper .text-muted-foreground { color: #5a5348; }
+.avena-v2.rpt-paper .text-primary,
+.avena-v2.rpt-paper .text-gold {
+  background: none;
+  -webkit-text-fill-color: #6d5420;
+  color: #6d5420;
+}
+
 .avena-v2 .text-glow {
   text-shadow: 0 0 24px hsl(var(--av-primary) / 0.4);
 }
@@ -501,6 +522,15 @@ body > * {
   #memo-print-root .border, #memo-print-root [class*="border-"] { border-color: #ccc !important; }
   /* Page breaks before each major section header */
   #memo-print-root section { page-break-inside: avoid; }
+  .print-root { max-width: none !important; color: #111 !important; }
+  .print-root h1, .print-root h2, .print-root h3 { color: #111 !important; }
+  .print-root .text-foreground { color: #111 !important; }
+  .print-root .text-muted-foreground { color: #444 !important; }
+  .print-root .text-primary { color: #8a6a1f !important; }
+  .print-root .text-gold { color: #8a6a1f !important; -webkit-text-fill-color: #8a6a1f !important; background: none !important; }
+  .print-root section { page-break-inside: auto; }
+  .print-root tr { page-break-inside: avoid; }
+  .print-table { display: block !important; }
   @page { margin: 18mm 16mm; size: A4; }
 }
 
