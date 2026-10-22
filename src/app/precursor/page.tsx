@@ -225,19 +225,19 @@ export default async function PrecursorPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div className="rounded-sm border p-5" style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}>
                 <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-2 flex items-center gap-2">
-                  <Radio className="h-3.5 w-3.5" /> Starter · on request
+                  <Radio className="h-3.5 w-3.5" /> Starter · Pricing on request
                 </div>
                 <p className="text-sm text-foreground/85 font-light">Signal alerts for your target markets. Read-only access to the live feed.</p>
               </div>
               <div className="rounded-sm border p-5" style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}>
                 <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-2 flex items-center gap-2">
-                  <Zap className="h-3.5 w-3.5" /> Desk · €2,500/mo
+                  <Zap className="h-3.5 w-3.5" /> Desk · Pricing on request
                 </div>
                 <p className="text-sm text-foreground/85 font-light">Full API access. Raw signal data. Custom market monitoring.</p>
               </div>
               <div className="rounded-sm border p-5" style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-primary) / 0.4)' }}>
                 <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-2 flex items-center gap-2">
-                  <AlertTriangle className="h-3.5 w-3.5" /> Fund · €12,000/mo
+                  <AlertTriangle className="h-3.5 w-3.5" /> Fund · Pricing on request
                 </div>
                 <p className="text-sm text-foreground/85 font-light">Custom signal categories for your mandate. Portfolio-level monitoring.</p>
               </div>

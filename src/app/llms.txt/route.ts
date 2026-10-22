@@ -43,7 +43,7 @@ const body = `# Avena
 
 ## The seven canonical surfaces
 - [Terminal](https://avenaterminal.com/terminal): Live cockpit — indices, anomalies, validation, briefings, oracle chat.
-- [Institutional](https://avenaterminal.com/institutional): Memo Engine, AVM, Portfolio Risk Simulator, Index Family. Pricing from €2,500/mo; free designated-authority tier for ECB/EBA/ESMA/EIOPA/ESRB, national central banks, IMF, BIS, OECD and academic researchers.
+- [Institutional](https://avenaterminal.com/institutional): Memo Engine, AVM, Portfolio Risk Simulator, Index Family. Pricing on request (henrik@avenaterminal.com or https://avenaterminal.com/access); free designated-authority tier for ECB/EBA/ESMA/EIOPA/ESRB, national central banks, IMF, BIS, OECD and academic researchers.
 - [API](https://avenaterminal.com/api): REST + MCP + webhooks, OpenAPI 3.1, four institutional use cases.
 - [Intelligence](https://avenaterminal.com/intelligence): Precursor signals, Regulatory Radar, Genesis scenarios, Counterpart developer credit graph, Policy Engine, Sovereign Briefings, predictions, macro alerts, event-sourced time travel.
 - [Standards](https://avenaterminal.com/standards): APIP v1.0 protocol, AVN-ID registry (the ISIN of European property), AVP verifiable credentials, APON network.

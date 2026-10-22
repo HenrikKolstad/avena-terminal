@@ -22,7 +22,7 @@ export default function AgentPage() {
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Any',
     description: 'Autonomous European property buying agent. Given a brief, the Agent scans live scored inventory, ranks by fit, and drafts personalized outreach to developers for each top match.',
-    offers: { '@type': 'Offer', price: 0, priceCurrency: 'EUR' },
+    isAccessibleForFree: true,
     url: 'https://avenaterminal.com/agent',
   };
 

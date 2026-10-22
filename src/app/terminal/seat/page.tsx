@@ -5,7 +5,7 @@ import { Footer } from '@/components/v2/Footer';
 import { SeatCheckout } from './SeatCheckout';
 
 export const metadata: Metadata = {
-  title: 'Avena Terminal Seat — €499 / month · institutional analyst access',
+  title: 'Avena Terminal Seat · institutional analyst access · pricing on request',
   description: 'Named-user license for European property analysts. Unlimited Oracle queries, citation-disciplined output, PDF research note export, programmatic API key, no rate limits.',
   alternates: { canonical: 'https://avenaterminal.com/terminal/seat' },
 };
@@ -23,9 +23,9 @@ const INCLUDES = [
 ];
 
 const COMPARE = [
-  { tier: 'Free',          price: '€0',         seat: 'Anonymous',          oracle: '5 queries/day',      api: '—',                      pdf: '—',         priority: '—' },
-  { tier: 'Seat',          price: '€499 / mo',  seat: 'Named institutional',oracle: 'Unlimited + tools',  api: '100 req/s · webhooks',   pdf: 'Branded',   priority: '24h' },
-  { tier: 'Enterprise',    price: 'from €25k',  seat: 'White-label',        oracle: 'Embedded + API',     api: 'Unlimited · SLA',        pdf: 'White-label', priority: '4h' },
+  { tier: 'Free',          price: 'Free',       seat: 'Anonymous',          oracle: '5 queries/day',      api: '—',                      pdf: '—',         priority: '—' },
+  { tier: 'Seat',          price: 'On request', seat: 'Named institutional',oracle: 'Unlimited + tools',  api: '100 req/s · webhooks',   pdf: 'Branded',   priority: '24h' },
+  { tier: 'Enterprise',    price: 'On request', seat: 'White-label',        oracle: 'Embedded + API',     api: 'Unlimited · SLA',        pdf: 'White-label', priority: '4h' },
 ];
 
 export default function SeatPage() {
@@ -47,12 +47,12 @@ export default function SeatPage() {
 
             <div className="flex flex-wrap items-baseline gap-6 mb-10">
               <div>
-                <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Per seat · monthly</div>
-                <div className="font-serif text-6xl font-light text-foreground tabular">€499</div>
+                <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Per seat</div>
+                <div className="font-serif text-5xl font-light text-foreground">Pricing on request</div>
               </div>
               <div className="text-sm text-muted-foreground leading-relaxed">
-                Billed monthly in EUR · cancel anytime<br />
-                Annual: €4,990 (save €998) · 5+ seats: contact desk
+                Write to <a href="mailto:henrik@avenaterminal.com" className="text-primary hover:text-gold underline">henrik@avenaterminal.com</a><br />
+                or see <Link href="/access" className="text-primary hover:text-gold underline">access options</Link>
               </div>
             </div>
 
@@ -115,9 +115,9 @@ export default function SeatPage() {
             <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-3">Enterprise · white-label</div>
             <h2 className="font-serif text-3xl sm:text-4xl font-light text-foreground mb-6">Embed the Terminal in your own brand.</h2>
             <p className="text-sm text-muted-foreground max-w-3xl mb-8 leading-relaxed">
-              For asset managers, banks, and central institutions that want the Avena Terminal hosted at <code className="font-mono text-foreground">terminal.your-domain.eu</code> with your logo, your colors, your SSO, and a dedicated cohort definition tracked against your book. Starts at €25,000/month. Includes a dedicated solution architect for first-90-days onboarding, SOC 2 attestation under shared-responsibility model, and DPA + GDPR Article 28 processor agreement.
+              For asset managers, banks, and central institutions that want the Avena Terminal hosted at <code className="font-mono text-foreground">terminal.your-domain.eu</code> with your logo, your colors, your SSO, and a dedicated cohort definition tracked against your book. Pricing on request. Includes a dedicated solution architect for first-90-days onboarding, SOC 2 attestation under shared-responsibility model, and DPA + GDPR Article 28 processor agreement.
             </p>
-            <a href="mailto:institutional@avenaterminal.com?subject=Avena%20Terminal%20Enterprise%20enquiry" className="inline-flex items-center gap-2 rounded-sm border px-5 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground hover:text-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border-strong))' }}>
+            <a href="mailto:henrik@avenaterminal.com?subject=Avena%20Terminal%20Enterprise%20enquiry" className="inline-flex items-center gap-2 rounded-sm border px-5 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground hover:text-primary transition-colors" style={{ borderColor: 'hsl(var(--av-border-strong))' }}>
               Talk to the desk →
             </a>
           </div>

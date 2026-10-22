@@ -4,6 +4,7 @@
  * The self-serve €49/€79 "Avena Estate PRO" plan was retired 2026-10-22.
  * Access is now by request: every CTA routes to an email to Henrik.
  * Payment links are sent privately after a yes; never render them on the site.
+ * No price figures on the site (2026-10-22): every offer shows 'Pricing on request'.
  */
 
 export const ACCESS_EMAIL = 'henrik@avenaterminal.com';
@@ -20,19 +21,19 @@ export const ACCESS_OFFERS: AccessOffer[] = [
   {
     id: 'founding-lender',
     name: 'Sell-Through Monitor · Founding Lender',
-    price: '€3,000 / month',
+    price: 'Pricing on request',
     audience: 'Lenders, funds and valuers',
     includes: [
       'Weekly sell-through report',
       'Watchlist of up to 25 projects',
       'API / CSV access',
-      'Founding price locked for 12 months, first three clients only',
+      'Founding terms for the first three clients',
     ],
   },
   {
     id: 'buyer-desk-office',
     name: 'Buyer Desk · per office',
-    price: '€750 / month',
+    price: 'Pricing on request',
     audience: 'Estate agents',
     includes: [
       'One-page project checks in Swedish, Norwegian or English',
@@ -42,7 +43,7 @@ export const ACCESS_OFFERS: AccessOffer[] = [
   {
     id: 'buyer-desk-network',
     name: 'Buyer Desk · full network',
-    price: '€1,500 / month',
+    price: 'Pricing on request',
     audience: 'Agent networks',
     includes: [
       'Everything in Buyer Desk, for every office',
@@ -59,6 +60,6 @@ export function accessMailto(subject = 'Avena Terminal: request access', body?: 
 export function offerMailto(offer: AccessOffer): string {
   return accessMailto(
     `Avena Terminal: ${offer.name}`,
-    `Hi Henrik,\n\nI am interested in ${offer.name} (${offer.price}).\n\nCompany:\nRole:\nTowns or projects of interest:\n`,
+    `Hi Henrik,\n\nI am interested in ${offer.name}.\n\nCompany:\nRole:\nTowns or projects of interest:\n`,
   );
 }

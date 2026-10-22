@@ -24,12 +24,6 @@ export async function GET() {
       name: 'Avena Terminal',
       url: 'https://avenaterminal.com',
     },
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'EUR',
-      description: 'Free read-only access to all property data tools',
-    },
     softwareVersion: '1.0.0',
     releaseNotes: 'Initial release with 4 tools: search_properties, get_property, get_market_stats, get_top_deals',
     datePublished: '2026-04-11',

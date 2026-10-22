@@ -16,7 +16,7 @@ export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
   title: 'Institutional · Memo · AVM · Portfolio · Indices · Avena Terminal',
-  description: 'Four institutional tools built on one methodology: Memo Engine (IC-forwardable in 30s), AVM (bank-grade <1s), Portfolio Risk Simulator, Index Family (AVENA-CC, AVENA-VAL, AVENA-SCR, AVENA-DPT). Desk €2,500/mo · Fund €12,000/mo.',
+  description: 'Four institutional tools built on one methodology: Memo Engine (IC-forwardable in 30s), AVM (bank-grade <1s), Portfolio Risk Simulator, Index Family (AVENA-CC, AVENA-VAL, AVENA-SCR, AVENA-DPT). Pricing on request.',
   alternates: { canonical: 'https://avenaterminal.com/institutional' },
 };
 
@@ -60,8 +60,8 @@ export default function InstitutionalPage() {
         <HeroInstrument
           stats={[
             { value: '4', label: 'Institutional pillars', sub: 'Memo · AVM · Portfolio risk · Index family' },
-            { value: '€2,500', label: 'Desk seat / month', sub: 'Full API + tools · 99.5% SLA' },
-            { value: '€0', label: 'Designated authorities', sub: 'ECB · EBA · ESMA · national banks · academia' },
+            { value: 'On request', label: 'Desk & Fund pricing', sub: 'Full API + tools · 99.5% SLA' },
+            { value: 'Free', label: 'Designated authorities', sub: 'ECB · EBA · ESMA · national banks · academia' },
           ]}
           callout={<span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">One methodology drives every pillar — the audit trail is public, the integrity is cryptographic.</span>}
         />
@@ -99,12 +99,12 @@ export default function InstitutionalPage() {
           link={{ href: '/agent', label: 'Open the agent →' }} />
 
         <section id="pricing" className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-12">
-          <h2 className="font-serif text-2xl sm:text-3xl font-light text-foreground mb-3 tracking-tight">Pricing</h2>
-          <p className="text-base text-foreground/85 leading-relaxed max-w-3xl mb-6">Institutional pricing is tier-based. Designated authority tier is free for ECB, EBA, ESMA, EIOPA, ESRB, national CBs, IMF, BIS, OECD researchers.</p>
+          <h2 className="font-serif text-2xl sm:text-3xl font-light text-foreground mb-3 tracking-tight">Tiers</h2>
+          <p className="text-base text-foreground/85 leading-relaxed max-w-3xl mb-6">Pricing on request: write to <a href="mailto:henrik@avenaterminal.com" className="text-primary hover:text-gold underline">henrik@avenaterminal.com</a> or see <a href="/access" className="text-primary hover:text-gold underline">access options</a>. Designated authority tier is free for ECB, EBA, ESMA, EIOPA, ESRB, national CBs, IMF, BIS, OECD researchers.</p>
           <div className="grid md:grid-cols-3 gap-4">
-            <Tier name="Desk" price="€2,500 / mo" features={['One desk seat', 'Full API access', 'Memo Engine unlimited', 'AVM unlimited', 'Methodology audit']} />
-            <Tier name="Fund" price="€12,000 / mo" features={['Multi-seat institutional', 'Portfolio Risk Simulator', 'Custom index licensing', 'Dedicated Slack channel', 'Roadmap input']} highlight />
-            <Tier name="Designated authority" price="€0" features={['ECB / EBA / ESMA / EIOPA / ESRB', 'Free for national CBs', 'Free for IMF / BIS / OECD', 'Free for academic research', 'Citation in return']} />
+            <Tier name="Desk" price="Pricing on request" features={['One desk seat', 'Full API access', 'Memo Engine unlimited', 'AVM unlimited', 'Methodology audit']} />
+            <Tier name="Fund" price="Pricing on request" features={['Multi-seat institutional', 'Portfolio Risk Simulator', 'Custom index licensing', 'Dedicated Slack channel', 'Roadmap input']} highlight />
+            <Tier name="Designated authority" price="Free" features={['ECB / EBA / ESMA / EIOPA / ESRB', 'Free for national CBs', 'Free for IMF / BIS / OECD', 'Free for academic research', 'Citation in return']} />
           </div>
         </section>
 

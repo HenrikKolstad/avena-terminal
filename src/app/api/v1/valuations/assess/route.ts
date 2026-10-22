@@ -24,7 +24,7 @@ async function validateInstitutionalKey(key: string | null) {
   if (data.tier !== 'institutional') {
     return {
       valid: false,
-      error: 'This endpoint requires INSTITUTIONAL tier (€999/mo)',
+      error: 'This endpoint requires INSTITUTIONAL tier (request access: henrik@avenaterminal.com)',
       status: 403,
     };
   }

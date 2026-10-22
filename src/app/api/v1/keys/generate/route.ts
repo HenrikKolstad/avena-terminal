@@ -14,10 +14,10 @@ const DAILY_LIMITS: Record<string, number> = {
 };
 
 const PRICING: Record<string, string> = {
-  free: '€0',
-  starter: '€49/mo',
-  pro: '€149/mo',
-  institutional: '€999/mo',
+  free: 'Free',
+  starter: 'Pricing on request: henrik@avenaterminal.com',
+  pro: 'Pricing on request: henrik@avenaterminal.com',
+  institutional: 'Pricing on request: henrik@avenaterminal.com',
 };
 
 export async function POST(req: NextRequest) {

@@ -247,7 +247,6 @@ export function getStructuredData() {
         '11-tool Model Context Protocol server exposing live Avena Terminal data to AI agents (Claude, ChatGPT, Cursor, Windsurf) — including the observation ledger no portal keeps: get_price_history, get_recent_price_moves, get_delistings, get_avena_index, plus search, scoring, ROI and market-timing tools.',
       url: 'https://avenaterminal.com/mcp',
       creator: { '@type': 'Organization', name: 'Avena Terminal', url: 'https://avenaterminal.com' },
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
       softwareVersion: '1.2.0',
       isAccessibleForFree: true,
       sameAs: 'https://smithery.ai/servers/henrik/avenaterminal',

@@ -81,9 +81,9 @@ export default async function GenesisPage() {
               Access <span className="italic text-gold">tiers</span>.
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <AccessCard icon={Activity} title="Starter · on request" desc="3 custom simulations per month. Unlimited prebuilt scenarios." />
-              <AccessCard icon={Zap} title="Desk · €2,500/mo" desc="Unlimited simulations. Full API access. Downloadable PDF reports." />
-              <AccessCard icon={FlaskConical} title="Fund · €12,000/mo" desc="Custom scenario inputs. Portfolio-level simulation. Bespoke causal factors." accent />
+              <AccessCard icon={Activity} title="Starter · Pricing on request" desc="3 custom simulations per month. Unlimited prebuilt scenarios." />
+              <AccessCard icon={Zap} title="Desk · Pricing on request" desc="Unlimited simulations. Full API access. Downloadable PDF reports." />
+              <AccessCard icon={FlaskConical} title="Fund · Pricing on request" desc="Custom scenario inputs. Portfolio-level simulation. Bespoke causal factors." accent />
             </div>
           </div>
         </section>
