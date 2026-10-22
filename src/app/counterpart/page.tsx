@@ -239,7 +239,7 @@ export default async function CounterpartPage() {
               Access <span className="italic text-gold">tiers</span>.
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <AccessCard icon={ShieldCheck} title="PRO · €79/mo" desc="Search any developer. See score, grade, project history. Watch up to 5 developers." />
+              <AccessCard icon={ShieldCheck} title="Starter · on request" desc="Search any developer. See score, grade, project history. Watch up to 5 developers." />
               <AccessCard icon={ShieldAlert} title="Desk · €2,500/mo" desc="Full network graph. Stress alerts. API access. Unlimited watchlists." />
               <AccessCard icon={ShieldX} title="Fund · €12,000/mo" desc="Bulk scanning. Custom thresholds. Contagion modeling for your portfolio." accent />
             </div>

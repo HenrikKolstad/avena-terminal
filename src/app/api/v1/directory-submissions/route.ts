@@ -55,7 +55,7 @@ const SUBMISSION_TEMPLATE = {
     `Avena Terminal scores and ranks ${getCorpusSizeLabel()} new build properties across Spain. 5 market indices, MCP server, 19 AI agents, PropertyEval benchmark. Open data, CC BY 4.0.`,
   url: 'https://avenaterminal.com',
   categories: ['AI Tool', 'PropTech', 'Real Estate', 'Data Platform', 'API'],
-  pricing: 'Free (PRO from \u20AC79/mo)',
+  pricing: 'Free (institutional access on request)',
   logo_url: 'https://avenaterminal.com/favicon.svg',
 };
 

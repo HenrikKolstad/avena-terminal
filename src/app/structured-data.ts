@@ -252,28 +252,5 @@ export function getStructuredData() {
       isAccessibleForFree: true,
       sameAs: 'https://smithery.ai/servers/henrik/avenaterminal',
     },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'SoftwareApplication',
-      name: 'Avena Terminal PRO',
-      applicationCategory: 'BusinessApplication',
-      operatingSystem: 'Web',
-      description:
-        'Private Client tier. The complete ranked book of scored new-builds, discount-to-market and savings on every property, price-change history, sell-out tracking, watchlist alerts and yield tools. €79 / month, cancel anytime.',
-      url: 'https://avenaterminal.com/pro',
-      creator: { '@type': 'Organization', name: 'Avena Terminal', url: 'https://avenaterminal.com' },
-      offers: {
-        '@type': 'Offer',
-        price: '79',
-        priceCurrency: 'EUR',
-        priceSpecification: {
-          '@type': 'UnitPriceSpecification',
-          price: '79',
-          priceCurrency: 'EUR',
-          billingDuration: 'P1M',
-          unitText: 'month',
-        },
-      },
-    },
   ];
 }

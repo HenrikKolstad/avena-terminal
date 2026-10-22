@@ -126,10 +126,10 @@ export function Nav() {
                 color: 'hsl(var(--av-primary) / 0.92)',
                 background: 'hsl(var(--av-primary) / 0.06)',
               }}
-              title="Private Client — active"
+              title="Full access — active"
             >
               <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
-              Pro
+              Access
             </span>
           ) : null}
           {/* Ghost-button treatment (2026-08-11): as plain muted text this sat
@@ -145,7 +145,7 @@ export function Nav() {
               color: 'hsl(var(--av-foreground) / 0.9)',
             }}
           >
-            {user ? (isPaid ? 'Account' : 'Account') : 'Sign in'}
+            {user ? 'Account' : 'Sign in'}
           </Link>
 
           {/* Mobile menu toggle */}
@@ -207,7 +207,7 @@ export function Nav() {
                 style={{ borderColor: 'hsl(var(--av-border-strong))' }}
               >
                 {user ? <UserIcon className="h-3.5 w-3.5" /> : <LogIn className="h-3.5 w-3.5" />}
-                {user ? (isPaid ? 'PRO Account' : 'Account') : 'Sign in'}
+                {user ? 'Account' : 'Sign in'}
               </Link>
               <Link
                 href="/watchlist"
@@ -233,7 +233,7 @@ export function Nav() {
                 className="mt-3 inline-flex items-center justify-center rounded-sm border py-3 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground"
                 style={{ borderColor: 'hsl(var(--av-border) / 0.5)' }}
               >
-                Upgrade to PRO
+                Request access
               </button>
             )}
 

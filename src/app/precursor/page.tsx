@@ -225,7 +225,7 @@ export default async function PrecursorPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div className="rounded-sm border p-5" style={{ background: 'hsl(var(--av-surface) / 0.4)', borderColor: 'hsl(var(--av-border) / 0.6)' }}>
                 <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-2 flex items-center gap-2">
-                  <Radio className="h-3.5 w-3.5" /> PRO · €79/mo
+                  <Radio className="h-3.5 w-3.5" /> Starter · on request
                 </div>
                 <p className="text-sm text-foreground/85 font-light">Signal alerts for your target markets. Read-only access to the live feed.</p>
               </div>
@@ -243,8 +243,8 @@ export default async function PrecursorPage() {
               </div>
             </div>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/pro" className="inline-flex items-center gap-2 rounded-sm px-5 py-3 font-mono text-[10px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold" style={{ background: 'var(--av-gradient-gold)' }}>
-                Subscribe PRO →
+              <Link href="/access" className="inline-flex items-center gap-2 rounded-sm px-5 py-3 font-mono text-[10px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold" style={{ background: 'var(--av-gradient-gold)' }}>
+                Request access →
               </Link>
               <Link href="/institutional" className="inline-flex items-center gap-2 rounded-sm border px-5 py-3 font-mono text-[10px] uppercase tracking-[0.22em] text-foreground hover:border-primary" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
                 Institutional access →

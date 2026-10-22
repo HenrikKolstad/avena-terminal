@@ -89,7 +89,7 @@ in chat is normal; commit messages and code in English.
 - Verify prod with PowerShell `Invoke-WebRequest`/`Invoke-RestMethod` on Windows
   (local curl returns 000). Cron-protected routes accept header `x-vercel-cron: 1`.
 - HTTP headers must be pure ASCII (em-dashes throw ERR_INVALID_CHAR → 500).
-- PRO gating: `freeVisible` rows clear, rest blurred, unlock CTA €79/mo (ProModal).
+- Access gating: `freeVisible` rows clear, rest blurred, "Request access" CTA (ProModal → institutional offers by email; self-serve €79 PRO retired 2026-10-22).
 
 ## Sibling projects (not in this repo)
 - X-bot: NEVER start/stop it — only Henrik does, via his buttons.
