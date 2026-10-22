@@ -148,7 +148,7 @@ export default function APIPage() {
             <Tier name="Desk"       price="€2,500 / mo"    reqs="Full API + institutional tools · 99.5% SLA · priority support" cta="Request access" href="/institutional#access" />
             <Tier name="Enterprise" price="From €12,000 / mo" reqs="Unlimited · custom endpoints · index licensing · DPA + contract" cta="Contact" href="/contact" highlight />
           </div>
-          <p className="mt-4 text-sm text-muted-foreground italic">Free designated-authority tier for ECB, EBA, ESMA, EIOPA, ESRB, national central banks, IMF, BIS, OECD — and free academic access in exchange for citation. <Link href="/eu-presidency" className="text-primary hover:underline">Presidency partnership →</Link></p>
+          <p className="mt-4 text-sm text-muted-foreground italic">Free designated-authority tier for ECB, EBA, ESMA, EIOPA, ESRB, national central banks, IMF, BIS, OECD — and free academic access in exchange for citation.</p>
         </section>
       </main>
       <Footer />
