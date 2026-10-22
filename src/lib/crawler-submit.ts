@@ -48,8 +48,6 @@ const SEED_URLS: string[] = [
   // Epicenter surfaces (shipped 2026-05-25/26)
   `${DOMAIN}/predictions`,
   `${DOMAIN}/consultations`,
-  `${DOMAIN}/apon-network`,
-  `${DOMAIN}/eu-presidency`,
   `${DOMAIN}/academic`,
   `${DOMAIN}/contribute`,
 
@@ -58,9 +56,6 @@ const SEED_URLS: string[] = [
   `${DOMAIN}/live`,
   `${DOMAIN}/policy-engine`,
   `${DOMAIN}/sovereign-briefing`,
-
-  // Citation moat surfaces
-  `${DOMAIN}/citation-moat`,
 
   // World-first instruments + answer layer (2026-06-10)
   `${DOMAIN}/delphi`,

@@ -101,16 +101,16 @@ const nextConfig: NextConfig = {
       { source: '/cite',                destination: '/citations',        permanent: true },
       { source: '/alternatives',        destination: '/compare',          permanent: true },
       { source: '/alternatives/:slug*', destination: '/compare',          permanent: true },
-      { source: '/agents/registry',     destination: '/swarm',            permanent: true },
-      { source: '/agents/directory',    destination: '/swarm',            permanent: true },
-      { source: '/agents/leaderboard',  destination: '/swarm',            permanent: true },
+      { source: '/agents/registry',     destination: '/engine',           permanent: true },
+      { source: '/agents/directory',    destination: '/engine',           permanent: true },
+      { source: '/agents/leaderboard',  destination: '/engine',           permanent: true },
 
       // Marketing fluff / vague / off-brand → closest meaningful surface
       { source: '/manifesto',           destination: '/about',            permanent: true },
       { source: '/space',               destination: '/',                 permanent: true },
-      { source: '/colosseum',           destination: '/swarm',            permanent: true },
-      { source: '/observatory',         destination: '/swarm',            permanent: true },
-      { source: '/personas',            destination: '/swarm',            permanent: true },
+      { source: '/colosseum',           destination: '/engine',           permanent: true },
+      { source: '/observatory',         destination: '/engine',           permanent: true },
+      { source: '/personas',            destination: '/engine',           permanent: true },
       { source: '/timeline',            destination: '/about',            permanent: true },
       { source: '/zk',                  destination: '/governance',       permanent: true },
       { source: '/corpus',              destination: '/dataset',          permanent: true },
@@ -238,8 +238,25 @@ const nextConfig: NextConfig = {
       { source: '/challenge/score-2026', destination: '/',                permanent: true },
       { source: '/guides',              destination: '/blog',             permanent: true },
       { source: '/tiktok',              destination: '/',                 permanent: true },
-      { source: '/agents',              destination: '/swarm',            permanent: true },
+      { source: '/agents',              destination: '/engine',           permanent: true },
       { source: '/vs',                  destination: '/proof#benchmark',  permanent: true },
+
+      // ─── Cleanup 2026-10-22 — gimmick / unverifiable surfaces removed ──
+      // Pages deleted outright; 301 so inbound links and old sitemaps land
+      // somewhere real instead of a 404.
+      { source: '/swarm',               destination: '/engine',           permanent: true },
+      { source: '/swarm/:path*',        destination: '/engine',           permanent: true },
+      { source: '/apon-network',        destination: '/standards',        permanent: true },
+      { source: '/citation-moat',       destination: '/engine',           permanent: true },
+      { source: '/awards',              destination: '/',                 permanent: true },
+      { source: '/eu-presidency',       destination: '/institutional',    permanent: true },
+      { source: '/eu-takeover/:path*',  destination: '/eu-coverage',      permanent: true },
+      { source: '/preview/:path*',      destination: '/',                 permanent: true },
+      // Retired $AVY token / crypto surfaces (strategy doc removed)
+      { source: '/crypto',              destination: '/',                 permanent: true },
+      { source: '/crypto/:path*',       destination: '/',                 permanent: true },
+      { source: '/avy',                 destination: '/',                 permanent: true },
+      { source: '/avy/:path*',          destination: '/',                 permanent: true },
     ];
   },
   async headers() {
