@@ -16,7 +16,7 @@ import { isAuthorizedCron } from '@/lib/cron-auth';
 import { chunkedWrite, mergeChunkWriteResults, failedRowIndices } from '@/lib/chunked-write';
 import { NextRequest, NextResponse } from 'next/server';
 import { startCronLog, finishCronLog, finishCronLogDerived } from '@/lib/cron-log';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import {
   fetchCommuneYear,
   mintAvnIdForDvf,

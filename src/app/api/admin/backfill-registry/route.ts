@@ -17,7 +17,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { readFileSync } from 'fs';
 import path from 'path';
 
@@ -52,9 +52,9 @@ function ensureAuth(req: NextRequest): boolean {
   const auth = req.headers.get('authorization') ?? '';
   const token = auth.replace(/^Bearer\s+/i, '').trim();
   const expected = process.env.ADMIN_TOKEN;
-  // If ADMIN_TOKEN not configured, allow (so first-run backfill from any
-  // browser works); once set, lock down.
-  if (!expected) return true;
+  // Fail closed: with no ADMIN_TOKEN configured nobody may rewrite the
+  // registry. (Before 2026-10-22 an unset token meant "allow anyone".)
+  if (!expected) return false;
   return token === expected;
 }
 

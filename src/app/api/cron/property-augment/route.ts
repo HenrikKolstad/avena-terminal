@@ -15,7 +15,7 @@
 import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { startCronLog, finishCronLog } from '@/lib/cron-log';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { getCadastralRefByCoords } from '@/lib/data-sources/catastro';
 import { getBuildingAtCoords, getAmenityDistances } from '@/lib/data-sources/osm';
 import { getClimateRisk } from '@/lib/data-sources/climate';
