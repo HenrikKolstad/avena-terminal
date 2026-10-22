@@ -22,7 +22,7 @@
  * the old field conflated them: Atlas ran three times this morning and
  * measured nothing. Both are published separately now.
  */
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import vercelConfig from '../../../../../vercel.json';
 import {
   ageInDays,

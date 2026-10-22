@@ -15,7 +15,7 @@
  */
 
 import { Resend } from 'resend';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
 const FROM = process.env.OUTREACH_FROM || 'Henrik Kolstad · Avena <research@avenaterminal.com>';
 const REPLY_TO = process.env.OUTREACH_REPLY_TO || 'henrik@xaviaestate.com';

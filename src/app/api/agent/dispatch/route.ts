@@ -10,7 +10,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { sendAgentOutreach } from '@/lib/agent-sender';
 
 export const dynamic = 'force-dynamic';

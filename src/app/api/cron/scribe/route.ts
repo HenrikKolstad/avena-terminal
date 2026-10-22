@@ -34,7 +34,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthorizedCron } from '@/lib/cron-auth';
 import { startCronLog, finishCronLog, describeError } from '@/lib/cron-log';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { getAllProperties } from '@/lib/properties';
 import { getFeedGeneratedDate } from '@/lib/feed-meta';
 import { resolveSnapshotDate, deriveStatus, deriveWriteCounts, type WriteTally } from '@/lib/scribe-logic';

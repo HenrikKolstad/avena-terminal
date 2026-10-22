@@ -12,7 +12,7 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { currentMarketSnapshot } from '@/lib/predictions';
 
 const MODEL = 'claude-sonnet-4-5';

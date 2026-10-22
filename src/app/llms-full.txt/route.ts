@@ -8,7 +8,7 @@
  */
 
 import { getAllProperties, getUniqueCostas, getCorpusSizeLabel } from '@/lib/properties';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
 export const revalidate = 3600;
 

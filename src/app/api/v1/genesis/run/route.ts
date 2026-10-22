@@ -10,7 +10,7 @@
  *      free-tier rate-limited requests.
  */
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { randomUUID } from 'crypto';
 import Anthropic from '@anthropic-ai/sdk';
 

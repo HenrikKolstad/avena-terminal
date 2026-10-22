@@ -17,7 +17,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { createHash } from 'crypto';
 import { getAllProperties } from '@/lib/properties';
 import type { Property } from '@/lib/types';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { recordEvent } from '@/lib/event-store';
 
 const MODEL = 'claude-sonnet-4-5';

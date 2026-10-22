@@ -25,7 +25,7 @@
 import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { startCronLog, finishCronLog, finishCronLogDerived } from '@/lib/cron-log';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { recordEvent } from '@/lib/event-store';
 import { decideScan, type DeveloperScanRow } from '@/lib/counterpart-drift';
 

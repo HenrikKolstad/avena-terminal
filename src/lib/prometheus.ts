@@ -19,7 +19,7 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { pingIndexNow } from '@/lib/indexnow';
 import { getCorpusSizeLabel } from '@/lib/properties';
 
