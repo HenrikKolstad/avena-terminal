@@ -289,7 +289,7 @@ export function FundReportView({
           <h2 className="font-serif text-3xl font-light text-foreground mb-4">Methodology</h2>
           <div className="max-w-3xl space-y-4 text-sm text-muted-foreground leading-relaxed">
             <p>
-              The live book is the nightly RedSP feed written to <span className="font-mono">public/data.json</span>.
+              The live book is Avena's nightly capture of agency-marketed new-build listings, written to <span className="font-mono">public/data.json</span>.
               Asking €/m² is price divided by built area. The benchmark €/m² on each listing is written when that feed is parsed:
               listings with a built area receive a hedonic estimate (a price-tier fit when that tier has enough listings, otherwise a global fit), and listings without area fall back to a town or region median of asking €/m².
             </p>

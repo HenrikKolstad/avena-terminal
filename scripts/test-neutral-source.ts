@@ -3,9 +3,9 @@
  * or the public can see. Avena's product is described as Avena's own daily
  * capture of agency-marketed new-build listings.
  *
- * Scope: every file served from public/, every page/layout/route under
- * src/app (code only — comments are stripped), the sell-through methodology
- * and the rendered lender report. Server-only internals (cron jobs, feed
+ * Scope: every file served from public/, all code under src/app,
+ * src/components and src/lib (code only — comments are stripped), the
+ * sell-through methodology and the rendered lender report. Server-only internals (cron jobs, feed
  * plumbing) are out of scope.
  *
  * Run: npx tsx scripts/test-neutral-source.ts
@@ -41,10 +41,10 @@ const SERVER_ONLY = new Set([path.join('src', 'app', 'api', 'cron', 'pricing-his
 const publicHits = walk('public').filter((f) => VENDOR.test(readFileSync(f, 'utf8')));
 ok(publicHits.length === 0, `no public/ file names the vendor${publicHits.length ? ` (${publicHits.join(', ')})` : ''}`);
 
-const appHits = walk(path.join('src', 'app'))
+const appHits = ['app', 'components', 'lib'].flatMap((d) => walk(path.join('src', d)))
   .filter((f) => !SERVER_ONLY.has(f))
   .filter((f) => VENDOR.test(stripComments(readFileSync(f, 'utf8'))));
-ok(appHits.length === 0, `no page or API code under src/app names the vendor${appHits.length ? ` (${appHits.join(', ')})` : ''}`);
+ok(appHits.length === 0, `no page, component, lib or API code under src names the vendor${appHits.length ? ` (${appHits.join(', ')})` : ''}`);
 
 ok(!METHODOLOGY.some((l) => VENDOR.test(l)), 'sell-through methodology does not name the vendor');
 ok(METHODOLOGY[0].includes("Avena's daily capture of agency-marketed new-build listings"), 'methodology names Avena as the source');
