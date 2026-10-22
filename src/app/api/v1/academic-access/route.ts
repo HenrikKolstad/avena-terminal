@@ -1,72 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
+import { isAcademicEmail } from '@/lib/academic-email';
 
 export const dynamic = 'force-dynamic';
-
-const ACADEMIC_DOMAINS = [
-  '.edu',
-  '.ac.uk',
-  '.ac.jp',
-  '.ac.kr',
-  '.ac.za',
-  '.ac.nz',
-  '.ac.in',
-  '.uni-',
-  '.university',
-  '.edu.au',
-  '.edu.sg',
-  '.edu.cn',
-  '.edu.br',
-  '.edu.mx',
-  '.edu.co',
-  '.edu.ar',
-  '.edu.pe',
-  '.ac.be',
-  '.ac.at',
-  '.uu.se',
-  '.lu.se',
-  '.ku.dk',
-  '.uva.nl',
-  '.ethz.ch',
-  '.epfl.ch',
-  '.tu-',
-  '.rwth-',
-  '.fu-berlin.de',
-  '.hu-berlin.de',
-  '.lmu.de',
-  '.ox.ac.uk',
-  '.cam.ac.uk',
-  '.ucl.ac.uk',
-  '.imperial.ac.uk',
-  '.kcl.ac.uk',
-  '.mit.edu',
-  '.stanford.edu',
-  '.harvard.edu',
-  '.berkeley.edu',
-  '.princeton.edu',
-  '.yale.edu',
-  '.columbia.edu',
-  '.uchicago.edu',
-  '.upenn.edu',
-  '.cornell.edu',
-  '.insead.edu',
-  '.iese.edu',
-  '.ie.edu',
-  '.esade.edu',
-  '.sorbonne-universite.fr',
-  '.sciences-po.fr',
-  '.ens.fr',
-  '.polytechnique.fr',
-  '.unibo.it',
-  '.unimi.it',
-  '.polimi.it',
-];
-
-function isAcademicEmail(email: string): boolean {
-  const lower = email.toLowerCase();
-  return ACADEMIC_DOMAINS.some((d) => lower.includes(d));
-}
 
 const ENDPOINTS = [
   { method: 'GET', path: '/api/v1/properties', description: 'All tracked properties with AI scores' },
