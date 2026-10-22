@@ -224,10 +224,11 @@ console.log('D. measure / difference — a failed read is null, never 0');
   eq('every schedule in vercel.json is describable by this parser', undescribable, 0);
 
   const liveAtlas = describeCadence('/api/cron/citation-agent', vercel.crons);
-  ok('citation-agent is still scheduled in vercel.json', liveAtlas !== null);
+  // citation-agent is disabled (Perplexity quota exhausted). If it is ever
+  // re-scheduled, its cadence must still not read as the false "daily" string.
   ok(
-    'the LIVE citation cadence is not the false "daily" string this fixed',
-    liveAtlas !== null && !liveAtlas.human.toLowerCase().includes('daily'),
+    'the LIVE citation cadence, if scheduled, is not the false "daily" string this fixed',
+    liveAtlas === null || !liveAtlas.human.toLowerCase().includes('daily'),
     liveAtlas?.human
   );
 
