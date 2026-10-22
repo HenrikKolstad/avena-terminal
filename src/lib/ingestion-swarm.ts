@@ -44,11 +44,13 @@ export const INGESTION_SWARM: IngestionAgent[] = [
   { id: 'cote-dazur',   name: 'Agent Côte d\'Azur', region: 'Côte d\'Azur',          country: 'France',   flag: '🇫🇷', sources: ['seloger', 'leboncoin', 'logic-immo', 'avendrealouer'],   base_daily: 32,  active: true,  scope_pct: 22,  cron_minutes: [14, 44] },
   { id: 'paris-metro',  name: 'Agent Paris Metro',  region: 'Paris metro',           country: 'France',   flag: '🇫🇷', sources: ['seloger', 'pap.fr', 'logic-immo'],                       base_daily: 24,  active: true,  scope_pct: 14,  cron_minutes: [29, 59] },
 
-  // ITALY — scoping
-  { id: 'riviera',      name: 'Agent Riviera',      region: 'Italian Riviera',       country: 'Italy',    flag: '🇮🇹', sources: ['immobiliare.it', 'casa.it', 'subito.it'],                base_daily: 26,  active: true,  scope_pct: 9,   cron_minutes: [16, 46] },
-  { id: 'milano',       name: 'Agent Milano',       region: 'Milan · Lakes',         country: 'Italy',    flag: '🇮🇹', sources: ['immobiliare.it', 'idealista.it', 'casa.it'],             base_daily: 20,  active: true,  scope_pct: 7,   cron_minutes: [31] },
-  { id: 'toscana',      name: 'Agent Toscana',      region: 'Toscana · Chianti',     country: 'Italy',    flag: '🇮🇹', sources: ['immobiliare.it', 'casa.it', 'gateaway'],                 base_daily: 22,  active: true,  scope_pct: 12,  cron_minutes: [8, 38] },
-  { id: 'puglia',       name: 'Agent Puglia',       region: 'Puglia · Salento',      country: 'Italy',    flag: '🇮🇹', sources: ['immobiliare.it', 'subito.it'],                           base_daily: 18,  active: true,  scope_pct: 8,   cron_minutes: [26] },
+  // ITALY — scoping. immobiliare.it is not a source: the portal feed was
+  // disabled as dead (HTTP 500 since 2026-05-24) and its terms do not allow
+  // automated reuse. Do not add it back to these lists.
+  { id: 'riviera',      name: 'Agent Riviera',      region: 'Italian Riviera',       country: 'Italy',    flag: '🇮🇹', sources: ['casa.it', 'subito.it'],                                  base_daily: 26,  active: true,  scope_pct: 9,   cron_minutes: [16, 46] },
+  { id: 'milano',       name: 'Agent Milano',       region: 'Milan · Lakes',         country: 'Italy',    flag: '🇮🇹', sources: ['idealista.it', 'casa.it'],                                   base_daily: 20,  active: true,  scope_pct: 7,   cron_minutes: [31] },
+  { id: 'toscana',      name: 'Agent Toscana',      region: 'Toscana · Chianti',     country: 'Italy',    flag: '🇮🇹', sources: ['casa.it', 'gateaway'],                                        base_daily: 22,  active: true,  scope_pct: 12,  cron_minutes: [8, 38] },
+  { id: 'puglia',       name: 'Agent Puglia',       region: 'Puglia · Salento',      country: 'Italy',    flag: '🇮🇹', sources: ['subito.it'],                                                  base_daily: 18,  active: true,  scope_pct: 8,   cron_minutes: [26] },
 
   // GREECE / CYPRUS — onboarding
   { id: 'aegean',       name: 'Agent Aegean',       region: 'Athens · Cyclades',     country: 'Greece',   flag: '🇬🇷', sources: ['spitogatos', 'xe.gr', 'tospitimou'],                     base_daily: 14,  active: true,  scope_pct: 5,   cron_minutes: [38] },
