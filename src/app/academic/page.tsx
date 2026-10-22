@@ -45,7 +45,7 @@ export default function AcademicPage() {
             If you are an EU housing economist — central bank, university faculty, research institute, policy think-tank — Avena gives you free full-dataset access for your paper. API quotas waived. Raw transaction-grade data on coastal Spain, Portugal, France, Germany. The Avena Index, AVM outputs, regime classifications, regulatory signal graph. The only ask: a single citation in your published work.
           </p>
           <p className="mt-4 max-w-3xl text-sm text-muted-foreground/85 leading-relaxed">
-            Avena is permanently CC BY 4.0 licensed and Zenodo-anchored under DOI <span className="font-mono text-foreground">10.5281/zenodo.19520064</span>. Citations are durable. We are not asking you to share data with us; we are asking you to use ours.
+            Avena is CC BY 4.0 licensed, and a 500-listing snapshot (v1.0.0, 11 April 2026) is archived on Zenodo under DOI <span className="font-mono text-foreground">10.5281/zenodo.19520064</span>. We are not asking you to share data with us; we are asking you to use ours.
           </p>
         </section>
 

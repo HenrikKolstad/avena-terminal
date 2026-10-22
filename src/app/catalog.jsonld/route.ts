@@ -116,7 +116,7 @@ export async function GET() {
     '@type': 'dcat:Catalog',
     'dct:title': { '@value': 'Avena Terminal Open Data Catalogue', '@language': 'en' },
     'dct:description': {
-      '@value': 'Open datasets from Avena Terminal — European residential property data infrastructure. CC BY 4.0, DOI 10.5281/zenodo.19520064, refreshed daily.',
+      '@value': 'Open datasets from Avena Terminal — European residential property data infrastructure. CC BY 4.0, refreshed daily.',
       '@language': 'en',
     },
     'dct:publisher': PUBLISHER,

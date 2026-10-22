@@ -89,7 +89,7 @@ Full note: ${url}
 
 ${b.cite_as ?? ''}
 
-This briefing is distributed under CC BY 4.0 and archived at Zenodo (DOI 10.5281/zenodo.19520064). To stop receiving these notes, reply with "unsubscribe".
+This briefing is distributed under CC BY 4.0. To stop receiving these notes, reply with "unsubscribe".
 
 — Avena Research Desk
 avenaterminal.com`;

@@ -103,7 +103,7 @@ export function VerifyForm({ initial }: { initial: VerifyResult | null }) {
                     {result.daily_root.zenodo_url ? (
                       <div><span className="text-muted-foreground">Zenodo:</span> <a href={result.daily_root.zenodo_url} target="_blank" rel="noopener" className="text-primary hover:underline">{result.daily_root.zenodo_deposit_id}</a></div>
                     ) : (
-                      <div className="text-muted-foreground/70">Zenodo deposit pending — root will receive an RFC 3161 timestamp at deposit.</div>
+                      <div className="text-muted-foreground/70">Not deposited externally — this root has no third-party timestamp.</div>
                     )}
                   </div>
                 </div>

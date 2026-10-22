@@ -342,7 +342,7 @@ export interface DatasetManifest {
   generated_at: string;
   license: string;
   attribution: string;
-  doi: string;
+  zenodo_snapshot: { doi: string; version: string; published: string; listings: number; note: string };
   publisher: { name: string; url: string };
   observation_ledger: {
     first_date: string;
@@ -390,7 +390,14 @@ export function buildManifest(args: {
     generated_at: generatedAt,
     license: 'CC-BY-4.0',
     attribution: 'Avena Terminal (avenaterminal.com)',
-    doi: '10.5281/zenodo.19520064',
+    // The Zenodo DOI is a one-off earlier snapshot, NOT this dataset version.
+    zenodo_snapshot: {
+      doi: '10.5281/zenodo.19520064',
+      version: '1.0.0',
+      published: '2026-04-11',
+      listings: 500,
+      note: 'Earlier one-off snapshot. This dataset version is not deposited on Zenodo.',
+    },
     publisher: { name: 'Avena Terminal', url: 'https://avenaterminal.com' },
     observation_ledger: {
       first_date: dates[0],

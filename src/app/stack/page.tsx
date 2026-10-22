@@ -95,8 +95,8 @@ export default function StackPage() {
           body="Every state change in Avena writes an immutable event to the events table before its projection updates. Replay the system at any historical timestamp via the as_of parameter. Critical for institutional diligence and methodology backtest."
           link={{ href: '/timetravel', label: 'Replay the system →' }} />
 
-        <Section id="integrity" title="Integrity — SHA-256 + daily Merkle root + Zenodo"
-          body="Every methodology version, model snapshot, dataset batch, and event log segment fingerprinted with SHA-256. Daily Merkle root rolled across all fingerprints and deposited to Zenodo for RFC 3161 trusted timestamping. Same cryptographic guarantee as Ethereum L2 commits with zero blockchain ceremony."
+        <Section id="integrity" title="Integrity — SHA-256 + daily Merkle root"
+          body="Every methodology version, model snapshot, dataset batch, and event log segment fingerprinted with SHA-256. Daily Merkle root rolled across all fingerprints and published on /verify. Not yet externally timestamped."
           link={{ href: '/verify', label: 'Verify an artefact →' }} />
 
         <Section id="changelog" title="Changelog — public, dated, signed"

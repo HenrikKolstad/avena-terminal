@@ -72,7 +72,7 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
     links: [
       { label: 'Terms of Service',   href: '/terms' },
       { label: 'License (CC BY 4.0)',href: '/license' },
-      { label: 'Zenodo DOI',        href: 'https://doi.org/10.5281/zenodo.19520064' },
+      { label: 'Zenodo snapshot (Apr 2026)', href: 'https://doi.org/10.5281/zenodo.19520064' },
       { label: 'Wikidata Q139165733', href: 'https://www.wikidata.org/wiki/Q139165733' },
       { label: 'Brand Kit',          href: '/brand' },
     ],
@@ -80,7 +80,7 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
 ];
 
 const credentials = [
-  { label: 'Zenodo DOI',  value: '10.5281/zenodo.19520064' },
+  { label: 'Zenodo snapshot', value: '10.5281/zenodo.19520064' },
   { label: 'Wikidata',    value: 'Q139165733' },
   { label: 'Schema',      value: 'APIP v1.0' },
   { label: 'License',     value: 'CC BY 4.0' },
@@ -111,7 +111,7 @@ export function Footer() {
             </Link>
 
             <p className="mt-5 max-w-sm text-sm font-light leading-relaxed text-muted-foreground">
-              The observation ledger for Spanish coastal new-build property — every listing observed nightly under the open APIP v1.0 standard. Refreshed daily. Cite as <span className="font-mono text-foreground/85">DOI 10.5281/zenodo.19520064</span>.
+              The observation ledger for Spanish coastal new-build property — every listing observed nightly under the open APIP v1.0 standard. Refreshed daily.
             </p>
 
             <div className="mt-5">
@@ -183,7 +183,7 @@ export function Footer() {
           className="mt-8 sm:mt-10 flex flex-col items-start justify-between gap-3 border-t pt-5 sm:pt-6 font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.22em] text-muted-foreground sm:flex-row sm:items-center"
           style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
         >
-          <span className="break-words">© 2026 Avena Terminal · All rights reserved · Cite as <Link href="/governance" className="text-foreground/85 hover:text-primary">DOI 10.5281/zenodo.19520064</Link></span>
+          <span className="break-words">© 2026 Avena Terminal · All rights reserved · April 2026 snapshot: <Link href="/governance" className="text-foreground/85 hover:text-primary">DOI 10.5281/zenodo.19520064</Link></span>
           <span className="flex items-center gap-2 shrink-0">
             <span className="pulse-dot relative inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'hsl(var(--av-primary))' }} />
             System operational

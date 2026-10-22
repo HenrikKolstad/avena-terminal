@@ -63,7 +63,6 @@ export default async function ArchivePage() {
         name="Avena Moat Archive — Hash-Chained Off-Site Backups"
         description="Nightly hash-chained snapshots of the Avena institutional data layer (EU official statistics, cross-validation snapshots, AVN-ID registry, sovereign briefings, macro anomalies, counterpart health history, price snapshots). Each snapshot is SHA-256 fingerprinted and chained to its predecessor — tampering with any historical snapshot breaks the chain publicly. Stored in Vercel Blob (Frankfurt) independently of the primary Supabase database."
         url="https://avenaterminal.com/archive"
-        identifier="https://doi.org/10.5281/zenodo.19520064"
         keywords={['data archive', 'cryptographic integrity', 'hash chain', 'reproducible research', 'open data']}
         spatialCoverage="Frankfurt (EU)"
         distributions={[

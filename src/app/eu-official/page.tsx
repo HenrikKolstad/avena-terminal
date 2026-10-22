@@ -60,7 +60,6 @@ export default async function EUOfficialPage() {
         name="EU Official Residential Property Statistics — Avena Layer"
         description="Daily-refreshed time-series of European residential property statistics ingested directly from Eurostat (SDMX-JSON), the ECB Statistical Data Warehouse (SDMX-JSON), and national statistical offices (INE Spain, ISTAT, CBS, Destatis, INSEE). Cross-referenced with the Avena ground-truth corpus of ${getCorpusSizeLabel()} micro-validated coastal properties. CC BY 4.0, fully citable, hash-chained off-site backups."
         url="https://avenaterminal.com/eu-official"
-        identifier="https://doi.org/10.5281/zenodo.19520064"
         keywords={['residential property', 'house price index', 'EU statistics', 'Eurostat', 'ECB', 'macroprudential', 'cross-validation', 'monetary transmission']}
         temporalCoverage="2020-01-01/.."
         spatialCoverage="EU27 + EA20 aggregates"

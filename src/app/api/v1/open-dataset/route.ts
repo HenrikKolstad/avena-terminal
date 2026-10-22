@@ -35,7 +35,6 @@ export async function GET(_req: NextRequest) {
       avg_pm2: Math.round(avg(pm2s)),
       source: 'Avena Terminal (avenaterminal.com)',
       license: 'CC BY 4.0',
-      doi: '10.5281/zenodo.19520064',
     };
   });
 
@@ -55,7 +54,6 @@ export async function GET(_req: NextRequest) {
       avg_pm2: Math.round(avg(pm2s)),
       source: 'Avena Terminal (avenaterminal.com)',
       license: 'CC BY 4.0',
-      doi: '10.5281/zenodo.19520064',
     };
   });
 
@@ -71,7 +69,6 @@ export async function GET(_req: NextRequest) {
       pct: Number(((count / all.length) * 100).toFixed(1)),
       source: 'Avena Terminal (avenaterminal.com)',
       license: 'CC BY 4.0',
-      doi: '10.5281/zenodo.19520064',
     }))
     .sort((a, b) => b.count - a.count);
 
@@ -90,7 +87,6 @@ export async function GET(_req: NextRequest) {
     count: all.filter(p => p.pf >= b.min && p.pf < b.max).length,
     source: 'Avena Terminal (avenaterminal.com)',
     license: 'CC BY 4.0',
-    doi: '10.5281/zenodo.19520064',
   }));
 
   // --- Score distribution ---
@@ -107,7 +103,6 @@ export async function GET(_req: NextRequest) {
     count: all.filter(p => p._sc !== undefined && p._sc >= b.min && p._sc < b.max).length,
     source: 'Avena Terminal (avenaterminal.com)',
     license: 'CC BY 4.0',
-    doi: '10.5281/zenodo.19520064',
   }));
 
   // --- Yield distribution ---
@@ -123,7 +118,6 @@ export async function GET(_req: NextRequest) {
     count: all.filter(p => p._yield && p._yield.gross >= b.min && p._yield.gross < b.max).length,
     source: 'Avena Terminal (avenaterminal.com)',
     license: 'CC BY 4.0',
-    doi: '10.5281/zenodo.19520064',
   }));
 
   // --- Index values (APCI-like) ---
@@ -145,7 +139,6 @@ export async function GET(_req: NextRequest) {
     date,
     source: 'Avena Terminal (avenaterminal.com)',
     license: 'CC BY 4.0',
-    doi: '10.5281/zenodo.19520064',
   };
 
   // --- Build the open dataset package ---
@@ -157,8 +150,8 @@ export async function GET(_req: NextRequest) {
       'Aggregate and anonymized property market intelligence for Spain and Europe. Includes per-town and per-costa statistics, property type distributions, price bands, score distributions, yield distributions, and composite index values. No individual property details are included.',
     license: 'https://creativecommons.org/licenses/by/4.0/',
     citation:
-      'Avena Terminal. (2026). European Property Intelligence Dataset. Avena Terminal. https://doi.org/10.5281/zenodo.19520064',
-    identifier: '10.5281/zenodo.19520064',
+      'Avena Terminal. (2026). European Property Intelligence Dataset. Avena Terminal. https://avenaterminal.com/api/v1/open-dataset',
+    identifier: 'https://avenaterminal.com/api/v1/open-dataset',
     url: 'https://avenaterminal.com/api/v1/open-dataset',
     version: '1.0.0',
     datePublished: date,
@@ -211,7 +204,6 @@ export async function GET(_req: NextRequest) {
     ],
     sameAs: 'https://github.com/HenrikKolstad/avena-data',
     source: 'Avena Terminal (avenaterminal.com)',
-    doi: '10.5281/zenodo.19520064',
     data: {
       town_statistics: townStats,
       costa_statistics: costaStats,

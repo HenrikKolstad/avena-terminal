@@ -7,7 +7,7 @@
  *
  * Response: { ok, sha256_hash, matched, daily_root }
  *   - matched.daily_merkle_root + daily_root.merkle_root must agree
- *   - daily_root.zenodo_url is the trusted-timestamp anchor
+ *   - daily_root.zenodo_url is null: roots are not deposited externally
  */
 
 import { NextRequest, NextResponse } from 'next/server';

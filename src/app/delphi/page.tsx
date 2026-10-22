@@ -49,7 +49,7 @@ const jsonLd = {
       description: 'Full daily panel: consensus index, disagreement index, per-question per-model answers, 60-day index history.',
     },
   ],
-  citation: 'Avena Terminal, DELPHI — the daily AI panel on European property. DOI 10.5281/zenodo.19520064.',
+  citation: 'Avena Terminal, DELPHI — the daily AI panel on European property. https://avenaterminal.com/delphi.',
 };
 
 /** Format the raw consensus value in its natural unit. */

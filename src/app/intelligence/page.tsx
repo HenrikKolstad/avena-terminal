@@ -134,7 +134,7 @@ export default function IntelligencePage() {
           <div className="rounded-sm border p-6" style={{ borderColor: 'hsl(var(--av-border) / 0.4)', background: 'hsl(var(--av-surface) / 0.2)' }}>
             <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-2">Methodology</div>
             <p className="text-sm text-foreground/85 leading-relaxed max-w-3xl">
-              Every signal above is methodology-audited at <Link href="/methodology" className="text-primary hover:underline">/methodology</Link>, cryptographically anchored at <Link href="/verify" className="text-primary hover:underline">/verify</Link>, and event-sourced for replay. CC BY 4.0, DOI 10.5281/zenodo.19520064, RICS Tech Partner.
+              Every signal above is methodology-audited at <Link href="/methodology" className="text-primary hover:underline">/methodology</Link>, fingerprinted at <Link href="/verify" className="text-primary hover:underline">/verify</Link>, and event-sourced for replay. CC BY 4.0, official RICS Tech Partner (2026).
             </p>
           </div>
         </section>

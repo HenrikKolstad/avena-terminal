@@ -65,7 +65,7 @@ const license = [
   { aspect: 'Open dataset license',  detail: 'CC BY 4.0 (Creative Commons Attribution 4.0 International). Reuse permitted with attribution.' },
   { aspect: 'Standard license',      detail: 'APIP v1.0 published under same CC BY 4.0 terms at /standards/apip-v1.json.' },
   { aspect: 'Attribution requirement', detail: 'Cite as: Avena Terminal (avenaterminal.com), DOI 10.5281/zenodo.19520064.' },
-  { aspect: 'Zenodo deposit',        detail: 'Permanent archived copy at https://doi.org/10.5281/zenodo.19520064.' },
+  { aspect: 'Zenodo deposit',        detail: 'One 500-listing snapshot (v1.0.0, 11 April 2026) archived at https://doi.org/10.5281/zenodo.19520064. Later data is not deposited.' },
   { aspect: 'Wikidata entity',       detail: 'Q139165733 — machine-readable cross-reference.' },
   { aspect: 'Commercial reuse',      detail: 'Permitted under CC BY 4.0 (incl. derivative datasets) with attribution preserved. Premium-tier API responses additionally subject to API Terms.' },
 ];

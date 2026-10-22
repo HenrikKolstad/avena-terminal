@@ -140,7 +140,7 @@ export default function StandardsPage() {
           <div className="rounded-sm border p-6" style={{ borderColor: 'hsl(var(--av-border) / 0.4)', background: 'hsl(var(--av-surface) / 0.2)' }}>
             <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-2">Governance</div>
             <p className="text-sm text-foreground/85 leading-relaxed max-w-3xl">
-              The Avena Foundation governs the standards. Avena Terminal (the company) is the reference implementation. Standards remain open under CC BY 4.0, anchored at DOI 10.5281/zenodo.19520064, with a Wikidata entity ID. Standards adoption is independent of Avena Terminal&apos;s commercial outcomes — the substrate survives any operator transition.
+              The Avena Foundation governs the standards. Avena Terminal (the company) is the reference implementation. Standards remain open under CC BY 4.0, with a Wikidata entity ID. Standards adoption is independent of Avena Terminal&apos;s commercial outcomes — the substrate survives any operator transition.
             </p>
           </div>
         </section>
