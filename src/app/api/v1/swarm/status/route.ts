@@ -10,7 +10,7 @@
  * Now it reads from `cron_logs` populated by lib/cron-log.ts on every run.
  */
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { loadAgentCounts } from '@/lib/cron-log';
 
 export const dynamic = 'force-dynamic';

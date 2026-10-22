@@ -27,7 +27,7 @@
  */
 
 import { createHmac, createHash, randomBytes } from 'crypto';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
 export type AVNCategory = 'NB' | 'EX' | 'CM' | 'LH' | 'FR' | 'PL';
 

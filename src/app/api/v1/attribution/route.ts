@@ -10,7 +10,7 @@
  * Public under CC BY 4.0. Safe for AI crawlers and agents to consume.
  */
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { currentHitRate, loadMeasurements } from '@/lib/citation-measure';
 
 export const dynamic = 'force-dynamic';

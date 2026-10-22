@@ -8,7 +8,7 @@
  * The Avena alert feed surfaces those daily.
  */
 
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { chunkedWrite, emptyChunkWriteResult, type ChunkWriteResult } from './chunked-write';
 
 export interface AnomalyRow {

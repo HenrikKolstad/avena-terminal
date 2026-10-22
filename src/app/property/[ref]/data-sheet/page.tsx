@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 import { cookies } from 'next/headers';
 import { Shield, Lock, ArrowUpRight, FileJson, MapPin, Building, Cloud, Briefcase, Scale, TrendingUp, History } from 'lucide-react';
 
@@ -25,20 +26,27 @@ async function checkPaidServerSide(): Promise<boolean> {
     const authCookie = allCookies.find((c) => c.name.startsWith('sb-') && c.name.includes('-auth-token'));
     if (!authCookie?.value) return false;
 
-    // Decode the auth cookie to extract the email — Supabase stores JSON
-    let email: string | undefined;
+    // Decode the auth cookie for the access token — Supabase stores JSON.
+    // The email is taken ONLY from the verified token (auth.getUser), never
+    // from the cookie's own `user` field, which the client can forge.
+    let accessToken: string | undefined;
     try {
       const raw = authCookie.value.startsWith('base64-')
         ? Buffer.from(authCookie.value.slice(7), 'base64').toString('utf-8')
         : authCookie.value;
       const parsed = JSON.parse(raw);
-      email = parsed?.user?.email || parsed?.[0]?.user?.email;
+      accessToken = parsed?.access_token || parsed?.[0];
     } catch { return false; }
-    if (!email) return false;
+    if (!accessToken || typeof accessToken !== 'string') return false;
+    const { data: verified, error: verifyError } = await supabase.auth.getUser(accessToken);
+    const email = verified?.user?.email;
+    if (verifyError || !email) return false;
 
     if (ADMIN_EMAILS.has(email.toLowerCase())) return true;
 
-    const { data } = await supabase
+    // subscriptions is not publicly readable; read it server-side only.
+    if (!supabaseAdmin) return false;
+    const { data } = await supabaseAdmin
       .from('subscriptions')
       .select('status, current_period_end')
       .eq('email', email)

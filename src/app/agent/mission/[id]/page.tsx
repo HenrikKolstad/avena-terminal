@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { Shield, AlertTriangle, Send, CheckCircle2, FileText, Clock, ArrowUpRight } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';

@@ -8,7 +8,7 @@
  */
 import { getAllProperties, avg } from '@/lib/properties';
 import { loadMacroIndicators } from '@/lib/data-sources/macro';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';

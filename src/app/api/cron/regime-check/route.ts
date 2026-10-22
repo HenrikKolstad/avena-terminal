@@ -1,6 +1,6 @@
 import { isAuthorizedCron } from '@/lib/cron-auth';
 import { withCronLog } from '@/lib/cron-log';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { recordEvent } from '@/lib/event-store';
 
 export const maxDuration = 60;

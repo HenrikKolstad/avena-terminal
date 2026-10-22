@@ -10,7 +10,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { startCronLog, finishCronLog } from '@/lib/cron-log';
 import { ingestEurostat, ingestECB, ingestINESpain, ingestISTAT, ingestCBS, ingestBIS, type IngestResult } from '@/lib/eu-stats-feeds';
 

@@ -24,7 +24,7 @@
 import { put } from '@vercel/blob';
 import { createHash } from 'crypto';
 import { gzipSync } from 'zlib';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
 const TABLE_TARGETS: Array<{ name: string; recentDaysOnly?: number }> = [
   { name: 'eu_official_stats' },
