@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
+import { isAdminRequest } from '@/lib/admin-auth';
+import { decideTier } from '@/lib/key-tiers';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,16 +20,18 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { email, tier = 'free' } = body;
+    const { email } = body as { email?: string };
 
     if (!email || typeof email !== 'string') {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
-    const validTiers = ['free', 'starter', 'pro', 'institutional'];
-    if (!validTiers.includes(tier)) {
-      return NextResponse.json({ error: `Invalid tier. Must be one of: ${validTiers.join(', ')}` }, { status: 400 });
+    // Self-serve is free tier only; paid tiers need the admin token (server-side issuance).
+    const decision = decideTier((body as { tier?: unknown }).tier, isAdminRequest(req.headers.get('authorization')));
+    if (!decision.ok) {
+      return NextResponse.json({ error: decision.error }, { status: decision.status });
     }
+    const tier = decision.tier;
 
     const key = `avt_v1_${randomUUID().replace(/-/g, '')}`;
 

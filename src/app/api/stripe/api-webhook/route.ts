@@ -1,18 +1,29 @@
 import { NextRequest } from 'next/server';
 import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { randomUUID } from 'crypto';
+import Stripe from 'stripe';
 
 export const maxDuration = 30;
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.text();
-    let event: Record<string, unknown>;
 
+    // Paid-tier keys are minted here, so the event MUST come from Stripe.
+    // Before 2026-10-22 this parsed any JSON body: anyone could POST a fake
+    // checkout.session.completed with tier=institutional, or a fake
+    // subscription.deleted to deactivate a customer's keys. Fail closed.
+    const secret = process.env.STRIPE_API_WEBHOOK_SECRET || process.env.STRIPE_WEBHOOK_SECRET;
+    const sig = req.headers.get('stripe-signature');
+    if (!secret || !sig || !process.env.STRIPE_SECRET_KEY) {
+      return new Response('Invalid signature', { status: 400 });
+    }
+    let event: Record<string, unknown>;
     try {
-      event = JSON.parse(body);
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+      event = stripe.webhooks.constructEvent(body, sig, secret) as unknown as Record<string, unknown>;
     } catch {
-      return new Response('Invalid JSON', { status: 400 });
+      return new Response('Invalid signature', { status: 400 });
     }
 
     const type = event.type as string;
