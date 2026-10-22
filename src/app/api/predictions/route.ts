@@ -8,7 +8,7 @@
  */
 
 import { NextRequest } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
 export const dynamic = 'force-dynamic';
 

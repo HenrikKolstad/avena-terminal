@@ -8,7 +8,7 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, avg } from '@/lib/properties';
 
 export type PredictionType =

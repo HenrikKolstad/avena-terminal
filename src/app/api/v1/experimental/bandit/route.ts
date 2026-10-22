@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
+import { isAdminRequest, presentedSecret, safeEqual } from '@/lib/admin-auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -165,7 +166,20 @@ export async function GET(req: NextRequest) {
   }
 }
 
+// Arm updates are server-side only (admin token or cron secret): the writer
+// uses the service role, so an open POST would let anyone rewrite the arms.
+function canWrite(req: NextRequest): boolean {
+  const auth = req.headers.get('authorization');
+  if (isAdminRequest(auth)) return true;
+  const got = presentedSecret(auth);
+  const cron = process.env.CRON_SECRET;
+  return !!cron && cron.length >= 16 && !!got && safeEqual(got, cron);
+}
+
 export async function POST(req: NextRequest) {
+  if (!canWrite(req)) {
+    return Response.json({ error: 'unauthorized' }, { status: 401 });
+  }
   try {
     const body = await req.json() as { persona?: string; signal_type?: string; reward?: number };
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,13 +8,17 @@ async function unsub(email: string): Promise<boolean> {
   const normalized = email.trim().toLowerCase();
   if (!normalized || !normalized.includes('@')) return false;
   try {
-    await supabase
+    const { error } = await supabase
       .from('newsletter_subscribers')
       .update({
         status: 'unsubscribed',
         unsubscribed_at: new Date().toISOString(),
       })
       .eq('email', normalized);
+    if (error) {
+      console.error('[newsletter/unsubscribe] update failed:', error.message);
+      return false;
+    }
     return true;
   } catch {
     return false;

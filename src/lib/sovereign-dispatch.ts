@@ -11,7 +11,7 @@
  */
 
 import { Resend } from 'resend';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
 const FROM = process.env.SOVEREIGN_BRIEFING_FROM || 'Avena Research Desk <research@avenaterminal.com>';
 const REPLY_TO = process.env.SOVEREIGN_BRIEFING_REPLY_TO || 'institutional@avenaterminal.com';
