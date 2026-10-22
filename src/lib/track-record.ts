@@ -205,7 +205,7 @@ export function buildTrackRecord(input: {
       'Score rows dated before the 2026-08-21 scribe correction can describe the previous day\'s book. Entry and exit prices here are taken from price_snapshots on the named dates, not from the price stored on the score row.',
     );
   }
-  reasons.push('A feed exit is a listing that left the RedSP book. It is not a registered sale, and a return to the book is counted as a relisting.');
+  reasons.push('A feed exit is a listing that left Avena\'s captured book. It is not a registered sale, and a return to the book is counted as a relisting.');
   reasons.push('The score\'s largest term is the gap between asking €/m² and an in-book benchmark. It is not an out-of-sample forecast of a transaction price.');
 
   return {

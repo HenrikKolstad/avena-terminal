@@ -198,7 +198,7 @@ export default function AboutPage() {
                   <h3 className="font-serif text-xl font-light text-foreground mb-2">Founded</h3>
                   <p className="font-light text-sm leading-relaxed text-muted-foreground">
                     Henrik Kolstad begins building the scoring engine and data pipeline, sourcing
-                    listings from the RedSP XML feed and benchmarking against Idealista and INE
+                    Avena's own daily capture of agency-marketed new-build listings and benchmarking against Idealista and INE
                     municipal data.
                   </p>
                 </div>

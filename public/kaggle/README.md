@@ -2,7 +2,7 @@
 
 **Source:** Avena Terminal (https://avenaterminal.com)
 **Coverage:** 1,881 new build properties across Costa Blanca, Costa Calida, Costa del Sol
-**Updated:** Daily via RedSP MLS partnership
+**Updated:** Daily, from Avena's own capture of agency-marketed new-build listings
 **License:** CC BY 4.0
 
 ## Fields

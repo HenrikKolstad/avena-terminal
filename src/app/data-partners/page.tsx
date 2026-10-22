@@ -18,7 +18,6 @@ export const metadata: Metadata = {
 };
 
 const TECH_PARTNERS = [
-  { name: 'RedSP / MLS Costa',  url: 'https://www.redsp.com',  role: 'Primary Listing Data Provider (Spain)', description: 'Daily XML feeds covering new build listings across Costa Blanca, Costa Calida, and Costa del Sol.' },
   { name: 'Casa Sapo',          url: 'https://www.casasapo.pt', role: 'Listing Data Provider (Portugal)',      description: 'Portuguese property listing RSS feed integrated with Avena APIP standard.' },
   { name: 'Immobiliare.it',     url: 'https://www.immobiliare.it', role: 'Listing Data Provider (Italy)',      description: 'Italian property listings via public API integration.' },
   { name: 'European Central Bank', url: 'https://www.ecb.europa.eu', role: 'Macro Data Provider', description: 'Policy rate, Euribor, EUR exchange rates pulled live via ECB SDW JSON API.' },

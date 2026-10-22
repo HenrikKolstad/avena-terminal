@@ -157,7 +157,7 @@ if (verdict.level === 'stalled') {
   // caller can re-derive it differently.
   const title =
     verdict.cause === 'origin'
-      ? `RedSP itself reports no rebuild for ${verdict.origin_days} days`
+      ? `Upstream origin itself reports no rebuild for ${verdict.origin_days} days`
       : verdict.cause === 'payload'
         ? `Upstream payload byte-identical across ${verdict.payload_days} days`
         : `Observable market data unchanged for ${verdict.content_days} days`;
@@ -165,7 +165,7 @@ if (verdict.level === 'stalled') {
     'error',
     title,
     `${sentence}. Red at ${CONTENT_RED_DAYS} unchanged days is the criterion pre-registered on 2026-10-11, ` +
-      `from a ledger whose longest genuine zero run is two days. The origin axis above is RedSP's own ` +
+      `from a ledger whose longest genuine zero run is two days. The origin axis above is the upstream origin's own ` +
       `Last-Modified claim and is the fastest way to tell a quiet market from a dead feed.`,
   );
   console.error(

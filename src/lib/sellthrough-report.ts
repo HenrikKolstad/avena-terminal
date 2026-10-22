@@ -122,7 +122,7 @@ ${weeklyChart(r.weekly)}
 <table>${groupHead('Town')}${towns.map((g) => groupRow(g, `${g.label} · ${region(g.region)}`)).join('')}</table>
 
 <h2>4. Projects to watch</h2>
-<p class="note">Project = RedSP development reference. Developer names are not in the source feed; the project-to-developer mapping is delivered separately once verified. "Live / seen" counts listings (unit types), not dwellings.</p>
+<p class="note">Project = Avena development reference. Developer names are not in the captured data; the project-to-developer mapping is delivered separately once verified. "Live / seen" counts listings (unit types), not dwellings.</p>
 <h3>Repeated price cuts</h3><table>${projHead}${pick('REPEAT_CUTS', maxP).map(projRow).join('')}</table>
 <h3>Delivery within two quarters, ≥3 listings still live</h3><table>${projHead}${pick('DELIVERY_NEAR_WITH_STOCK', maxP).map(projRow).join('')}</table>
 <h3>All listings gone since ${esc(r.seriesStart)}</h3><table>${projHead}${pick('SOLD_OUT', maxP).map(projRow).join('')}</table>

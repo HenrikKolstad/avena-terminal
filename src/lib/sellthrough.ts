@@ -449,12 +449,12 @@ export function computeMonitor(series: RefSeries[], metaByRef: Record<string, Re
 }
 
 export const METHODOLOGY: string[] = [
-  'Source: Avena nightly snapshots of the RedSP new-build feed (Costa Blanca, Costa Calida, Costa del Sol), one row per listing per day, stored in price_snapshots since 2026-08-05.',
-  'Listing = one RedSP ref, usually a unit type within a development, not a single dwelling. Counts are listing counts.',
+  'Source: Avena\'s daily capture of agency-marketed new-build listings (Costa Blanca, Costa Calida, Costa del Sol), one row per listing per day, stored in price_snapshots since 2026-08-05.',
+  'Listing = one listing reference, usually a unit type within a development, not a single dwelling. Counts are listing counts.',
   'Exit = a listing present in an earlier snapshot and absent from the latest one: sold out or withdrawn. The feed does not distinguish the two, so exits are not called sales.',
   'Absorption (30d) = exits in the window, scaled to 30 days, divided by live listings plus window exits. Months of supply = live listings divided by exits per 30 days.',
   'Price move = change in a listing\'s asking price between two snapshots. Asking prices only; no transaction prices are claimed.',
-  'Project = RedSP development_ref, joined from the git history of the published feed (data/ref-dev-map.json). Developer names are not part of the feed.',
+  'Project = Avena development reference, joined from the history of Avena\'s captured listings. Developer names are not part of the captured data.',
   'The feed price is the listing\'s asking price, which for a unit type spanning several dwellings is the "from" price. A rise can therefore mean the cheapest unit sold, and a large cut can mean a cheaper unit was added; moves above ~20% should be read against the listing before being quoted as a repricing.',
   'Price per m2 uses usable living area where the feed provides it, otherwise built area.',
   'Known gap: no snapshots 2026-10-14 to 2026-10-20 (feed outage). Listings last seen 2026-10-13 and absent on 2026-10-21 are exits with an unknown date in that gap (flag EXIT_IN_GAP).',

@@ -8,7 +8,7 @@
  *   window=30          trailing window in days for flow metrics (7-90)
  *   region=cb-south    cb-north | cb-south | costa-calida | costa-del-sol
  *   towns=Estepona,Mijas
- *   projects=P01007,P02071   watchlist of RedSP development refs
+ *   projects=P01007,P02071   watchlist of Avena development refs
  *   format=json|csv    csv = one row per project
  *   section=all|market|towns|projects|weekly|cuts|exits
  */

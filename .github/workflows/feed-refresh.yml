@@ -68,7 +68,7 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Run the RedSP feed
+      - name: Run the listing capture
         # Belt to parse-feed's own per-attempt timeout: 120min of wait budget
         # plus parse and upload should never approach this. If it does, the
         # step is wedged and the run must die loudly at a known hour rather
@@ -133,7 +133,7 @@ jobs:
             echo "No feed changes today."
           else
             COUNT=$(node -e "console.log(require('./public/data.json').length)")
-            git commit -m "chore(feed): nightly RedSP refresh — ${COUNT} listings [skip ci]"
+            git commit -m "chore(feed): nightly listing capture — ${COUNT} listings [skip ci]"
             git pull --rebase origin main
             git push
             echo "Pushed refreshed feed (${COUNT} listings)."
