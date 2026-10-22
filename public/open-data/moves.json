@@ -7508,5 +7508,125 @@
     "change_pct": 6.02,
     "town": "la Nucia",
     "type": "Townhouse"
+  },
+  {
+    "avn_id": "N6130",
+    "date": "2026-10-22",
+    "prev_date": "2026-10-21",
+    "prev_price_eur": 1400000,
+    "new_price_eur": 1350000,
+    "change_pct": -3.57,
+    "town": "Finestrat",
+    "type": "Villa"
+  },
+  {
+    "avn_id": "N7708",
+    "date": "2026-10-22",
+    "prev_date": "2026-10-21",
+    "prev_price_eur": 420000,
+    "new_price_eur": 375000,
+    "change_pct": -10.71,
+    "town": "Marbella",
+    "type": "Apartment"
+  },
+  {
+    "avn_id": "N8443",
+    "date": "2026-10-22",
+    "prev_date": "2026-10-21",
+    "prev_price_eur": 7800000,
+    "new_price_eur": 7950000,
+    "change_pct": 1.92,
+    "town": "Marbella",
+    "type": "Villa"
+  },
+  {
+    "avn_id": "N8638",
+    "date": "2026-10-22",
+    "prev_date": "2026-10-21",
+    "prev_price_eur": 366000,
+    "new_price_eur": 376000,
+    "change_pct": 2.73,
+    "town": "Orihuela",
+    "type": "Townhouse"
+  },
+  {
+    "avn_id": "N8656",
+    "date": "2026-10-22",
+    "prev_date": "2026-10-21",
+    "prev_price_eur": 659000,
+    "new_price_eur": 679000,
+    "change_pct": 3.03,
+    "town": "Polop",
+    "type": "Villa"
+  },
+  {
+    "avn_id": "N9063",
+    "date": "2026-10-22",
+    "prev_date": "2026-10-21",
+    "prev_price_eur": 296000,
+    "new_price_eur": 355000,
+    "change_pct": 19.93,
+    "town": "Pilar de La Horadada",
+    "type": "Bungalow"
+  },
+  {
+    "avn_id": "N9589",
+    "date": "2026-10-22",
+    "prev_date": "2026-10-21",
+    "prev_price_eur": 379000,
+    "new_price_eur": 390000,
+    "change_pct": 2.9,
+    "town": "Pinoso",
+    "type": "Villa"
+  },
+  {
+    "avn_id": "N9668",
+    "date": "2026-10-22",
+    "prev_date": "2026-10-21",
+    "prev_price_eur": 318000,
+    "new_price_eur": 320000,
+    "change_pct": 0.63,
+    "town": "Los Alcazares",
+    "type": "Apartment"
+  },
+  {
+    "avn_id": "N9669",
+    "date": "2026-10-22",
+    "prev_date": "2026-10-21",
+    "prev_price_eur": 409000,
+    "new_price_eur": 408000,
+    "change_pct": -0.24,
+    "town": "Los Alcazares",
+    "type": "Apartment"
+  },
+  {
+    "avn_id": "N9765",
+    "date": "2026-10-22",
+    "prev_date": "2026-10-21",
+    "prev_price_eur": 890000,
+    "new_price_eur": 915000,
+    "change_pct": 2.81,
+    "town": "Finestrat",
+    "type": "Villa"
+  },
+  {
+    "avn_id": "N9766",
+    "date": "2026-10-22",
+    "prev_date": "2026-10-13",
+    "prev_price_eur": 279000,
+    "new_price_eur": 285000,
+    "change_pct": 2.15,
+    "town": "San Pedro del Pinatar",
+    "type": "Bungalow"
+  },
+  {
+    "avn_id": "SP1865",
+    "date": "2026-10-22",
+    "prev_date": "2026-10-21",
+    "prev_price_eur": 2900000,
+    "new_price_eur": 3200000,
+    "change_pct": 10.34,
+    "town": "Málaga",
+    "type": "Villa"
   }
 ]
