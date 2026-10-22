@@ -23,7 +23,7 @@ export default function ScorePage() {
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Any',
     description: 'Paste any property URL from idealista, kyero, rightmove, fotocasa, or anywhere else. Get an Avena Score in 5 seconds. Free.',
-    offers: { '@type': 'Offer', price: 0, priceCurrency: 'EUR' },
+    isAccessibleForFree: true,
     url: 'https://avenaterminal.com/score',
     license: 'https://opensource.org/licenses/MIT',
   };

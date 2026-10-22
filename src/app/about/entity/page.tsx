@@ -58,13 +58,6 @@ export default function EntityPage() {
       'Model Context Protocol',
       'Property Data Protocol',
     ],
-    hasOfferCatalog: {
-      '@type': 'OfferCatalog',
-      name: 'Avena Terminal Products',
-      itemListElement: [
-        { '@type': 'Offer', itemOffered: { '@type': 'SoftwareApplication', name: 'Avena Terminal MCP Server', applicationCategory: 'DeveloperApplication' }, price: '0', priceCurrency: 'EUR' },
-      ],
-    },
     dataset: [
       { '@type': 'Dataset', name: 'Spain New Build Property Investment Database 2026', url: 'https://avenaterminal.com/dataset', identifier: '10.5281/zenodo.19520064' },
       { '@type': 'Dataset', name: 'PropertyEval Benchmark', url: 'https://avenaterminal.com/propertyeval' },

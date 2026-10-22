@@ -34,7 +34,7 @@ const ITEMS: PaletteItem[] = [
   { group: 'Integ.',    label: 'Wikidata claim graph',                 href: '/wikidata' },
   { group: 'Integ.',    label: 'MCP server',                           href: '/mcp-server' },
   // Account
-  { group: 'Account',   label: 'Get a seat — €499/mo',                 href: '/terminal/seat' },
+  { group: 'Account',   label: 'Get a seat — request access',                 href: '/terminal/seat' },
   { group: 'Account',   label: 'Institutional packages',               href: '/institutional' },
   { group: 'Account',   label: 'Governance & SLA',                     href: '/governance' },
 ];

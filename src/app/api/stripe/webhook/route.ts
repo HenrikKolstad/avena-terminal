@@ -22,8 +22,7 @@ function getSupabase() {
  * user as PRO, send the PRO welcome email or overwrite an existing PRO row.
  */
 const LEGACY_PRO_PRICE_IDS = new Set(
-  [process.env.NEXT_PUBLIC_STRIPE_PRICE_ID, 'price_1TJJG9Bn1EnHU5xhVXK0PoKk', 'price_1TJFIMBn1EnHU5xhBA1vEGNu']
-    .filter((x): x is string => Boolean(x)),
+  ['price_1TJJG9Bn1EnHU5xhVXK0PoKk', 'price_1TJFIMBn1EnHU5xhBA1vEGNu'], // archived 2026-10-22
 );
 const LEGACY_PRO_PRODUCT_NAME = /^Avena (Terminal|Estate) PRO\b/;
 

@@ -81,12 +81,7 @@ export async function GET() {
         },
       },
     ],
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'EUR',
-      description: 'Free access to property data, scores, and market intelligence. API access available.',
-    },
+    isAccessibleForFree: true,
     featureList: [
       'Multi-factor property investment scoring (0-100)',
       'Avena Property Consciousness Index (APCI)',

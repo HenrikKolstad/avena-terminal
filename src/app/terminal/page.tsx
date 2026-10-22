@@ -240,7 +240,7 @@ export default async function TerminalPage() {
           <Link href="/archive" className="hover:text-foreground transition-colors">Moat archive</Link>
           <Link href="/wikidata" className="hover:text-foreground transition-colors">Wikidata</Link>
           <Link href="/terminal/seat" className="ml-auto inline-flex items-center gap-2 rounded-sm border px-3 py-1.5 text-primary hover:text-foreground transition-colors" style={{ borderColor: 'hsl(var(--av-primary) / 0.4)' }}>
-            Get a seat · €499/mo →
+            Get a seat · request access →
           </Link>
         </div>
       </div>

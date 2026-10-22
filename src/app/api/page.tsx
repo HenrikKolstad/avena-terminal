@@ -141,12 +141,12 @@ export default function APIPage() {
 
         {/* Pricing */}
         <section id="pricing" className="mx-auto max-w-[1400px] px-5 sm:px-12 pb-20">
-          <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">Pricing</div>
+          <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">Access</div>
           <div className="grid md:grid-cols-4 gap-4">
-            <Tier name="Developer"  price="€0 / mo"        reqs="100 / day · attribution required · evaluation & research" cta="Get API key" href="/login" />
-            <Tier name="Builder"    price="€490 / mo"      reqs="10,000 / day · commercial use · email support"            cta="Subscribe"   href="/contact" />
-            <Tier name="Desk"       price="€2,500 / mo"    reqs="Full API + institutional tools · 99.5% SLA · priority support" cta="Request access" href="/institutional#access" />
-            <Tier name="Enterprise" price="From €12,000 / mo" reqs="Unlimited · custom endpoints · index licensing · DPA + contract" cta="Contact" href="/contact" highlight />
+            <Tier name="Developer"  price="Free"           reqs="100 / day · attribution required · evaluation & research" cta="Get API key" href="/login" />
+            <Tier name="Builder"    price="Pricing on request" reqs="10,000 / day · commercial use · email support"         cta="Request access" href="/access" />
+            <Tier name="Desk"       price="Pricing on request" reqs="Full API + institutional tools · 99.5% SLA · priority support" cta="Request access" href="/access" />
+            <Tier name="Enterprise" price="Pricing on request" reqs="Unlimited · custom endpoints · index licensing · DPA + contract" cta="Request access" href="/access" highlight />
           </div>
           <p className="mt-4 text-sm text-muted-foreground italic">Free designated-authority tier for ECB, EBA, ESMA, EIOPA, ESRB, national central banks, IMF, BIS, OECD — and free academic access in exchange for citation.</p>
         </section>
