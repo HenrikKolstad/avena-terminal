@@ -202,7 +202,7 @@ export default async function LivePage() {
           <div className="mx-auto max-w-[1200px] px-5 sm:px-12 py-10">
             <div className="flex items-baseline justify-between mb-5">
               <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary">Recent agent runs</div>
-              <Link href="/swarm" className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground hover:text-primary">View swarm →</Link>
+              <Link href="/live" className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground hover:text-primary">Operations →</Link>
             </div>
             {recentCrons.length === 0 ? (
               <p className="text-sm text-muted-foreground">No cron runs persisted in cron_logs yet.</p>
@@ -244,7 +244,7 @@ export default async function LivePage() {
               All counters read live from Supabase · refreshed every 5 minutes · zero estimation
             </p>
             <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mt-2">
-              <Link href="/governance" className="text-foreground hover:text-primary">Governance</Link> · <Link href="/methodology" className="text-foreground hover:text-primary">Methodology</Link> · <Link href="/swarm" className="text-foreground hover:text-primary">Swarm</Link>
+              <Link href="/governance" className="text-foreground hover:text-primary">Governance</Link> · <Link href="/methodology" className="text-foreground hover:text-primary">Methodology</Link>
             </p>
           </div>
         </section>

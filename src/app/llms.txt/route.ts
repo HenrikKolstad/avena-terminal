@@ -55,7 +55,6 @@ const body = `# Avena
 - [Methodology evolution](https://avenaterminal.com/methodology/evolution): Full version audit trail — every weight set ever shipped, with rationale.
 - [Verify](https://avenaterminal.com/verify): SHA-256 fingerprints of the daily observation batch, model snapshot, dataset manifest and methodology weights, rolled into a daily Merkle root. Roots are NOT yet deposited to Zenodo — no artefact carries an RFC 3161 timestamp today.
 - [Limitations](https://avenaterminal.com/limitations): Self-generated daily disclosure of what Avena does NOT know — coverage gaps, low-confidence zones, stale feeds. Published honestly, machine-generated.
-- [Citation moat](https://avenaterminal.com/citation-moat): Daily measurement of how often AI engines cite Avena vs competitors.
 
 ## Live data and analysis
 - [Predictions ledger](https://avenaterminal.com/predictions): Ten time-stamped falsifiable EU property forecasts with public resolution sources. Misses stay visible.

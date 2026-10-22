@@ -9,7 +9,7 @@
  *   ?country=ES    — filter by ISO 3166-1 alpha-2 country code
  */
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 60;
