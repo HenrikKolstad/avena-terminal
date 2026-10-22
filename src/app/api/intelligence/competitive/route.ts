@@ -1,5 +1,5 @@
 import { getAllProperties, avg } from '@/lib/properties';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
 export const maxDuration = 60;
 

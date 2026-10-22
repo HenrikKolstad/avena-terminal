@@ -88,7 +88,6 @@ export default function ContributePage() {
             </p>
             <div className="mt-4 flex flex-wrap gap-3 font-mono text-[10px] uppercase tracking-[0.22em]">
               <Link href="/standards/apip" className="text-foreground/85 hover:text-primary">APIP v1.0 spec →</Link>
-              <Link href="/apon-network" className="text-foreground/85 hover:text-primary">APON network →</Link>
               <Link href="/data-partners" className="text-foreground/85 hover:text-primary">Current partners →</Link>
               <Link href="/governance" className="text-foreground/85 hover:text-primary">Governance →</Link>
             </div>

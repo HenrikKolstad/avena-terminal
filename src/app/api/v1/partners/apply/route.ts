@@ -7,7 +7,7 @@
  * client can show a success state.
  */
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { randomUUID } from 'crypto';
 
 export const dynamic = 'force-dynamic';

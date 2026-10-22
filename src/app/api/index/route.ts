@@ -150,8 +150,6 @@ const endpoints: Endpoint[] = [
   { path: '/api/v1/community-pulse',        methods: ['GET'], category: 'tools',       description: 'Community discussion signal.', auth: 'none' },
 
   // Misc / specialty
-  { path: '/api/v1/consciousness',          methods: ['GET'], category: 'specialty',   description: 'APCI consciousness index (deep read).', auth: 'none' },
-  { path: '/api/v1/civilizational',         methods: ['GET'], category: 'specialty',   description: 'Civilizational / long-cycle view.', auth: 'none' },
   { path: '/api/v1/genome',                 methods: ['GET'], category: 'specialty',   description: 'Property genome fingerprint.', auth: 'none' },
   { path: '/api/v1/digital-twin',           methods: ['GET'], category: 'specialty',   description: 'Digital-twin feed.', auth: 'none' },
   { path: '/api/v1/carbon',                 methods: ['GET'], category: 'specialty',   description: 'Carbon footprint estimate.', auth: 'none' },
@@ -184,9 +182,7 @@ const endpoints: Endpoint[] = [
   { path: '/api/v1/voice',                  methods: ['GET'], category: 'outputs',     description: 'Voice-ready audio content feed.', auth: 'none' },
   { path: '/api/v1/podcast',                methods: ['GET'], category: 'outputs',     description: 'Podcast RSS feed.', auth: 'none' },
   { path: '/api/v1/episodes',               methods: ['GET'], category: 'outputs',     description: 'Podcast episodes.', auth: 'none' },
-  { path: '/api/v1/influencer-brief',       methods: ['GET'], category: 'outputs',     description: 'Daily brief for content creators.', auth: 'none' },
   { path: '/api/v1/rics-data-brief',        methods: ['GET'], category: 'outputs',     description: 'RICS-format data brief.', auth: 'none' },
-  { path: '/api/v1/trademark-brief',        methods: ['GET'], category: 'outputs',     description: 'Trademark monitoring brief.', auth: 'none' },
   { path: '/api/v1/crawler-report',         methods: ['GET'], category: 'outputs',     description: 'Crawler activity report.', auth: 'none' },
   { path: '/api/v1/seo-health',             methods: ['GET'], category: 'outputs',     description: 'SEO health snapshot.', auth: 'none' },
   { path: '/api/v1/snippet-answers',        methods: ['GET'], category: 'outputs',     description: 'AEO-optimized snippet answers.', auth: 'none' },

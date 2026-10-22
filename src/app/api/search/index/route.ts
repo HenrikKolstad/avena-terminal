@@ -12,7 +12,6 @@ const PAGES = [
   { title: 'Terminal v2', url: '/terminal-v2', kind: 'page' },
   { title: 'Coverage map', url: '/coverage', kind: 'page' },
   { title: 'Oracle AI', url: '/chat', kind: 'page' },
-  { title: 'Swarm', url: '/swarm', kind: 'page' },
   { title: 'Methodology', url: '/methodology', kind: 'page' },
   { title: 'Track record', url: '/track-record', kind: 'page' },
   { title: 'Watchlist', url: '/watchlist', kind: 'page' },
