@@ -74,7 +74,16 @@ const TRAINING_ALLOW: string[] = [
 // per-UA group is exclusive in robots.txt (a bot that matches its own group
 // ignores `*` entirely), so without this each named bot was implicitly
 // invited into /admin/ and the billing/auth/cron API surface.
-const STANDARD_DISALLOW = ['/admin/', '/api/stripe/', '/api/auth/', '/api/cron/', '/api/email-capture', '/api/email/'];
+const STANDARD_DISALLOW = [
+  '/admin/',
+  '/api/stripe/',
+  '/api/auth/',
+  '/api/cron/',
+  '/api/email-capture',
+  '/api/email/',
+  // Unlinked research note. Longer than the /research/ allow, so it wins.
+  '/research/builder-stock-signal',
+];
 
 /**
  * Crawl-budget reclamation for bulk TRAINING crawlers.
