@@ -13,6 +13,9 @@ import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import type { EngineDeltas, PriceMove, EngineTruth } from '@/lib/deltas';
 import type { EngineStats } from '@/lib/deals';
+import { MarketPulse } from '@/components/engine/MarketPulse';
+import { PriceHistoryChart } from '@/components/engine/PriceHistoryChart';
+import { SelloutLedger } from '@/components/engine/SelloutLedger';
 
 const GOLD = 'hsl(var(--av-primary))';
 const PAPER = 'hsl(var(--av-surface))';
@@ -214,6 +217,8 @@ export default function EngineClient({ deltas, stats, truth, health }: { deltas?
 
       {/* Hero */}
       <section style={{ maxWidth: 1280, margin: '0 auto', padding: '124px 32px 76px' }}>
+        {/* Market pulse — what the engine caught this week, before any total. */}
+        <MarketPulse pulse={deltas?.pulse} sellouts30d={deltas?.selloutCount30d ?? 0} />
         <div ref={hero.ref} className="av-eng-hero" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.35fr) minmax(0,1fr)', gap: 64, alignItems: 'start' }}>
           <div>
             <Label>The infrastructure behind every score</Label>
@@ -223,7 +228,7 @@ export default function EngineClient({ deltas, stats, truth, health }: { deltas?
               verified transactions and developer intelligence — recomputed every night, never guessed.
             </p>
             <div style={{ marginTop: 40 }}>
-              <Link href="/deals" style={{ background: GOLD, color: '#fff', padding: '15px 30px', borderRadius: 4, fontFamily: 'ui-monospace, monospace', fontSize: 11, letterSpacing: '0.22em', textTransform: 'uppercase', textDecoration: 'none' }}>Explore this week&apos;s opportunities →</Link>
+              <Link href="/deals" className="av-eng-cta" style={{ display: 'inline-block', maxWidth: '100%', boxSizing: 'border-box', background: GOLD, color: '#fff', padding: '15px 30px', borderRadius: 4, fontFamily: 'ui-monospace, monospace', fontSize: 11, lineHeight: 1.6, letterSpacing: '0.22em', textTransform: 'uppercase', textDecoration: 'none', textAlign: 'center' }}>Explore this week&apos;s <span style={{ whiteSpace: 'nowrap' }}>opportunities →</span></Link>
             </div>
           </div>
 
@@ -356,31 +361,13 @@ export default function EngineClient({ deltas, stats, truth, health }: { deltas?
             ? <>Every movement is written to permanent price history — the record that makes &ldquo;underpriced&rdquo; provable.</>
             : <>These rows are examples from an earlier sweep, shown because this week&apos;s live movements could not be loaded. They are not current prices.</>}
         </p>
-
-        {/* Left the market — the absorption signal the source deletes */}
-        {deltas && deltas.selloutCount30d > 0 && (
-          <div style={{ marginTop: 56 }}>
-            <Label>Left the market · last 30 days · live</Label>
-            <h3 style={{ fontFamily: 'Georgia, serif', fontWeight: 300, fontSize: 'clamp(1.5rem,2.6vw,2.1rem)', letterSpacing: '-0.02em', margin: '16px 0 10px' }}>
-              {deltas.selloutCount30d} new-builds gone from the feed
-              {deltas.medianExitPm2 ? ` · median exit ${eur(deltas.medianExitPm2)}/m²` : ''}
-            </h3>
-            <p style={{ color: MUTED, fontSize: 13.5, margin: '0 0 24px', maxWidth: 640 }}>
-              When a unit sells, the source removes it — the listing, the price, everything. These records now exist only here.
-            </p>
-            <div style={{ border: `1px solid ${LINE}`, borderRadius: 4, overflow: 'hidden', background: SURFACE }}>
-              {deltas.sellouts.map((s, i) => (
-                <div key={s.ref} className="av-eng-mv" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr auto auto', gap: 20, alignItems: 'center', padding: '16px 26px', borderTop: i === 0 ? 'none' : `1px solid ${LINE}` }}>
-                  <span style={{ fontFamily: 'ui-monospace, monospace', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: MUTED }}>{s.town ?? '—'}</span>
-                  <span style={{ fontFamily: 'Georgia, serif', fontSize: 15 }}>{s.type ?? 'New build'}{s.lastPrice ? ` · last asked ${eur(s.lastPrice)}` : ''}</span>
-                  <span style={{ fontFamily: 'ui-monospace, monospace', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: MUTED }}>{s.lastSeen}</span>
-                  <span style={{ fontFamily: 'ui-monospace, monospace', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: GOLD }}>archived</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </section>
+
+      {/* Price memory — one real home's captured history, every cut marked */}
+      <PriceHistoryChart history={deltas?.showcase} />
+
+      {/* The sell-out ledger — the absorption signal the source deletes */}
+      <SelloutLedger sellouts={deltas?.sellouts ?? []} count={deltas?.selloutCount30d ?? 0} medianExitPm2={deltas?.medianExitPm2 ?? null} />
 
       {/* Closing */}
       <section style={{ borderTop: `1px solid ${LINE}`, background: SURFACE }}>
@@ -391,7 +378,7 @@ export default function EngineClient({ deltas, stats, truth, health }: { deltas?
             Spanish coast so every opportunity is backed by structured evidence — not speculation.
           </p>
           <div style={{ marginTop: 40 }}>
-            <Link href="/deals" style={{ background: GOLD, color: '#fff', padding: '16px 34px', borderRadius: 4, fontFamily: 'ui-monospace, monospace', fontSize: 11, letterSpacing: '0.22em', textTransform: 'uppercase', textDecoration: 'none' }}>Explore this week&apos;s opportunities →</Link>
+            <Link href="/deals" className="av-eng-cta" style={{ display: 'inline-block', maxWidth: '100%', boxSizing: 'border-box', background: GOLD, color: '#fff', padding: '16px 34px', borderRadius: 4, fontFamily: 'ui-monospace, monospace', fontSize: 11, lineHeight: 1.6, letterSpacing: '0.22em', textTransform: 'uppercase', textDecoration: 'none', textAlign: 'center' }}>Explore this week&apos;s <span style={{ whiteSpace: 'nowrap' }}>opportunities →</span></Link>
           </div>
           {/* Go deeper — the technical cathedral, preserved */}
           <div style={{ marginTop: 56, paddingTop: 28, borderTop: `1px solid ${LINE}`, display: 'flex', flexWrap: 'wrap', gap: 18, justifyContent: 'center' }}>
@@ -409,6 +396,10 @@ export default function EngineClient({ deltas, stats, truth, health }: { deltas?
           .av-eng-hero { grid-template-columns: 1fr !important; }
           .av-eng-cov  { grid-template-columns: 1fr !important; gap: 28px !important; }
           .av-eng-mv   { grid-template-columns: 1fr auto !important; row-gap: 4px !important; }
+        }
+        @media (max-width: 520px) {
+          .av-eng-cta  { display: block !important; padding-left: 18px !important; padding-right: 18px !important; letter-spacing: 0.16em !important; }
+          .av-eng-pulse { padding: 16px 18px !important; gap: 12px 24px !important; }
         }
       `}</style>
     </div>

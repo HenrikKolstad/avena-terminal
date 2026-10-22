@@ -12,6 +12,7 @@ import type { Metadata } from 'next';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { CineHero } from '@/components/mare/CineHero';
+import { AudienceDoors } from '@/components/mare/AudienceDoors';
 import { LuxuryRankings } from '@/components/mare/LuxuryRankings';
 import { TownMarquee, Statement, LuxuryCollection, CoastPanels, PrivateOffice } from '@/components/mare/Sections';
 import { AvenaConcierge } from '@/components/concierge/AvenaConcierge';
@@ -67,6 +68,7 @@ export default function HomePage() {
       <Nav />
       <main className="av-clean">
         <CineHero />
+        <AudienceDoors />
         <LuxuryRankings deals={deals.slice(0, 5)} total={total} seeAllHref="/deals" />
         <PrivateOffice />
         <TownMarquee />
