@@ -237,7 +237,8 @@ const nextConfig: NextConfig = {
       { source: '/stats',              destination: '/proof#stats',        permanent: true },
       { source: '/terminal-stats',     destination: '/proof#stats',        permanent: true },
       { source: '/status',             destination: '/live',               permanent: true },
-      { source: '/portugal',           destination: '/eu-coverage',        permanent: true },
+      // /portugal reclaimed 2026-10-22 for the Portugal market layer
+      // (INE + Banco de Portugal benchmarks). Redirect removed.
       // /benchmark reclaimed 2026-06-10 for PLAB — the European Property
       // AI Benchmark (daily model leaderboard). Redirect removed.
       { source: '/propertyeval-benchmark', destination: '/benchmark',      permanent: true },

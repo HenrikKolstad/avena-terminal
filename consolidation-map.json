@@ -115,8 +115,7 @@
     "/stats":           "/proof#stats",
     "/terminal-stats":  "/proof#stats",
     "/archive":         "/proof#archive",
-    "/status":          "/proof#status",
-    "/portugal":        "/proof#coverage"
+    "/status":          "/proof#status"
   },
 
   "fold_into_stack": {
