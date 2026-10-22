@@ -23,11 +23,14 @@ const EU_FEED_CONFIGS = [
     country: 'PT',
     country_name: 'Portugal',
     portal: 'casa-sapo',
-    feed_url: 'https://www.casasapo.pt/Comum/RSS/Imoveis.xml',
+    // Disabled 2026-10-22: the public RSS returned HTTP 504 every night since
+    // 2026-05-24 and Casa SAPO's terms do not permit automated reuse. Portugal
+    // listings will come from consented developer/agency feeds instead.
+    feed_url: null,
     feed_type: 'xml',
     currency: 'EUR',
-    status: 'beta',
-    notes: 'Casa Sapo public RSS — limited to title/url/region. Replace with partner feed for full data.',
+    status: 'stub',
+    notes: 'Disabled (terms + dead endpoint). Portugal listings require a consented partner feed.',
     fallback_url: 'https://www.casasapo.pt',
     field_map: {
       ref:        'guid',
@@ -107,11 +110,14 @@ const EU_FEED_CONFIGS = [
     country: 'IT',
     country_name: 'Italy',
     portal: 'immobiliare-it',
-    feed_url: 'https://www.immobiliare.it/api-next/search-list/?vetrina=1',
+    // Disabled 2026-10-22: an internal site endpoint, not a public API. It
+    // returned HTTP 500 every night since 2026-05-24 and the portal's terms do
+    // not permit automated reuse. Italy needs a consented partner feed.
+    feed_url: null,
     feed_type: 'json',
     currency: 'EUR',
-    status: 'beta',
-    notes: 'Immobiliare.it Next API is publicly reachable but rate-limited; tune limit/page in production.',
+    status: 'stub',
+    notes: 'Disabled (terms + dead endpoint). Italy listings require a consented partner feed.',
     fallback_url: 'https://www.immobiliare.it',
     field_map: {
       ref:      'realEstate.id',
