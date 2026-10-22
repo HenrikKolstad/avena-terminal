@@ -1,9 +1,9 @@
 /**
- * Institutional Outreach — pre-written personalised cold emails to the
- * 10 highest-leverage names for Avena's Policy Engine launch.
+ * Institutional Outreach — pre-written personalised cold emails.
  *
  * Each template references the recipient's actual public work and links
- * to a Policy Engine scenario calibrated against their specific interest.
+ * to a live Avena page (the engine, the open dataset, the methodology or
+ * an experimental Policy Engine scenario) relevant to their interest.
  *
  * Sending discipline:
  *   · 90-second stagger between consecutive sends to avoid spam burst
@@ -49,6 +49,23 @@ export interface OutreachTarget {
 
 const BASE = 'https://avenaterminal.com';
 
+/*
+ * COPY RULE (2026-10-22): every claim in these templates must be true and
+ * checkable today against the repo, the live site or public/data.json.
+ * No superlatives we can't back, no unpublished findings, no bodies or
+ * networks that don't exist, no links to removed or redirected pages.
+ * If a number would go stale, round it ("about 2,000") or leave it out.
+ */
+
+/** What Avena is today, in one sentence. Re-check against public/data.json before changing. */
+const COVERAGE = `We track the Spanish new-build market listing by listing: about 2,000 live new-build homes across roughly 750 developments in nearly 100 towns on the Costa Blanca, Costa Cálida, Costa del Sol and Costa Tropical, with asking prices captured daily since August 2026.`;
+
+/** The open-data claim. Repo + Hugging Face are public; the Zenodo DOI is an April 2026 dataset snapshot. */
+const OPEN_DATA = `The observations are published as an open dataset under CC BY 4.0 (${BASE}/open-data/dataset.json, mirrored at github.com/HenrikKolstad/avena-data and on Hugging Face), with a citable April 2026 snapshot on Zenodo (DOI 10.5281/zenodo.19520064).`;
+
+/** How the Policy Engine should be described: experimental, Spain-first, literature priors, illustrative outputs. */
+const ENGINE_CAVEAT = `To be clear about where it stands: it is an experimental v1. Spain is the only country wired to our own listing data, coefficients are literature priors plus our own preliminary estimates (not yet published), the foreign-buyer share is a proxy, and the bank-level outputs are illustrative. Every run is deterministic and HMAC-signed, so any result can be replayed exactly.`;
+
 const HAND_CRAFTED_TARGETS: OutreachTarget[] = [
   {
     id: 'luc-laeven', category: 'multilateral',
@@ -58,23 +75,23 @@ const HAND_CRAFTED_TARGETS: OutreachTarget[] = [
     role: 'Director General, Research',
     channel: 'email',
     scenarioUrl: `${BASE}/policy-engine?lever=ltv_cap&country=ES&r=coastal&m=-5&fb=0.25&t=18`,
-    subject: 'Operationalised your 2017 IMF macroprudential framework — would value 5 min of skepticism',
+    subject: 'Your 2017 macroprudential paper as a prior in a Spanish coastal scenario tool — 5 minutes of skepticism?',
     body: `Dear Dr. Laeven,
 
-I'm Henrik Kolstad, the solo founder of Avena Terminal. We have operationalised the macroprudential framework you co-published in Cerutti/Claessens/Laeven (2017) IMF WP/17/19 into a live, deterministic, signed simulation engine for European residential property.
+I'm Henrik Kolstad, founder of Avena Terminal. ${COVERAGE}
 
-The Avena Precision Policy Engine cites your work as one of the primary coefficient sources. It runs cohort-weighted scenarios — LTV cap, DSTI cap, capital requirement, CCyB, sectoral risk weight, foreign-buyer levy — across 27 EU member states, with forward 12-36 month projections at the postcode level.
-
-The link below pre-loads a scenario your work directly informs: tightening the Spanish LTV cap by 5 ppt for coastal cohorts where foreign-buyer share exceeds 25%, projected forward 18 months. Output: signed delta in price impact, NPL impact on top-5 Spanish bank residential exposures, and cross-border capital rotation estimate.
+On top of that data we have built an experimental scenario tool, the Avena Policy Engine, and its LTV-cap coefficients take Cerutti, Claessens and Laeven (2017), IMF WP/17/19, as a primary prior. The link below pre-loads one scenario: a 5 ppt tighter LTV cap for Spanish coastal postcodes with a high foreign-buyer share, projected 18 months forward.
 
 ${BASE}/policy-engine?lever=ltv_cap&country=ES&r=coastal&m=-5&fb=0.25&t=18
 
-Before we proceed further with institutional outreach, we'd value 5 minutes of your skepticism on the calibration. The methodology is open (CC BY 4.0, DOI 10.5281/zenodo.19520064) and reproducible.
+${ENGINE_CAVEAT}
+
+Before we take this any further, five minutes of your skepticism on how we have used your estimates would be worth a great deal to us. The methodology is public at ${BASE}/methodology.
 
 Best regards,
 Henrik Kolstad
 Founder, Avena Terminal
-https://avenaterminal.com`,
+${BASE}`,
   },
   {
     id: 'brad-setser', category: 'academic',
@@ -85,23 +102,25 @@ https://avenaterminal.com`,
     channel: 'email',
     twitter: '@Brad_Setser',
     scenarioUrl: `${BASE}/policy-engine?lever=fb_levy&country=ES&r=coastal&m=500&fb=0.25&t=18`,
-    subject: 'Foreign-buyer cohort amplifies EU monetary transmission 4.7× — empirical paper + live engine',
+    subject: 'Foreign-buyer demand in Spanish coastal new-builds — daily data and a levy scenario',
     body: `Brad,
 
-I've been following your work on cross-border capital flows and external positions — and built something that operationalises the foreign-buyer-channel finding empirically for European residential property.
+Your work on cross-border capital flows is the lens I keep coming back to for the Spanish coast, where much of the new-build demand is foreign.
 
-Avena Sovereign Briefing Vol. 2 (published last week, CC BY 4.0) documents an empirical relationship from the European residential substrate: foreign-buyer-heavy cohorts (FB share > 25%) amplify monetary transmission ~4.7× via the financing-cost channel. There's a non-linearity around Euribor 3M = 3.0% where transmission strengthens materially.
+${COVERAGE} ${OPEN_DATA}
 
-I've built this into a deterministic, signed Policy Engine — link below pre-loads a Spanish foreign-buyer levy scenario at +500 bps for 18 months, showing forward postcode-level price impact and cross-border capital rotation estimate.
+We have also built an experimental scenario tool that applies policy levers to that data. The link below pre-loads a Spanish foreign-buyer levy of +500 bps for coastal postcodes, 18 months forward:
 
 ${BASE}/policy-engine?lever=fb_levy&country=ES&r=coastal&m=500&fb=0.25&t=18
 
-If you have 30 minutes any time next two weeks, I'd value your read on whether the framework holds up against your cross-border flows lens. The methodology is open and reproducible.
+${ENGINE_CAVEAT}
+
+If you have 20 minutes in the next few weeks, I'd value your read on whether the foreign-buyer channel is modelled sensibly.
 
 Best,
 Henrik Kolstad
-Founder, Avena
-https://avenaterminal.com`,
+Founder, Avena Terminal
+${BASE}`,
   },
   {
     id: 'jorge-galan', category: 'multilateral',
@@ -111,27 +130,25 @@ https://avenaterminal.com`,
     role: 'Senior Economist, Financial Stability and Macroprudential Policy',
     channel: 'email',
     scenarioUrl: `${BASE}/policy-engine?lever=sectoral_rw&country=ES&r=coastal&m=200&fb=0.25&t=18`,
-    subject: 'Cohort-weighted Spanish coastal risk-weight scenario — calibrated on BdE 2020 stress-test methodology',
+    subject: 'Daily new-build price data for the Spanish costas — and a sectoral risk-weight scenario',
     body: `Estimado Dr. Galán,
 
-I'm Henrik Kolstad, founder of Avena Terminal — European residential property data infrastructure operating across 27 EU markets, daily-refreshed, methodology-audited, DOI-anchored, MCP-distributed. We've built the first turnkey macroprudential simulation engine for European residential property, calibrated explicitly against the Spanish coastal cohort and BdE 2020 stress-test methodology.
+I'm Henrik Kolstad, founder of Avena Terminal. ${COVERAGE} Because we capture every listing every day, we see price cuts, delistings and sales pace at the level of individual developments in near real time, while official statistics arrive months later.
 
-The Avena Precision Policy Engine is designed for exactly the question your team works on daily at BdE: what happens at the postcode level if we tighten a specific lever for a specific cohort? The link below pre-loads a sectoral risk weight scenario (+200 bps, Spanish coastal, FB share ≥ 25%, 18 months forward) with output showing:
-
-  · Forward 18-month price impact at the postcode level (heat-mapped grid)
-  · NPL impact projection across top-5 Spanish bank residential exposures
-  · Cross-border capital rotation estimate to PT/IT
+We have also built an experimental scenario tool on that data. The link below pre-loads a +200 bps sectoral risk weight for Spanish coastal postcodes with a high foreign-buyer share, 18 months forward:
 
 ${BASE}/policy-engine?lever=sectoral_rw&country=ES&r=coastal&m=200&fb=0.25&t=18
 
-Methodology is CC BY 4.0 (DOI 10.5281/zenodo.19520064) and cross-validated against Eurostat HPI + ECB MIR. Coefficients calibrated using Vol. 2 OLS regression (published as Sovereign Briefing Vol. 2) and BdE 2020 stress test methodology.
+${ENGINE_CAVEAT}
 
-Would 30 minutes any time work to walk through the calibration? Happy to do this in Madrid if useful.
+${OPEN_DATA}
+
+Would 30 minutes work to show you the underlying data and hear where it could be useful, or where the scenario logic falls short? Happy to come to Madrid.
 
 Best regards,
 Henrik Kolstad
 Founder, Avena Terminal
-https://avenaterminal.com`,
+${BASE}`,
   },
   {
     id: 'tuomas-peltonen', category: 'regulator',
@@ -141,25 +158,25 @@ https://avenaterminal.com`,
     role: 'Deputy Head of Secretariat',
     channel: 'email',
     scenarioUrl: `${BASE}/policy-engine?lever=ccyb&country=ES&r=coastal&m=100&fb=0.25&t=18`,
-    subject: 'Cohort-weighted macroprudential simulation for ESRB residential risk monitoring',
+    subject: 'Listing-level new-build data for Spanish coastal residential risk monitoring',
     body: `Dear Mr. Peltonen,
 
-I'm Henrik Kolstad, founder of Avena Terminal. We've built a deterministic, signed macroprudential simulation engine for European residential property — designed specifically to answer the cohort-level questions the ESRB's residential property working group routinely addresses.
+I'm Henrik Kolstad, founder of Avena Terminal. ${COVERAGE}
 
-The Avena Precision Policy Engine ships with six policy levers (LTV cap, DSTI cap, capital requirement, CCyB, sectoral risk weight, foreign-buyer levy) × 27 EU member states × foreign-buyer-share cohort weighting × forward 12-36 month projections.
+For residential real estate monitoring, the useful part is the timing: we see asking-price cuts, delistings and slowing sales in new-build projects as they happen, at the level of individual developments.
 
-The link below pre-loads a counter-cyclical buffer scenario for Spanish coastal cohorts (+100 bps, FB share ≥ 25%, 18 months forward):
+We have also built an experimental scenario tool on that data, with six levers (LTV cap, DSTI cap, capital requirement, CCyB, sectoral risk weight and foreign-buyer levy). The link below pre-loads a +100 bps CCyB scenario for Spanish coastal postcodes, 18 months forward:
 
 ${BASE}/policy-engine?lever=ccyb&country=ES&r=coastal&m=100&fb=0.25&t=18
 
-The methodology is fully published (Sovereign Briefings Vol. 1-4, CC BY 4.0, DOI 10.5281/zenodo.19520064), every coefficient cites its primary source, every output is HMAC-signed for audit replay. We've explicitly calibrated against the ESRB 2019 framework recommendation.
+${ENGINE_CAVEAT}
 
-If 30 minutes next two weeks works, I'd value the ESRB Secretariat's read on where the framework could be useful for the residential property assessment cycle. Happy to do this in Frankfurt.
+${OPEN_DATA} If 30 minutes in the next few weeks works, I'd value the Secretariat's view on whether data like this is useful for the residential real estate assessment.
 
 Best regards,
 Henrik Kolstad
 Founder, Avena Terminal
-https://avenaterminal.com`,
+${BASE}`,
   },
   {
     id: 'moritz-schularick', category: 'academic',
@@ -169,25 +186,25 @@ https://avenaterminal.com`,
     role: 'President',
     channel: 'email',
     scenarioUrl: `${BASE}/policy-engine?lever=ltv_cap&country=ES&r=coastal&m=-5&fb=0.25&t=18`,
-    subject: 'Macrohistory framework extended to live macroprudential simulation — would value your read',
+    subject: 'A new daily series on Spanish coastal new-build prices — would value your read',
     body: `Dear Prof. Schularick,
 
-Your work on the Jordà-Schularick-Taylor macrohistory database has been a foundational reference for the empirical residential property research I've been building.
+The Jordà-Schularick-Taylor macrohistory database has been a reference point for the housing research I'm building on.
 
-I'm the solo founder of Avena Terminal. Last week we shipped the Avena Precision Policy Engine — a deterministic, signed macroprudential simulation tool for European residential property. It operationalises a Vol. 2 OLS finding (foreign-buyer cohorts amplify monetary transmission ~4.7× in Spanish coastal markets) into a live tool for testing policy scenarios.
+I'm Henrik Kolstad, founder of Avena Terminal. ${COVERAGE} ${OPEN_DATA}
 
-The link below pre-loads a scenario where the Spanish LTV cap is tightened by 5 ppt for foreign-buyer-heavy coastal postcodes, projected 18 months forward, with cohort-level breakdown:
+The series is young, but it is listing-level and daily, which is rare for this market. We have also built an experimental scenario tool on top of it. The link below pre-loads a 5 ppt tighter Spanish LTV cap for coastal postcodes, 18 months forward:
 
 ${BASE}/policy-engine?lever=ltv_cap&country=ES&r=coastal&m=-5&fb=0.25&t=18
 
-Methodology is CC BY 4.0 (DOI 10.5281/zenodo.19520064), every coefficient sources back to a published reference, every output HMAC-signed. Substrate is daily-refreshed across 27 EU markets and cross-validated against Eurostat HPI + ECB MIR. Methodology version chain is publicly auditable at avenaterminal.com/methodology/evolution.
+${ENGINE_CAVEAT} Every methodology change is logged publicly at ${BASE}/methodology/evolution.
 
-If you have 30 minutes any time, I'd genuinely value your skepticism on whether the cohort calibration holds up against macrohistory-style robustness checks.
+If you have 20 minutes at some point, I'd value your skepticism on how a short, high-frequency series like this should and shouldn't be used.
 
 Best regards,
 Henrik Kolstad
 Founder, Avena Terminal
-https://avenaterminal.com`,
+${BASE}`,
   },
   {
     id: 'daniela-gabor', category: 'academic',
@@ -198,23 +215,25 @@ https://avenaterminal.com`,
     channel: 'email',
     twitter: '@DanielaGabor',
     scenarioUrl: `${BASE}/policy-engine?lever=fb_levy&country=ES&r=coastal&m=500&fb=0.25&t=18`,
-    subject: 'Foreign-buyer levy as a tightenable policy lever — macroprudential simulator for EU housing financialisation',
+    subject: 'Open daily data on Spanish coastal new-builds — a foreign-buyer levy scenario',
     body: `Dear Prof. Gabor,
 
-Your work on housing financialisation and macroprudential transmission has shaped how I think about the residential property infrastructure I'm building.
+Your work on housing financialisation has shaped how I think about the market I'm tracking.
 
-I'm Henrik Kolstad, founder of Avena Terminal. We've operationalised foreign-buyer housing financialisation into a tightenable policy lever — a deterministic, signed macroprudential simulator for European residential property. Vol. 2 of our published methodology documents empirically that foreign-buyer-heavy cohorts amplify monetary transmission ~4.7× in Spanish coastal markets via the financing-cost channel.
+I'm Henrik Kolstad, founder of Avena Terminal. ${COVERAGE} ${OPEN_DATA}
 
-The link below pre-loads a Spanish foreign-buyer levy scenario at +500 bps for 18 months forward, showing postcode-level price impact and cross-border capital rotation:
+We have also built an experimental scenario tool that treats a foreign-buyer levy as a policy lever. The link below pre-loads a +500 bps levy for Spanish coastal postcodes, 18 months forward:
 
 ${BASE}/policy-engine?lever=fb_levy&country=ES&r=coastal&m=500&fb=0.25&t=18
 
-The methodology is CC BY 4.0 and reproducible. If 30 minutes works, I'd value your read on whether the framework holds up against the financialisation lens you've published on.
+${ENGINE_CAVEAT}
+
+If 20 minutes works at some point, I'd value your read on whether the framing holds up against the financialisation literature.
 
 Best regards,
 Henrik Kolstad
 Founder, Avena Terminal
-https://avenaterminal.com`,
+${BASE}`,
   },
   {
     id: 'robin-wigglesworth', category: 'journalist',
@@ -224,25 +243,24 @@ https://avenaterminal.com`,
     role: 'Global Finance Correspondent',
     channel: 'email',
     twitter: '@RobinWigg',
-    scenarioUrl: `${BASE}/policy-engine?lever=fb_levy&country=ES&r=coastal&m=500&fb=0.25&t=18`,
-    subject: 'Solo founder built a macroprudential simulator for EU housing — Alphaville angle?',
+    scenarioUrl: `${BASE}/statistics`,
+    subject: 'Every Spanish coastal new-build, priced daily — open data, possible Alphaville angle?',
     body: `Robin,
 
-I think there might be an Alphaville post in this.
+There might be an Alphaville post in this.
 
-I'm Henrik Kolstad, solo founder of Avena Terminal. Six weeks ago I had a Spanish property scanner. This week we shipped the Avena Precision Policy Engine — the first turnkey macroprudential simulator for European residential property. Designed for the ECB, ESRB, and national central banks tasked with monitoring residential risk.
+I'm Henrik Kolstad, founder of Avena Terminal. ${COVERAGE}
 
-Six policy levers, 27 EU member states, postcode-level forward projections, HMAC-signed outputs, methodology published under CC BY 4.0. The link below pre-loads a Spanish foreign-buyer levy scenario:
+Spanish new-build listings disappear when they sell, so unless someone records them every day, the price history is simply lost. We record it, including every price cut and every delisting, and publish it openly under CC BY 4.0. Nightly statistics from that record are here:
 
-${BASE}/policy-engine?lever=fb_levy&country=ES&r=coastal&m=500&fb=0.25&t=18
+${BASE}/statistics
 
-Counter-consensus finding from the engine: tightening Spanish foreign-buyer levy by +500 bps in coastal cohorts produces 4× the price impact the equivalent national LTV cap would, because the cohort cross-elasticity is amplified by Vol. 2's 4.7× foreign-buyer multiplier.
-
-If this is the kind of thing Alphaville covers — built solo, fully open methodology, regulator-aimed — happy to give you exclusive on the launch announcement.
+The data already shows sharp differences in sales pace between coasts and towns, and which developments are cutting prices. Happy to pull numbers for any angle you're interested in, and to be clear about what a series that started in August can and can't tell you.
 
 Best,
 Henrik Kolstad
-https://avenaterminal.com`,
+Founder, Avena Terminal
+${BASE}`,
   },
   {
     id: 'martin-sandbu', category: 'journalist',
@@ -251,23 +269,24 @@ https://avenaterminal.com`,
     organisation: 'Financial Times',
     role: 'European Economics Commentator',
     channel: 'email',
-    scenarioUrl: `${BASE}/policy-engine?lever=ltv_cap&country=PT&r=coastal&m=-5&fb=0.28&t=18`,
-    subject: 'Portugal at +18.9% YoY — built a tool to model the policy response',
+    scenarioUrl: `${BASE}/statistics`,
+    subject: 'Daily, listing-level data on Spain\'s coastal new-build market',
     body: `Martin,
 
-The Eurostat 2025-Q4 HPI prints Portuguese residential property at +18.9% YoY — the widest cross-country dispersion since the post-2008 cycle. Banco de Portugal and the ESRB are under pressure to respond.
+Official house-price statistics for Southern Europe arrive months after the fact. I've built something that sees one important corner of the market every day.
 
-I'm Henrik Kolstad, solo founder of Avena Terminal. We just shipped the first macroprudential simulator for European residential property — built specifically for the question that's actually on regulators' desks right now: what happens if we tighten Portuguese LTV at 75% for Algarve coastal postcodes where foreign-buyer share exceeds 28%?
+I'm Henrik Kolstad, founder of Avena Terminal. ${COVERAGE} We record every price cut and every delisting, which gives an early read on sales pace before it reaches official numbers. Nightly statistics from that record:
 
-${BASE}/policy-engine?lever=ltv_cap&country=PT&r=coastal&m=-5&fb=0.28&t=18
+${BASE}/statistics
 
-The engine outputs postcode-level price impact, NPL impact on Portuguese banks' residential book, and cross-border capital rotation estimate (likely to redirect flows to Spain and Italy). The methodology is published under CC BY 4.0 (Sovereign Briefing Vol. 2-4 at avenaterminal.com/sovereign-briefing).
+${OPEN_DATA}
 
-If you're working on a piece on the European housing cycle or the macroprudential response, this might be a useful tool to reference. Happy to walk through the calibration.
+If you're writing about the European housing cycle, I'd be glad to pull specific numbers or walk you through the data, including its limits.
 
 Best,
 Henrik Kolstad
-https://avenaterminal.com`,
+Founder, Avena Terminal
+${BASE}`,
   },
   {
     id: 'frederik-ducrozet', category: 'journalist',
@@ -278,8 +297,8 @@ https://avenaterminal.com`,
     channel: 'twitter-only',
     twitter: '@fwred',
     scenarioUrl: `${BASE}/policy-engine?lever=ccyb&country=ES&r=coastal&m=100&fb=0.25&t=18`,
-    subject: '[Twitter DM] Macroprudential simulator for next ECB call angle',
-    body: `Frederik — built a deterministic, signed macroprudential simulator for EU residential property that I think might be useful for your ECB call work. The link pre-loads a Spanish CCyB +100bps coastal cohort scenario with forward 18m projection: ${BASE}/policy-engine?lever=ccyb&country=ES&r=coastal&m=100&fb=0.25&t=18 — methodology open (CC BY 4.0). Curious if the calibration matches your priors. — Henrik (avenaterminal.com)`,
+    subject: '[Twitter DM] Daily Spanish new-build data + an experimental macroprudential scenario tool',
+    body: `Frederik, I track every new-build listing on the Spanish costas daily (about 2,000 homes, open data, CC BY 4.0) and built an experimental scenario tool on top. This link pre-loads a Spanish CCyB +100bps coastal scenario, 18m forward: ${BASE}/policy-engine?lever=ccyb&country=ES&r=coastal&m=100&fb=0.25&t=18. It's v1, literature priors, outputs illustrative. Curious whether it matches your priors. Henrik (avenaterminal.com)`,
   },
   {
     id: 'tracy-alloway', category: 'journalist',
@@ -289,26 +308,22 @@ https://avenaterminal.com`,
     role: 'Senior Editor and Odd Lots Co-host',
     channel: 'twitter-only',
     twitter: '@tracyalloway',
-    scenarioUrl: `${BASE}/policy-engine?lever=fb_levy&country=ES&r=coastal&m=500&fb=0.25&t=18`,
-    subject: '[Twitter DM] Odd Lots-shaped story: solo Norwegian built a macroprudential simulator for EU housing',
+    scenarioUrl: `${BASE}/statistics`,
+    subject: '[Twitter DM] Odd Lots-shaped story: the price history of Spanish new-builds disappears unless someone records it',
     body: `Tracy,
 
 This might be an Odd Lots-shaped story.
 
-Six weeks ago I had a Spanish property scanner. This week I shipped the first turnkey macroprudential simulator for European residential property. Solo founder, open methodology (CC BY 4.0), HMAC-signed outputs, calibrated against the published Avena methodology + Cerutti/Claessens/Laeven 2017 IMF WP/17/19. Designed specifically for the ECB and ESRB.
+When a new-build home on the Spanish coast sells, its listing vanishes, and with it the record of what it was offered at and how often the price was cut. Official statistics only catch the transaction, months later.
 
-Link below pre-loads a Spanish foreign-buyer levy scenario at +500 bps for 18 months — output is postcode-level price impact, bank NPL projection, and cross-border capital rotation estimate:
+I'm Henrik Kolstad, founder of Avena Terminal. ${COVERAGE} We keep every price cut and every delisting, and publish it all as open data (CC BY 4.0). Nightly statistics: ${BASE}/statistics
 
-${BASE}/policy-engine?lever=fb_levy&country=ES&r=coastal&m=500&fb=0.25&t=18
-
-The narrative arc that might work for the show: how does a solo founder build a regulator-grade analytical tool in 6 weeks, what does the data say that the consensus has missed (the foreign-buyer cohort amplifies monetary transmission ~4.7×), and what does it mean for the next ECB Financial Stability Review?
-
-Happy to come on the show or just chat. The data is all open.
+The story could be how much you can learn about a property market by simply refusing to let its listings disappear: which coasts are selling and which are stuck, and who is cutting prices. Happy to come on or just chat.
 
 Best,
 Henrik Kolstad
 Founder, Avena Terminal
-https://avenaterminal.com`,
+${BASE}`,
   },
 ];
 
@@ -322,15 +337,14 @@ https://avenaterminal.com`,
 const SIGN = `\n\nBest,\nHenrik Kolstad\nFounder, Avena Terminal\n${BASE}`;
 
 /**
- * Three substrate-pitch variants rotated across recipients so emails don't
- * read template-stamped. None lead with property count — Avena is identifier
- * substrate + open standard + regulatory intent graph + AI distribution.
+ * Three pitch variants rotated across recipients so emails don't read
+ * template-stamped. All three say only what is true today.
  */
-const PITCH_A = `Avena Terminal is European residential property data infrastructure — live across 27 EU markets, daily-refreshed, open APIP v1.0 standard, AVN-ID identifier registry (the ISIN of European property), DOI-anchored at 10.5281/zenodo.19520064, methodology version chain public at ${BASE}/methodology/evolution, MCP-distributed into Claude / Cursor / ChatGPT / Perplexity. RICS Tech Partner, Wikidata Q139165733, CC BY 4.0.`;
+const PITCH_A = `${COVERAGE} ${OPEN_DATA} Avena is an official RICS Tech Partner (2026).`;
 
-const PITCH_B = `Avena operates the missing institutional substrate for European residential property: AVN-ID Registry, daily-refreshed live data across 27 EU markets, Regulatory Radar daily-classifying every active ECB / ESMA / EBA / national CB signal for property impact, cryptographic integrity with Zenodo-anchored Merkle roots, full methodology audit trail at ${BASE}/methodology/evolution. CC BY 4.0, DOI 10.5281/zenodo.19520064.`;
+const PITCH_B = `Avena Terminal records the Spanish coastal new-build market every day: about 2,000 live listings across roughly 750 developments, every asking-price change and every delisting, since August 2026. Each day's dataset batch is fingerprinted with SHA-256 into a daily Merkle root, and every methodology change is logged at ${BASE}/methodology/evolution. The data is open under CC BY 4.0.`;
 
-const PITCH_C = `Avena Terminal convenes APON — the Avena Property Open Network — an open EU residential property substrate under APIP v1.0. Permanent DOI attribution, signed credential chain anchored to AVN-IDs, regulatory intent graph daily-classified across ECB / ESMA / EBA / national CBs, MCP server distributing into every major AI assistant, methodology audit trail public, integrity verifiable at ${BASE}/verify.`;
+const PITCH_C = `Avena Terminal is a data terminal for the Spanish new-build market: live listings across nearly 100 coastal towns, scored on value, yield, location, quality and risk (methodology at ${BASE}/methodology), with daily price capture since August 2026 and an open CC BY 4.0 dataset. It is also available to AI assistants through an MCP server (${BASE}/api#mcp).`;
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // Vestigial template type kept so the templated build() pipeline compiles
@@ -345,160 +359,151 @@ interface TemplateSpec {
 const TEMPLATES: Record<OutreachCategory, TemplateSpec> = {
   academic: {
     subject: (org, hook) => hook
-      ? `Avena dataset for ${hook} — free full access in exchange for citation`
-      : `Avena dataset for ${org} — free full access in exchange for citation`,
-    scenarioUrl: `${BASE}/academic`,
+      ? `Open daily data on Spanish coastal new-builds — for research on ${hook}`
+      : `Open daily data on Spanish coastal new-builds — for researchers at ${org}`,
+    scenarioUrl: `${BASE}/dataset`,
     body: (name, org, hook) => `Dear ${name.split(' ').slice(-1)[0] ? 'Dr. ' + name.split(' ').slice(-1)[0] : name},
 
-I'm Henrik Kolstad, founder of Avena Terminal — European residential property data infrastructure, CC BY 4.0, DOI 10.5281/zenodo.19520064.
+I'm Henrik Kolstad, founder of Avena Terminal. ${COVERAGE}
 
-${hook ? `Your work on ${hook} is exactly the kind of research Avena's dataset is built to support. ` : `Avena's substrate is built for academic housing economics research. `}We're offering full dataset access (API quotas waived, bulk export, 30-day as-of snapshots via the event store) to researchers at ${org} in exchange for a single citation in the resulting paper. No paywall, no proprietary lock-in, permanent DOI anchor.
+${hook ? `Your work on ${hook} is why I'm writing. ` : ''}Listing-level, daily data on this market is rare: Spanish new-build listings disappear when they sell, and with them the record of what was asked and how often the price was cut. We keep that record.
 
-What's available: the full European residential substrate — daily-refreshed across 27 EU markets, 60 dimensions per record, regime classifications, AVM outputs with adversarial confidence intervals, full methodology version history at ${BASE}/methodology/evolution, regulatory signal graph at ${BASE}/regulatory-radar.
+${OPEN_DATA} It is free to use with attribution. Dataset overview: ${BASE}/dataset
 
-Request access in 60 seconds: ${BASE}/academic
-
-If you'd prefer a tailored brief on a specific research question, reply here.${SIGN}`,
+If a bulk export or a specific cut of the data would help a project at ${org}, reply here and I'll set it up.${SIGN}`,
   },
 
   multilateral: {
     subject: (org, hook) => hook
-      ? `Operationalised ${hook} for European residential property — 5-min skepticism?`
-      : `Operationalised macroprudential framework for European residential property`,
+      ? `Daily Spanish new-build data and an experimental scenario tool — relevant to ${hook}?`
+      : `Daily Spanish new-build data and an experimental macroprudential scenario tool`,
     scenarioUrl: `${BASE}/policy-engine`,
     body: (name, org, hook) => `Dear ${name},
 
-I'm Henrik Kolstad, founder of Avena Terminal — a live, deterministic, signed simulation engine for European residential property markets, designed for institutional research consumption.
+I'm Henrik Kolstad, founder of Avena Terminal. ${COVERAGE}
 
-${hook ? `${hook} is part of what Avena's Policy Engine operationalises. ` : `Avena's Policy Engine operationalises the macroprudential literature into live cohort-weighted scenarios. `}Cohort-weighted LTV cap, DSTI cap, capital requirement, CCyB, sectoral risk weight, foreign-buyer levy — across 27 EU member states, forward 12-36 month projections, postcode level where data permits.
+${hook ? `Given ${org}'s work on ${hook}, two things may be of interest. ` : 'Two things may be of interest. '}First, the data itself: an early, listing-level read on price cuts and sales pace in a market that official statistics report months after the fact. Second, an experimental scenario tool built on it, with six levers (LTV cap, DSTI cap, capital requirement, CCyB, sectoral risk weight and foreign-buyer levy).
 
-Live scenario engine: ${BASE}/policy-engine
-Methodology audit trail: ${BASE}/methodology/evolution
-Cryptographic integrity: ${BASE}/verify
+Scenario tool: ${BASE}/policy-engine
+Methodology change log: ${BASE}/methodology/evolution
 
-We maintain a free designated-authority tier for ${org} researchers. If 20 minutes of your skepticism on calibration would be useful to us, we'd value it. The methodology is open (CC BY 4.0, DOI 10.5281/zenodo.19520064) and reproducible.${SIGN}`,
+${ENGINE_CAVEAT}
+
+${OPEN_DATA} If 20 minutes of your skepticism on the approach would be possible, we'd value it.${SIGN}`,
   },
 
   regulator: {
     subject: (org, hook) => hook
-      ? `Re: ${hook} — Avena's published position`
-      : `Avena positions on active ${org} consultations`,
-    scenarioUrl: `${BASE}/consultations`,
+      ? `Listing-level Spanish new-build data — relevant to ${hook}`
+      : `Listing-level Spanish new-build data for ${org}`,
+    scenarioUrl: `${BASE}/methodology`,
     body: (name, org, hook) => `Dear ${name},
 
-I'm Henrik Kolstad, founder of Avena Terminal — European residential property data infrastructure, CC BY 4.0, DOI 10.5281/zenodo.19520064.
+I'm Henrik Kolstad, founder of Avena Terminal. ${COVERAGE}
 
-${hook ? `Avena has published its position on ${hook} at ${BASE}/consultations and would welcome an early conversation with the technical team owning the file. ` : `Avena maintains published positions on every active ${org} consultation touching residential property data, AVM methodology, macroprudential measures, or property disclosure. The register is at ${BASE}/consultations. `}
+${hook ? `I'm writing because of ${hook}. ` : ''}What we can offer ${org}'s technical teams today:
+• Daily, listing-level asking prices, price cuts and delistings for Spanish coastal new-builds, as open data under CC BY 4.0
+• A public methodology (${BASE}/methodology) with every change logged (${BASE}/methodology/evolution)
+• A daily SHA-256 Merkle root over each day's dataset batch, so published data can be checked for later changes
 
-Three things we operate today that may be of direct interest:
-• Methodology audit trail with cryptographic version anchoring — ${BASE}/methodology/evolution
-• Regulatory signal graph classifying every ECB/ESMA/EBA item by intent direction — ${BASE}/regulatory-radar
-• Free designated-authority tier — institutional researchers at ${org} get full API and dataset access at zero cost
+${OPEN_DATA}
 
-Reply here if a 20-minute call with the technical team would be useful, or point me to the right colleague.${SIGN}`,
+If a 20-minute call with the right colleague would be useful, reply here or point me to them.${SIGN}`,
   },
 
   insurer: {
-    subject: (org, _hook) => `Residential property stress-test infrastructure for ${org}`,
-    scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: (org, _hook) => `Daily price and sales-pace data on Spanish coastal new-builds — for ${org}`,
+    scenarioUrl: `${BASE}/institutional`,
     body: (name, org, hook) => `Dear ${name},
 
-I'm Henrik Kolstad, founder of Avena Terminal. We've built residential property stress-test infrastructure designed specifically for credit insurers and property insurers underwriting European residential mortgage exposure.
+I'm Henrik Kolstad, founder of Avena Terminal. ${COVERAGE}
 
-${hook ? `Given ${org}'s ${hook}, this is likely directly relevant. ` : ''}The Avena Bank Stress API takes a portfolio of residential property exposures and returns AVM-based valuation, regime classification, regulatory exposure (CSRD, EPBD, macroprudential), and stress-test projections under user-defined macro scenarios. Built on the same substrate the ECB's macroprudential literature uses, with cryptographic integrity (Zenodo-anchored daily Merkle roots) and a published methodology audit trail.
+${hook ? `Given ${org}'s ${hook}, this may be relevant. ` : ''}For anyone underwriting exposure to Spanish coastal residential property or to the developers building it, the useful signals are early ones: which projects are cutting prices, how fast units are selling, and how much stock is still unsold close to delivery. We track those every day at the level of individual developments.
 
-Live endpoint and documentation: ${BASE}/products/bank-stress-api
+Institutional access: ${BASE}/institutional
 Methodology: ${BASE}/methodology
 
-If a 30-minute call would be useful to scope a pilot on a sample of ${org}'s residential portfolio, reply here.${SIGN}`,
+Avena is an official RICS Tech Partner (2026). If a 30-minute call to look at the data against part of ${org}'s exposure would be useful, reply here.${SIGN}`,
   },
 
   notarial: {
-    subject: (org, _hook) => `Open EU property data network — invitation to ${org}`,
-    scenarioUrl: `${BASE}/contribute`,
+    subject: (org, _hook) => `Data partnership on Spanish residential prices — invitation to ${org}`,
+    scenarioUrl: `${BASE}/methodology`,
     body: (name, org, hook) => `Dear ${name},
 
-I'm Henrik Kolstad, founder of Avena Terminal. We're building APON — the Avena Property Open Network — an open EU residential property data substrate convened by the Avena Foundation under APIP v1.0 standard and CC BY 4.0 licensing.
+I'm Henrik Kolstad, founder of Avena Terminal. ${COVERAGE}
 
-${org} holds ${hook || 'closed-transaction property data that is among the most valuable underlying data in European residential finance'}. The structural problem: there is no canonical European residential property data substrate; every member-state's notarial / registry data sits in its own silo; banks, insurers, researchers, and regulators each scrape it independently.
+${org} holds ${hook || 'closed-transaction property data that is among the most valuable in European residential finance'}. Our data covers the other side of the market: what developers ask, how often they cut, and when listings disappear. Asking prices and closed prices together say far more than either alone.
 
-APON solves this by being the open standard. Contributors retain ownership, name their licensing terms, and receive permanent attribution at DOI 10.5281/zenodo.19520064 plus a listing at ${BASE}/data-partners. Avena Foundation governs the standard; we operate the substrate. There is no commercial extraction; commercial customers pay Avena and contributors receive co-citation.
+${OPEN_DATA} Any data partner would keep ownership of its data, set its own licensing terms and be credited by name wherever the data is used.
 
-Network overview: ${BASE}/apon-network
-Contribution onramp: ${BASE}/contribute
-
-If a 30-minute call to scope what an integration could look like would be useful, reply here.${SIGN}`,
+If a 30-minute call to explore what a collaboration could look like would be useful, reply here.${SIGN}`,
   },
 
   bank: {
-    subject: (org, _hook) => `Avena AVM v1.0 — independent reference for ${org}'s residential mortgage book`,
-    scenarioUrl: `${BASE}/products/bank-stress-api`,
+    subject: (org, _hook) => `Independent daily price and sales-pace data for ${org}'s Spanish coastal exposure`,
+    scenarioUrl: `${BASE}/institutional`,
     body: (name, org, hook) => `Dear ${name},
 
-I'm Henrik Kolstad, founder of Avena Terminal — European residential property data infrastructure, CC BY 4.0, DOI 10.5281/zenodo.19520064.
+I'm Henrik Kolstad, founder of Avena Terminal. ${COVERAGE}
 
-The EBA's residential AVM methodology consultation closes 2026-07-31. Our published position is at ${BASE}/consultations. The direction of travel — mandatory model version disclosure, confidence intervals, reproducibility — is exactly what Avena's substrate operationalises.
+${hook ? `Given ${org}'s ${hook}, this may be timely. ` : ''}What we can offer ${org}'s credit and model-risk teams today:
+• An independent, daily read on asking prices, price cuts and delistings for each development, useful for monitoring collateral and developer loans between valuations
+• A public methodology with every change logged (${BASE}/methodology/evolution)
+• Open data under CC BY 4.0, so your validation team can reproduce anything we publish
+• A daily SHA-256 Merkle root over each day's dataset batch
 
-${hook ? `Given ${org}'s ${hook}, this is timely. ` : ''}What we offer ${org}'s model risk and credit risk teams:
-• Independent reference AVM with published methodology audit trail (${BASE}/methodology/evolution)
-• Cryptographic integrity for every published valuation (${BASE}/verify)
-• Adversarial confidence intervals on every score
-• Free institutional research tier for the validation team
-• Direct line for collaborative work on EBA AVM submission
+Avena is an official RICS Tech Partner (2026). Institutional access: ${BASE}/institutional
 
-Live API: ${BASE}/products/bank-stress-api
-20-minute conversation? Reply here or book directly.${SIGN}`,
+Would a 20-minute conversation be useful? Reply here.${SIGN}`,
   },
 
   sovereign: {
-    subject: (org, _hook) => `European residential property substrate — ${org}'s deployment infrastructure`,
-    scenarioUrl: `${BASE}/products/property-oracle`,
+    subject: (org, _hook) => `Daily data on Spain's coastal new-build market — for ${org}`,
+    scenarioUrl: `${BASE}/institutional`,
     body: (name, org, hook) => `Dear ${name},
 
-I'm Henrik Kolstad, founder of Avena Terminal. European residential property is a €30T asset class with no canonical institutional substrate — which is why sovereign and pension funds can't deploy at scale despite multi-year stated interest.
+I'm Henrik Kolstad, founder of Avena Terminal. ${COVERAGE}
 
-${hook ? `Given ${org}'s ${hook}, this may be directly relevant. ` : ''}Avena operates the missing substrate: AVN-ID identifier registry (the ISIN of European property), signed credential chain (notarial / registry attestations anchored to AVN-IDs), live AVM with cryptographic integrity, regime classification across 27 EU markets, regulatory signal graph, and a daily-refreshed property cycle index.
+${hook ? `Given ${org}'s ${hook}, this may be relevant. ` : ''}Spanish coastal new-build is opaque: there is no central record of asking prices, and listings disappear when units sell. We keep that record every day, scored on value, yield, location, quality and risk, which gives an investor a daily view of pricing and sales pace by town and by development.
 
-What you could do with this: portfolio aggregation across thematic European residential exposure with daily NAV calculation, verifiable provenance for any reporting, and macroprudential stress-test on demand.
+Institutional access: ${BASE}/institutional
+Methodology: ${BASE}/methodology
 
-Property Oracle: ${BASE}/products/property-oracle
-APON Network: ${BASE}/apon-network
-
-If a 30-minute call would be useful, reply here.${SIGN}`,
+${OPEN_DATA} If a 30-minute call would be useful, reply here.${SIGN}`,
   },
 
   ai_lab: {
-    subject: (org, _hook) => `Avena MCP integration — citation standard for European property answers`,
-    scenarioUrl: `${BASE}/install`,
+    subject: (org, _hook) => `Live Spanish new-build property data for ${org}'s assistants, via MCP`,
+    scenarioUrl: `${BASE}/api#mcp`,
     body: (name, org, hook) => `Dear ${name},
 
-I'm Henrik Kolstad, founder of Avena Terminal — European residential property data infrastructure, MCP-native, with published methodology audit trail and cryptographic citation receipts.
+I'm Henrik Kolstad, founder of Avena Terminal. ${COVERAGE}
 
-${hook ? `Given ${org}'s ${hook}, the integration story may be directly relevant. ` : ''}When ${org}'s assistant gets a query like "what's the average flat in Marbella per square metre" today, the answer is either training-cutoff stale, hallucinated, or scraped from a non-authoritative source. Avena's MCP server returns the live answer with an AVN-ID, methodology version, retrieval timestamp, and signed integrity receipt — making the answer verifiable in a single click.
+${hook ? `Given ${org}'s ${hook}, this may be relevant. ` : ''}When an assistant is asked what a new-build flat costs per square metre in Torrevieja or Estepona, it usually answers from stale training data. Avena serves the current answer, from listings captured daily, through an MCP server and a REST API, including tools for price history, recent price moves and delistings (get_price_history, get_recent_price_moves, get_delistings).
 
-Install in 30 seconds: ${BASE}/install
-MCP endpoint: ${BASE}/mcp
-Reality Layer protocol draft: ${BASE}/apon-network
+MCP and API details: ${BASE}/api#mcp
+Methodology: ${BASE}/methodology
 
-Free integration tier; we benefit from the citations, you benefit from the verifiable property answers. If a 20-minute call to scope deeper integration would be useful, reply here.${SIGN}`,
+${OPEN_DATA} If a 20-minute call to discuss an integration would be useful, reply here.${SIGN}`,
   },
 
   journalist: {
-    subject: (org, hook) => hook
-      ? `Embargoed brief: ${hook}`
-      : `Live EU property predictions, methodology audit, regulatory radar — ${org} brief`,
-    scenarioUrl: `${BASE}/predictions`,
+    subject: (org, _hook) => `Daily data on Spain's coastal new-build market — for ${org}'s coverage`,
+    scenarioUrl: `${BASE}/statistics`,
     body: (name, org, hook) => `${name.split(' ')[0]},
 
-Henrik here, solo founder of Avena Terminal. Wanted to put three things on your radar that may be useful to ${org}:
+Henrik here, founder of Avena Terminal. ${COVERAGE}
 
-1. **Predictions ledger** — ten time-stamped, falsifiable forecasts on EU residential property published 2026-05-25 with full reasoning, methodology references, target dates, and resolution sources. Audit trail visible even on misses. ${BASE}/predictions
+${hook ? `Given your coverage of ${hook}, a few things may be useful:` : 'A few things that may be useful to you:'}
 
-2. **Regulatory radar** — daily-classified EU regulatory signals (ECB, ESMA, EBA, national CBs) with property impact coefficients and lag estimates. ${BASE}/regulatory-radar
+1. **Spanish coastal property statistics.** Computed nightly from our record of asking-price changes and delistings, free to cite with attribution. ${BASE}/statistics
 
-3. **Citation moat** — live measurement of how often AI assistants cite Avena vs Idealista/Kyero/Rightmove on European property questions. ${BASE}/citation-moat
+2. **Methodology.** How every listing is scored, with every change logged publicly. ${BASE}/methodology/evolution
 
-${hook ? `${hook} ` : ''}If any of these are useful for upcoming coverage I'd be glad to provide a deeper brief, embargoed numbers, or commentary. Avena is two months old, solo, CC BY 4.0, DOI 10.5281/zenodo.19520064.${SIGN}`,
+3. **Open data.** Every observed price move and delisting, CC BY 4.0, free to use with attribution. ${BASE}/open-data/dataset.json
+
+If any of this is useful for upcoming coverage, I'm glad to pull specific numbers or give commentary.${SIGN}`,
   },
 };
 
@@ -566,10 +571,10 @@ const TEMPLATED_TARGETS: OutreachTarget[] = [
   build({ id: 'andrea-presbitero', name: 'Andrea Presbitero', email: '', organisation: 'Johns Hopkins SAIS / former IMF', role: 'Associate Professor of International Economics', category: 'multilateral', hook: 'cross-border lending and housing finance in Europe', lookup_query: 'Andrea Presbitero Johns Hopkins SAIS email' }),
 
   // ─── REGULATOR / SUPERVISOR (15) ────────────────────────────────────────
-  build({ id: 'jose-manuel-campa', name: 'José Manuel Campa', email: '', organisation: 'European Banking Authority', role: 'Chair', category: 'regulator', hook: 'the EBA residential AVM methodology consultation (EBA-2026-AVM-METHODOLOGY)', lookup_query: 'Jose Manuel Campa EBA email chair' }),
-  build({ id: 'philippe-tibi', name: 'Philippe Tibi', email: '', organisation: 'European Banking Authority', role: 'Head of Credit, Market and Operational Risk Policy', category: 'regulator', hook: 'EBA AVM methodology harmonisation discussion paper', lookup_query: 'Philippe Tibi EBA credit risk email' }),
+  build({ id: 'jose-manuel-campa', name: 'José Manuel Campa', email: '', organisation: 'European Banking Authority', role: 'Chair', category: 'regulator', hook: 'the EBA\'s work on automated valuation models for residential collateral', lookup_query: 'Jose Manuel Campa EBA email chair' }),
+  build({ id: 'philippe-tibi', name: 'Philippe Tibi', email: '', organisation: 'European Banking Authority', role: 'Head of Credit, Market and Operational Risk Policy', category: 'regulator', hook: 'EBA credit-risk policy on residential collateral valuation', lookup_query: 'Philippe Tibi EBA credit risk email' }),
   build({ id: 'francesco-mazzaferro', name: 'Francesco Mazzaferro', email: '', organisation: 'European Systemic Risk Board (ESRB)', role: 'Head of Secretariat', category: 'regulator', hook: 'ESRB residential real estate warnings and recommendations', lookup_query: 'Francesco Mazzaferro ESRB email' }),
-  build({ id: 'verena-ross', name: 'Verena Ross', email: '', organisation: 'European Securities and Markets Authority (ESMA)', role: 'Chair', category: 'regulator', hook: 'the ESMA CSRD real estate disclosure Q&A (ESMA-2026-CSRD-PROPERTY)', lookup_query: 'Verena Ross ESMA chair email' }),
+  build({ id: 'verena-ross', name: 'Verena Ross', email: '', organisation: 'European Securities and Markets Authority (ESMA)', role: 'Chair', category: 'regulator', hook: 'ESMA\'s work on real estate disclosures', lookup_query: 'Verena Ross ESMA chair email' }),
   build({ id: 'petra-hielkema', name: 'Petra Hielkema', email: '', organisation: 'European Insurance and Occupational Pensions Authority (EIOPA)', role: 'Chair', category: 'regulator', hook: 'EIOPA Solvency II property exposure framework', lookup_query: 'Petra Hielkema EIOPA email' }),
   build({ id: 'claudia-buch', name: 'Claudia Buch', email: '', organisation: 'European Central Bank (SSM Chair)', role: 'Chair of the Supervisory Board, ECB Banking Supervision', category: 'regulator', hook: 'SSM residential mortgage exposure assessment across SIs', lookup_query: 'Claudia Buch ECB SSM email' }),
   build({ id: 'mark-branson', name: 'Mark Branson', email: '', organisation: 'Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin)', role: 'President', category: 'regulator', hook: 'BaFin residential mortgage portfolio supervision', lookup_query: 'Mark Branson BaFin email' }),
@@ -610,7 +615,7 @@ const TEMPLATED_TARGETS: OutreachTarget[] = [
   build({ id: 'lantmateriet-sweden', name: 'Director-General — Lantmäteriet', email: '', organisation: 'Lantmäteriet (Sweden)', role: 'Director-General; Swedish land registry', category: 'notarial', hook: 'Swedish cadastral and land registry residential property data', lookup_query: 'Lantmateriet director general email' }),
 
   // ─── TIER-1 BANK (15) ───────────────────────────────────────────────────
-  build({ id: 'santander-credit-risk', name: 'Head of Credit Risk Modelling — Santander', email: '', organisation: 'Banco Santander', role: 'Head of Credit Risk Modelling, Spain', category: 'bank', hook: 'EBA AVM consultation timing and Spanish coastal mortgage book exposure', lookup_query: 'Santander Spain Head Credit Risk Modelling LinkedIn' }),
+  build({ id: 'santander-credit-risk', name: 'Head of Credit Risk Modelling — Santander', email: '', organisation: 'Banco Santander', role: 'Head of Credit Risk Modelling, Spain', category: 'bank', hook: 'Spanish coastal mortgage and developer-loan exposure', lookup_query: 'Santander Spain Head Credit Risk Modelling LinkedIn' }),
   build({ id: 'bbva-mortgage-risk', name: 'Head of Mortgage Risk — BBVA', email: '', organisation: 'BBVA', role: 'Head of Mortgage Credit Risk', category: 'bank', hook: 'BBVA residential mortgage exposure and AVM validation cycle', lookup_query: 'BBVA Head Mortgage Risk LinkedIn' }),
   build({ id: 'caixa-model-risk', name: 'Head of Model Risk — CaixaBank', email: '', organisation: 'CaixaBank', role: 'Head of Model Risk Management', category: 'bank', hook: 'CaixaBank IRB residential mortgage model validation', lookup_query: 'CaixaBank Head Model Risk LinkedIn' }),
   build({ id: 'sabadell-credit-risk', name: 'Head of Credit Risk — Banco Sabadell', email: '', organisation: 'Banco Sabadell', role: 'Head of Credit Risk', category: 'bank', hook: 'Sabadell Mediterranean coastal mortgage portfolio', lookup_query: 'Banco Sabadell Head Credit Risk LinkedIn' }),
@@ -627,10 +632,10 @@ const TEMPLATED_TARGETS: OutreachTarget[] = [
   build({ id: 'dnb-mortgage', name: 'Head of Residential Credit Risk — DNB', email: '', organisation: 'DNB (Norway)', role: 'Head of Residential Credit Risk', category: 'bank', hook: 'DNB Norwegian residential mortgage portfolio and Nordic cross-exposure', lookup_query: 'DNB Norway Head Residential Credit Risk LinkedIn' }),
 
   // ─── SOVEREIGN WEALTH / PENSION (8) ─────────────────────────────────────
-  build({ id: 'nbim-real-estate', name: 'Head of European Real Estate — NBIM', email: '', organisation: 'Norges Bank Investment Management', role: 'Head of European Real Estate', category: 'sovereign', hook: 'NBIM\'s stated interest in expanding European residential property exposure (Norwegian to Norwegian — Henrik Kolstad)', lookup_query: 'NBIM Head European Real Estate LinkedIn' }),
+  build({ id: 'nbim-real-estate', name: 'Head of European Real Estate — NBIM', email: '', organisation: 'Norges Bank Investment Management', role: 'Head of European Real Estate', category: 'sovereign', hook: 'European real estate portfolio', lookup_query: 'NBIM Head European Real Estate LinkedIn' }),
   build({ id: 'gic-europe', name: 'Head of European Real Estate — GIC', email: '', organisation: 'GIC Singapore', role: 'Head of European Real Estate', category: 'sovereign', hook: 'GIC European residential property allocation strategy', lookup_query: 'GIC Head European Real Estate LinkedIn' }),
   build({ id: 'adia-europe', name: 'Director European Real Estate — ADIA', email: '', organisation: 'Abu Dhabi Investment Authority', role: 'Director, European Real Estate', category: 'sovereign', hook: 'ADIA European real estate portfolio direction', lookup_query: 'ADIA Director European Real Estate LinkedIn' }),
-  build({ id: 'apg-real-estate', name: 'Head of Residential Real Estate — APG', email: '', organisation: 'APG (Dutch pension)', role: 'Head of Residential Real Estate', category: 'sovereign', hook: 'APG €600B Dutch pension fund residential exposure', lookup_query: 'APG Head Residential Real Estate LinkedIn' }),
+  build({ id: 'apg-real-estate', name: 'Head of Residential Real Estate — APG', email: '', organisation: 'APG (Dutch pension)', role: 'Head of Residential Real Estate', category: 'sovereign', hook: 'residential real estate allocation', lookup_query: 'APG Head Residential Real Estate LinkedIn' }),
   build({ id: 'alecta-real-estate', name: 'Head of Real Estate — Alecta', email: '', organisation: 'Alecta (Swedish pension)', role: 'Head of Real Estate Investments', category: 'sovereign', hook: 'Alecta Swedish pension residential property strategy', lookup_query: 'Alecta Head Real Estate LinkedIn' }),
   build({ id: 'pfa-real-estate', name: 'Head of Real Estate — PFA Pension', email: '', organisation: 'PFA Pension (Denmark)', role: 'Head of Real Estate Investments', category: 'sovereign', hook: 'PFA Danish pension residential allocation across Europe', lookup_query: 'PFA Pension Head Real Estate LinkedIn' }),
   build({ id: 'caisse-quebec', name: 'Head of European Real Estate — CDPQ', email: '', organisation: 'Caisse de dépôt et placement du Québec', role: 'Head of European Real Estate', category: 'sovereign', hook: 'CDPQ Ivanhoé Cambridge European residential strategy', lookup_query: 'CDPQ Ivanhoe Cambridge Head European Real Estate LinkedIn' }),
