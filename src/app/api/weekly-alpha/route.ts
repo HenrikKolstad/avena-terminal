@@ -2,7 +2,7 @@ import { bearerCronAuth, withCronLog } from '@/lib/cron-log';
 import Anthropic from '@anthropic-ai/sdk';
 import { detectAnomalies } from '@/lib/anomaly';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, avg } from '@/lib/properties';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { pingIndexNow } from '@/lib/indexnow';
 
 export const maxDuration = 60;

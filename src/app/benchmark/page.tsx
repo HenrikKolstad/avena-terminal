@@ -194,7 +194,6 @@ export default async function BenchmarkPage() {
             </p>
             <div className="mt-4 flex flex-wrap gap-3 font-mono text-[10px] uppercase tracking-[0.22em]">
               <Link href="/methodology" className="text-foreground/85 hover:text-primary">Avena methodology →</Link>
-              <Link href="/citation-moat" className="text-foreground/85 hover:text-primary">Citation moat →</Link>
               <Link href="/api" className="text-foreground/85 hover:text-primary">API →</Link>
             </div>
           </div>

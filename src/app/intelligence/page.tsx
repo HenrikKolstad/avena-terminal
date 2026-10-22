@@ -43,7 +43,6 @@ const ANCHORS = [
   { id: 'predictions',        label: 'Predictions' },
   { id: 'delphi',             label: 'DELPHI' },
   { id: 'alerts',             label: 'Macro Alerts' },
-  { id: 'swarm',              label: 'Swarm' },
   { id: 'timetravel',         label: 'Time Travel' },
 ];
 
@@ -126,9 +125,6 @@ export default function IntelligencePage() {
           body="Daily anomaly detection across Eurostat HPI, ECB MIR, INE Spain, Insee France, Destatis Germany, Istat Italy, and other national stats sources. ≥2σ deviations from rolling baselines trigger published alerts."
           link={{ href: '/alerts/macro', label: 'View the alert feed →' }} />
 
-        <Section id="swarm" title="Swarm — multi-agent intelligence"
-          body="A dozen named agents run continuously: Atlas (citation monitoring), Demeter (citation rollup), Nostradamus (prediction generation), Arbiter (prediction verification), Causal (causal indicator updates), Mentat (intelligence synthesis), Argus (anomaly detection), Courier (sovereign dispatch), and more. Each agent's output is event-sourced and replayable."
-          link={{ href: '/swarm', label: 'View the swarm →' }} />
 
         <Section id="timetravel" title="Time Travel — event-sourced replay"
           body="Every state change in Avena writes an immutable event before its projection updates. Replay the system as it existed on any historical date. Critical for institutional diligence — when a CoStar analyst asks 'show me the system on 2026-03-14', the literal answer exists."
