@@ -1,20 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
-import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
-
-const ADMIN_EMAILS = ['henrik@xaviaestate.com'];
-
-// Service role client for admin reads (env var only available server-side in prod,
-// but we fall back to anon key gracefully)
-function getAdminClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !serviceKey) return null;
-  return createClient(url, serviceKey);
-}
 
 interface Metrics {
   mrr: number | null;
@@ -82,7 +69,6 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
 }
 
 export default function AdminPage() {
-  const { user, loading: authLoading } = useAuth();
   const [metrics, setMetrics] = useState<Metrics>({
     mrr: null,
     mrrNote: null,
@@ -102,176 +88,36 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const isAdmin = user?.email
-    ? ADMIN_EMAILS.some((e) => e.toLowerCase() === user.email!.toLowerCase())
-    : false;
+  // Access is enforced server-side: the middleware admin gate (Basic auth,
+  // ADMIN_TOKEN) and /admin/data. The browser never queries Supabase here.
+  const [denied, setDenied] = useState(false);
 
   useEffect(() => {
-    if (authLoading) return;
-    if (!user || !isAdmin) { setLoading(false); return; }
-
+    let cancelled = false;
     async function fetchAll() {
       setLoading(true);
       setError(null);
-      const sb = getAdminClient();
-      if (!sb) {
-        setError('Supabase not configured');
-        setLoading(false);
-        return;
+      try {
+        const res = await fetch('/admin/data', { cache: 'no-store', credentials: 'same-origin' });
+        if (res.status === 401) { if (!cancelled) { setDenied(true); setLoading(false); } return; }
+        const body = await res.json();
+        if (!res.ok) throw new Error(body?.error || `HTTP ${res.status}`);
+        if (cancelled) return;
+        setMetrics(body.metrics as Metrics);
+        setEmailLeads((body.emailLeads as EmailLead[]) || []);
+        setLeads((body.leads as Lead[]) || []);
+      } catch (e) {
+        if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load admin data');
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-
-      const today = new Date().toISOString().slice(0, 10);
-      const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-
-      // Run all queries in parallel, catch each individually
-      const [
-        subscriptionRes,
-        profilesRes,
-        emailLeadsCountRes,
-        leadsCountRes,
-        propertiesRes,
-        soldRes,
-        lastSyncRes,
-        totalSnapshotsRes,
-        trackedRes,
-        snapshotsTodayRes,
-        soldWeekRes,
-        emailLeadsRes,
-        leadsRes,
-      ] = await Promise.allSettled([
-        // MRR: active subscriptions
-        sb.from('subscriptions').select('*', { count: 'exact', head: true }).eq('status', 'active'),
-        // Total users: profiles table
-        sb.from('profiles').select('*', { count: 'exact', head: true }),
-        // Email leads count
-        sb.from('email_leads').select('*', { count: 'exact', head: true }),
-        // Leads count
-        sb.from('leads').select('*', { count: 'exact', head: true }),
-        // Properties live: fetch /data.json
-        fetch('/data.json').then((r) => r.json()),
-        // Sold detected count
-        sb.from('sold_properties').select('*', { count: 'exact', head: true }),
-        // Last sync
-        sb.from('price_snapshots').select('snapshot_date').order('snapshot_date', { ascending: false }).limit(1),
-        // Total snapshots
-        sb.from('price_snapshots').select('*', { count: 'exact', head: true }),
-        // Currently tracked (feed_active_refs)
-        sb.from('feed_active_refs').select('*', { count: 'exact', head: true }),
-        // Snapshots today
-        sb.from('price_snapshots').select('*', { count: 'exact', head: true }).eq('snapshot_date', today),
-        // Sold this week
-        sb.from('sold_properties').select('*', { count: 'exact', head: true }).gte('last_seen_date', weekAgo),
-        // Recent email leads
-        sb.from('email_leads').select('email, source, created_at').order('created_at', { ascending: false }).limit(20),
-        // Recent leads
-        sb.from('leads').select('created_at, user_email, property_name, property_ref, action').order('created_at', { ascending: false }).limit(20),
-      ]);
-
-      // Parse MRR
-      let mrr: number | null = 0;
-      let mrrNote: string | null = null;
-      if (subscriptionRes.status === 'fulfilled' && !subscriptionRes.value.error) {
-        const count = subscriptionRes.value.count ?? 0;
-        mrr = count * 79;
-      } else {
-        mrrNote = 'connect Stripe webhooks';
-      }
-
-      // Total users
-      let totalUsers: number | null = null;
-      if (profilesRes.status === 'fulfilled' && !profilesRes.value.error) {
-        totalUsers = profilesRes.value.count ?? null;
-      }
-
-      // Email leads count
-      let emailLeadsCount: number | null = null;
-      if (emailLeadsCountRes.status === 'fulfilled' && !emailLeadsCountRes.value.error) {
-        emailLeadsCount = emailLeadsCountRes.value.count ?? null;
-      }
-
-      // Leads count
-      let leadsCount: number | null = null;
-      if (leadsCountRes.status === 'fulfilled' && !leadsCountRes.value.error) {
-        leadsCount = leadsCountRes.value.count ?? null;
-      }
-
-      // Properties live
-      let propertiesLive: number | null = null;
-      if (propertiesRes.status === 'fulfilled') {
-        const data = propertiesRes.value;
-        if (Array.isArray(data)) propertiesLive = data.length;
-        else if (data?.properties && Array.isArray(data.properties)) propertiesLive = data.properties.length;
-      }
-
-      // Sold detected
-      let soldDetected: number | null = null;
-      if (soldRes.status === 'fulfilled' && !soldRes.value.error) {
-        soldDetected = soldRes.value.count ?? null;
-      }
-
-      // Last sync
-      let lastSync: string | null = null;
-      if (lastSyncRes.status === 'fulfilled' && !lastSyncRes.value.error && lastSyncRes.value.data?.length) {
-        lastSync = lastSyncRes.value.data[0].snapshot_date;
-      }
-
-      // Total snapshots
-      let totalSnapshots: number | null = null;
-      if (totalSnapshotsRes.status === 'fulfilled' && !totalSnapshotsRes.value.error) {
-        totalSnapshots = totalSnapshotsRes.value.count ?? null;
-      }
-
-      // Tracked properties
-      let trackedProperties: number | null = null;
-      if (trackedRes.status === 'fulfilled' && !trackedRes.value.error) {
-        trackedProperties = trackedRes.value.count ?? null;
-      }
-
-      // Snapshots today
-      let snapshotsToday: number | null = null;
-      if (snapshotsTodayRes.status === 'fulfilled' && !snapshotsTodayRes.value.error) {
-        snapshotsToday = snapshotsTodayRes.value.count ?? null;
-      }
-
-      // Sold this week
-      let soldThisWeek: number | null = null;
-      if (soldWeekRes.status === 'fulfilled' && !soldWeekRes.value.error) {
-        soldThisWeek = soldWeekRes.value.count ?? null;
-      }
-
-      // Email leads table
-      if (emailLeadsRes.status === 'fulfilled' && !emailLeadsRes.value.error) {
-        setEmailLeads((emailLeadsRes.value.data as EmailLead[]) || []);
-      }
-
-      // Leads table
-      if (leadsRes.status === 'fulfilled' && !leadsRes.value.error) {
-        setLeads((leadsRes.value.data as Lead[]) || []);
-      }
-
-      setMetrics({
-        mrr,
-        mrrNote,
-        totalUsers,
-        emailLeads: emailLeadsCount,
-        totalLeads: leadsCount,
-        propertiesLive,
-        soldDetected,
-        lastSync,
-        totalSnapshots,
-        trackedProperties,
-        snapshotsToday,
-        soldThisWeek,
-      });
-      setLoading(false);
     }
-
     fetchAll();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id, authLoading]);
+    return () => { cancelled = true; };
+  }, []);
 
   // Loading state
-  if (authLoading || (user && isAdmin && loading)) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-[#070709] flex items-center justify-center">
         <span className="text-[#c9a84c] font-mono text-sm tracking-widest animate-pulse">
@@ -281,8 +127,8 @@ export default function AdminPage() {
     );
   }
 
-  // Not logged in or not admin
-  if (!user || !isAdmin) {
+  // Server refused (no or wrong admin credentials)
+  if (denied) {
     return (
       <div className="min-h-screen bg-[#070709] flex flex-col items-center justify-center gap-4">
         <div className="border border-red-900/40 bg-red-950/20 rounded-lg px-8 py-6 text-center max-w-sm">
@@ -290,7 +136,7 @@ export default function AdminPage() {
             ACCESS DENIED
           </div>
           <div className="text-[#6b6b8a] font-mono text-xs">
-            {!user ? 'You must be logged in to view this page.' : 'Your account does not have admin access.'}
+            Admin credentials are required.
           </div>
         </div>
         <Link
