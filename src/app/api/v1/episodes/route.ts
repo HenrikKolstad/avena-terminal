@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
+import { isAdminRequest, presentedSecret, safeEqual } from '@/lib/admin-auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,7 +31,7 @@ export async function GET(req: NextRequest) {
         .from('property_episodes')
         .select('*')
         .eq('property_id', ref)
-        .order('created_at', { ascending: false })
+        .order('episode_date', { ascending: false, nullsFirst: false })
         .limit(limit);
 
       if (error) throw error;
@@ -50,7 +51,7 @@ export async function GET(req: NextRequest) {
         .from('property_episodes')
         .select('*')
         .eq('episode_type', type)
-        .order('created_at', { ascending: false })
+        .order('episode_date', { ascending: false, nullsFirst: false })
         .limit(limit);
 
       if (error) throw error;
@@ -61,20 +62,33 @@ export async function GET(req: NextRequest) {
     const { data, error } = await supabase
       .from('property_episodes')
       .select('*')
-      .order('created_at', { ascending: false })
+      .order('episode_date', { ascending: false, nullsFirst: false })
       .limit(limit);
 
     if (error) throw error;
     return Response.json({ count: data?.length ?? 0, episodes: data ?? [] });
   } catch (err) {
     return Response.json(
-      { error: 'Failed to fetch episodes', detail: String(err) },
+      { error: 'Failed to fetch episodes', detail: err instanceof Error ? err.message : (err as { message?: string })?.message ?? 'unknown' },
       { status: 500 }
     );
   }
 }
 
+// Writes are server-side only: admin token or the cron secret. (Until
+// 2026-10-22 anyone could POST episodes, which then went out on this public feed.)
+function canWrite(req: NextRequest): boolean {
+  const auth = req.headers.get('authorization');
+  if (isAdminRequest(auth)) return true;
+  const cron = process.env.CRON_SECRET;
+  const got = presentedSecret(auth);
+  return !!cron && cron.length >= 16 && !!got && safeEqual(got, cron);
+}
+
 export async function POST(req: NextRequest) {
+  if (!canWrite(req)) {
+    return Response.json({ error: 'unauthorized' }, { status: 401 });
+  }
   if (!supabase) {
     return Response.json({ error: 'Supabase not configured' }, { status: 503 });
   }
@@ -112,7 +126,7 @@ export async function POST(req: NextRequest) {
         before_state: before_state ?? null,
         after_state: after_state ?? null,
         magnitude: magnitude ?? null,
-        created_at: new Date().toISOString(),
+        episode_date: new Date().toISOString(),
       })
       .select()
       .single();

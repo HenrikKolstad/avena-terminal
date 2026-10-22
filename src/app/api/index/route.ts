@@ -181,7 +181,7 @@ const endpoints: Endpoint[] = [
   // Specialty outputs
   { path: '/api/v1/voice',                  methods: ['GET'], category: 'outputs',     description: 'Voice-ready audio content feed.', auth: 'none' },
   { path: '/api/v1/podcast',                methods: ['GET'], category: 'outputs',     description: 'Podcast RSS feed.', auth: 'none' },
-  { path: '/api/v1/episodes',               methods: ['GET'], category: 'outputs',     description: 'Podcast episodes.', auth: 'none' },
+  { path: '/api/v1/episodes',               methods: ['GET'], category: 'outputs',     description: 'Property episodes (price, regime, score and developer events).', auth: 'none' },
   { path: '/api/v1/rics-data-brief',        methods: ['GET'], category: 'outputs',     description: 'RICS-format data brief.', auth: 'none' },
   { path: '/api/v1/crawler-report',         methods: ['GET'], category: 'outputs',     description: 'Crawler activity report.', auth: 'none' },
   { path: '/api/v1/seo-health',             methods: ['GET'], category: 'outputs',     description: 'SEO health snapshot.', auth: 'none' },
