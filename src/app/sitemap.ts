@@ -64,6 +64,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ['/counterpart',          'daily',  0.75],
     ['/sovereign-briefing',   'weekly', 0.8],
     ['/track-record',         'daily',  0.8],
+    ['/reports/sample',       'daily',  0.75],
     ['/live',                 'daily',  0.75],
     ['/eu-coverage',          'daily',  0.8],
     ['/eu-official',          'daily',  0.75],
