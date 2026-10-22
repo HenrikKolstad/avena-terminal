@@ -5,6 +5,8 @@ import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { supabase } from '@/lib/supabase';
 import { supabaseAdmin } from '@/lib/supabase-admin';
+import { getAllProperties, getFeedUpdatedAt } from '@/lib/properties';
+import type { Property } from '@/lib/types';
 import { cookies } from 'next/headers';
 import { Shield, Lock, ArrowUpRight, FileJson, MapPin, Building, Cloud, Briefcase, Scale, TrendingUp, History } from 'lucide-react';
 
@@ -100,13 +102,17 @@ interface CoreRow {
   avena_score: number | null;
   yield_gross_pct: number | null;
   developer: string | null;
-  first_seen_at: string;
-  last_seen_at: string;
+  first_seen_at: string | null;
+  last_seen_at: string | null;
   primary_image: string | null;
 }
 
 interface DataSheetData {
   core: CoreRow | null;
+  /** True when core.avn_prop_id is a real issued registry ID (not just the feed ref). */
+  registered: boolean;
+  /** True when the ref is in today's live feed (public/data.json). */
+  live: boolean;
   geo: Record<string, unknown> | null;
   climate: Record<string, unknown> | null;
   valuation: Record<string, unknown> | null;
@@ -116,46 +122,125 @@ interface DataSheetData {
   market: Record<string, unknown> | null;
 }
 
+function findLive(ref: string): Property | null {
+  try {
+    return getAllProperties().find((p) => p.ref === ref) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Build the identity/location/physical/listing block from the LIVE feed.
+ *
+ * properties_registry froze on 2026-05-24, so every ref added since then is
+ * missing from it, and its price/score columns are stale for the rest. The
+ * live feed (public/data.json via getAllProperties) is the source of truth for
+ * what is on the market today; the registry only contributes identifiers it
+ * actually issued (AVN_PROP_ID, cadastral ref, OSM id, postcode).
+ */
+function coreFromLive(p: Property, reg: CoreRow | null): CoreRow {
+  const parts = (p.l || '').split(',').map((x) => x.trim()).filter(Boolean);
+  const pm2 = p.pm2 ?? (p.bm > 0 ? Math.round(p.pf / p.bm) : null);
+  const poolFlag = p.pool == null ? null : !/^no$/i.test(p.pool);
+  return {
+    avn_prop_id: reg?.avn_prop_id ?? (p.ref as string),
+    cadastral_ref: reg?.cadastral_ref ?? null,
+    osm_id: reg?.osm_id ?? null,
+    tier: reg?.tier ?? 'listing',
+    is_for_sale: true,
+    source_portal: reg?.source_portal ?? p.source_portal ?? null,
+    source_url: null,
+    country: reg?.country ?? p.country ?? 'ES',
+    region: p.costa ?? reg?.region ?? null,
+    municipality: parts[0] ?? reg?.municipality ?? null,
+    province: reg?.province ?? (parts.length > 1 ? parts[parts.length - 1] : null),
+    postal_code: reg?.postal_code ?? null,
+    lat: p.lat ?? reg?.lat ?? null,
+    lng: p.lng ?? reg?.lng ?? null,
+    address: reg?.address ?? null,
+    property_type: p.t ?? null,
+    status: p.s ?? null,
+    bedrooms: p.bd ?? null,
+    bathrooms: p.ba ?? null,
+    built_m2: p.bm ?? null,
+    plot_m2: p.pl ?? null,
+    terrace_m2: p.terrace ?? null,
+    year_built: reg?.year_built ?? null,
+    completion_year: (() => { const m = /(20\d\d)/.exec(p.c || ''); return m ? Number(m[1]) : null; })(),
+    energy_rating: p.energy ?? null,
+    pool: poolFlag,
+    parking: p.parking != null ? p.parking > 0 : null,
+    building_footprint_m2: reg?.building_footprint_m2 ?? null,
+    price_eur: p.pf ?? null,
+    price_max_eur: p.pt && p.pt > p.pf ? p.pt : null,
+    price_per_m2_eur: pm2,
+    avena_score: p._sc != null ? Math.round(p._sc) : null,
+    yield_gross_pct: p._yield?.gross ?? null,
+    developer: p.d ?? null,
+    first_seen_at: p._added ?? reg?.first_seen_at ?? null,
+    last_seen_at: getFeedUpdatedAt().toISOString(),
+    primary_image: p.imgs?.[0] ?? null,
+  };
+}
+
 async function loadDataSheet(ref: string): Promise<DataSheetData> {
+  const live = findLive(ref);
   const empty: DataSheetData = {
-    core: null, geo: null, climate: null, valuation: null,
+    core: live ? coreFromLive(live, null) : null, registered: false, live: !!live,
+    geo: null, climate: null, valuation: null,
     valHistory: [], transactions: [], regulatory: null, market: null,
   };
   if (!supabase) return empty;
 
-  // The data sheet works on either AVN_PROP_ID or legacy ref
-  let avnId = ref;
-  if (!ref.startsWith('AVN:')) {
-    // Look up by legacy source_listing_id
-    const { data } = await supabase
-      .from('properties_registry')
-      .select('avn_prop_id')
-      .eq('source_listing_id', ref)
-      .maybeSingle();
-    if (data?.avn_prop_id) avnId = data.avn_prop_id;
+  try {
+    // The data sheet works on either AVN_PROP_ID or a feed ref. A feed ref can
+    // map to several registry rows (one per unit: ...-0001, ...-0002), so take
+    // the first deterministically — maybeSingle() errored on those and the
+    // page 404'd even for refs the registry does hold.
+    let avnId: string | null = ref.startsWith('AVN:') ? ref : null;
+    if (!avnId) {
+      const { data } = await supabase
+        .from('properties_registry')
+        .select('avn_prop_id')
+        .eq('source_listing_id', ref)
+        .order('avn_prop_id', { ascending: true })
+        .limit(1);
+      avnId = (data as Array<{ avn_prop_id: string }> | null)?.[0]?.avn_prop_id ?? null;
+    }
+    if (!avnId) return empty;
+
+    const [core, geo, climate, val, valHist, tx, reg, mkt] = await Promise.all([
+      supabase.from('properties_registry').select('*').eq('avn_prop_id', avnId).maybeSingle(),
+      supabase.from('property_geo').select('*').eq('avn_prop_id', avnId).maybeSingle(),
+      supabase.from('property_climate').select('*').eq('avn_prop_id', avnId).maybeSingle(),
+      supabase.from('property_valuation').select('*').eq('avn_prop_id', avnId).maybeSingle(),
+      supabase.from('property_valuation_history').select('*').eq('avn_prop_id', avnId).order('recorded_at', { ascending: false }).limit(20),
+      supabase.from('property_transactions').select('*').eq('avn_prop_id', avnId).order('transacted_at', { ascending: false }).limit(20),
+      supabase.from('property_regulatory').select('*').eq('avn_prop_id', avnId).maybeSingle(),
+      supabase.from('property_market').select('*').eq('avn_prop_id', avnId).maybeSingle(),
+    ]);
+
+    const regCore = (core.data as CoreRow | null) ?? null;
+    // An AVN id looked up directly may belong to a live feed ref too.
+    const liveForReg = live ?? (regCore ? findLive((regCore as unknown as { source_listing_id?: string }).source_listing_id ?? '') : null);
+
+    return {
+      core: liveForReg ? coreFromLive(liveForReg, regCore) : regCore,
+      registered: !!regCore,
+      live: !!liveForReg,
+      geo: geo.data ?? null,
+      climate: climate.data ?? null,
+      valuation: val.data ?? null,
+      valHistory: (valHist.data as Array<Record<string, unknown>>) ?? [],
+      transactions: (tx.data as Array<Record<string, unknown>>) ?? [],
+      regulatory: reg.data ?? null,
+      market: mkt.data ?? null,
+    };
+  } catch {
+    // Registry enrichment is optional; never 404 a live listing because of it.
+    return empty;
   }
-
-  const [core, geo, climate, val, valHist, tx, reg, mkt] = await Promise.all([
-    supabase.from('properties_registry').select('*').eq('avn_prop_id', avnId).maybeSingle(),
-    supabase.from('property_geo').select('*').eq('avn_prop_id', avnId).maybeSingle(),
-    supabase.from('property_climate').select('*').eq('avn_prop_id', avnId).maybeSingle(),
-    supabase.from('property_valuation').select('*').eq('avn_prop_id', avnId).maybeSingle(),
-    supabase.from('property_valuation_history').select('*').eq('avn_prop_id', avnId).order('recorded_at', { ascending: false }).limit(20),
-    supabase.from('property_transactions').select('*').eq('avn_prop_id', avnId).order('transacted_at', { ascending: false }).limit(20),
-    supabase.from('property_regulatory').select('*').eq('avn_prop_id', avnId).maybeSingle(),
-    supabase.from('property_market').select('*').eq('avn_prop_id', avnId).maybeSingle(),
-  ]);
-
-  return {
-    core: (core.data as CoreRow | null) ?? null,
-    geo: geo.data ?? null,
-    climate: climate.data ?? null,
-    valuation: val.data ?? null,
-    valHistory: (valHist.data as Array<Record<string, unknown>>) ?? [],
-    transactions: (tx.data as Array<Record<string, unknown>>) ?? [],
-    regulatory: reg.data ?? null,
-    market: mkt.data ?? null,
-  };
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ ref: string }> }): Promise<Metadata> {
@@ -260,7 +345,7 @@ export default async function DataSheetPage({ params }: { params: Promise<{ ref:
     url: `https://avenaterminal.com/property/${encodeURIComponent(c.avn_prop_id)}/data-sheet`,
     license: 'https://creativecommons.org/licenses/by/4.0/',
     creator: { '@type': 'Organization', name: 'Avena Terminal', url: 'https://avenaterminal.com' },
-    identifier: c.avn_prop_id,
+    identifier: sheet.registered ? c.avn_prop_id : ref,
   };
 
   return (
@@ -273,7 +358,7 @@ export default async function DataSheetPage({ params }: { params: Promise<{ ref:
           <div className="mx-auto max-w-[1200px] px-5 sm:px-12 py-12 sm:py-14 min-w-0">
             <span className="inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-5">
               <span className="h-px w-10 hidden sm:inline-block" style={{ background: 'hsl(var(--av-primary))' }} />
-              Avena Registry · institutional data sheet · AVP v1.0 signed
+              {sheet.registered ? 'Avena Registry · institutional data sheet · AVP v1.0 signed' : 'Avena Registry · institutional data sheet'}
             </span>
             <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-light leading-[0.95] tracking-tight text-foreground mb-3 break-words" style={{ overflowWrap: 'anywhere' }}>
               Property <span className="italic text-gold">data sheet</span>.
@@ -288,6 +373,7 @@ export default async function DataSheetPage({ params }: { params: Promise<{ ref:
             )}
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
+              {sheet.registered && (
               <Link
                 href={`/api/v1/property/${encodeURIComponent(c.avn_prop_id)}`}
                 target="_blank"
@@ -297,6 +383,7 @@ export default async function DataSheetPage({ params }: { params: Promise<{ ref:
               >
                 <FileJson className="h-3.5 w-3.5" /> JSON API
               </Link>
+              )}
               {!isPaid && (
                 <Link
                   href="/access"
@@ -320,14 +407,15 @@ export default async function DataSheetPage({ params }: { params: Promise<{ ref:
 
           {/* IDENTITY */}
           <Section title="Identity" icon={Shield}>
-            <MetricRow label="AVN_PROP_ID" value={<span className="text-primary break-all" style={{ overflowWrap: 'anywhere' }}>{c.avn_prop_id}</span>} />
+            <MetricRow label="AVN_PROP_ID" value={sheet.registered ? <span className="text-primary break-all" style={{ overflowWrap: 'anywhere' }}>{c.avn_prop_id}</span> : 'not yet issued'} />
+            {sheet.live && <MetricRow label="Listing ref" value={ref} />}
             <MetricRow label="Cadastral ref" value={c.cadastral_ref ? <span className="text-primary break-all" style={{ overflowWrap: 'anywhere' }}>{c.cadastral_ref}</span> : '—'} />
             <MetricRow label="OSM ID" value={c.osm_id || '—'} />
             <MetricRow label="Tier" value={c.tier || 'listing'} />
-            <MetricRow label="For sale" value={c.is_for_sale ? 'yes' : 'no'} />
+            <MetricRow label="For sale" value={sheet.live ? 'yes' : c.is_for_sale ? 'yes' : 'no'} />
             <MetricRow label="Source portal" value={c.source_portal || '—'} />
-            <MetricRow label="First seen" value={new Date(c.first_seen_at).toLocaleDateString('en-GB')} />
-            <MetricRow label="Last seen" value={new Date(c.last_seen_at).toLocaleDateString('en-GB')} />
+            <MetricRow label="First seen" value={c.first_seen_at ? new Date(c.first_seen_at).toLocaleDateString('en-GB') : '—'} />
+            <MetricRow label="Last seen" value={c.last_seen_at ? new Date(c.last_seen_at).toLocaleDateString('en-GB') : '—'} />
           </Section>
 
           {/* LOCATION */}
