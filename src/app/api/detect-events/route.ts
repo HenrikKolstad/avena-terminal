@@ -1,7 +1,7 @@
 import { withCronLog } from '@/lib/cron-log';
 import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { getAllProperties } from '@/lib/properties';
 
 export const maxDuration = 60;
