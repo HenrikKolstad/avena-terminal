@@ -5,7 +5,7 @@
  */
 export function CredentialBar() {
   const items = [
-    { label: 'Zenodo', value: 'DOI 10.5281/zenodo.19520064' },
+    { label: 'Zenodo', value: 'Apr 2026 snapshot · DOI 10.5281/zenodo.19520064' },
     { label: 'Perplexity', value: 'Actively citing' },
     { label: 'MCP', value: 'Registered on Smithery' },
     { label: 'Wikidata', value: 'Entity Q139165733' },

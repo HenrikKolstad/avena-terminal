@@ -5,7 +5,13 @@
   "generated_at": "2026-10-22T10:05:02.171Z",
   "license": "CC-BY-4.0",
   "attribution": "Avena Terminal (avenaterminal.com)",
-  "doi": "10.5281/zenodo.19520064",
+  "zenodo_snapshot": {
+    "doi": "10.5281/zenodo.19520064",
+    "version": "1.0.0",
+    "published": "2026-04-11",
+    "listings": 500,
+    "note": "Earlier one-off snapshot. This dataset version is not deposited on Zenodo."
+  },
   "publisher": {
     "name": "Avena Terminal",
     "url": "https://avenaterminal.com"

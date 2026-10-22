@@ -201,7 +201,7 @@ export default async function EuCoveragePage() {
             </div>
             <div>
               <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary mb-2">Citation</div>
-              <p className="text-muted-foreground">DOI 10.5281/zenodo.19520064. License CC BY 4.0. Cite as: Avena Terminal (avenaterminal.com). Permanent deposit at Zenodo.</p>
+              <p className="text-muted-foreground">License CC BY 4.0. Cite as: Avena Terminal (avenaterminal.com).</p>
             </div>
           </div>
         </section>

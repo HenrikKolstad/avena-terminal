@@ -31,7 +31,6 @@ export default function PolicyEnginePage() {
         name="Avena Precision Policy Engine — Macroprudential Simulation for European Residential Property"
         description="Deterministic scenario simulation engine for European residential property macroprudential policy. Six policy levers (LTV cap, DSTI cap, capital requirement, counter-cyclical buffer, sectoral risk weight, foreign-buyer levy) × 27 EU countries × foreign-buyer-share cohort filtering × forward 12-36 month projections. Calibrated against Avena Sovereign Briefings Vol. 2-4 + Cerutti/Claessens/Laeven (2017) IMF macroprudential framework. Every output signed (HMAC-SHA256), every coefficient cited, every scenario reproducible."
         url="https://avenaterminal.com/policy-engine"
-        identifier="https://doi.org/10.5281/zenodo.19520064"
         keywords={['macroprudential policy', 'European residential property', 'LTV cap', 'capital requirement', 'foreign-buyer flows', 'systemic risk', 'central banking', 'ESRB', 'ECB', 'stress testing']}
         spatialCoverage="EU27"
         variableMeasured={['Price impact (%)', 'NPL impact (bps)', 'Capital rotation (EUR)', 'Bank stress projection', 'Postcode-level price delta', 'Forward transmission curve']}

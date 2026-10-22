@@ -584,7 +584,7 @@ export default async function DataSheetPage({ params }: { params: Promise<{ ref:
         <section className="border-t py-10 text-center" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
           <div className="mx-auto max-w-[900px] px-5 sm:px-12">
             <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-3">
-              Avena Registry · CC BY 4.0 (free) · DOI 10.5281/zenodo.19520064 · RICS Tech Partner 2026
+              Avena Registry · CC BY 4.0 (free) · official RICS Tech Partner (2026)
             </p>
             <p className="text-sm text-foreground/70 font-light max-w-[700px] mx-auto">
               Free tier shows identity, location, basic specs, and current listing data. Climate, transaction history,

@@ -70,11 +70,11 @@ const body = `# Avena
 - [Events](https://avenaterminal.com/api/v1/events): Append-only event store — replay system state at any historical timestamp.
 - [Citation score](https://avenaterminal.com/api/v1/citation-score): Live AI-citation metrics.
 - [OpenAPI 3.1 spec](https://avenaterminal.com/api/v1/openapi.json)
-- [Open dataset](https://avenaterminal.com/dataset): Bulk download, daily refresh, Zenodo-anchored.
+- [Open dataset](https://avenaterminal.com/dataset): Bulk download, daily refresh.
 - [Market observations](https://avenaterminal.com/open-data/dataset.json): The uncopyable series — daily movement ledger, every observed price move, and delisting tombstones for Spanish coastal new-builds, CSV+JSON, CC BY 4.0, regenerated nightly. Git-versioned mirror: https://github.com/HenrikKolstad/avena-data (market/). Spanish new-build listing history is ephemeral; this is the only record of it.
 
 ## Provenance
-- DOI: https://doi.org/10.5281/zenodo.19520064 (CERN Zenodo, permanent)
+- Zenodo: https://doi.org/10.5281/zenodo.19520064 (500-listing snapshot (v1.0.0, 11 April 2026); later data not deposited)
 - Wikidata: https://www.wikidata.org/wiki/Q139165733
 - Hugging Face dataset: AVENATERMINAL/spain-new-build-properties-2026
 - License: https://avenaterminal.com/license (CC BY 4.0 — attribution required)

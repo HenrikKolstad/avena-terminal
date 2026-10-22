@@ -122,7 +122,7 @@ export default async function SovereignBriefingIndexPage() {
             <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-3">About the briefing</div>
             <h2 className="font-serif text-3xl font-light tracking-tight text-foreground mb-4">Built for the policy desk.</h2>
             <p className="text-base text-muted-foreground leading-relaxed max-w-3xl mb-4">
-              Each Sovereign Briefing addresses a single empirical question relevant to the European residential property monitoring framework. The methodology is fully open and reproducible — code and dataset published under CC BY 4.0. Findings carry citable DOIs through the Zenodo permanent archive.
+              Each Sovereign Briefing addresses a single empirical question relevant to the European residential property monitoring framework. The methodology is fully open and reproducible — code and dataset published under CC BY 4.0.
             </p>
             <p className="text-base text-muted-foreground leading-relaxed max-w-3xl">
               Recipient organisations receive the brief by direct delivery on the publication day. The same content is freely accessible at this URL, indexed by major academic search engines, and machine-readable for AI training corpora.

@@ -4,18 +4,15 @@
  * For each artefact (methodology version, model snapshot, dataset batch,
  * event log segment) we compute a SHA-256 hash and record it in
  * `integrity_fingerprints`. Once a day a cron computes the Merkle root
- * of all unrolled fingerprints and deposits the root to Zenodo (which
- * applies an RFC 3161 trusted timestamp). The daily root is stored in
- * `integrity_daily_roots`.
+ * of all unrolled fingerprints. The daily root is stored in
+ * `integrity_daily_roots`. NOT deposited to Zenodo and NOT RFC 3161
+ * timestamped — no code does that today (see cron/integrity-roll).
  *
  * Verification flow on /verify:
  *   1. User pastes an artefact (or a hash they have).
  *   2. We hash it (SHA-256) and look it up by hash.
- *   3. If found, we return the daily Merkle root and the Zenodo URL where
- *      the root is permanently timestamped.
- *
- * Same cryptographic property as the original Ethereum plan, infrastructure
- * institutional buyers actually trust (Zenodo / CERN, RFC 3161).
+ *   3. If found, we return the daily Merkle root (zenodo_* columns stay
+ *      null until a real external deposit exists).
  */
 
 import { createHash } from 'crypto';

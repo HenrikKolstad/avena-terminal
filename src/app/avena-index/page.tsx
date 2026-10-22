@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://avenaterminal.com/avena-index' },
   openGraph: {
     title: 'Avena Index Family — daily property benchmarks for Europe',
-    description: 'Four published indices · daily close · CC BY 4.0 · DOI 10.5281/zenodo.19520064',
+    description: 'Four published indices · daily close · CC BY 4.0',
     url: 'https://avenaterminal.com/avena-index',
   },
 };
@@ -160,7 +160,7 @@ export default async function AvenaIndexPage() {
               for <span className="italic text-gold">institutional</span> Europe.
             </h1>
             <p className="max-w-2xl text-base text-muted-foreground font-light leading-relaxed">
-              Four published indices closing every UTC day. Base period {indices[0]?.base_date || '—'} = 100. Methodology is open (CC BY 4.0), the dataset is citable (DOI 10.5281/zenodo.19520064), and every level is computed from the live Avena corpus, timestamped, and audit-logged.
+              Four published indices closing every UTC day. Base period {indices[0]?.base_date || '—'} = 100. Methodology is open (CC BY 4.0), and every level is computed from the live Avena corpus, timestamped, and audit-logged.
             </p>
             <div className="mt-6 inline-flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
               <span>Close <span className="text-foreground">23:50 UTC daily</span></span>

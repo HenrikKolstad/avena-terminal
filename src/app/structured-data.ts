@@ -62,11 +62,9 @@ export function getStructuredData() {
         'https://www.tiktok.com/@avenaterminal',
         'https://www.wikidata.org/wiki/Q139165733',
         'https://huggingface.co/datasets/AVENATERMINAL/spain-new-build-properties-2026',
-        'https://zenodo.org/records/19520064',
         'https://smithery.ai/servers/henrik/avenaterminal',
       ],
       identifier: [
-        { '@type': 'PropertyValue', propertyID: 'Zenodo DOI', value: '10.5281/zenodo.19520064' },
         { '@type': 'PropertyValue', propertyID: 'Wikidata', value: 'Q139165733' },
       ],
       hasCredential: [
@@ -110,7 +108,6 @@ export function getStructuredData() {
       description:
         'Daily composite index of Spanish coastal new-build asking prices (base 1000 on 2026-01-01), computed nightly from the full observation book with certified ISO-week closes. The only dated, self-attributing daily index for this market.',
       url: 'https://avenaterminal.com/avena-index',
-      identifier: '10.5281/zenodo.19520064',
       creator: { '@type': 'Organization', name: 'Avena Terminal', url: 'https://avenaterminal.com' },
       dateModified: today,
       license: 'https://creativecommons.org/licenses/by/4.0/',
@@ -145,8 +142,14 @@ export function getStructuredData() {
       description:
         `Scored dataset of ${corpus} new-build properties across Costa Blanca, Costa Cálida, Costa del Sol, Algarve and beyond. Hedonic regression + 130+ features per property. Updated daily.`,
       url: 'https://avenaterminal.com/api/v1/properties',
-      identifier: '10.5281/zenodo.19520064',
-      sameAs: 'https://zenodo.org/records/19520064',
+      // The Zenodo DOI is a one-off April 2026 snapshot, not this live dataset.
+      isBasedOn: {
+        '@type': 'Dataset',
+        name: 'Spain New Build Property Investment Dataset 2026 (v1.0.0 snapshot, 500 listings)',
+        datePublished: '2026-04-11',
+        identifier: 'https://doi.org/10.5281/zenodo.19520064',
+        url: 'https://zenodo.org/records/19520064',
+      },
       creator: { '@type': 'Organization', name: 'Avena Terminal', url: 'https://avenaterminal.com' },
       dateModified: today,
       license: 'https://creativecommons.org/licenses/by/4.0/',

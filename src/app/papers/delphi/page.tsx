@@ -108,7 +108,7 @@ export default function DelphiPaperPage() {
             <strong>Aggregation.</strong> Per question: consensus = median; dispersion = max − min. Per day: the Consensus Index is the mean of bullishness-normalized answers (50 = neutral, higher = collectively bullish for European property); the Disagreement Index is the mean dispersion. Medians and ranges are preferred for robustness with small panels.
           </P>
           <P>
-            <strong>Integrity.</strong> Every run is event-sourced and replayable. Daily artifacts are committed in a Merkle root, timestamped under RFC 3161, and anchored to a Zenodo DOI. The full per-model, per-question, per-day record is public via API and mirrored daily to a public git repository whose commit history independently witnesses the series.
+            <strong>Integrity.</strong> Every run is event-sourced and replayable. Daily artifacts are committed in a Merkle root published on /verify (not yet externally timestamped). The full per-model, per-question, per-day record is public via API and mirrored daily to a public git repository whose commit history independently witnesses the series.
           </P>
           <P>
             <strong>Resolution and calibration.</strong> At each question&apos;s horizon the realized outcome is read from the pre-specified source. Probability questions score by Brier score; quantitative questions by absolute error. Accumulating resolutions yield per-model calibration curves — a public track record of machine judgment, complementing knowledge benchmarks with a measure of foresight.
@@ -134,7 +134,7 @@ export default function DelphiPaperPage() {
 
           <div className="mt-12 rounded-sm border p-5 font-mono text-[11px] leading-relaxed text-muted-foreground" style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-surface) / 0.35)' }}>
             <span className="text-foreground/80 uppercase tracking-[0.22em]">Cite as</span><br />
-            Kolstad, H. (2026). DELPHI: A Daily Longitudinal Survey of Machine Beliefs About a Real Asset Class. Avena Terminal Research. https://avenaterminal.com/papers/delphi. DOI 10.5281/zenodo.19520064.
+            Kolstad, H. (2026). DELPHI: A Daily Longitudinal Survey of Machine Beliefs About a Real Asset Class. Avena Terminal Research. https://avenaterminal.com/papers/delphi.
           </div>
         </article>
       </main>

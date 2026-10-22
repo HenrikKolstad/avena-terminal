@@ -2,8 +2,8 @@
  * /verify — cryptographically verify any Avena artefact against the
  * integrity log. Architectural Commitment 7.
  *
- * SHA-256 + daily Merkle root + Zenodo RFC 3161 timestamp. Same guarantee
- * as on-chain, no blockchain ceremony.
+ * SHA-256 + daily Merkle root, published here. Roots are NOT deposited to
+ * Zenodo and carry no external (RFC 3161) timestamp today.
  */
 
 import type { Metadata } from 'next';
@@ -17,7 +17,7 @@ export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Verify · cryptographic integrity for any Avena artefact',
-  description: 'Verify any Avena methodology, model output, or dataset snapshot against the published integrity log. SHA-256 + daily Merkle root + Zenodo trusted timestamp.',
+  description: 'Verify any Avena methodology, model output, or dataset snapshot against the published integrity log. SHA-256 fingerprints rolled into a daily Merkle root.',
   alternates: { canonical: 'https://avenaterminal.com/verify' },
 };
 
@@ -52,7 +52,7 @@ export default async function VerifyPage({ searchParams }: Props) {
             Don&apos;t trust us. Verify us.
           </h1>
           <p className="max-w-3xl text-base text-muted-foreground leading-relaxed">
-            Every methodology version, model snapshot, and dataset batch Avena ships is fingerprinted with SHA-256. Each day, all fingerprints are rolled into a Merkle root and deposited to Zenodo, where the deposit receives an RFC 3161 trusted timestamp from CERN&apos;s infrastructure. The cryptographic guarantee is the same as committing to an Ethereum L2 — without the institutional eye-rolls.
+            Every methodology version, model snapshot, and dataset batch Avena ships is fingerprinted with SHA-256. Each day, all fingerprints are rolled into a Merkle root, published on this page. The roots are not yet deposited with an external archive, so they carry no third-party timestamp today — treat them as Avena&apos;s own published record.
           </p>
         </section>
 
@@ -91,7 +91,7 @@ export default async function VerifyPage({ searchParams }: Props) {
                         {r.zenodo_url ? (
                           <a href={r.zenodo_url} target="_blank" rel="noopener" className="text-primary hover:underline">{r.zenodo_deposit_id}</a>
                         ) : (
-                          <span className="text-muted-foreground/60">pending deposit</span>
+                          <span className="text-muted-foreground/60">not deposited</span>
                         )}
                       </td>
                     </tr>
@@ -107,7 +107,7 @@ export default async function VerifyPage({ searchParams }: Props) {
           <div className="rounded-sm border p-6" style={{ borderColor: 'hsl(var(--av-border) / 0.4)', background: 'hsl(var(--av-surface) / 0.2)' }}>
             <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-2">Why not blockchain</div>
             <p className="text-sm text-foreground/85 leading-relaxed max-w-3xl">
-              An Ethereum L2 Merkle commit gives you exactly the same cryptographic guarantee as a Zenodo deposit with RFC 3161 timestamping. The difference is the institutional read: a CoStar M&amp;A analyst sees &quot;Zenodo / CERN&quot; and trusts the timestamp; the same analyst sees &quot;Ethereum L2&quot; and the credibility drops. We picked the verification stack that works in a Moody&apos;s diligence meeting.
+              A Merkle root lets anyone check that a fingerprinted artefact has not changed since the root was published. What it cannot prove on its own is when it was published: that needs an external timestamp (an RFC 3161 authority, an archive deposit or an on-chain commit), and Avena does not apply one yet. Until it does, these roots are a consistency check, not an independent timestamp.
             </p>
             <div className="mt-4 flex flex-wrap gap-3 font-mono text-[10px] uppercase tracking-[0.22em]">
               <Link href="/methodology/evolution" className="text-foreground/85 hover:text-primary">Methodology audit trail →</Link>

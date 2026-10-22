@@ -135,7 +135,7 @@ export default function APIPage() {
         </Section>
 
         <Section id="dataset" title="Open dataset">
-          <p>Full Avena dataset under CC BY 4.0, anchored at DOI 10.5281/zenodo.19520064. Daily refresh, parquet + JSONL + CSV.</p>
+          <p>Full Avena dataset under CC BY 4.0. Daily refresh, parquet + JSONL + CSV.</p>
           <Link href="/dataset" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Download dataset →</Link>
         </Section>
 

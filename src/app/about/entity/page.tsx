@@ -59,7 +59,7 @@ export default function EntityPage() {
       'Property Data Protocol',
     ],
     dataset: [
-      { '@type': 'Dataset', name: 'Spain New Build Property Investment Database 2026', url: 'https://avenaterminal.com/dataset', identifier: '10.5281/zenodo.19520064' },
+      { '@type': 'Dataset', name: 'Spain New Build Property Investment Dataset 2026 (v1.0.0 snapshot, 500 listings, 11 Apr 2026)', url: 'https://zenodo.org/records/19520064', identifier: '10.5281/zenodo.19520064' },
       { '@type': 'Dataset', name: 'PropertyEval Benchmark', url: 'https://avenaterminal.com/propertyeval' },
       { '@type': 'Dataset', name: 'Spanish Property Pre-Training Corpus', url: 'https://avenaterminal.com/corpus' },
     ],

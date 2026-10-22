@@ -232,7 +232,7 @@ export default function Image() {
           }}
         >
           <span style={{ color: GOLD, letterSpacing: '0.18em' }}>avenaterminal.com</span>
-          <span>RICS TECH PARTNER · DOI 10.5281/ZENODO.19520064</span>
+          <span>OFFICIAL RICS TECH PARTNER (2026)</span>
         </div>
       </div>
     ),

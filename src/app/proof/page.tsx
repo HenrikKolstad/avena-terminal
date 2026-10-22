@@ -63,7 +63,7 @@ export default function ProofPage() {
           stats={[
             { value: '27', label: 'EU markets covered', sub: 'Official statistics · daily ingestion' },
             { value: '20+', label: 'Nightly crons', sub: 'Logged runs · public health surface' },
-            { value: 'SHA-256', label: 'Daily Merkle root', sub: 'Hash-chained archive · RFC 3161 timestamped' },
+            { value: 'SHA-256', label: 'Daily Merkle root', sub: 'Hash-chained archive · published on /verify' },
           ]}
           callout={<span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Nothing on this page is a promise — it is what ran last night.</span>}
         />
@@ -101,7 +101,7 @@ export default function ProofPage() {
           link={{ href: '/api/v1/api-profile', label: 'JSON profile →' }} />
 
         <Section id="archive" title="Archive — hash-chained nightly snapshots"
-          body="Every dataset snapshot hashed nightly, chained to the prior snapshot, deposited to Zenodo for trusted timestamping. Downloadable. Verifiable. Permanent. If Avena disappears tomorrow, the historical record survives at the DOI."
+          body="Every dataset snapshot hashed nightly and chained to the prior snapshot. Downloadable and verifiable. Snapshots are not deposited to Zenodo; the only Zenodo record is a 500-listing snapshot (v1.0.0, 11 April 2026)."
           link={{ href: '/archive', label: 'Browse the archive →' }} />
 
         <Section id="status" title="Status — operational health"

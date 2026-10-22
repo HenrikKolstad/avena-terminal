@@ -40,7 +40,7 @@ export default function ContributePage() {
             Avena is the network, not the vendor.
           </h1>
           <p className="max-w-3xl text-base text-muted-foreground leading-relaxed">
-            If your organisation holds European residential property data — transactions, listings, valuations, rents, completions — there is a public path to contributing it to the open APIP network. You retain ownership. You name the licensing terms. You receive durable public attribution at the Zenodo-anchored DOI. Banks, regulators, and researchers consume the network; we operate the substrate.
+            If your organisation holds European residential property data — transactions, listings, valuations, rents, completions — there is a public path to contributing it to the open APIP network. You retain ownership. You name the licensing terms. You receive public attribution in the CC BY 4.0 dataset. Banks, regulators, and researchers consume the network; we operate the substrate.
           </p>
         </section>
 
@@ -61,7 +61,7 @@ export default function ContributePage() {
           <div className="rounded-sm border p-6" style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-surface) / 0.3)' }}>
             <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold mb-3">What contributors receive</div>
             <ul className="grid sm:grid-cols-2 gap-2 text-sm text-foreground/90">
-              <li>· Permanent attribution at the public DOI 10.5281/zenodo.19520064</li>
+              <li>· Attribution in the public CC BY 4.0 dataset</li>
               <li>· A listing on /data-partners with logo and dataset description</li>
               <li>· Co-citation in every research paper using the contributed segment</li>
               <li>· Co-citation in regulator submissions where the data informs the position</li>

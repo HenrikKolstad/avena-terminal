@@ -54,7 +54,6 @@ const jsonLd = {
   logo: 'https://avenaterminal.com/logo.png',
   sameAs: [
     'https://www.wikidata.org/wiki/Q139165733',
-    'https://doi.org/10.5281/zenodo.19520064',
   ],
 };
 

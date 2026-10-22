@@ -222,15 +222,15 @@ export default async function DefensibilityPage() {
                 The Avena dataset, methodology, briefings, and APIP standard are all released under Creative Commons Attribution 4.0 International. Acquirers inherit a license stack with no proprietary entanglements. The license is non-revocable, irrevocable, and survives all corporate transitions.
                 <Pointer href="/license">License terms →</Pointer>
               </Card>
-              <Card title="Permanent DOI through Zenodo">
-                The Avena dataset is registered with Digital Object Identifier <Code>10.5281/zenodo.19520064</Code>, archived by CERN under EU jurisdiction. The DOI persists independently of avenaterminal.com domain ownership. Academic citations remain resolvable forever.
+              <Card title="Zenodo snapshot DOI">
+                A 500-listing snapshot (v1.0.0, 11 April 2026) of the Avena dataset is archived on Zenodo under DOI <Code>10.5281/zenodo.19520064</Code>. That snapshot resolves independently of avenaterminal.com; data captured after it is not deposited.
                 <Pointer href="https://doi.org/10.5281/zenodo.19520064">Zenodo record →</Pointer>
               </Card>
               <Card title="EU data residency">
                 All Avena infrastructure operates within EU jurisdiction. Supabase Postgres in Frankfurt (eu-central-1). Vercel Blob archive in Frankfurt (fra1). DNS and CDN routed through European regions. GDPR-compliant by construction. Suitable for ECB, ESRB, national central bank procurement.
               </Card>
               <Card title="Third-party credentialing">
-                Avena is a registered RICS Tech Partner (2026). The Wikidata entry Q139165733 is publicly maintained. The Zenodo DOI is institutionally archived by CERN. The Schema.org Dataset markup is indexed by Google Dataset Search. Multiple independent registries acknowledge Avena&apos;s existence.
+                Avena is an official RICS Tech Partner (2026). The Wikidata entry Q139165733 is publicly maintained. The April 2026 snapshot is archived on Zenodo. The Schema.org Dataset markup is indexed by Google Dataset Search. Multiple independent registries acknowledge Avena&apos;s existence.
                 <Pointer href="/governance">Governance details →</Pointer>
               </Card>
             </div>
