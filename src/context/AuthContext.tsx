@@ -18,7 +18,6 @@ interface AuthContextType {
   signInWithEmail: (email: string) => Promise<{ error: string | null }>;
   signInWithPassword: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
-  startCheckout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -29,7 +28,6 @@ const AuthContext = createContext<AuthContextType>({
   signInWithEmail: async () => ({ error: null }),
   signInWithPassword: async () => ({ error: null }),
   signOut: async () => {},
-  startCheckout: async () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -86,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function signInWithEmail(email: string) {
     if (!supabase) return { error: 'Supabase not configured' };
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
-    // Land on /login — signed-in branch shows welcome state + PRO badge
+    // Land on /login — signed-in branch shows welcome state
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: `${appUrl}/login` },
@@ -106,27 +104,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsPaid(false);
   }
 
-  async function startCheckout() {
-    const email = user?.email;
-    if (!email) return;
-    try {
-      const res = await fetch('/api/stripe/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-      const { url, error } = await res.json();
-      if (error) throw new Error(error);
-      if (!url) throw new Error('Stripe did not return a checkout URL');
-      window.location.href = url;
-    } catch (e) {
-      // Re-throw so callers can render inline error (replaces jarring alert())
-      throw e instanceof Error ? e : new Error('Checkout failed');
-    }
-  }
-
   return (
-    <AuthContext.Provider value={{ user, session, isPaid, loading, signInWithEmail, signInWithPassword, signOut, startCheckout }}>
+    <AuthContext.Provider value={{ user, session, isPaid, loading, signInWithEmail, signInWithPassword, signOut }}>
       {children}
     </AuthContext.Provider>
   );

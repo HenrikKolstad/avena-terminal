@@ -62,7 +62,6 @@ export default function EntityPage() {
       '@type': 'OfferCatalog',
       name: 'Avena Terminal Products',
       itemListElement: [
-        { '@type': 'Offer', itemOffered: { '@type': 'SoftwareApplication', name: 'Avena Terminal PRO', applicationCategory: 'BusinessApplication' }, price: '79', priceCurrency: 'EUR' },
         { '@type': 'Offer', itemOffered: { '@type': 'SoftwareApplication', name: 'Avena Terminal MCP Server', applicationCategory: 'DeveloperApplication' }, price: '0', priceCurrency: 'EUR' },
       ],
     },

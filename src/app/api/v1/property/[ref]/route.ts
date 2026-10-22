@@ -10,7 +10,7 @@
  *
  * Auth: optional `X-Avena-API-Key` header for paid tier. Without it,
  * the response includes paid sections but their values are replaced by
- * `{ paywall: true, unlock_at: '/pro' }` placeholders.
+ * `{ paywall: true, unlock_at: '/access' }` placeholders.
  *
  * Spec: AVP v1.0 | License: CC BY 4.0 (free tier) | Commercial: contact
  */
@@ -32,7 +32,7 @@ export function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: cors });
 }
 
-const PAYWALL_PLACEHOLDER = { paywall: true, unlock_at: 'https://avenaterminal.com/pro' };
+const PAYWALL_PLACEHOLDER = { paywall: true, unlock_at: 'https://avenaterminal.com/access' };
 
 function isAuthed(req: NextRequest): boolean {
   const key = req.headers.get('x-avena-api-key') || '';
@@ -166,7 +166,7 @@ export async function GET(
         doi: '10.5281/zenodo.19520064',
         spec: 'https://avenaterminal.com/standards/avp',
         verifier: 'https://avenaterminal.com/standards/avp/verify',
-        unlock_paid: 'https://avenaterminal.com/pro',
+        unlock_paid: 'https://avenaterminal.com/access',
       },
     },
     {

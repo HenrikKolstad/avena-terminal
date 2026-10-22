@@ -106,8 +106,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // winner per Search Console — pairs are added dynamically below)
     ['/compare',          'weekly',  0.8],
 
-    // ─── PRO landing (preserved for institutional pricing) ────────────────
-    ['/pro',              'weekly',  0.85],
+    // ─── Institutional access (replaced /pro 2026-10-22) ─────────────────
+    ['/access',           'weekly',  0.85],
 
     // ─── Answer layer (AEO) — exact-match questions for retrieval engines ─
     ['/answers',          'weekly',  0.85],

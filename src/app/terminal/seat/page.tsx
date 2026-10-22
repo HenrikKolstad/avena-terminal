@@ -24,7 +24,6 @@ const INCLUDES = [
 
 const COMPARE = [
   { tier: 'Free',          price: '€0',         seat: 'Anonymous',          oracle: '5 queries/day',      api: '—',                      pdf: '—',         priority: '—' },
-  { tier: 'PRO',           price: '€79 / mo',   seat: 'Single user',        oracle: 'Unlimited',          api: 'Read-only',              pdf: '—',         priority: '7d' },
   { tier: 'Seat',          price: '€499 / mo',  seat: 'Named institutional',oracle: 'Unlimited + tools',  api: '100 req/s · webhooks',   pdf: 'Branded',   priority: '24h' },
   { tier: 'Enterprise',    price: 'from €25k',  seat: 'White-label',        oracle: 'Embedded + API',     api: 'Unlimited · SLA',        pdf: 'White-label', priority: '4h' },
 ];

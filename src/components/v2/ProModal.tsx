@@ -2,22 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { ArrowUpRight, Check, Lock, X } from 'lucide-react';
+import { ArrowUpRight, Check, Mail, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { trackEvent } from '@/lib/tracking';
 
-// Private Client inclusions (rewritten 2026-08-06) — only what PRO actually
-// unlocks today. No roadmap promises, no retired tooling.
-const PRO_FEATURES = [
-  'The complete ranked book — every scored home, not just the top three',
-  'Discount-to-market and savings on every property',
-  'Price-change history — what moved, when, and by how much',
-  'Sell-out tracking — what left the market, and at what price',
-  'Watchlist with price-drop alerts',
-  'Yield and ROI tools · rental-return modelling',
-  'Deal alerts by region, budget and score',
-  'Priority introductions through Xavia Estate',
-];
+import { ACCESS_OFFERS, accessMailto, offerMailto } from '@/lib/access-offers';
+
+// The self-serve €49/€79 PRO plan was retired 2026-10-22. This modal (name
+// kept so existing call sites stay untouched) now presents the institutional
+// offers as request-access emails. No checkout, no payment links on site.
 
 export function ProModal({
   open,
@@ -26,10 +19,7 @@ export function ProModal({
   open: boolean;
   onClose: () => void;
 }) {
-  const { isPaid, user, startCheckout } = useAuth();
-  const [inlineEmail, setInlineEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { isPaid } = useAuth();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
@@ -47,50 +37,11 @@ export function ProModal({
     };
   }, [open, onClose]);
 
-  // Fire InitiateCheckout when modal opens for a non-PRO user (TikTok funnel event)
   useEffect(() => {
     if (open && !isPaid) {
-      trackEvent('InitiateCheckout', { value: 79, currency: 'EUR' });
+      trackEvent('ClickButton', { button: 'request_access_open' });
     }
   }, [open, isPaid]);
-
-  async function handleCheckout() {
-    setError(null);
-    trackEvent('ClickButton', { button: 'checkout_cta', value: 79, currency: 'EUR' });
-
-    if (user?.email) {
-      setLoading(true);
-      try {
-        await startCheckout();
-      } catch (e) {
-        setError(e instanceof Error ? e.message : 'Checkout failed');
-        setLoading(false);
-      }
-      return;
-    }
-    if (!inlineEmail || !inlineEmail.includes('@')) {
-      setError('Enter a valid email');
-      return;
-    }
-    setLoading(true);
-    try {
-      const res = await fetch('/api/stripe/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: inlineEmail }),
-      });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error('No checkout URL returned');
-      }
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Checkout failed');
-      setLoading(false);
-    }
-  }
 
   if (!open || !mounted) return null;
 
@@ -143,93 +94,71 @@ export function ProModal({
           className="absolute -top-px left-6 rounded-b-sm px-3 py-1 font-mono text-[9px] uppercase tracking-[0.3em] text-primary-foreground"
           style={{ background: 'var(--av-gradient-gold)' }}
         >
-          Private Client
+          Institutional
         </span>
 
         <div className="p-8 pt-10">
-          {/* Headline */}
           <div className="mb-5 mt-2">
             <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-3 inline-block">
-              Avena Terminal · Tier I
+              Avena Terminal · Access by request
             </span>
-            <div className="flex items-baseline gap-3 mb-2">
-              <span className="font-serif text-6xl font-light text-foreground tabular leading-none">€79</span>
-              <span className="font-mono text-xs uppercase tracking-[0.22em] text-muted-foreground">/ month</span>
-            </div>
-            <p className="font-serif text-lg italic text-muted-foreground">
-              The full terminal. Private. Cancel at any time.
+            <p className="font-serif text-2xl font-light text-foreground leading-tight">
+              Full access is available to lenders, funds, valuers and agents.
+            </p>
+            <p className="mt-2 text-sm font-light text-muted-foreground">
+              Every plan starts with a complimentary two-week trial on your own projects.
             </p>
           </div>
 
-          {/* Feature list — tight & scannable */}
-          <ul className="mb-6 grid grid-cols-1 gap-y-2">
-            {PRO_FEATURES.map(f => (
-              <li key={f} className="flex items-start gap-2.5 text-sm text-foreground/90 font-light">
-                <Check className="h-3.5 w-3.5 mt-1 flex-shrink-0" style={{ color: 'hsl(var(--av-primary))' }} />
-                <span>{f}</span>
+          <ul className="mb-6 grid grid-cols-1 gap-3">
+            {ACCESS_OFFERS.map(o => (
+              <li key={o.id}>
+                <a
+                  href={offerMailto(o)}
+                  onClick={() => trackEvent('ClickButton', { button: `request_access_${o.id}` })}
+                  className="block rounded-sm border p-4 transition-colors hover:border-primary"
+                  style={{ borderColor: 'hsl(var(--av-border-strong))', background: 'hsl(var(--av-background) / 0.4)' }}
+                >
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="text-sm text-foreground">{o.name}</span>
+                    <span className="font-mono text-[11px] tabular text-primary whitespace-nowrap">{o.price}</span>
+                  </div>
+                  <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">{o.audience}</div>
+                  <ul className="mt-2 space-y-1">
+                    {o.includes.map(f => (
+                      <li key={f} className="flex items-start gap-2 text-xs text-foreground/80 font-light">
+                        <Check className="h-3 w-3 mt-0.5 flex-shrink-0" style={{ color: 'hsl(var(--av-primary))' }} />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </a>
               </li>
             ))}
           </ul>
 
-          {/* Trust bar */}
-          <div className="mb-5 flex items-center gap-4 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground/80">
-            <span className="flex items-center gap-1.5"><Lock size={9} /> Stripe</span>
-            <span>•</span>
-            <span>Cancel anytime</span>
-            <span>•</span>
-            <span>7-day refund</span>
-          </div>
-
-          {/* CTA — login or email */}
           {isPaid ? (
             <div
               className="rounded-sm border p-4 text-center"
-              style={{
-                background: 'hsl(var(--av-primary) / 0.08)',
-                borderColor: 'hsl(var(--av-primary) / 0.4)',
-              }}
+              style={{ background: 'hsl(var(--av-primary) / 0.08)', borderColor: 'hsl(var(--av-primary) / 0.4)' }}
             >
-              <span className="font-mono text-xs uppercase tracking-[0.22em] text-primary">PRO · active</span>
+              <span className="font-mono text-xs uppercase tracking-[0.22em] text-primary">Access · active</span>
             </div>
           ) : (
-            <>
-              {!user?.email && (
-                <div className="mb-3">
-                  <input
-                    type="email"
-                    value={inlineEmail}
-                    onChange={e => setInlineEmail(e.target.value)}
-                    placeholder="you@email.com"
-                    className="w-full rounded-sm border px-4 py-3 font-mono text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition-colors focus:border-primary"
-                    style={{ background: 'hsl(var(--av-background))', borderColor: 'hsl(var(--av-border-strong))' }}
-                    autoFocus
-                  />
-                </div>
-              )}
-
-              <button
-                onClick={handleCheckout}
-                disabled={loading}
-                className="group inline-flex w-full items-center justify-center gap-3 rounded-sm px-6 py-4 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-wait disabled:hover:translate-y-0"
-                style={{ background: 'var(--av-gradient-gold)' }}
-              >
-                {loading ? 'Opening Stripe…' : 'Checkout — €79 / mo'}
-                {!loading && <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />}
-              </button>
-
-              {error && (
-                <p
-                  className="mt-3 rounded-sm border px-3 py-2 font-mono text-[11px] text-destructive"
-                  style={{
-                    background: 'hsl(var(--av-destructive) / 0.08)',
-                    borderColor: 'hsl(var(--av-destructive) / 0.3)',
-                  }}
-                >
-                  {error}
-                </p>
-              )}
-            </>
+            <a
+              href={accessMailto()}
+              onClick={() => trackEvent('ClickButton', { button: 'request_access_email' })}
+              className="group inline-flex w-full items-center justify-center gap-3 rounded-sm px-6 py-4 font-mono text-xs uppercase tracking-[0.22em] text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
+              style={{ background: 'var(--av-gradient-gold)' }}
+            >
+              <Mail className="h-3.5 w-3.5" />
+              Request access
+              <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </a>
           )}
+          <p className="mt-3 text-center font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground/80">
+            Or write to henrik@avenaterminal.com
+          </p>
         </div>
       </div>
       </div>
@@ -239,11 +168,10 @@ export function ProModal({
 }
 
 /**
- * Trigger button that opens the PRO modal.
- * Drop anywhere: <ProButton>Upgrade to PRO</ProButton>
+ * Trigger button that opens the request-access modal.
  */
 export function ProButton({
-  children = 'Upgrade to PRO',
+  children = 'Request access',
   variant = 'gold',
   className = '',
 }: {

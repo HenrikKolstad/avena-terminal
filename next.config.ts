@@ -79,7 +79,13 @@ const nextConfig: NextConfig = {
       // ─── Consolidation redirects (2026-05-23) ─────────────────────────
       // Pages deleted or merged into canonical surfaces. 301 preserves SEO
       // and prevents 404s from bookmarks / external links / older sitemaps.
-      { source: '/test-pro',     destination: '/pro',         permanent: true },
+      { source: '/test-pro',     destination: '/access',      permanent: true },
+      // ─── Self-serve PRO (€49/€79) retired 2026-10-22 → institutional access
+      { source: '/pro',                 destination: '/access', permanent: true },
+      { source: '/pro/:path*',          destination: '/access', permanent: true },
+      { source: '/pricing',             destination: '/access', permanent: true },
+      { source: '/upgrade',             destination: '/access', permanent: true },
+      { source: '/checkout/success',    destination: '/access', permanent: true },
       { source: '/cc-submit',    destination: '/dataset',     permanent: true },
       { source: '/coverage',     destination: '/eu-coverage', permanent: true },
       { source: '/digest',       destination: '/pulse',       permanent: true },

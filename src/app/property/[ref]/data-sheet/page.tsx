@@ -229,7 +229,7 @@ function Section({ title, icon: Icon, paid = false, locked = false, children }: 
           style={{ background: 'linear-gradient(180deg, hsl(var(--av-background) / 0.0) 0%, hsl(var(--av-background) / 0.85) 50%, hsl(var(--av-background) / 0.95) 100%)' }}
         >
           <Link
-            href="/pro"
+            href="/access"
             className="inline-flex items-center gap-2 rounded-sm px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold"
             style={{ background: 'var(--av-gradient-gold)' }}
           >
@@ -299,7 +299,7 @@ export default async function DataSheetPage({ params }: { params: Promise<{ ref:
               </Link>
               {!isPaid && (
                 <Link
-                  href="/pro"
+                  href="/access"
                   className="inline-flex items-center gap-2 rounded-sm px-4 py-2 font-mono text-[10px] uppercase tracking-[0.22em] text-primary-foreground shadow-gold"
                   style={{ background: 'var(--av-gradient-gold)' }}
                 >
@@ -501,7 +501,7 @@ export default async function DataSheetPage({ params }: { params: Promise<{ ref:
             <p className="text-sm text-foreground/70 font-light max-w-[700px] mx-auto">
               Free tier shows identity, location, basic specs, and current listing data. Climate, transaction history,
               regulatory, market context, and valuation history require institutional access.{' '}
-              <Link href="/pro" className="text-primary hover:text-gold underline">Unlock</Link>
+              <Link href="/access" className="text-primary hover:text-gold underline">Request access</Link>
               {' '}or{' '}
               <Link href="/institutional" className="text-primary hover:text-gold underline">contact for licensing</Link>.
             </p>

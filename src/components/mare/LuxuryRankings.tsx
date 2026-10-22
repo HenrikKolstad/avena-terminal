@@ -191,9 +191,9 @@ export function LuxuryRankings({
           >
             <span className="flex items-center gap-3">
               <Lock className="h-3.5 w-3.5" />
-              Unlock {(total - freeVisible).toLocaleString()} more ranked properties · PRO €79/mo
+              {(total - freeVisible).toLocaleString()} more ranked properties · Request access
             </span>
-            <span className="font-mono text-[9px] uppercase tracking-[0.3em] opacity-85">Full ranked book · price history · yield tools</span>
+            <span className="font-mono text-[9px] uppercase tracking-[0.3em] opacity-85">Institutional access for lenders, funds and agents</span>
           </button>
         )}
 

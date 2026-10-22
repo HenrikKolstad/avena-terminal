@@ -61,7 +61,7 @@ export default function LoginPage() {
                   style={{ background: isPaid ? 'hsl(var(--av-primary))' : 'hsl(var(--av-border-strong))' }}
                 />
                 <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-                  {isPaid ? 'PRO · Unlimited' : 'Free tier'}
+                  {isPaid ? 'Full access' : 'Free tier'}
                 </span>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">

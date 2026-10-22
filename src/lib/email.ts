@@ -111,7 +111,7 @@ export async function sendWelcomeEmail(email: string): Promise<{ sent: boolean; 
         <!-- Footer -->
         <tr><td style="padding:24px 40px 32px;border-top:1px solid #3B3530;text-align:center;">
           <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:#6B625A;">
-            Avena Terminal · €79/mo · Cancel anytime
+            Avena Terminal · Cancel anytime
           </div>
           <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:#6B625A;margin-top:4px;">
             Manage billing via Stripe link in your receipt
@@ -143,7 +143,7 @@ export async function sendWelcomeEmail(email: string): Promise<{ sent: boolean; 
     '',
     `Need help? Reply to this email or ${contactUrl}.`,
     '',
-    'Avena Terminal · €79/mo · Cancel anytime',
+    'Avena Terminal · Cancel anytime',
   ].join('\n');
 
   try {

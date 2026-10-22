@@ -66,7 +66,7 @@ const CHANGELOG: ChangelogEntry[] = [
     summary: '75+ pages migrated from dark terminal to warm luxe editorial (serif headings, gold accents, mono data). Every click on Avena now matches the new design system. Shared Nav + Footer components. ProModal popup replaces full /pro page.',
     links: [
       { label: 'Homepage', href: '/' },
-      { label: 'PRO', href: '/pro' },
+      { label: 'Access', href: '/access' },
     ],
   },
   {
