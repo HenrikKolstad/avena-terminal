@@ -11,6 +11,7 @@ import type { Metadata } from 'next';
 import EngineClient from './EngineClient';
 import { getEngineDeltas, getEngineTruth } from '@/lib/deltas';
 import { getEngineStats } from '@/lib/deals';
+import { collectHealth } from '@/lib/health';
 
 // Revalidate hourly: the Delta Layer (live price moves + sell-outs from the
 // moat tables) refreshes after each nightly capture instead of being frozen
@@ -77,12 +78,19 @@ const jsonLd = {
 };
 
 export default async function EnginePage() {
-  const [deltas, truth] = await Promise.all([getEngineDeltas(), getEngineTruth()]);
+  const [deltas, truth, report] = await Promise.all([getEngineDeltas(), getEngineTruth(), collectHealth()]);
   const stats = getEngineStats();
+  // Only the verdict crosses to the client; the per-check detail lives at /api/health.
+  const health = {
+    status: report.status,
+    label: report.label,
+    checkedAt: report.checked_at,
+    summary: report.checks.filter((c) => c.status !== 'ok').map((c) => `${c.label}: ${c.detail}`).join(' · '),
+  };
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <EngineClient deltas={deltas} stats={stats} truth={truth} />
+      <EngineClient deltas={deltas} stats={stats} truth={truth} health={health} />
     </>
   );
 }

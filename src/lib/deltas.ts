@@ -12,6 +12,8 @@
 import { supabase } from './supabase';
 import { supabaseAdmin } from './supabase-admin';
 import { getAllProperties } from './properties';
+import { summarizePulse, rankByCuts, pickShowcase, type MarketPulse, type PriceHistory } from './engine-pulse';
+import { LEDGER_START } from './observations';
 
 export interface PriceMove {
   ref: string;
@@ -34,6 +36,10 @@ export interface EngineDeltas {
   sellouts: Sellout[];
   selloutCount30d: number;
   medianExitPm2: number | null;
+  /** Price cuts captured over the last 7 days; null when the window holds no snapshots. */
+  pulse?: MarketPulse | null;
+  /** One real home's full captured asking-price history; null when none has a cut to show. */
+  showcase?: PriceHistory | null;
 }
 
 const daysAgo = (n: number) => new Date(Date.now() - n * 86_400_000).toISOString().slice(0, 10);
@@ -115,7 +121,14 @@ async function fetchSnapshotWindow(since: string): Promise<SnapRow[]> {
 export async function getRecentPriceMoves(windowDays = 7, limit = 6): Promise<PriceMove[]> {
   if (!supabase) return [];
   try {
-    const rows = await fetchSnapshotWindow(daysAgo(windowDays));
+    return movesFromRows(await fetchSnapshotWindow(daysAgo(windowDays)), limit);
+  } catch {
+    return [];
+  }
+}
+
+/** The move derivation, split out so getEngineDeltas can reuse one window fetch. */
+function movesFromRows(rows: SnapRow[], limit: number): PriceMove[] {
     if (!rows.length) return [];
 
     const byRef = new Map(getAllProperties().filter((p) => p.ref && p.pf > 0).map((p) => [p.ref as string, p]));
@@ -160,9 +173,6 @@ export async function getRecentPriceMoves(windowDays = 7, limit = 6): Promise<Pr
     // Biggest relative moves first — that's what buyers and crawlers care about.
     moves.sort((a, b) => Math.abs((b.to - b.from) / b.from) - Math.abs((a.to - a.from) / a.from));
     return moves.slice(0, limit);
-  } catch {
-    return [];
-  }
 }
 
 /** Listings that left the feed (sold/withdrawn) in the last `windowDays` days. */
@@ -196,9 +206,77 @@ export async function getRecentSellouts(windowDays = 30, limit = 6): Promise<{ s
   }
 }
 
+/**
+ * The full captured price history of one real home, chosen as the one with
+ * the most cuts in price_snapshots.
+ *
+ * A full-table scan to rank every ref is not affordable at request time
+ * (~130k rows, ~130 PostgREST pages), so the candidates are the homes that
+ * took a cut in this week's window — already in memory — and the winner is
+ * picked from their COMPLETE histories, fetched in one bounded query. If no
+ * home took a cut this week the showcase is null and the page says so; it
+ * never falls back to an example series.
+ */
+async function getShowcaseHistory(windowRows: SnapRow[]): Promise<PriceHistory | null> {
+  if (!supabase || !windowRows.length) return null;
+  try {
+    const byRef = new Map(getAllProperties().filter((p) => p.ref).map((p) => [p.ref as string, p]));
+    const candidates = rankByCuts(windowRows, (ref) => byRef.has(ref), 8);
+    if (!candidates.length) return null;
+
+    const PAGE = 1000;
+    const rows: SnapRow[] = [];
+    for (let page = 0; page < 5; page++) {
+      const { data, error } = await supabase
+        .from('price_snapshots')
+        .select('ref, price, snapshot_date')
+        .in('ref', candidates)
+        .order('ref', { ascending: true })
+        .order('snapshot_date', { ascending: true })
+        .range(page * PAGE, page * PAGE + PAGE - 1);
+      if (error) throw error;
+      if (!data?.length) break;
+      rows.push(...(data as SnapRow[]));
+      if (data.length < PAGE) break;
+    }
+    const best = pickShowcase(rows);
+    if (!best) return null;
+    const p = byRef.get(best.ref);
+    return {
+      ref: best.ref,
+      town: (p?.l || '').split(',')[0].trim(),
+      title: p?.p ? String(p.p) : null,
+      points: best.points,
+      cuts: best.cuts,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function getEngineDeltas(): Promise<EngineDeltas> {
-  const [moves, sold] = await Promise.all([getRecentPriceMoves(), getRecentSellouts()]);
-  return { moves, sellouts: sold.sellouts, selloutCount30d: sold.count, medianExitPm2: sold.medianExitPm2 };
+  // One 7-day snapshot window feeds the moves table, the pulse line and the
+  // showcase candidates, instead of paging the same rows three times.
+  const windowPromise: Promise<SnapRow[]> = supabase
+    ? fetchSnapshotWindow(daysAgo(7)).catch(() => [])
+    : Promise.resolve([]);
+  const [rows, sold] = await Promise.all([windowPromise, getRecentSellouts()]);
+
+  let moves: PriceMove[] = [];
+  try { moves = movesFromRows(rows, 6); } catch { moves = []; }
+
+  const live = new Set(getAllProperties().filter((p) => p.ref && p.pf > 0).map((p) => p.ref as string));
+  const pulse = rows.length ? summarizePulse(rows, (ref) => live.has(ref)) : null;
+  const showcase = await getShowcaseHistory(rows);
+
+  return {
+    moves,
+    sellouts: sold.sellouts,
+    selloutCount30d: sold.count,
+    medianExitPm2: sold.medianExitPm2,
+    pulse,
+    showcase,
+  };
 }
 
 /**
@@ -353,7 +431,12 @@ export async function getEngineTruth(): Promise<EngineTruth> {
       dailyUpdates = count ?? null;
     }
     if (oldest?.[0]?.snapshot_date && newest?.[0]?.snapshot_date) {
-      observationSince = String(oldest[0].snapshot_date);
+      // Clamp to the start of the DAILY ledger. score_history holds rows from
+      // 2026-04-25, but until 2026-08-05 they were a frozen snapshot rewritten
+      // nightly (see the audit note above), so "since Apr 2026" under the
+      // label "daily observations" overstated the record by three months.
+      const first = String(oldest[0].snapshot_date);
+      observationSince = first < LEDGER_START ? LEDGER_START : first;
       observationDays = Math.round(
         (Date.parse(String(newest[0].snapshot_date)) - Date.parse(observationSince)) / 86_400_000,
       ) + 1;

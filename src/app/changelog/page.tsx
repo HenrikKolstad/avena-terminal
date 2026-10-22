@@ -46,7 +46,7 @@ const CHANGELOG: ChangelogEntry[] = [
     tag: 'AGENT',
     summary: '14th agent. Runs daily at 04:00 UTC. Harvests questions from /api/aeo/questions, user queue, and Agent Shadow\'s citation gaps. Drafts atomic-fact answers via Claude Sonnet. Publishes to Supabase generated_answers. IndexNow-pinged within minutes.',
     links: [
-      { label: 'Swarm', href: '/swarm' },
+      { label: 'Live operations', href: '/live' },
       { label: 'Status API', href: '/api/prometheus/status' },
     ],
   },
@@ -84,7 +84,7 @@ const CHANGELOG: ChangelogEntry[] = [
     tag: 'AGENT',
     summary: '13th agent. Daily 03:00 UTC. Queries Perplexity with 50 tracked property questions, finds gaps where Avena isn\'t cited but competitors are, generates citation-optimized content via Claude.',
     links: [
-      { label: 'Swarm', href: '/swarm' },
+      { label: 'Live operations', href: '/live' },
     ],
   },
   {
