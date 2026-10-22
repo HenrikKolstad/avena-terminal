@@ -12,7 +12,7 @@
  * the outbound pipeline is alive.
  */
 
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
 const DOMAIN = 'https://avenaterminal.com';
 

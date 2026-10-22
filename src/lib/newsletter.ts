@@ -18,7 +18,7 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 import { Resend } from 'resend';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { getAllProperties, getUniqueCostas, avg } from '@/lib/properties';
 
 const MODEL = 'claude-sonnet-4-5';

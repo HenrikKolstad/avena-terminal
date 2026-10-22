@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,7 +16,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'storage unavailable' }, { status: 503 });
     }
 
-    await supabase
+    // Until 2026-10-22 this used the anon client, which RLS rejects, and the
+    // error was ignored — every signup returned ok:true and stored nothing.
+    const { error } = await supabase
       .from('newsletter_subscribers')
       .upsert(
         {
@@ -29,6 +31,11 @@ export async function POST(req: NextRequest) {
         },
         { onConflict: 'email' }
       );
+
+    if (error) {
+      console.error('[newsletter/subscribe] upsert failed:', error.message);
+      return NextResponse.json({ error: 'could not save subscription' }, { status: 500 });
+    }
 
     return NextResponse.json({ ok: true });
   } catch (e) {
