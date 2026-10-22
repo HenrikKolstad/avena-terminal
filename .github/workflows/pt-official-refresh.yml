@@ -39,6 +39,13 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
+      - name: Reachability probe (diagnostic only)
+        continue-on-error: true
+        run: |
+          for u in https://www.ine.pt/ https://bpstat.bportugal.pt/data/v1/domains/39/; do
+            curl -sS -o /dev/null -w "$u -> %{http_code} %{remote_ip} %{time_total}s\n" --max-time 60 "$u" || echo "$u -> curl failed"
+          done
+
       - name: Build the Portugal layer from INE + Banco de Portugal
         run: npx tsx scripts/ingest-pt-official.ts
 

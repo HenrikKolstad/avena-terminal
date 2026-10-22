@@ -17,6 +17,7 @@
 
 import { writeFileSync, readFileSync, existsSync } from 'fs';
 import { join } from 'path';
+import { execFileSync } from 'child_process';
 import {
   INE_API, BPSTAT_API, INE_PRICE_INDICATOR, INE_LICENSING_INDICATOR,
   parseIneIndicator, parseBpstatSingleSeries, buildPortugalLayer,
@@ -33,6 +34,22 @@ const BDP = {
   rateFixed: { id: 12710738, path: '/domains/186/datasets/6a83b46f5911d1b086a2891746a2fd9a/' },
 } as const;
 
+function describe(e: unknown): string {
+  const err = e as Error & { cause?: { code?: string; message?: string } };
+  const cause = err?.cause ? ` (cause: ${err.cause.code ?? ''} ${err.cause.message ?? ''})` : '';
+  return `${err?.message ?? String(e)}${cause}`;
+}
+
+/** curl uses the runner's system CA store and its own TLS stack, which is a
+ *  genuinely independent path when Node's fetch is refused at the socket. */
+function curlJson(url: string): unknown {
+  const out = execFileSync('curl', ['-sS', '--fail', '--max-time', '240', '--retry', '2', '-A', UA, '-H', 'Accept: application/json', url], {
+    maxBuffer: 256 * 1024 * 1024,
+    encoding: 'utf8',
+  });
+  return JSON.parse(out);
+}
+
 async function getJson(url: string, attempts = 4): Promise<unknown> {
   let last: unknown;
   for (let i = 1; i <= attempts; i++) {
@@ -42,11 +59,18 @@ async function getJson(url: string, attempts = 4): Promise<unknown> {
       return await res.json();
     } catch (e) {
       last = e;
-      console.warn(`  attempt ${i}/${attempts} failed for ${url.split('?')[0]}: ${(e as Error).message}`);
-      if (i < attempts) await new Promise((r) => setTimeout(r, 5000 * i));
+      console.warn(`  fetch attempt ${i}/${attempts} failed for ${url.split('?')[0]}: ${describe(e)}`);
+      try {
+        const j = curlJson(url);
+        console.warn('  curl fallback succeeded');
+        return j;
+      } catch (c) {
+        console.warn(`  curl fallback failed: ${describe(c).split('\n')[0]}`);
+      }
+      if (i < attempts) await new Promise((r) => setTimeout(r, 10_000 * i));
     }
   }
-  throw new Error(`fetch failed after ${attempts} attempts: ${url} — ${(last as Error)?.message}`);
+  throw new Error(`fetch failed after ${attempts} attempts: ${url} — ${describe(last)}`);
 }
 
 const ine = (code: string) => `${INE_API}?op=2&varcd=${code}&Dim1=T&lang=EN`;
