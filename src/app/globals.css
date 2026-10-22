@@ -588,10 +588,7 @@ body > * {
 }
 
 /* ─── Policy Engine — print stylesheet ────────────────────────────────────
-   Critical path only: hide nav/footer/buttons, keep section breaks tidy.
-   The brief page (/policy-engine/brief) ships its own inline <style> for
-   richer print formatting — duplicating it here breaks Turbopack's CSS
-   parser when combined with Tailwind v4 print:* utility escapes. */
+   Critical path only: hide nav/footer/buttons, keep section breaks tidy. */
 @media print {
   .avena-v2 button,
   .avena-v2 input[type="range"],

@@ -86,6 +86,9 @@ const nextConfig: NextConfig = {
       { source: '/pricing',             destination: '/access', permanent: true },
       { source: '/upgrade',             destination: '/access', permanent: true },
       { source: '/checkout/success',    destination: '/access', permanent: true },
+      // /policy-engine/brief 500'd (server component with an onClick) and its
+      // copy carried unverifiable claims; retired 2026-10-22 → live engine.
+      { source: '/policy-engine/brief', destination: '/policy-engine', permanent: true },
       { source: '/cc-submit',    destination: '/dataset',     permanent: true },
       { source: '/coverage',     destination: '/eu-coverage', permanent: true },
       { source: '/digest',       destination: '/pulse',       permanent: true },
@@ -216,8 +219,8 @@ const nextConfig: NextConfig = {
       // Intelligence facets stay LIVE as deep pages — /intelligence is the
       // hub that links into them. Redirecting them away orphaned the rich
       // surfaces (the 10-prediction ledger, the live regulatory feed, the
-      // interactive Policy Engine, the institutional one-pager at
-      // /policy-engine/brief used in cold outreach).
+      // interactive Policy Engine). The old /policy-engine/brief one-pager
+      // is retired — see the redirect above.
 
       // Fold into /standards — spec sub-pages only; the live registry
       // (/avn-id) and the rich APON page stay reachable.
