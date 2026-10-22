@@ -18,12 +18,10 @@ export const metadata: Metadata = {
 };
 
 const TECH_PARTNERS = [
-  { name: 'Casa Sapo',          url: 'https://www.casasapo.pt', role: 'Listing Data Provider (Portugal)',      description: 'Portuguese property listing RSS feed integrated with Avena APIP standard.' },
-  { name: 'Immobiliare.it',     url: 'https://www.immobiliare.it', role: 'Listing Data Provider (Italy)',      description: 'Italian property listings via public API integration.' },
   { name: 'European Central Bank', url: 'https://www.ecb.europa.eu', role: 'Macro Data Provider', description: 'Policy rate, Euribor, EUR exchange rates pulled live via ECB SDW JSON API.' },
   { name: 'Eurostat',           url: 'https://ec.europa.eu/eurostat', role: 'Macro Data Provider', description: 'HICP inflation, unemployment, GDP for all 27 EU member states via JSON-stat 2.0.' },
   { name: 'Wise',               url: 'https://wise.com',       role: 'FX Infrastructure',                     description: 'Mid-market rates for multi-currency price display (GBP, NOK, SEK, USD).' },
-  { name: 'Stripe',             url: 'https://stripe.com',     role: 'Payment Infrastructure',                description: 'PCI-compliant subscription billing for Avena PRO and API tiers.' },
+  { name: 'Stripe',             url: 'https://stripe.com',     role: 'Payment Infrastructure',                description: 'PCI-compliant billing for institutional data access.' },
   { name: 'Resend',             url: 'https://resend.com',     role: 'Transactional Email',                   description: 'Partner approval emails, deal alerts, newsletter delivery.' },
 ];
 
