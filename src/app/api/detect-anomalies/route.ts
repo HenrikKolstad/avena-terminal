@@ -1,6 +1,6 @@
 import { bearerCronAuth, withCronLog } from '@/lib/cron-log';
 import { detectAnomalies } from '@/lib/anomaly';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { pingIndexNow } from '@/lib/indexnow';
 
 export const maxDuration = 60;

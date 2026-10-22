@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { getAllProperties, getUniqueTowns, getUniqueCostas, avg } from '@/lib/properties';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { NextResponse } from 'next/server';
 
 export const maxDuration = 60;
