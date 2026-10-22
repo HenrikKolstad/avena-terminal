@@ -1462,7 +1462,7 @@ async function main() {
     generated_at: nowIso,
     generated_date: today,
     listings: unique.length,
-    source: 'redsp',
+    source: 'avena-capture',
     ...fingerprint,
     source_first_seen_at: carriedForward ? prevSeen : nowIso,
     ...contentFingerprint,

@@ -51,7 +51,7 @@ repointed at the live feed.
 ## How the capture works
 
 ```
-RedSP XML feed (~98 MB)
+Listing XML feed (~98 MB)
   └─ parse-feed.js          fingerprints the payload, refuses a short read
       └─ public/data.json   the book, committed nightly
           ├─ pricing-history cron   → price_snapshots   (per ref, per day)
@@ -150,7 +150,7 @@ deployments do not, so a green production build proves nothing about a branch.
 
 ```bash
 npm install
-export FEED_URL="<RedSP feed URL>"   # required; no fallback, throws if unset
+export FEED_URL="<listing feed URL>"   # required; no fallback, throws if unset
 node parse-feed.js                   # refresh public/data.json
 npm run dev
 ```

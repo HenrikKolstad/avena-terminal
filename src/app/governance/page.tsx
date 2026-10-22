@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 // ─── Data — every number on this page is sourced from a real file or table ─
 
 const sources = [
-  { layer: 'Property listings',         provider: 'RedSP / MLS Costa (Spain), Casa Sapo (Portugal), Immobiliare.it (Italy)', cadence: 'Daily 03:00 UTC', format: 'XML / JSON',     coverage: 'ES, PT, IT live · 24 EU markets in partner pipeline' },
+  { layer: 'Property listings',         provider: 'Avena daily capture of agency-marketed new-build listings (Spain), Casa Sapo (Portugal), Immobiliare.it (Italy)', cadence: 'Daily 03:00 UTC', format: 'XML / JSON',     coverage: 'ES, PT, IT live · 24 EU markets in partner pipeline' },
   { layer: 'Cadastral references',      provider: 'Catastro Spain (OVCCoordenadas)',                                          cadence: 'On listing ingest',  format: 'SOAP/XML',     coverage: 'ES coastal regions; Navarra + País Vasco use foral cadastres (not covered)' },
   { layer: 'Building footprints',       provider: 'OpenStreetMap (Overpass API)',                                              cadence: 'On listing ingest',  format: 'Overpass JSON', coverage: 'EU-wide' },
   { layer: 'Macro indicators (rates)',  provider: 'European Central Bank Statistical Data Warehouse',                          cadence: 'Daily 06:00 UTC', format: 'SDMX-ML / JSON', coverage: 'Policy rate, Euribor 3M/12M, EUR/GBP/NOK/SEK/USD reference rates' },

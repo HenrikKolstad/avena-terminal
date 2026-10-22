@@ -59,7 +59,7 @@ const LEGACY_META: FeedMetaShape = {
   generated_at: '2026-10-10T11:07:31.616Z',
   generated_date: '2026-10-10',
   listings: 2039,
-  source: 'redsp',
+  source: 'avena-capture',
 };
 
 /** 2026-10-09 11:50 — the first run that saw payload A. */
@@ -925,7 +925,7 @@ const real1013 = runReporter({
   generated_at: daysAgoAt(1, 13, 3, 26),
   generated_date: 'fixture',
   listings: 2039,
-  source: 'redsp',
+  source: 'avena-capture',
   source_sha256: 'c938e76ec551c059cbd9a5b046f2b23f00d9afdf905e1d466038ab10354315dd',
   source_bytes: 97_801_134,
   source_first_seen_at: daysAgoAt(1, 7, 55, 59),
@@ -959,7 +959,7 @@ const payloadRedRun = runReporter({
   generated_at: minutesAgo(1),
   generated_date: 'fixture',
   listings: 2039,
-  source: 'redsp',
+  source: 'avena-capture',
   source_sha256: 'd'.repeat(64),
   source_bytes: 97_801_134,
   source_first_seen_at: daysAgoAt(3, 7, 0),
@@ -977,7 +977,7 @@ const originRedRun = runReporter({
   generated_at: minutesAgo(1),
   generated_date: 'fixture',
   listings: 2039,
-  source: 'redsp',
+  source: 'avena-capture',
   source_sha256: 'f'.repeat(64),
   source_bytes: 97_801_134,
   source_first_seen_at: minutesAgo(1),
@@ -986,7 +986,7 @@ const originRedRun = runReporter({
   content_first_seen_at: minutesAgo(2),
   origin_last_modified: new Date(Date.now() - 3 * DAY_MS).toUTCString(),
 });
-ok('a frozen origin is titled as RedSP not rebuilding', /::error title=RedSP itself reports no rebuild for 3 days::/.test(originRedRun.out));
+ok('a frozen origin is titled as the upstream origin not rebuilding', /::error title=Upstream origin itself reports no rebuild for 3 days::/.test(originRedRun.out));
 ok('…and exits 1 even though the map moved today and the payload is fresh', originRedRun.code === 1);
 ok('…attributing the cause to the origin', /cause=origin/.test(originRedRun.out));
 
@@ -997,7 +997,7 @@ const healthyRun = runReporter({
   generated_at: minutesAgo(1),
   generated_date: 'fixture',
   listings: 2039,
-  source: 'redsp',
+  source: 'avena-capture',
   source_sha256: 'b'.repeat(64),
   source_bytes: 97_801_138,
   source_first_seen_at: minutesAgo(1),

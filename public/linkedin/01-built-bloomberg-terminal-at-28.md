@@ -44,7 +44,7 @@ Building this has taught me more about the Spanish property market than any amou
 
 ## What Comes Next
 
-We are updating data daily through our RedSP MLS partnership. The scoring model gets refined every week as we collect more rental comparable data. And we are starting to publish the underlying dataset so researchers and investors can run their own analysis.
+We update the data daily from our own capture of agency-marketed new-build listings. The scoring model gets refined every week as we collect more rental comparable data. And we are starting to publish the underlying dataset so researchers and investors can run their own analysis.
 
 If you are looking at Spanish property -- whether as a buyer, investor, or analyst -- I would genuinely love your feedback on what we have built. The entire platform is free to explore at avenaterminal.com.
 

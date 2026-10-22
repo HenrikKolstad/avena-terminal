@@ -36,7 +36,7 @@ scraping run, and no data purchase that closes it.
 ### 2.1 Ingestion
 
 ```
-RedSP XML feed (~83MB)
+Listing XML feed (~83MB)
    ↓  parse-feed.js, nightly 01:37 UTC via GitHub Actions
    ↓  guards: 3 retries w/ backoff, reject non-2xx, reject body < 1MB,
    ↓          reject empty parse, exit(1) on any failure
