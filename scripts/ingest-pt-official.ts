@@ -43,7 +43,7 @@ function describe(e: unknown): string {
 /** curl uses the runner's system CA store and its own TLS stack, which is a
  *  genuinely independent path when Node's fetch is refused at the socket. */
 function curlJson(url: string): unknown {
-  const out = execFileSync('curl', ['-sS', '--fail', '--max-time', '240', '--retry', '2', '-A', UA, '-H', 'Accept: application/json', url], {
+  const out = execFileSync('curl', ['-sS', '--fail', '--max-time', '900', '--retry', '2', '-A', UA, '-H', 'Accept: application/json', url], {
     maxBuffer: 256 * 1024 * 1024,
     encoding: 'utf8',
   });
