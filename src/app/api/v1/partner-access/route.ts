@@ -1,10 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
+import { isAdminRequest } from '@/lib/admin-auth';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
+  // Partner keys are unlimited. They are issued by an admin only, never to
+  // whoever posts the form.
+  if (!isAdminRequest(request.headers.get('authorization'))) {
+    return NextResponse.json(
+      {
+        error: 'Partner access is granted manually.',
+        message: 'Email henrik@xaviaestate.com with your use case and we will get back to you.',
+      },
+      { status: 401, headers: { 'Cache-Control': 'no-store' } },
+    );
+  }
+
   let body: {
     partner_name?: string;
     use_case?: string;
