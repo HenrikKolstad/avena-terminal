@@ -472,16 +472,6 @@ export function PolicyEngineClient({ levers, countries }: { levers: Lever[]; cou
                 <ExportButton onClick={copyShareLink} icon={shareCopied ? <Check className="h-3 w-3" /> : <Link2 className="h-3 w-3" />}>
                   {shareCopied ? 'Link copied · forward to a colleague' : 'Copy share link'}
                 </ExportButton>
-                <a
-                  href={`/policy-engine/brief?lever=${lever.id}&country=${country.code}&r=${region}&m=${magnitude}&fb=${fbShareMin.toFixed(2)}&t=${timeframe}`}
-                  target="_blank"
-                  rel="noopener"
-                  className="w-full inline-flex items-center justify-between rounded-sm border px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-foreground hover:text-primary hover:border-primary transition-colors"
-                  style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}
-                >
-                  <span className="inline-flex items-center gap-2"><FileDown className="h-3 w-3" /> Open institutional brief</span>
-                  <ChevronRight className="h-3 w-3 text-muted-foreground" />
-                </a>
                 <ExportButton onClick={() => window.print()} icon={<FileDown className="h-3 w-3" />}>Save engine view as PDF</ExportButton>
                 <ExportButton onClick={() => { navigator.clipboard.writeText(JSON.stringify(output, null, 2)).catch(() => null); }} icon={<Copy className="h-3 w-3" />}>Copy raw JSON</ExportButton>
                 <button onClick={() => setShowInquire(s => !s)} className="w-full inline-flex items-center justify-between rounded-sm px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-primary-foreground transition-transform hover:-translate-y-0.5" style={{ background: 'var(--av-gradient-gold)' }}>
