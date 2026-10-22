@@ -35,6 +35,12 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_CORPUS_SIZE: String(corpusSizeAtBuildTime()),
   },
+  // The Sell-Through Monitor reads its project map with fs at request time;
+  // make sure the file ships inside those two functions.
+  outputFileTracingIncludes: {
+    '/api/v1/lender/monitor': ['./data/ref-dev-map.json', './public/data.json'],
+    '/lender/report': ['./data/ref-dev-map.json', './public/data.json'],
+  },
   // Explicit Turbopack workspace root — silences "inferred workspace root"
   // warning that fires when a lockfile exists up-tree (e.g. in HOME dir).
   turbopack: {
