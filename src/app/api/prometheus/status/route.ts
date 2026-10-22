@@ -17,7 +17,7 @@
  * Status now derives from `cron_logs`, cadence from `vercel.json`, and an
  * unread count is null beside a recorded error rather than a 0.
  */
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import vercelConfig from '../../../../../vercel.json';
 import {
   collectErrors,

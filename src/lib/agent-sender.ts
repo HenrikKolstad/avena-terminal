@@ -8,7 +8,7 @@
  */
 
 import { Resend } from 'resend';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { buildAvpOffer, type AvpOfferDocument } from '@/lib/avp-offer';
 
 /**

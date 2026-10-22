@@ -10,7 +10,7 @@
  * citable evidence about regional risk transmission.
  */
 
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { getAllProperties } from '@/lib/properties';
 import { chunkedWrite, emptyChunkWriteResult, type ChunkWriteResult } from './chunked-write';
 

@@ -19,7 +19,7 @@
  *   https://www.ine.es/dyngs/DataLab/manual.html?cid=63
  */
 
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { chunkedWrite, emptyChunkWriteResult, splitOnUpsertKey, type ChunkWriteResult } from './chunked-write';
 import { fetchWithRetry, shareBudget, type FetchBudget } from './resilient-fetch';
 

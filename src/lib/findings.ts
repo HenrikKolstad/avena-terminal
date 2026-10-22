@@ -5,7 +5,7 @@
  * Powers /eu-takeover real-time counters + activity feed.
  */
 
-import { supabase } from './supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
 export interface Finding {
   agent_id: string;

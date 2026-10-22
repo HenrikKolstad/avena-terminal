@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { currentHitRate, loadMeasurements } from '@/lib/citation-measure';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
