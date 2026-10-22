@@ -3857,8 +3857,8 @@
     "last_price_eur": 279000,
     "last_pm2_eur": 4292,
     "last_seen_date": "2026-10-21",
-    "relisted_on": null,
-    "still_listed": false
+    "relisted_on": "2026-10-22",
+    "still_listed": true
   },
   {
     "avn_id": "N9811",
@@ -4065,6 +4065,19 @@
     "last_price_eur": 618700,
     "last_pm2_eur": 7932,
     "last_seen_date": "2026-10-21",
+    "relisted_on": null,
+    "still_listed": false
+  },
+  {
+    "avn_id": "N7949",
+    "town": "Torrevieja",
+    "region": "cb-south",
+    "type": "Villa",
+    "beds": 3,
+    "built_m2": 95,
+    "last_price_eur": 424000,
+    "last_pm2_eur": 4463,
+    "last_seen_date": "2026-10-22",
     "relisted_on": null,
     "still_listed": false
   }

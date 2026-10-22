@@ -295,7 +295,7 @@ N9532,Baños y Mendigo,costa-calida,Villa,4,167,744000,4455,2026-10-21,,false
 N9653,Estepona,costa-del-sol,Apartment,2,91,599000,6582,2026-10-21,,false
 N9685,San Miguel de Salinas,cb-south,Bungalow,3,75,284900,3799,2026-10-21,,false
 N9708,Torrevieja,cb-south,Apartment,2,61,265000,4344,2026-10-21,,false
-N9766,San Pedro del Pinatar,costa-calida,Bungalow,2,65,279000,4292,2026-10-21,,false
+N9766,San Pedro del Pinatar,costa-calida,Bungalow,2,65,279000,4292,2026-10-21,2026-10-22,true
 N9811,Mazarron,costa-calida,Villa,3,69,309900,4491,2026-10-21,,false
 N9887,Guardamar del Segura,cb-south,Apartment,3,80,334000,4175,2026-10-21,,false
 N9888,Guardamar del Segura,cb-south,Apartment,2,65,332500,5115,2026-10-21,,false
@@ -312,3 +312,4 @@ SP1275,Fuengirola,costa-del-sol,Apartment,3,100,795000,7950,2026-10-21,,false
 SP1635,Fuengirola,costa-del-sol,Townhouse,3,133,995000,7481,2026-10-21,,false
 SP1654,Marbella,costa-del-sol,Townhouse,3,143,1395275,9757,2026-10-21,,false
 SP1782,Mijas,costa-del-sol,Apartment,2,78,618700,7932,2026-10-21,,false
+N7949,Torrevieja,cb-south,Villa,3,95,424000,4463,2026-10-22,,false
