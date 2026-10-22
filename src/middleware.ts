@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isAdminRequest, presentedSecret, safeEqual } from '@/lib/admin-auth';
 
 /**
  * Crawler ledger (O-18) — observation only, nothing more.
@@ -80,7 +81,59 @@ function classify(ua: string): string | null {
 // because its path has no file extension.
 const ASSET = /\.(?:png|jpe?g|webp|avif|ico|css|js|map|woff2?|ttf|svg|txt)$/i;
 
+/**
+ * Admin gate (2026-10-22). /admin pages and /api/admin routes are checked on
+ * the SERVER before any page or payload is produced. Before this, the /admin
+ * pages were "gated" by a client-side email check, and /admin/outreach shipped
+ * every outreach email in the RSC payload to anyone who opened it.
+ *
+ * Pages: HTTP Basic auth, any username, password = ADMIN_TOKEN.
+ * API:   Bearer ADMIN_TOKEN (or Basic), or the CRON_SECRET bearer / the
+ *        x-avena-admin-secret header used by existing cron/seed callers.
+ * ADMIN_TOKEN unset → nobody gets in (fail closed).
+ */
+const ADMIN_PAGE = /^\/admin(?:\/|$)/;
+const ADMIN_API = /^\/api\/admin(?:\/|$)/;
+
+function cronOrSeedSecretOk(req: NextRequest): boolean {
+  const cron = process.env.CRON_SECRET;
+  const presented = [presentedSecret(req.headers.get('authorization')), req.headers.get('x-avena-admin-secret')];
+  const accepted = [cron, process.env.ADMIN_TOKEN, process.env.ADMIN_SECRET].filter(
+    (v): v is string => typeof v === 'string' && v.length >= 16,
+  );
+  return presented.some((p) => !!p && accepted.some((a) => safeEqual(p, a)));
+}
+
+function adminGate(req: NextRequest, path: string): NextResponse {
+  const auth = req.headers.get('authorization');
+  if (ADMIN_API.test(path)) {
+    if (isAdminRequest(auth) || cronOrSeedSecretOk(req)) return NextResponse.next();
+    return NextResponse.json({ ok: false, error: 'unauthorized' }, {
+      status: 401,
+      headers: { 'cache-control': 'no-store' },
+    });
+  }
+  if (isAdminRequest(auth)) {
+    const res = NextResponse.next();
+    res.headers.set('cache-control', 'private, no-store');
+    res.headers.set('x-robots-tag', 'noindex, nofollow');
+    return res;
+  }
+  return new NextResponse('Authentication required.', {
+    status: 401,
+    headers: {
+      'www-authenticate': 'Basic realm="Avena Admin", charset="UTF-8"',
+      'cache-control': 'no-store',
+      'x-robots-tag': 'noindex, nofollow',
+      'content-type': 'text/plain; charset=utf-8',
+    },
+  });
+}
+
 export function middleware(req: NextRequest) {
+  const adminPath = req.nextUrl.pathname;
+  if (ADMIN_PAGE.test(adminPath) || ADMIN_API.test(adminPath)) return adminGate(req, adminPath);
+
   try {
     if (process.env.CRAWLER_LEDGER_DISABLED === '1') return NextResponse.next();
 
