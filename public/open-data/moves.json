@@ -7760,6 +7760,16 @@
     "type": "Villa"
   },
   {
+    "avn_id": "N8566",
+    "date": "2026-10-23",
+    "prev_date": "2026-10-22",
+    "prev_price_eur": 429900,
+    "new_price_eur": 399900,
+    "change_pct": -6.98,
+    "town": "San Miguel de Salinas",
+    "type": "Apartment"
+  },
+  {
     "avn_id": "N8931",
     "date": "2026-10-23",
     "prev_date": "2026-10-22",

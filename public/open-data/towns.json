@@ -26,14 +26,14 @@
   {
     "town": "Torrevieja",
     "costa": "Costa Blanca South",
-    "n_listings": 111,
-    "median_price_eur": 305000,
-    "median_pm2_eur": 4983,
-    "p25_pm2_eur": 4166,
-    "p75_pm2_eur": 5694,
+    "n_listings": 118,
+    "median_price_eur": 308500,
+    "median_pm2_eur": 5084,
+    "p25_pm2_eur": 4325,
+    "p75_pm2_eur": 5818,
     "median_built_m2": 62,
     "villa_share_pct": 24,
-    "median_beach_km": 0.6
+    "median_beach_km": 0.5
   },
   {
     "town": "Fuengirola",

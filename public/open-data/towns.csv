@@ -1,7 +1,7 @@
 town,costa,n_listings,median_price_eur,median_pm2_eur,p25_pm2_eur,p75_pm2_eur,median_built_m2,villa_share_pct,median_beach_km
 Estepona,Costa del Sol,226,730000,6793,5467,9000,103,13,1.2
 Mijas,Costa del Sol,190,565000,6636,5504,8294,86,17,2
-Torrevieja,Costa Blanca South,111,305000,4983,4166,5694,62,24,0.6
+Torrevieja,Costa Blanca South,118,308500,5084,4325,5818,62,24,0.5
 Fuengirola,Costa del Sol,100,722500,7510,6295,9701,89,13,1.5
 Pilar de La Horadada,Costa Blanca South,90,369700,5071,4348,5859,77,69,2
 Marbella,Costa del Sol,84,1015500,8203,6528,12117,117,30,2.1
