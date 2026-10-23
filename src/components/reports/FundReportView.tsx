@@ -2,8 +2,8 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { PrintButton } from '@/components/reports/PrintButton';
 import type { InstitutionalSample } from '@/lib/institutional-load';
-import type { AbsorptionRow, Bucket, GroupRow, PairedSlice } from '@/lib/fund-report';
-import { MIN_TOWN_ABSORPTION, MIN_TOWN_N } from '@/lib/fund-report';
+import type { AbsorptionRow, Bucket, GroupRow, LedgerTape, PairedSlice, PipelineRow } from '@/lib/fund-report';
+import { MIN_TOWN_ABSORPTION, MIN_TOWN_N, rate } from '@/lib/fund-report';
 import { fmtCount, fmtEur, fmtNum, fmtPct, fmtPoints, fmtSignedPct } from '@/lib/report-format';
 
 function Eyebrow({ children }: { children: ReactNode }) {
@@ -72,8 +72,14 @@ export function FundReportView({
   data: InstitutionalSample;
   printableHref?: string;
 }) {
-  const { book, history, absorption, model, coverage, issues } = data;
+  const { book, pipeline, tape, history, absorption, model, coverage, issues } = data;
   const line = history ? sparkline(history.samples.map((d) => d.medianPm2)) : null;
+  const freshness: { label: string; value: string }[] = [
+    { label: 'Report generated', value: `${data.generatedAt.slice(0, 16).replace('T', ' ')} UTC` },
+  ];
+  if (coverage.feedUpdated) freshness.push({ label: 'Asking book', value: coverage.feedUpdated });
+  if (coverage.snapshotMax) freshness.push({ label: 'Latest price snapshot', value: coverage.snapshotMax });
+  if (tape) freshness.push({ label: 'Observation ledger', value: `${tape.firstDate} to ${tape.lastDate}` });
 
   return (
     <article id="fund-report-root" className="print-root">
@@ -86,8 +92,9 @@ export function FundReportView({
             <span className="italic text-gold">as observed</span>.
           </h1>
           <p className="max-w-2xl text-base sm:text-lg text-muted-foreground font-light leading-relaxed">
-            A specimen of the cross-section and the short history an institutional reader can actually be shown today.
-            Every figure is computed from the live book or from stored snapshots. Where a series does not exist, the section says so.
+            A specimen of the cross-section and the short history an institutional reader can actually be shown today:
+            the coastal book by region and town, the delivery pipeline, asking-price changes, and feed exits.
+            Every figure is computed from the live book or from stored observations. Where a series does not exist, the section says so.
           </p>
           <p className="mt-4 max-w-2xl text-sm text-muted-foreground leading-relaxed">
             This is not a valuation, not a registered-sale index, and not a performance record.
@@ -101,12 +108,21 @@ export function FundReportView({
             <Link href="/track-record" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-gold">
               Score track record
             </Link>
+            <Link href="/research/builder-stock-signal" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-gold">
+              Homebuilder stock test
+            </Link>
+            <Link href="/access" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-gold">
+              Pricing on request
+            </Link>
           </div>
-          <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-            Generated {data.generatedAt.slice(0, 16).replace('T', ' ')} UTC
-            {coverage.feedUpdated ? ` · Feed book stamped ${coverage.feedUpdated}` : ''}
-            {coverage.snapshotMax ? ` · Latest snapshot ${coverage.snapshotMax}` : ''}
-          </p>
+          <dl className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {freshness.map((item) => (
+              <div key={item.label}>
+                <dt className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">{item.label}</dt>
+                <dd className="mt-1 font-mono text-sm text-foreground tabular">{item.value}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
 
@@ -163,12 +179,65 @@ export function FundReportView({
         </div>
       </section>
 
+      {pipeline ? (
+        <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+          <div className="mx-auto max-w-[1100px] px-5 sm:px-12 py-12">
+            <h2 className="font-serif text-3xl font-light text-foreground mb-2">Supply pipeline</h2>
+            <p className="mb-6 max-w-3xl text-sm text-muted-foreground leading-relaxed">
+              Delivery status and completion quarter are the values stored on each listing in the current asking book
+              {coverage.feedUpdated ? ` (${coverage.feedUpdated})` : ''}.
+              A project is the development reference on the listing. The capture does not name the developer, so this is not a developer league table.
+              Completion quarter is the date stored on the listing, not a verified construction certificate.
+            </p>
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-px overflow-hidden rounded-sm border mb-8" style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-border) / 0.6)' }}>
+              <Stat label="Listings" value={fmtCount(pipeline.listings)} />
+              <Stat label="Projects" value={fmtCount(pipeline.projects)} note="Distinct development references" />
+              <Stat label="Completion quarters" value={fmtCount(pipeline.byQuarter.length)} note={pipeline.byQuarter.length ? `${pipeline.byQuarter[0].label} to ${pipeline.byQuarter[pipeline.byQuarter.length - 1].label}` : undefined} />
+            </div>
+            {pipeline.byStatus.reduce((sum, row) => sum + row.projects, 0) > pipeline.projects
+              || pipeline.byQuarter.reduce((sum, row) => sum + row.projects, 0) > pipeline.projects ? (
+              <p className="mb-6 max-w-3xl text-sm text-muted-foreground leading-relaxed">
+                A development reference with listings in more than one row is counted in each of those rows. The project total above counts each reference once.
+              </p>
+            ) : null}
+            {pipeline.byStatus.length ? (
+              <>
+                <h3 className="mb-3 font-serif text-2xl font-light text-foreground">By delivery status</h3>
+                <PipelineBlock rows={pipeline.byStatus} name="Status" total={pipeline.listings} />
+                {pipeline.statusUnspecified > 0 ? (
+                  <p className="mt-3 text-sm text-muted-foreground">{fmtCount(pipeline.statusUnspecified)} listings have no delivery status and are left out of the rows above.</p>
+                ) : null}
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground">No listing has a delivery status.</p>
+            )}
+            {pipeline.byQuarter.length ? (
+              <>
+                <h3 className="mt-10 mb-3 font-serif text-2xl font-light text-foreground">By completion quarter</h3>
+                <PipelineBlock rows={pipeline.byQuarter} name="Quarter" total={pipeline.listings} />
+                {pipeline.quarterUnspecified > 0 ? (
+                  <p className="mt-3 text-sm text-muted-foreground">{fmtCount(pipeline.quarterUnspecified)} listings have no completion quarter in YYYY-Q form and are left out of the rows above.</p>
+                ) : null}
+              </>
+            ) : (
+              <p className="mt-6 text-sm text-muted-foreground">No listing carries a completion quarter.</p>
+            )}
+          </div>
+        </section>
+      ) : null}
+
       <section className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
         <div className="mx-auto max-w-[1100px] px-5 sm:px-12 py-12">
           <h2 className="font-serif text-3xl font-light text-foreground mb-2">Price levels and trend</h2>
-          {!history ? (
+          {!history && !tape ? (
             <p className="text-sm text-muted-foreground">Price history is unavailable. The coverage note below says why.</p>
-          ) : (
+          ) : null}
+          {!history && tape ? (
+            <p className="mb-6 max-w-3xl text-sm text-muted-foreground leading-relaxed">
+              The same-ref paired change is unavailable. The coverage note below says why. The published daily tape is shown on its own.
+            </p>
+          ) : null}
+          {history ? (
             <>
               <p className="mb-6 max-w-3xl text-sm text-muted-foreground leading-relaxed">
                 Ground truth is <span className="font-mono">price_snapshots</span> from {history.firstDate} to {history.lastDate}
@@ -227,7 +296,8 @@ export function FundReportView({
               <p className="mb-4 text-sm text-muted-foreground">Towns with at least {MIN_TOWN_ABSORPTION} listings present on both days. {fmtCount(history.townsOmitted)} towns are below that bar.</p>
               {history.byTown.length ? <PairedTable rows={history.byTown} name="Town" /> : <p className="text-sm text-muted-foreground">No town reached the paired-sample bar.</p>}
             </>
-          )}
+          ) : null}
+          {tape ? <TapeBlock tape={tape} /> : null}
         </div>
       </section>
 
@@ -319,6 +389,7 @@ export function FundReportView({
             <p>
               The published formula note is at <Link href="/methodology" className="text-primary hover:text-gold">/methodology</Link>.
               The score comparison against later prices is at <Link href="/track-record" className="text-primary hover:text-gold">/track-record</Link>.
+              A pre-specified test of this coastal series against later returns of listed Spanish homebuilder stocks is at <Link href="/research/builder-stock-signal" className="text-primary hover:text-gold">/research/builder-stock-signal</Link>. That page states its own sample and result. This report does not repeat the test.
             </p>
           </div>
         </div>
@@ -336,7 +407,143 @@ export function FundReportView({
           </dl>
         </div>
       </section>
+
+      <section className="border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+        <div className="mx-auto max-w-[1100px] px-5 sm:px-12 py-12">
+          <h2 className="font-serif text-3xl font-light text-foreground mb-3">Institutional access</h2>
+          <p className="max-w-2xl text-sm text-muted-foreground leading-relaxed">
+            This page is the public specimen. Access for lenders, funds and other institutions is arranged directly.
+          </p>
+          <p className="mt-4">
+            <Link href="/access" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-gold">
+              Pricing on request
+            </Link>
+          </p>
+        </div>
+      </section>
     </article>
+  );
+}
+
+function PipelineBlock({ rows, name, total }: { rows: PipelineRow[]; name: string; total: number }) {
+  return (
+    <>
+      <div className="space-y-3 lg:hidden policy-print-hide">
+        {rows.map((row) => (
+          <div key={row.key} className="rounded-sm border p-4" style={{ borderColor: 'hsl(var(--av-border) / 0.6)' }}>
+            <div className="font-serif text-2xl font-light text-foreground">{row.label}</div>
+            <dl className="mt-3 grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Listings</dt>
+                <dd className="mt-1 font-mono tabular text-foreground">{fmtCount(row.n)}</dd>
+              </div>
+              <div>
+                <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Share</dt>
+                <dd className="mt-1 font-mono tabular text-foreground">{fmtPct(rate(row.n, total), 1)}</dd>
+              </div>
+              <div>
+                <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Projects</dt>
+                <dd className="mt-1 font-mono tabular text-foreground">{fmtCount(row.projects)}</dd>
+              </div>
+              <div>
+                <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Median price</dt>
+                <dd className="mt-1 font-mono tabular text-foreground">{fmtEur(row.medianPrice)}</dd>
+              </div>
+              <div>
+                <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Median €/m²</dt>
+                <dd className="mt-1 font-mono tabular text-foreground">{fmtEur(row.medianPm2)}</dd>
+              </div>
+            </dl>
+          </div>
+        ))}
+      </div>
+      <div className="hidden lg:block print-show">
+        <PipelineTable rows={rows} name={name} total={total} />
+      </div>
+    </>
+  );
+}
+
+function PipelineTable({ rows, name, total }: { rows: PipelineRow[]; name: string; total: number }) {
+  return (
+    <TableWrap>
+      <thead>
+        <tr>
+          <Th>{name}</Th>
+          <Th align="right">Listings</Th>
+          <Th align="right">Share</Th>
+          <Th align="right">Projects</Th>
+          <Th align="right">Median price</Th>
+          <Th align="right">Median €/m²</Th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row) => (
+          <tr key={row.key} className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.35)' }}>
+            <Td>{row.label}</Td>
+            <Td align="right">{fmtCount(row.n)}</Td>
+            <Td align="right">{fmtPct(rate(row.n, total), 1)}</Td>
+            <Td align="right">{fmtCount(row.projects)}</Td>
+            <Td align="right">{fmtEur(row.medianPrice)}</Td>
+            <Td align="right">{fmtEur(row.medianPm2)}</Td>
+          </tr>
+        ))}
+      </tbody>
+    </TableWrap>
+  );
+}
+
+function TapeBlock({ tape }: { tape: LedgerTape }) {
+  return (
+    <div className={tape.observedDays ? 'mt-10' : ''}>
+      <h3 className="mb-3 font-serif text-2xl font-light text-foreground">Published daily tape</h3>
+      <p className="mb-6 max-w-3xl text-sm text-muted-foreground leading-relaxed">
+        Each row is one observed day in the published movement ledger, {tape.firstDate} to {tape.lastDate}
+        {' '}({fmtCount(tape.observedDays)} days, {fmtCount(tape.spanDays)} calendar days).
+        An increase or a reduction is a listing whose asking price changed from the previous observation.
+        A delisting is a listing that left the book. It is not a registered sale.
+        Totals add every observed day. The table shows sampled days.
+      </p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-px overflow-hidden rounded-sm border mb-8" style={{ borderColor: 'hsl(var(--av-border) / 0.6)', background: 'hsl(var(--av-border) / 0.6)' }}>
+        <Stat label="Asking-price increases" value={fmtCount(tape.increases)} />
+        <Stat label="Asking-price reductions" value={fmtCount(tape.reductions)} />
+        <Stat label="Delistings" value={fmtCount(tape.delistings)} note="Listings that left the book" />
+        <Stat label="Relistings" value={fmtCount(tape.relistings)} />
+      </div>
+      {tape.missing.length > 0 ? (
+        <ul className="mb-6 text-sm text-muted-foreground space-y-1">
+          {tape.missing.map((gap) => (
+            <li key={gap.start}>No observation from {gap.start} through {gap.end} ({fmtCount(gap.missingDays)} days).</li>
+          ))}
+        </ul>
+      ) : null}
+      <TableWrap>
+        <thead>
+          <tr>
+            <Th>Date</Th>
+            <Th align="right">Listings</Th>
+            <Th align="right">Increases</Th>
+            <Th align="right">Reductions</Th>
+            <Th align="right">Median absolute move</Th>
+            <Th align="right">Delistings</Th>
+            <Th align="right">Relistings</Th>
+          </tr>
+        </thead>
+        <tbody>
+          {tape.samples.map((day) => (
+            <tr key={day.date} className="border-b" style={{ borderColor: 'hsl(var(--av-border) / 0.35)' }}>
+              <Td>{day.date}</Td>
+              <Td align="right">{fmtCount(day.listings)}</Td>
+              <Td align="right">{fmtCount(day.increases)}</Td>
+              <Td align="right">{fmtCount(day.reductions)}</Td>
+              <Td align="right">{fmtPoints(day.medianAbsMovePct, 2)}</Td>
+              <Td align="right">{fmtCount(day.delistings)}</Td>
+              <Td align="right">{fmtCount(day.relistings)}</Td>
+            </tr>
+          ))}
+        </tbody>
+      </TableWrap>
+    </div>
   );
 }
 

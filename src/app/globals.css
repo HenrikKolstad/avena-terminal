@@ -531,6 +531,7 @@ body > * {
   .print-root section { page-break-inside: auto; }
   .print-root tr { page-break-inside: avoid; }
   .print-table { display: block !important; }
+  .print-show { display: block !important; }
   @page { margin: 18mm 16mm; size: A4; }
 }
 
