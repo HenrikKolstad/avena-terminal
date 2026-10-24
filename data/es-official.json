@@ -1,0 +1,456 @@
+{
+  "status": "ready",
+  "generated_at": "2026-10-24T23:22:40.336Z",
+  "retrieved_at": "2026-10-24",
+  "provinces_in_corpus": [
+    "Málaga",
+    "Alicante",
+    "Murcia",
+    "Granada",
+    "Cádiz"
+  ],
+  "coverage_note": "INE publishes the new-build versus second-hand housing price index by autonomous community, not by province. Each province below is shown with its community's index. The appraised €/m² is provincial free-market housing of all ages. Murcia has no separate province row in the ministry file; the figure is the uniprovincial community total, which is the same territory, and it is not the national total.",
+  "omissions": [
+    {
+      "source": "Colegio de Registradores",
+      "url": "https://opendata.registradores.org/dataset/es/dataset/compraventas-de-inmuebles-uso-residencial-por-provincia",
+      "ingested": false,
+      "reason": "The open-data portal returned HTTP 403 to the refresh job. No registradores series was ingested."
+    },
+    {
+      "source": "Consejo General del Notariado",
+      "url": null,
+      "ingested": false,
+      "reason": "No keyless CSV or JSON endpoint is read by this job. Notarial prices are not in this file."
+    }
+  ],
+  "sources": {
+    "ine_ipv": {
+      "publisher": "Instituto Nacional de Estadística",
+      "table_id": "79563",
+      "table_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+      "api": "https://servicios.ine.es/wstempus/js/ES/DATOS_SERIE/{cod}",
+      "licence_note": "Reuse with attribution. Fuente: INE.",
+      "latest_period": "2026-Q2"
+    },
+    "mivau_appraisal": {
+      "publisher": "Ministerio de Vivienda y Agenda Urbana",
+      "dataset_id": "VDP006_01",
+      "url": "https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP006_01.csv",
+      "catalog_url": "https://datos.gob.es/es/catalogo/e05233601-valor-tasado-de-la-vivienda",
+      "licence": "CC BY 4.0",
+      "regime": "Libre",
+      "latest_period": "2026-Q2",
+      "definition": "Mean appraised value per m² of free-market housing (vivienda libre), all ages. Not a new-build price and not a transaction price."
+    }
+  },
+  "national": {
+    "appraisal": {
+      "value": 2355,
+      "unit": "eur_per_m2",
+      "unit_label": "€/m²",
+      "period": "2026-Q2",
+      "series_id": "VDP006_01:libre:ccaa=Total nacional",
+      "source": "mivau",
+      "source_name": "Ministerio de Vivienda y Agenda Urbana",
+      "source_url": "https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP006_01.csv",
+      "retrieved_at": "2026-10-24",
+      "provisional": null
+    },
+    "ine_new_index": {
+      "value": 107.228,
+      "unit": "index",
+      "unit_label": "Índice",
+      "period": "2026-Q2",
+      "series_id": "IPV1613",
+      "source": "ine_es",
+      "source_name": "Instituto Nacional de Estadística",
+      "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+      "retrieved_at": "2026-10-24",
+      "provisional": false
+    },
+    "ine_new_yoy_pct": {
+      "value": 7.4,
+      "unit": "pct",
+      "unit_label": "Tasas",
+      "period": "2026-Q2",
+      "series_id": "IPV1615",
+      "source": "ine_es",
+      "source_name": "Instituto Nacional de Estadística",
+      "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+      "retrieved_at": "2026-10-24",
+      "provisional": false
+    },
+    "ine_existing_index": {
+      "value": 111.682,
+      "unit": "index",
+      "unit_label": "Índice",
+      "period": "2026-Q2",
+      "series_id": "IPV1618",
+      "source": "ine_es",
+      "source_name": "Instituto Nacional de Estadística",
+      "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+      "retrieved_at": "2026-10-24",
+      "provisional": false
+    },
+    "ine_existing_yoy_pct": {
+      "value": 12.9,
+      "unit": "pct",
+      "unit_label": "Tasas",
+      "period": "2026-Q2",
+      "series_id": "IPV1620",
+      "source": "ine_es",
+      "source_name": "Instituto Nacional de Estadística",
+      "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+      "retrieved_at": "2026-10-24",
+      "provisional": false
+    }
+  },
+  "provinces": [
+    {
+      "name": "Málaga",
+      "slug": "malaga",
+      "key": "malaga",
+      "cpro": "29",
+      "nuts3": "ES617",
+      "ccaa": "Andalucía",
+      "ine_territory_equals_province": false,
+      "appraisal": {
+        "value": 3083.5,
+        "unit": "eur_per_m2",
+        "unit_label": "€/m²",
+        "period": "2026-Q2",
+        "series_id": "VDP006_01:libre:cpro=29",
+        "source": "mivau",
+        "source_name": "Ministerio de Vivienda y Agenda Urbana",
+        "source_url": "https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP006_01.csv",
+        "retrieved_at": "2026-10-24",
+        "provisional": null
+      },
+      "ine_new_index": {
+        "value": 108.261,
+        "unit": "index",
+        "unit_label": "Índice",
+        "period": "2026-Q2",
+        "series_id": "IPV1628",
+        "source": "ine_es",
+        "source_name": "Instituto Nacional de Estadística",
+        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+        "retrieved_at": "2026-10-24",
+        "provisional": false
+      },
+      "ine_new_yoy_pct": {
+        "value": 9,
+        "unit": "pct",
+        "unit_label": "Tasas",
+        "period": "2026-Q2",
+        "series_id": "IPV1630",
+        "source": "ine_es",
+        "source_name": "Instituto Nacional de Estadística",
+        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+        "retrieved_at": "2026-10-24",
+        "provisional": false
+      },
+      "ine_existing_index": {
+        "value": 111.393,
+        "unit": "index",
+        "unit_label": "Índice",
+        "period": "2026-Q2",
+        "series_id": "IPV1633",
+        "source": "ine_es",
+        "source_name": "Instituto Nacional de Estadística",
+        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+        "retrieved_at": "2026-10-24",
+        "provisional": false
+      },
+      "ine_existing_yoy_pct": {
+        "value": 12.5,
+        "unit": "pct",
+        "unit_label": "Tasas",
+        "period": "2026-Q2",
+        "series_id": "IPV1635",
+        "source": "ine_es",
+        "source_name": "Instituto Nacional de Estadística",
+        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+        "retrieved_at": "2026-10-24",
+        "provisional": false
+      }
+    },
+    {
+      "name": "Alicante",
+      "slug": "alicante",
+      "key": "alicante",
+      "cpro": "03",
+      "nuts3": "ES521",
+      "ccaa": "Comunitat Valenciana",
+      "ine_territory_equals_province": false,
+      "appraisal": {
+        "value": 2020.7,
+        "unit": "eur_per_m2",
+        "unit_label": "€/m²",
+        "period": "2026-Q2",
+        "series_id": "VDP006_01:libre:cpro=03",
+        "source": "mivau",
+        "source_name": "Ministerio de Vivienda y Agenda Urbana",
+        "source_url": "https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP006_01.csv",
+        "retrieved_at": "2026-10-24",
+        "provisional": null
+      },
+      "ine_new_index": {
+        "value": 107.364,
+        "unit": "index",
+        "unit_label": "Índice",
+        "period": "2026-Q2",
+        "series_id": "IPV1397",
+        "source": "ine_es",
+        "source_name": "Instituto Nacional de Estadística",
+        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+        "retrieved_at": "2026-10-24",
+        "provisional": false
+      },
+      "ine_new_yoy_pct": {
+        "value": 8.5,
+        "unit": "pct",
+        "unit_label": "Tasas",
+        "period": "2026-Q2",
+        "series_id": "IPV1399",
+        "source": "ine_es",
+        "source_name": "Instituto Nacional de Estadística",
+        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+        "retrieved_at": "2026-10-24",
+        "provisional": false
+      },
+      "ine_existing_index": {
+        "value": 112.408,
+        "unit": "index",
+        "unit_label": "Índice",
+        "period": "2026-Q2",
+        "series_id": "IPV1402",
+        "source": "ine_es",
+        "source_name": "Instituto Nacional de Estadística",
+        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+        "retrieved_at": "2026-10-24",
+        "provisional": false
+      },
+      "ine_existing_yoy_pct": {
+        "value": 13.8,
+        "unit": "pct",
+        "unit_label": "Tasas",
+        "period": "2026-Q2",
+        "series_id": "IPV1404",
+        "source": "ine_es",
+        "source_name": "Instituto Nacional de Estadística",
+        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+        "retrieved_at": "2026-10-24",
+        "provisional": false
+      }
+    },
+    {
+      "name": "Murcia",
+      "slug": "murcia",
+      "key": "murcia",
+      "cpro": "30",
+      "nuts3": "ES620",
+      "ccaa": "Murcia, Región de",
+      "ine_territory_equals_province": true,
+      "appraisal": {
+        "value": 1350.1,
+        "unit": "eur_per_m2",
+        "unit_label": "€/m²",
+        "period": "2026-Q2",
+        "series_id": "VDP006_01:libre:ccaa=Murcia, Region de",
+        "source": "mivau",
+        "source_name": "Ministerio de Vivienda y Agenda Urbana",
+        "source_url": "https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP006_01.csv",
+        "retrieved_at": "2026-10-24",
+        "provisional": null
+      },
+      "ine_new_index": {
+        "value": 111.221,
+        "unit": "index",
+        "unit_label": "Índice",
+        "period": "2026-Q2",
+        "series_id": "IPV1457",
+        "source": "ine_es",
+        "source_name": "Instituto Nacional de Estadística",
+        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+        "retrieved_at": "2026-10-24",
+        "provisional": false
+      },
+      "ine_new_yoy_pct": {
+        "value": 12.6,
+        "unit": "pct",
+        "unit_label": "Tasas",
+        "period": "2026-Q2",
+        "series_id": "IPV1459",
+        "source": "ine_es",
+        "source_name": "Instituto Nacional de Estadística",
+        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+        "retrieved_at": "2026-10-24",
+        "provisional": false
+      },
+      "ine_existing_index": {
+        "value": 113.498,
+        "unit": "index",
+        "unit_label": "Índice",
+        "period": "2026-Q2",
+        "series_id": "IPV1462",
+        "source": "ine_es",
+        "source_name": "Instituto Nacional de Estadística",
+        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+        "retrieved_at": "2026-10-24",
+        "provisional": false
+      },
+      "ine_existing_yoy_pct": {
+        "value": 14.6,
+        "unit": "pct",
+        "unit_label": "Tasas",
+        "period": "2026-Q2",
+        "series_id": "IPV1464",
+        "source": "ine_es",
+        "source_name": "Instituto Nacional de Estadística",
+        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+        "retrieved_at": "2026-10-24",
+        "provisional": false
+      }
+    },
+    {
+      "name": "Granada",
+      "slug": "granada",
+      "key": "granada",
+      "cpro": "18",
+      "nuts3": "ES614",
+      "ccaa": "Andalucía",
+      "ine_territory_equals_province": false,
+      "appraisal": {
+        "value": 1673.3,
+        "unit": "eur_per_m2",
+        "unit_label": "€/m²",
+        "period": "2026-Q2",
+        "series_id": "VDP006_01:libre:cpro=18",
+        "source": "mivau",
+        "source_name": "Ministerio de Vivienda y Agenda Urbana",
+        "source_url": "https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP006_01.csv",
+        "retrieved_at": "2026-10-24",
+        "provisional": null
+      },
+      "ine_new_index": {
+        "value": 108.261,
+        "unit": "index",
+        "unit_label": "Índice",
+        "period": "2026-Q2",
+        "series_id": "IPV1628",
+        "source": "ine_es",
+        "source_name": "Instituto Nacional de Estadística",
+        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+        "retrieved_at": "2026-10-24",
+        "provisional": false
+      },
+      "ine_new_yoy_pct": {
+        "value": 9,
+        "unit": "pct",
+        "unit_label": "Tasas",
+        "period": "2026-Q2",
+        "series_id": "IPV1630",
+        "source": "ine_es",
+        "source_name": "Instituto Nacional de Estadística",
+        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+        "retrieved_at": "2026-10-24",
+        "provisional": false
+      },
+      "ine_existing_index": {
+        "value": 111.393,
+        "unit": "index",
+        "unit_label": "Índice",
+        "period": "2026-Q2",
+        "series_id": "IPV1633",
+        "source": "ine_es",
+        "source_name": "Instituto Nacional de Estadística",
+        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+        "retrieved_at": "2026-10-24",
+        "provisional": false
+      },
+      "ine_existing_yoy_pct": {
+        "value": 12.5,
+        "unit": "pct",
+        "unit_label": "Tasas",
+        "period": "2026-Q2",
+        "series_id": "IPV1635",
+        "source": "ine_es",
+        "source_name": "Instituto Nacional de Estadística",
+        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+        "retrieved_at": "2026-10-24",
+        "provisional": false
+      }
+    },
+    {
+      "name": "Cádiz",
+      "slug": "cadiz",
+      "key": "cadiz",
+      "cpro": "11",
+      "nuts3": "ES612",
+      "ccaa": "Andalucía",
+      "ine_territory_equals_province": false,
+      "appraisal": {
+        "value": 2043,
+        "unit": "eur_per_m2",
+        "unit_label": "€/m²",
+        "period": "2026-Q2",
+        "series_id": "VDP006_01:libre:cpro=11",
+        "source": "mivau",
+        "source_name": "Ministerio de Vivienda y Agenda Urbana",
+        "source_url": "https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP006_01.csv",
+        "retrieved_at": "2026-10-24",
+        "provisional": null
+      },
+      "ine_new_index": {
+        "value": 108.261,
+        "unit": "index",
+        "unit_label": "Índice",
+        "period": "2026-Q2",
+        "series_id": "IPV1628",
+        "source": "ine_es",
+        "source_name": "Instituto Nacional de Estadística",
+        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+        "retrieved_at": "2026-10-24",
+        "provisional": false
+      },
+      "ine_new_yoy_pct": {
+        "value": 9,
+        "unit": "pct",
+        "unit_label": "Tasas",
+        "period": "2026-Q2",
+        "series_id": "IPV1630",
+        "source": "ine_es",
+        "source_name": "Instituto Nacional de Estadística",
+        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+        "retrieved_at": "2026-10-24",
+        "provisional": false
+      },
+      "ine_existing_index": {
+        "value": 111.393,
+        "unit": "index",
+        "unit_label": "Índice",
+        "period": "2026-Q2",
+        "series_id": "IPV1633",
+        "source": "ine_es",
+        "source_name": "Instituto Nacional de Estadística",
+        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+        "retrieved_at": "2026-10-24",
+        "provisional": false
+      },
+      "ine_existing_yoy_pct": {
+        "value": 12.5,
+        "unit": "pct",
+        "unit_label": "Tasas",
+        "period": "2026-Q2",
+        "series_id": "IPV1635",
+        "source": "ine_es",
+        "source_name": "Instituto Nacional de Estadística",
+        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
+        "retrieved_at": "2026-10-24",
+        "provisional": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+name: Spain official statistics refresh
+
+# Rebuilds data/es-official.json (the /spain/official benchmark) from INE
+# Spain's housing price index and the Ministerio de Vivienda y Agenda Urbana
+# appraised-value file. Both are keyless public sources, so this job needs
+# NO secrets. Both series are quarterly; a weekly pull keeps the page within
+# days of a release.
+#
+# If a required source stops parsing, scripts/ingest-es-official.ts exits
+# non-zero and nothing is committed: the previous layer stays live and this
+# run goes red. The Registradores portal is probed and, when it refuses the
+# runner, recorded as not ingested — that refusal does not fail the job.
+# If nothing changed upstream the script leaves the file untouched and the
+# commit step is a no-op.
+
+on:
+  schedule:
+    - cron: '40 4 * * 3'   # Wednesdays 04:40 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: es-official-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Reachability probe (diagnostic only)
+        continue-on-error: true
+        run: |
+          for u in \
+            https://servicios.ine.es/wstempus/js/ES/SERIES_TABLA/79563 \
+            https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP006_01.csv \
+            https://opendata.registradores.org/dataset/es/dataset/compraventas-de-inmuebles-uso-residencial-por-provincia
+          do
+            curl -sS -L -o /dev/null -w "$u -> %{http_code} %{remote_ip} %{time_total}s\n" --max-time 60 -A 'AvenaTerminal-OfficialStats/1.0' "$u" || echo "$u -> curl failed"
+          done
+
+      - name: Build the Spain layer from INE + MIVAU
+        run: npx tsx scripts/ingest-es-official.ts
+
+      - name: Commit refreshed layer (if changed)
+        run: |
+          git config user.name "avena-feed-bot"
+          git config user.email "feed@avenaterminal.com"
+          git add data/es-official.json
+          if git diff --staged --quiet; then
+            echo "No Spain layer changes this week."
+          else
+            git commit -m "chore(es): weekly INE / MIVAU official benchmark refresh [skip ci]"
+            git pull --rebase origin main
+            git push
+            echo "Pushed refreshed Spain layer."
+          fi
