@@ -1,3 +1,4 @@
+import { dropPreUnitChange } from '@/lib/unit-identity';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { supabase } from '@/lib/supabase';
@@ -54,7 +55,7 @@ export function registerLedgerTools(server: McpServer) {
       }
       const { data, error } = await supabase
         .from('price_snapshots')
-        .select('price, snapshot_date')
+        .select('ref, price, snapshot_date, move_status')
         .eq('ref', ref)
         .order('snapshot_date', { ascending: true })
         .limit(2000);
@@ -69,7 +70,9 @@ export function registerLedgerTools(server: McpServer) {
       // Collapse the daily series to distinct-price segments: one entry per
       // price actually held, dated the first day we recorded it.
       const segments: Array<{ price: number; first_observed: string }> = [];
-      for (const row of data) {
+      // A switch to another unit of the same development is not a price
+      // change; history restarts at the current unit (src/lib/unit-identity.ts).
+      for (const row of dropPreUnitChange(data)) {
         const price = Math.round(Number(row.price));
         if (!price || price <= 0) continue;
         if (!segments.length || segments[segments.length - 1].price !== price) {

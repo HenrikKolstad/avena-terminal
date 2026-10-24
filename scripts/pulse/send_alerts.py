@@ -27,6 +27,9 @@ import sys
 import urllib.error
 import urllib.request
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import unit_identity as ui  # noqa: E402
+
 SB_URL = os.environ.get('NEXT_PUBLIC_SUPABASE_URL', '').rstrip('/')
 SB_KEY = os.environ.get('SUPABASE_SERVICE_ROLE_KEY', '')
 RESEND = os.environ.get('RESEND_API_KEY', '')
@@ -81,7 +84,8 @@ def todays_moves():
     rows, page = [], 0
     while True:
         chunk = rest(
-            f'price_snapshots?select=ref,price,snapshot_date'
+            f'price_snapshots?select=ref,price,snapshot_date,pm2,mm2,type,'
+            f'built_m2,plot_m2,beds,baths,img_sig,move_status'
             f'&snapshot_date=gte.{since}&order=ref.asc,snapshot_date.asc'
             f'&limit=1000&offset={page * 1000}')
         rows += chunk
@@ -96,13 +100,19 @@ def todays_moves():
         d = r['snapshot_date'][:10]
         lst = series.setdefault(r['ref'], [])
         if not lst or lst[-1][0] != d:
-            lst.append((d, v))
+            lst.append((d, v, r))
     moves = {}
     for ref, lst in series.items():
         if len(lst) < 2 or lst[-1][0] != str(TODAY):
             continue
         prev, cur = lst[-2][1], lst[-1][1]
-        if cur != prev:
+        # Unit identity: a listing that switched to another unit of the same
+        # development is not a price move (scripts/pulse/unit_identity.py).
+        status = lst[-1][2].get('move_status')
+        if cur != prev and not status:
+            side = lambda x, p: {**{k: x.get(k) for k in ('pm2', 'type', 'built_m2', 'plot_m2', 'beds', 'baths', 'img_sig')}, 'price': p}
+            status = (ui.verdict(side(lst[-2][2], prev), side(lst[-1][2], cur), lst[-1][2].get('mm2')) or ('verified',))[0]
+        if cur != prev and status == ui.COUNTED:
             moves.setdefault(TOWN_OF.get(ref, '?'), []).append(
                 (ref, prev, cur, round((cur - prev) / prev * 100, 1)))
     return moves

@@ -47,7 +47,7 @@ export async function fetchSnapshots(db: SupabaseClient, sinceDate: string): Pro
   const rows = await fetchAll<SnapshotRow>(
     db,
     'price_snapshots',
-    'ref, snapshot_date, price, pm2, town, region, type',
+    'ref, snapshot_date, price, pm2, town, region, type, move_status',
     'snapshot_date',
   );
   // The genuine observation ledger begins 2026-08-05; anything earlier is the

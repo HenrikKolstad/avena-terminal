@@ -9,6 +9,7 @@
  * Supabase client or an empty table can never break a page.
  */
 
+import { dropPreUnitChange } from './unit-identity';
 import { supabase } from './supabase';
 import { supabaseAdmin } from './supabase-admin';
 import { getAllProperties } from './properties';
@@ -48,6 +49,8 @@ interface SnapRow {
   ref: string;
   price: number | null;
   snapshot_date: string;
+  /** verified | unit_changed | unverified — see src/lib/unit-identity.ts. */
+  move_status?: string | null;
 }
 
 /**
@@ -66,7 +69,7 @@ async function fetchSnapshotWindow(since: string): Promise<SnapRow[]> {
   for (let page = 0; page < MAX_PAGES; page++) {
     const { data, error } = await supabase
       .from('price_snapshots')
-      .select('ref, price, snapshot_date')
+      .select('ref, price, snapshot_date, move_status')
       .gte('snapshot_date', since)
       .order('ref', { ascending: true })
       .order('snapshot_date', { ascending: true })
@@ -76,7 +79,9 @@ async function fetchSnapshotWindow(since: string): Promise<SnapRow[]> {
     out.push(...(data as SnapRow[]));
     if (data.length < PAGE) break;
   }
-  return out;
+  // A ref that switched to another unit of the same development is a break
+  // in its series, not a price move: keep only the current unit's rows.
+  return dropPreUnitChange(out);
 }
 
 /**
@@ -229,7 +234,7 @@ async function getShowcaseHistory(windowRows: SnapRow[]): Promise<PriceHistory |
     for (let page = 0; page < 5; page++) {
       const { data, error } = await supabase
         .from('price_snapshots')
-        .select('ref, price, snapshot_date')
+        .select('ref, price, snapshot_date, move_status')
         .in('ref', candidates)
         .order('ref', { ascending: true })
         .order('snapshot_date', { ascending: true })
@@ -239,7 +244,7 @@ async function getShowcaseHistory(windowRows: SnapRow[]): Promise<PriceHistory |
       rows.push(...(data as SnapRow[]));
       if (data.length < PAGE) break;
     }
-    const best = pickShowcase(rows);
+    const best = pickShowcase(dropPreUnitChange(rows));
     if (!best) return null;
     const p = byRef.get(best.ref);
     return {

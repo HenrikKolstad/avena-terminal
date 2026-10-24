@@ -12,6 +12,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { SIZE_TOL, LARGE_MOVE, PM2_BAND, RECUR_DAYS } from '@/lib/unit-identity';
 
 export const dynamic = 'force-static';
 
@@ -36,6 +37,7 @@ const ANCHORS = [
   { id: 'apci',        label: 'APCI' },
   { id: 'counterpart', label: 'Counterpart' },
   { id: 'evolution',   label: 'Evolution' },
+  { id: 'price-moves', label: 'Price moves' },
   { id: 'confidence',  label: 'Confidence' },
   { id: 'limitations', label: 'Limitations' },
   { id: 'citations',   label: 'Citations' },
@@ -93,6 +95,9 @@ export default function MethodologyPage() {
         <Section id="evolution" title="Evolution — published version chain"
           body="Every methodology version Avena has ever shipped: weights, rationale, derivation method, activated_at timestamp, out-of-sample accuracy. Six methodologies versioned today (avena_score, apci, counterpart, avm, score_confidence, regulatory_classifier). Activation requires human sign-off plus statistical significance (p<0.05) on out-of-sample data. Methodology fingerprints (SHA-256 of weights JSON) committed daily to the integrity log."
           link={{ href: '/methodology/evolution', label: 'View the full audit trail →' }} />
+
+        <Section id="price-moves" title="Price moves — unit-identity check"
+          body={`A developer often advertises several units of one building under a single listing reference and changes which unit it shows: the smallest flat one week, the largest the next. Read on price alone, that looks like a large move. So a change in asking price counts as a price move only when it is the same unit: same property type, bedrooms and bathrooms, and built and plot size within ${Math.round(SIZE_TOL * 100)}%. When the specification changed, the row is recorded as "unit re-listed / spec change" and excluded from every move count, tape and report. A move of ${Math.round(LARGE_MOVE * 100)}% or more also needs full specs on both sides, the same photo set, a new €/m² within ${PM2_BAND[0]}–${PM2_BAND[1]}× the area benchmark, and must not return exactly to an asking price the listing showed in the previous ${RECUR_DAYS} days (two units alternating); otherwise it is marked unverified and not counted. Every observation is kept; the verdict is stored alongside it, never by deleting history.`} />
 
         <Section id="confidence" title="Confidence — adversarial residual layer"
           body="Every Avena Score returns alongside a confidence float in [0, 1] and reason codes for low confidence. Confidence derives from a deterministic adversarial heuristic v1: comp sparsity, extreme price/m² vs market median, missing key inputs, edge-case score values. Properties whose adversarial residual exceeds threshold flag for human review. v2 will swap in a trained residual model once labelled out-of-sample resolution mass exceeds 10k samples." />

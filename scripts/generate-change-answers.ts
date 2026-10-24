@@ -34,6 +34,7 @@
  *
  * Run: npx tsx scripts/generate-change-answers.ts [--dry]
  */
+import { dropPreUnitChange } from '../src/lib/unit-identity';
 import { createClient } from '@supabase/supabase-js';
 import { readFileSync } from 'fs';
 import { join } from 'path';
@@ -103,7 +104,7 @@ async function fetchLedger(sinceDays: number): Promise<Ledger> {
   const since = new Date(Date.now() - sinceDays * 86_400_000).toISOString().slice(0, 10);
   const from = since > LEDGER_START ? since : LEDGER_START;
 
-  const rows: Array<{ ref: string; price: number | null; snapshot_date: string }> = [];
+  const rows: Array<{ ref: string; price: number | null; snapshot_date: string; move_status?: string | null }> = [];
   const PAGE = 1000;
   // ~2,000 refs x up to 30 days = ~60k rows, and the book grows. Budget well
   // past that and treat exhausting the budget as a failure: a loop that stops
@@ -114,7 +115,7 @@ async function fetchLedger(sinceDays: number): Promise<Ledger> {
   for (let page = 0; page < MAX_PAGES; page++) {
     const { data, error } = await db
       .from('price_snapshots')
-      .select('ref, price, snapshot_date')
+      .select('ref, price, snapshot_date, move_status')
       .gte('snapshot_date', from)
       .order('ref', { ascending: true })
       .order('snapshot_date', { ascending: true })
@@ -134,7 +135,8 @@ async function fetchLedger(sinceDays: number): Promise<Ledger> {
 
   const series = new Map<string, Array<{ d: string; v: number }>>();
   const dateSet = new Set<string>();
-  for (const r of rows) {
+  // Unit swaps (same ref, different unit) are not price changes.
+  for (const r of dropPreUnitChange(rows)) {
     const v = Math.round(Number(r.price));
     if (!Number.isFinite(v) || v <= 0) continue;
     const d = String(r.snapshot_date).slice(0, 10);

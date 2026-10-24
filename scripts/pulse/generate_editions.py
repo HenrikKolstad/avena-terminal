@@ -39,6 +39,9 @@ import time
 import urllib.request
 import urllib.error
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import unit_identity as ui  # noqa: E402
+
 from reportlab.lib.colors import HexColor
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
@@ -137,19 +140,31 @@ def region_of(town):
 SNAP_REGION = {}
 
 
+# town -> [(ref, from, to, date, pct, prev_date, status, note)] — price changes
+# that are NOT counted: the listing switched unit, or a large move is unverified.
+HELD = {}
+
+
 def fetch_moves():
-    """EVERY price change observed this week, per town, from the snapshots.
+    """EVERY genuine price change observed this week, per town, from the snapshots.
 
     No threshold, no direction filter, no top-N: a move is any change in a
     ref's asking price between consecutive observations where the newer one
     falls inside the week (WEEK_AGO, TODAY]. The older observation may be
     from before the week (baseline), so the first change of the week is never
-    lost. Tuple: (ref, from, to, date, pct, previous_observation_date)."""
+    lost. Tuple: (ref, from, to, date, pct, previous_observation_date).
+
+    UNIT IDENTITY. A change only counts when the ref still describes the same
+    unit (unit_identity.py; stamped per row as price_snapshots.move_status).
+    A developer switching the ref from the smallest flat to the penthouse is
+    not a price move: those land in HELD with the reason, are listed
+    separately in the edition and are never counted."""
     since = WEEK_AGO - dt.timedelta(days=BASELINE_DAYS)
     rows, page = [], 0
     while True:
         chunk = rest(
-            f'price_snapshots?select=ref,price,snapshot_date,town,region'
+            f'price_snapshots?select=ref,price,snapshot_date,town,region,pm2,mm2,type,'
+            f'built_m2,plot_m2,beds,baths,img_sig,move_status,move_note'
             f'&snapshot_date=gte.{since}&order=ref.asc,snapshot_date.asc'
             f'&limit=1000&offset={page * 1000}')
         rows += chunk
@@ -169,18 +184,31 @@ def fetch_moves():
         d = r['snapshot_date'][:10]
         lst = series.setdefault(r['ref'], [])
         if not lst or lst[-1][0] != d:
-            lst.append((d, v))
+            lst.append((d, v, r))
     moves = {}
+    HELD.clear()
     for ref, lst in series.items():
         for i in range(1, len(lst)):
             if lst[i][0] <= str(WEEK_AGO):
                 continue
             if lst[i][1] != lst[i - 1][1]:
                 town = TOWN_OF.get(ref) or SNAP_TOWN.get(ref) or 'Unattributed'
-                moves.setdefault(town, []).append(
-                    (ref, lst[i - 1][1], lst[i][1], lst[i][0],
-                     round((lst[i][1] - lst[i - 1][1]) / lst[i - 1][1] * 100, 1),
-                     lst[i - 1][0]))
+                cur, prev = lst[i][2], lst[i - 1][2]
+                status, note = cur.get('move_status'), cur.get('move_note')
+                if not status:
+                    # Row predates the DB trigger: classify here with the same
+                    # rules. Recurrence only sees the fetched window.
+                    recurs = any(x[1] == lst[i][1] for x in lst[:i - 1]
+                                 if (dt.date.fromisoformat(lst[i][0]) - dt.date.fromisoformat(x[0])).days <= ui.RECUR_DAYS)
+                    side = lambda x, p: {**{k: x.get(k) for k in ('pm2', 'type', 'built_m2', 'plot_m2', 'beds', 'baths', 'img_sig')}, 'price': p}
+                    status, note = ui.verdict(side(prev, lst[i - 1][1]), side(cur, lst[i][1]), cur.get('mm2'), recurs) or ('verified', None)
+                mv = (ref, lst[i - 1][1], lst[i][1], lst[i][0],
+                      round((lst[i][1] - lst[i - 1][1]) / lst[i - 1][1] * 100, 1),
+                      lst[i - 1][0])
+                if status == ui.COUNTED:
+                    moves.setdefault(town, []).append(mv)
+                else:
+                    HELD.setdefault(town, []).append(mv + (status, note or ''))
     return moves
 
 
@@ -397,6 +425,15 @@ def render_edition(path, subscriber_name, towns, moves, delist, all_coverage=Fal
              f'observation, so each change is stated against the last price actually seen.', size=7.5, leading=10,
              color=FAINT)
 
+    all_held = [h for t in towns for h in HELD.get(t, [])]
+    if all_held:
+        state['y'] -= 4
+        n_unit = sum(1 for h in all_held if h[6] == 'unit_changed')
+        para(f'{len(all_held)} further asking-price change(s) are not counted: in {n_unit} the listing switched to a '
+             f'different unit (type, bedrooms, bathrooms, built or plot size changed), and '
+             f'{len(all_held) - n_unit} large jump(s) could not be verified as the same unit. They are listed '
+             f'separately after the full table.', size=7.5, leading=10, color=FAINT)
+
     # ── Full price-change table ────────────────────────────────────────────
     RUN = 'all price changes'
     PX = [M, M + 52, M + 120, M + 190, M + 262, M + 345]
@@ -430,11 +467,43 @@ def render_edition(path, subscriber_name, towns, moves, delist, all_coverage=Fal
                     {4: GOLD if to > f else RED})
             state['y'] -= 6
     if has_big:
-        # Honesty note: a 20%+ overnight jump is usually the listing's
-        # "from" price stepping to the next unit after a sale, or a
-        # relaunch — real market signal, but not a simple repricing.
-        para('‡ Moves of ±20%+ typically reflect a relaunch or unit-mix change (e.g. cheapest unit sold), not a simple repricing.',
+        para(f'‡ Move of ±20% or more. Every counted change passed the unit-identity check: same type, bedrooms and '
+             f'bathrooms, built and plot size within {ui.SIZE_TOL:.0%}; moves of {ui.LARGE_MOVE:.0%}+ also need full specs, '
+             f'the same photo set and a €/m² within {ui.PM2_BAND[0]:g}–{ui.PM2_BAND[1]:g}× the area benchmark.',
              font='Courier', size=6.5, leading=10, color=FAINT)
+
+    # ── Not counted: listing changed unit / unverified ─────────────────────
+    if all_held:
+        RUN = 'not counted'
+        need(120, RUN)
+        state['y'] -= 10
+        eyebrow(f'Not counted as price changes · {len(all_held)}')
+        para('The listing reference stayed the same but the advertised unit did not (a developer re-using one '
+             'listing for several units of a building), or a large jump could not be confirmed as the same unit. '
+             'Shown for transparency; excluded from every count above.', size=8, leading=11)
+        state['y'] -= 4
+        HX = [M, M + 52, M + 112, M + 172, M + 232, M + 275]
+
+        def held_header():
+            row([(HX[0], 'REF'), (HX[1], 'CHANGED'), (HX[2], 'FROM'), (HX[3], 'TO'), (HX[4], 'ASKING Δ'),
+                 (HX[5], 'WHY NOT COUNTED')], {i: FAINT for i in range(6)}, size=6.5, step=12)
+        for rg in region_order:
+            for t in regions[rg]:
+                hl = HELD.get(t, [])
+                if not hl:
+                    continue
+                group_head(rg, t, f'{len(hl)} not counted', RUN)
+                held_header()
+                for ref, f, to, d, pct, pd, status, note in sorted(hl, key=lambda h: (h[3], h[0])):
+                    why = f'{ui.HELD_LABEL.get(status, status)}: {note}' if note else ui.HELD_LABEL.get(status, status)
+                    lines = wrap(why, 'Courier', 7.3, W - M - HX[5])
+                    need(11 * len(lines), RUN, held_header)
+                    ref_link(HX[0], state['y'], ref)
+                    row([(HX[1], d), (HX[2], money(f)), (HX[3], money(to)), (HX[4], f'{pct:+.1f}%'),
+                         (HX[5], lines[0])], {i: FAINT for i in (2, 3, 4)})
+                    for ln in lines[1:]:
+                        row([(HX[5], ln)], {0: FAINT})
+                state['y'] -= 6
 
     # ── New on the market ──────────────────────────────────────────────────
     RUN = 'new on the market'
@@ -514,7 +583,10 @@ def render_edition(path, subscriber_name, towns, moves, delist, all_coverage=Fal
     c.drawString(M, H - 148, 'Reply to this email — a person answers.')
     state['y'] = H - 190
     para('Change your coverage any time by replying. Data: the Avena observation ledger — every Spanish coastal '
-         'new-build observed nightly, with the price history the portals delete.',
+         'new-build observed nightly, with the price history the portals delete. A price change is counted only '
+         'when the listing still describes the same unit — same type, bedrooms, bathrooms, and built and plot '
+         'size within 2% — so a developer switching one listing between units of a building never shows up '
+         'as a price move.',
          size=10, leading=15)
     c.setFillColor(FAINT); c.setFont('Courier', 7)
     c.drawString(M, H - 240, 'AVENA TERMINAL  ·  AVENATERMINAL.COM  ·  HENRIK@AVENATERMINAL.COM  ·  +47 980 71 453')
@@ -535,7 +607,7 @@ def scope_towns(sub, moves, delist):
         return list(sub['towns'])
     # Book towns plus any town that only appears in this week's moves/exits
     # (e.g. a development that left the book mid-week) — nothing is dropped.
-    return sorted(set(BY_TOWN) | set(moves) | set(delist))
+    return sorted(set(BY_TOWN) | set(moves) | set(delist) | set(HELD))
 
 
 def send_edition(sub, pdf_path):
@@ -590,7 +662,9 @@ def main():
         render_edition(pdf_path, sub.get('name') or sub['email'], towns, moves, delist, all_coverage=is_all(sub))
         if DRY:
             n = sum(len(moves.get(t, [])) for t in towns)
-            print(f"pulse [dry]: built {pdf_path} for {sub['email']} ({len(towns)} towns, {n} price changes)")
+            held = sum(len(HELD.get(t, [])) for t in towns)
+            print(f"pulse [dry]: built {pdf_path} for {sub['email']} ({len(towns)} towns, {n} price changes, "
+                  f"{held} not counted)")
             continue
         resend_id = send_edition(sub, pdf_path)
         rest('pulse_deliveries', 'POST', {
