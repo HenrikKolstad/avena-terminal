@@ -6,9 +6,13 @@ name: Market Pulse same-day alerts
 # The script itself skips Mondays (the weekly edition covers that morning)
 # and stays silent for any subscriber whose towns saw no movement.
 
+# PAUSED 2026-10-24 at the owner's request: "i dont need everyday notifs. One
+# day a week should be fine for now." The schedule is removed so only the
+# Monday edition (pulse-weekly.yml) goes out. The script and this workflow are
+# kept intact; to resume daily alerts, restore:
+#   schedule:
+#     - cron: '10 6 * * *'
 on:
-  schedule:
-    - cron: '10 6 * * *'
   workflow_dispatch: {}
 
 permissions:

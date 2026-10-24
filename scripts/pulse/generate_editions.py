@@ -27,7 +27,9 @@ import datetime as dt
 import json
 import os
 import statistics
+import socket
 import sys
+import time
 import urllib.request
 import urllib.error
 
@@ -45,6 +47,25 @@ if not (SB_URL and SB_KEY):
     sys.exit('pulse: Supabase credentials missing — refusing to run.')
 if not RESEND and not DRY:
     sys.exit('pulse: RESEND_API_KEY missing — refusing to run.')
+
+
+def urlopen_retry(req, timeout=60, attempts=4):
+    """urlopen that retries only failures where the request never reached the
+    server (DNS lookup failure / connection refused), so a retried
+    Resend POST cannot double-send. 2026-10-19's edition was lost to a single
+    'Name or service not known'. HTTP errors are not retried."""
+    for i in range(attempts):
+        try:
+            return urllib.request.urlopen(req, timeout=timeout)
+        except urllib.error.HTTPError:
+            raise
+        except urllib.error.URLError as e:
+            pre_send = isinstance(e.reason, (socket.gaierror, ConnectionRefusedError))
+            if not pre_send or i == attempts - 1:
+                raise
+            wait = 15 * (i + 1)
+            print(f'pulse: network error ({e.reason}); retrying in {wait}s')
+            time.sleep(wait)
 
 
 def rest(path, method='GET', body=None):
@@ -65,7 +86,7 @@ def rest(path, method='GET', body=None):
         },
     )
     try:
-        with urllib.request.urlopen(req, timeout=60) as r:
+        with urlopen_retry(req, timeout=60) as r:
             raw = r.read()
             return json.loads(raw) if raw else []
     except urllib.error.HTTPError as e:
@@ -331,7 +352,7 @@ def send_edition(sub, pdf_path):
                  'User-Agent': 'avena-pulse/1.0 (avenaterminal.com)'},
         method='POST')
     try:
-        with urllib.request.urlopen(req, timeout=60) as r:
+        with urlopen_retry(req, timeout=60) as r:
             return json.loads(r.read()).get('id')
     except urllib.error.HTTPError as e:
         sys.exit(f'pulse: Resend {e.code} for {sub["email"]} — {e.read()[:300]!r}')
