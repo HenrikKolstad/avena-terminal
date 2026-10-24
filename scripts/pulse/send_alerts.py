@@ -188,7 +188,11 @@ def main():
         if sub['id'] in already:
             print(f'alerts: {sub["email"]} already alerted {TODAY} — skipping.')
             continue
-        town_moves = {t: moves[t] for t in (sub.get('towns') or []) if t in moves}
+        # towns = {'*'} means every town Avena covers (same rule as the weekly edition).
+        if '*' in (sub.get('towns') or []):
+            town_moves = dict(moves)
+        else:
+            town_moves = {t: moves[t] for t in (sub.get('towns') or []) if t in moves}
         if not town_moves:
             print(f'alerts: {sub["email"]} — no moves in {sub.get("towns")}, staying silent.')
             continue
