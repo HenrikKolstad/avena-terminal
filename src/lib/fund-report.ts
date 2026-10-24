@@ -29,6 +29,12 @@ export interface LiveListing {
   yieldGross: number | null;
   /** Attribution string from the yield model. Null when no yield was computed. */
   yieldSource: string | null;
+  /** Delivery status stored on the listing. Absent on older fixtures. */
+  status?: string | null;
+  /** Completion quarter stored on the listing, when it matches YYYY-Q[1-4]. */
+  completion?: string | null;
+  /** Development reference on the listing. Not a developer name. */
+  project?: string | null;
 }
 
 export interface SnapListing {
@@ -629,5 +635,203 @@ export function buildAbsorption(
     byRegion,
     byTown,
     townsOmitted,
+  };
+}
+
+export interface PipelineRow {
+  key: string;
+  label: string;
+  n: number;
+  projects: number;
+  medianPrice: number | null;
+  medianPm2: number | null;
+}
+
+export interface SupplyPipeline {
+  listings: number;
+  projects: number;
+  byStatus: PipelineRow[];
+  byQuarter: PipelineRow[];
+  statusUnspecified: number;
+  quarterUnspecified: number;
+}
+
+const STATUS_LABEL: Record<string, string> = {
+  'off-plan': 'Off-plan',
+  'under-construction': 'Under construction',
+  ready: 'Ready',
+};
+
+const STATUS_ORDER = ['off-plan', 'under-construction', 'ready'];
+
+const QUARTER = /^(\d{4})-Q([1-4])$/;
+
+function statusKey(row: LiveListing): string | null {
+  const raw = row.status?.trim();
+  return raw ? raw : null;
+}
+
+function quarterKey(row: LiveListing): string | null {
+  const raw = row.completion?.trim() ?? '';
+  return QUARTER.test(raw) ? raw : null;
+}
+
+function pipelineRows(
+  listings: LiveListing[],
+  keyOf: (row: LiveListing) => string | null,
+  labelOf: (key: string) => string,
+  sort: (a: PipelineRow, b: PipelineRow) => number,
+): { rows: PipelineRow[]; unspecified: number } {
+  const map = new Map<string, LiveListing[]>();
+  let unspecified = 0;
+  for (const row of listings) {
+    const key = keyOf(row);
+    if (!key) {
+      unspecified += 1;
+      continue;
+    }
+    const list = map.get(key);
+    if (list) list.push(row);
+    else map.set(key, [row]);
+  }
+  const rows = [...map.entries()].map(([key, list]) => {
+    const projects = new Set<string>();
+    for (const row of list) {
+      const project = row.project?.trim();
+      if (project) projects.add(project);
+    }
+    return {
+      key,
+      label: labelOf(key),
+      n: list.length,
+      projects: projects.size,
+      medianPrice: median(positives(list.map((r) => r.price))),
+      medianPm2: median(positives(list.map((r) => r.pm2))),
+    };
+  });
+  rows.sort(sort);
+  return { rows, unspecified };
+}
+
+/**
+ * Delivery status and completion quarter on the current book.
+ * Returns null when neither field is present, so an empty book is not
+ * published as a pipeline of zeros.
+ */
+export function buildSupplyPipeline(listings: LiveListing[]): SupplyPipeline | null {
+  const projects = new Set<string>();
+  for (const row of listings) {
+    const project = row.project?.trim();
+    if (project) projects.add(project);
+  }
+  const byStatus = pipelineRows(
+    listings,
+    statusKey,
+    (key) => STATUS_LABEL[key] ?? key,
+    (a, b) => {
+      const ia = STATUS_ORDER.indexOf(a.key);
+      const ib = STATUS_ORDER.indexOf(b.key);
+      const ra = ia === -1 ? STATUS_ORDER.length : ia;
+      const rb = ib === -1 ? STATUS_ORDER.length : ib;
+      if (ra !== rb) return ra - rb;
+      return a.label.localeCompare(b.label);
+    },
+  );
+  const byQuarter = pipelineRows(
+    listings,
+    quarterKey,
+    (key) => key,
+    (a, b) => a.key.localeCompare(b.key),
+  );
+  if (!byStatus.rows.length && !byQuarter.rows.length) return null;
+  return {
+    listings: listings.length,
+    projects: projects.size,
+    byStatus: byStatus.rows,
+    byQuarter: byQuarter.rows,
+    statusUnspecified: byStatus.unspecified,
+    quarterUnspecified: byQuarter.unspecified,
+  };
+}
+
+export interface LedgerDay {
+  date: string;
+  listings: number;
+  increases: number;
+  reductions: number;
+  /** Absolute asking-price move, already in percent points. Null when the day had no move. */
+  medianAbsMovePct: number | null;
+  delistings: number;
+  relistings: number;
+}
+
+export interface LedgerTape {
+  firstDate: string;
+  lastDate: string;
+  observedDays: number;
+  spanDays: number;
+  increases: number;
+  reductions: number;
+  delistings: number;
+  relistings: number;
+  missing: MissingRange[];
+  samples: LedgerDay[];
+}
+
+function countField(value: unknown): number | null {
+  if (typeof value !== 'number' || !Number.isInteger(value) || value < 0) return null;
+  return value;
+}
+
+/** One movement-ledger row. A malformed row is null so the caller can refuse a partial sum. */
+export function parseLedgerDay(row: unknown): LedgerDay | null {
+  if (!row || typeof row !== 'object') return null;
+  const record = row as Record<string, unknown>;
+  const date = typeof record.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(record.date) ? record.date : null;
+  if (!date || date < LEDGER_EPOCH) return null;
+  const listings = countField(record.listings_observed);
+  const increases = countField(record.price_increases);
+  const reductions = countField(record.price_reductions);
+  const delistings = countField(record.delistings);
+  const relistings = countField(record.relistings);
+  if (listings == null || increases == null || reductions == null || delistings == null || relistings == null) return null;
+  let medianAbsMovePct: number | null = null;
+  if (record.median_abs_move_pct != null) {
+    const n = record.median_abs_move_pct;
+    if (typeof n !== 'number' || !Number.isFinite(n) || n < 0) return null;
+    medianAbsMovePct = n;
+  }
+  return { date, listings, increases, reductions, medianAbsMovePct, delistings, relistings };
+}
+
+/**
+ * Daily asking-price changes and delistings from the published movement ledger.
+ * Any unreadable row rejects the whole tape. A partial sum would look like a quieter market.
+ */
+export function buildLedgerTape(rows: unknown[]): LedgerTape | null {
+  if (!Array.isArray(rows) || rows.length < 2) return null;
+  const days: LedgerDay[] = [];
+  const seen = new Set<string>();
+  for (const row of rows) {
+    const day = parseLedgerDay(row);
+    if (!day || seen.has(day.date)) return null;
+    seen.add(day.date);
+    days.push(day);
+  }
+  days.sort((a, b) => a.date.localeCompare(b.date));
+  const dates = days.map((day) => day.date);
+  const sampleDates = new Set(selectTrendDates(dates));
+  const sum = (pick: (day: LedgerDay) => number) => days.reduce((total, day) => total + pick(day), 0);
+  return {
+    firstDate: dates[0],
+    lastDate: dates[dates.length - 1],
+    observedDays: days.length,
+    spanDays: daysBetween(dates[0], dates[dates.length - 1]),
+    increases: sum((day) => day.increases),
+    reductions: sum((day) => day.reductions),
+    delistings: sum((day) => day.delistings),
+    relistings: sum((day) => day.relistings),
+    missing: findMissingRanges(dates),
+    samples: days.filter((day) => sampleDates.has(day.date)),
   };
 }

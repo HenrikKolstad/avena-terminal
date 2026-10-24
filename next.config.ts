@@ -76,6 +76,9 @@ const nextConfig: NextConfig = {
         destination: '/',
         permanent: true,
       },
+      // Alias for the public specimen. The page itself stays at /reports/sample.
+      { source: '/sample-report', destination: '/reports/sample', permanent: true },
+      { source: '/sample-report/print', destination: '/reports/sample/print', permanent: true },
       // ─── Consolidation redirects (2026-05-23) ─────────────────────────
       // Pages deleted or merged into canonical surfaces. 301 preserves SEO
       // and prevents 404s from bookmarks / external links / older sitemaps.

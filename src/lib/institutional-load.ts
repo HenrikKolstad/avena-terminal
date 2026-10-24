@@ -16,7 +16,9 @@ import type { Property } from '@/lib/types';
 import {
   buildAbsorption,
   buildBookOverview,
+  buildLedgerTape,
   buildPriceHistory,
+  buildSupplyPipeline,
   calendarDays,
   reconcileObservedDates,
   regionLabels,
@@ -24,10 +26,12 @@ import {
   uniqueDates,
   type Absorption,
   type BookOverview,
+  type LedgerTape,
   type LiveListing,
   type PriceHistory,
   type SnapListing,
   type SoldListing,
+  type SupplyPipeline,
 } from '@/lib/fund-report';
 import { buildTrackRecord, type TrackRecord } from '@/lib/track-record';
 
@@ -73,6 +77,8 @@ export interface LoadIssue {
 export interface InstitutionalSample {
   generatedAt: string;
   book: BookOverview;
+  pipeline: SupplyPipeline | null;
+  tape: LedgerTape | null;
   model: ModelDisclosure | null;
   history: PriceHistory | null;
   absorption: Absorption | null;
@@ -105,6 +111,9 @@ function toLive(p: Property): LiveListing {
     score: p._sc != null && Number.isFinite(p._sc) ? p._sc : null,
     yieldGross: p._yield != null && Number.isFinite(p._yield.gross) ? p._yield.gross : null,
     yieldSource: p._yield?.src ?? null,
+    status: (p.s || '').trim() || null,
+    completion: (p.c || '').trim() || null,
+    project: (p.dev_ref || '').trim() || null,
   };
 }
 
@@ -124,6 +133,16 @@ function readModel(): ModelDisclosure | null {
       computedAt: typeof raw.computed_at === 'string' ? raw.computed_at : null,
       caveats,
     };
+  } catch {
+    return null;
+  }
+}
+
+function readLedgerTape(): LedgerTape | null {
+  try {
+    const raw = JSON.parse(readFileSync(path.join(process.cwd(), 'public', 'open-data', 'movement-ledger.json'), 'utf8')) as unknown;
+    if (!Array.isArray(raw)) return null;
+    return buildLedgerTape(raw);
   } catch {
     return null;
   }
@@ -282,6 +301,20 @@ export async function loadInstitutionalSample(now = new Date()): Promise<Institu
   const live = getAllProperties().map(toLive);
   const book = buildBookOverview(live);
   const labels = regionLabels(live);
+  const pipeline = buildSupplyPipeline(live);
+  if (!pipeline) {
+    issues.push({
+      section: 'pipeline',
+      message: 'The live book has no delivery status or completion quarter, so the supply pipeline is omitted.',
+    });
+  }
+  const tape = readLedgerTape();
+  if (!tape) {
+    issues.push({
+      section: 'tape',
+      message: 'The published movement ledger could not be read as a complete series, so the daily price-change tape is omitted.',
+    });
+  }
   const model = readModel();
   if (!model) {
     issues.push({ section: 'model', message: 'public/model-stats.json could not be read. AVM error figures are omitted.' });
@@ -309,6 +342,8 @@ export async function loadInstitutionalSample(now = new Date()): Promise<Institu
   const empty = (history: PriceHistory | null = null, absorption: Absorption | null = null, track: TrackRecord | null = null): InstitutionalSample => ({
     generatedAt: now.toISOString(),
     book,
+    pipeline,
+    tape,
     model,
     history,
     absorption,
@@ -321,7 +356,7 @@ export async function loadInstitutionalSample(now = new Date()): Promise<Institu
   if (!db) {
     issues.push({
       section: 'history',
-      message: 'No Supabase client is configured. Historical prices, absorption and the score comparison are omitted.',
+      message: 'No Supabase client is configured. The same-ref price comparison, the exit rate and the score comparison are omitted.',
     });
     return empty();
   }

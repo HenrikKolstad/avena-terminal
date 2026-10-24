@@ -9,7 +9,7 @@ export const maxDuration = 60;
 
 export const metadata: Metadata = {
   title: 'Sample fund report | Avena Terminal',
-  description: 'Cross-section and short history of Spanish coastal new-build asking prices, computed from the live book and stored snapshots.',
+  description: 'Public specimen of the Spanish coastal new-build book: regions and towns, delivery pipeline, asking-price changes, and feed exits, computed from the live book and stored observations.',
   alternates: { canonical: 'https://avenaterminal.com/reports/sample' },
 };
 

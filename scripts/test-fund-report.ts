@@ -14,7 +14,9 @@ import {
   MIN_TOWN_N,
   buildAbsorption,
   buildBookOverview,
+  buildLedgerTape,
   buildPriceHistory,
+  buildSupplyPipeline,
   findMissingRanges,
   median,
   quantile,
@@ -24,6 +26,7 @@ import {
   type LiveListing,
   type SnapListing,
 } from '../src/lib/fund-report';
+import { getAllProperties } from '../src/lib/properties';
 import {
   buildTrackRecord,
   claimLevel,
@@ -56,6 +59,9 @@ function live(partial: Partial<LiveListing> & Pick<LiveListing, 'town'>): LiveLi
     score: partial.score === undefined ? 50 : partial.score,
     yieldGross: partial.yieldGross === undefined ? 5 : partial.yieldGross,
     yieldSource: partial.yieldSource === undefined ? 'AirDNA' : partial.yieldSource,
+    status: partial.status ?? null,
+    completion: partial.completion ?? null,
+    project: partial.project ?? null,
   };
 }
 
@@ -187,6 +193,79 @@ console.log('score split — fixed threshold, no stronger claim than illustrativ
   check('a null span is unavailable', claimLevel({ spanDays: null, flagged: 10, rest: 10, pairedFlagged: 10, pairedRest: 10 }) === 'unavailable');
 }
 
+console.log('supply pipeline — omit when the book has no stage, keep unknown labels');
+
+{
+  check('a book with no status and no quarter is not a pipeline', buildSupplyPipeline([live({ town: 'A' })]) === null);
+  const rows = [
+    live({ town: 'A', status: 'ready', completion: '2026-Q4', project: 'P1', price: 100, pm2: 1000 }),
+    live({ town: 'B', status: 'off-plan', completion: '2027-Q1', project: 'P1', price: 300, pm2: 3000 }),
+    live({ town: 'C', status: 'under-construction', completion: 'soon', project: 'P2', price: 0, pm2: null }),
+    live({ town: 'D', status: '  ', completion: '2026-Q4', project: 'P3', price: 200, pm2: 2000 }),
+    live({ town: 'E', status: 'custom-stage', completion: '2026-Q2', project: 'P3', price: 200, pm2: 2000 }),
+  ];
+  const pipeline = buildSupplyPipeline(rows);
+  check('known statuses stay in delivery order', pipeline?.byStatus.map((r) => r.key).join(',') === 'off-plan,under-construction,ready,custom-stage', pipeline?.byStatus.map((r) => r.key).join(','));
+  check('an unknown status keeps the stored label', pipeline?.byStatus.find((r) => r.key === 'custom-stage')?.label === 'custom-stage');
+  check('a blank status is unspecified, not a row', pipeline?.statusUnspecified === 1 && !pipeline.byStatus.some((r) => r.key === ''));
+  check('a free-text completion is not forced into a quarter', pipeline?.quarterUnspecified === 1 && pipeline.byQuarter.map((r) => r.key).join(',') === '2026-Q2,2026-Q4,2027-Q1');
+  check('quarters are chronological', pipeline?.byQuarter[0]?.key === '2026-Q2' && pipeline.byQuarter[pipeline.byQuarter.length - 1]?.key === '2027-Q1');
+  check('a project shared by two statuses is counted once in the book and once in each row', pipeline?.projects === 3 && pipeline.byStatus.find((r) => r.key === 'off-plan')?.projects === 1 && pipeline.byQuarter.find((r) => r.key === '2026-Q4')?.projects === 2);
+  check('a non-positive price is left out of the pipeline median', pipeline?.byStatus.find((r) => r.key === 'under-construction')?.medianPrice === null);
+  const statusSum = (pipeline?.byStatus.reduce((s, r) => s + r.n, 0) ?? 0) + (pipeline?.statusUnspecified ?? 0);
+  const quarterSum = (pipeline?.byQuarter.reduce((s, r) => s + r.n, 0) ?? 0) + (pipeline?.quarterUnspecified ?? 0);
+  check('status and quarter rows account for every listing', statusSum === rows.length && quarterSum === rows.length);
+
+  const liveBook = getAllProperties().map((p): LiveListing => ({
+    ref: p.ref ?? null,
+    town: (p.l || '').split(',')[0].trim(),
+    costa: (p.costa || '').trim(),
+    region: (p.r || '').trim(),
+    price: p.pf > 0 ? p.pf : null,
+    pm2: p.pm2 != null && p.pm2 > 0 ? p.pm2 : null,
+    mm2: p.mm2 > 0 ? p.mm2 : null,
+    score: null,
+    yieldGross: null,
+    yieldSource: null,
+    status: (p.s || '').trim() || null,
+    completion: (p.c || '').trim() || null,
+    project: (p.dev_ref || '').trim() || null,
+  }));
+  const fromBook = buildSupplyPipeline(liveBook);
+  const statusN = (fromBook?.byStatus.reduce((s, r) => s + r.n, 0) ?? 0) + (fromBook?.statusUnspecified ?? -1);
+  const quarterN = (fromBook?.byQuarter.reduce((s, r) => s + r.n, 0) ?? 0) + (fromBook?.quarterUnspecified ?? -1);
+  check('the current book produces a pipeline that covers every listing', fromBook != null && fromBook.listings === liveBook.length && statusN === liveBook.length && quarterN === liveBook.length);
+  check('every published quarter is a real YYYY-Q value', fromBook?.byQuarter.every((r) => /^\d{4}-Q[1-4]$/.test(r.key)) === true);
+}
+
+console.log('movement ledger — a bad row rejects the tape');
+
+{
+  const ok = (date: string, listings = 10, increases = 1, reductions = 0, delistings = 0, relistings = 0, move: number | null = 1) => ({
+    date,
+    listings_observed: listings,
+    price_increases: increases,
+    price_reductions: reductions,
+    median_abs_move_pct: move,
+    delistings,
+    relistings,
+  });
+  const tape = buildLedgerTape([
+    ok('2026-08-05', 10, 0, 0, 0, 0, null),
+    ok('2026-08-06', 11, 2, 1, 1, 0, 4.07),
+    ok('2026-08-14', 12, 3, 0, 0, 1, 2),
+  ]);
+  check('three days sum without dropping the quiet day', tape?.increases === 5 && tape.reductions === 1 && tape.delistings === 1 && tape.relistings === 1 && tape.observedDays === 3);
+  check('the ledger gap is the days between observations', tape?.missing.length === 1 && tape.missing[0].missingDays === 7 && tape.missing[0].start === '2026-08-07');
+  check('a negative count rejects the tape', buildLedgerTape([ok('2026-08-05'), { ...ok('2026-08-06'), price_reductions: -1 }]) === null);
+  check('a pre-epoch day rejects the tape', buildLedgerTape([ok('2026-04-08'), ok('2026-08-05')]) === null);
+  check('one day is not a tape', buildLedgerTape([ok('2026-08-05')]) === null);
+  const published = JSON.parse(readFileSync(path.join(process.cwd(), 'public', 'open-data', 'movement-ledger.json'), 'utf8')) as Array<Record<string, number>>;
+  const publishedTape = buildLedgerTape(published);
+  const sum = (key: string) => published.reduce((total, row) => total + Number(row[key]), 0);
+  check('the published ledger builds a complete tape', publishedTape != null && publishedTape.observedDays === published.length && publishedTape.increases === sum('price_increases') && publishedTape.reductions === sum('price_reductions') && publishedTape.delistings === sum('delistings') && publishedTape.relistings === sum('relistings'));
+}
+
 console.log('published copy does not carry a hardcoded market figure');
 
 {
@@ -206,7 +285,14 @@ console.log('published copy does not carry a hardcoded market figure');
   for (const file of files) {
     const text = readFileSync(path.join(process.cwd(), file), 'utf8');
     check(`${file} has no baked-in price or error figure`, !banned.test(text));
+    check(`${file} does not name an upstream feed vendor`, !/\bred\s?sp\b/i.test(text));
   }
+  const view = readFileSync(path.join(process.cwd(), 'src', 'components', 'reports', 'FundReportView.tsx'), 'utf8');
+  check('the specimen links the score track record', view.includes('href="/track-record"'));
+  check('the specimen links the homebuilder stock test', view.includes('href="/research/builder-stock-signal"'));
+  check('access is pricing on request', view.includes('Pricing on request') && view.includes('href="/access"') && !/€\s*\d|per month|€79|€49/i.test(view));
+  const config = readFileSync(path.join(process.cwd(), 'next.config.ts'), 'utf8');
+  check('/sample-report aliases the existing specimen', config.includes("source: '/sample-report'") && config.includes("destination: '/reports/sample'"));
 }
 
 console.log(`\n${failed === 0 ? 'ALL PASS' : 'FAILURES'} — ${passed} passed, ${failed} failed`);
