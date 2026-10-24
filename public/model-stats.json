@@ -2,17 +2,17 @@
   "model_version": "avm-runtime-v1",
   "sample": "live Avena book (asking prices)",
   "in_sample": true,
-  "n_scored": 2043,
+  "n_scored": 2040,
   "n_skipped": 0,
-  "mape_pct": 22.11,
-  "rmse_pct": 44.38,
-  "median_abs_error_pct": 16.02,
+  "mape_pct": 22.04,
+  "rmse_pct": 44.27,
+  "median_abs_error_pct": 16,
   "within_10_pct": 33.5,
-  "within_20_pct": 59.4,
-  "mean_bias_pct": 3.3,
+  "within_20_pct": 59.6,
+  "mean_bias_pct": 3.22,
   "caveats": [
     "In-sample: town × type medians are drawn from the same book, so each listing contributes to its own baseline. Out-of-sample error is higher.",
     "Target is asking price, not registered transaction price. Spanish coastal new-build transaction prices are not publicly available at listing level."
   ],
-  "computed_at": "2026-10-23T09:58:38.776Z"
+  "computed_at": "2026-10-24T06:22:19.585Z"
 }
