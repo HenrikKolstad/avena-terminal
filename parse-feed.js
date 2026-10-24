@@ -2,6 +2,20 @@ const fs = require('fs');
 const { XMLParser } = require('fast-xml-parser');
 require('dotenv').config({ path: '.env.production' });
 
+// Unit identity columns for price_snapshots. Mirrors src/lib/unit-spec.ts.
+function unitSpecOf(p) {
+  const pos = (n) => { const v = Number(n); return Number.isFinite(v) && v > 0 ? v : null; };
+  const int = (n) => { if (n === null || n === undefined || n === '') return null; const v = Number(n); return Number.isFinite(v) ? Math.round(v) : null; };
+  const imgs = Array.isArray(p.imgs) ? p.imgs.filter(Boolean) : [];
+  return {
+    built_m2: pos(p.bm),
+    plot_m2: pos(p.pl),
+    beds: int(p.bd),
+    baths: int(p.ba),
+    img_sig: imgs.length ? require('crypto').createHash('md5').update([...imgs].sort().join('\n')).digest('hex').slice(0, 16) : null,
+  };
+}
+
 /**
  * The RedSP feed URL. REQUIRED — there is deliberately no fallback.
  *
@@ -1346,6 +1360,10 @@ async function main() {
           region: p.r,
           type: p.t,
           town: (p.l || '').split(',')[0].trim(),
+          // Unit identity — lets the DB trigger tell a repricing from the ref
+          // switching to another unit of the same development
+          // (supabase/migrations/20261024_price_move_verification.sql).
+          ...unitSpecOf(p),
         }));
 
       const { error: snapErr } = await sb2

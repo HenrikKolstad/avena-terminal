@@ -22,6 +22,7 @@
  * counts in the moat tables lie and why `property_pricing_history` is not
  * usable for movement.
  */
+import { dropPreUnitChange } from './unit-identity';
 import { supabase } from './supabase';
 import { supabaseAdmin } from './supabase-admin';
 // The verified 2026-04-08 book (ref -> [entry_price, built_m2]), extracted
@@ -101,7 +102,7 @@ export async function getObservationRecord(ref: string, currentM2?: number | nul
   try {
     const { data, error } = await db
       .from('price_snapshots')
-      .select('price, snapshot_date')
+      .select('ref, price, snapshot_date, move_status')
       .eq('ref', ref)
       .gte('snapshot_date', FIRST_OBSERVATION)
       .order('snapshot_date', { ascending: true })
@@ -111,7 +112,9 @@ export async function getObservationRecord(ref: string, currentM2?: number | nul
     if (error || !data?.length) return null;
 
     const points: PriceObservation[] = [];
-    for (const row of data as Array<{ price: number | null; snapshot_date: string }>) {
+    // A switch to another unit of the same development starts a new series:
+    // the earlier unit's prices are not this listing's history.
+    for (const row of dropPreUnitChange(data as Array<{ ref: string; price: number | null; snapshot_date: string; move_status?: string | null }>)) {
       const price = Math.round(Number(row.price));
       if (!Number.isFinite(price) || price <= 0) continue;
       const date = String(row.snapshot_date).slice(0, 10);
@@ -184,11 +187,11 @@ export async function getChangedRefs(days = 30): Promise<Array<{ ref: string; da
 
   try {
     const PAGE = 1000;
-    const rows: Array<{ ref: string; price: number | null; snapshot_date: string }> = [];
+    const rows: Array<{ ref: string; price: number | null; snapshot_date: string; move_status?: string | null }> = [];
     for (let page = 0; page < 40; page++) {
       const { data, error } = await db
         .from('price_snapshots')
-        .select('ref, price, snapshot_date')
+        .select('ref, price, snapshot_date, move_status')
         .gte('snapshot_date', from)
         .order('ref', { ascending: true })
         .order('snapshot_date', { ascending: true })
@@ -202,7 +205,7 @@ export async function getChangedRefs(days = 30): Promise<Array<{ ref: string; da
     }
 
     const series = new Map<string, Array<{ d: string; v: number }>>();
-    for (const r of rows) {
+    for (const r of dropPreUnitChange(rows)) {
       const v = Math.round(Number(r.price));
       if (!Number.isFinite(v) || v <= 0) continue;
       const d = String(r.snapshot_date).slice(0, 10);

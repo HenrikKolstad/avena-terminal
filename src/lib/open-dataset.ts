@@ -26,6 +26,7 @@
  * which is a fabrication. (See THE RECURRING BUG in the Odyssey charter.)
  */
 
+import { isUnitBreak } from './unit-identity';
 import type { Property } from '@/lib/types';
 
 // ─── Input row shapes (as stored in Supabase) ─────────────────────────────
@@ -38,6 +39,8 @@ export interface SnapshotRow {
   town: string | null;
   region: string | null;
   type: string | null;
+  /** verified | unit_changed | unverified (src/lib/unit-identity.ts); absent on old fixtures. */
+  move_status?: string | null;
 }
 
 export interface SoldRow {
@@ -173,7 +176,8 @@ export function buildTownAggregates(props: Property[], minN = 5): TownAggregate[
 
 /**
  * Every price move we observed: consecutive observations of the same ref
- * whose price differs by >= 1 EUR. Consecutive OBSERVATIONS, not calendar
+ * whose price differs by >= 1 EUR and whose unit identity is unchanged
+ * (move_status not unit_changed / unverified — src/lib/unit-identity.ts). Consecutive OBSERVATIONS, not calendar
  * days — a ref unobserved for two days then repriced is one move dated the
  * day we saw it.
  */
@@ -195,6 +199,9 @@ export function buildObservedMoves(snapshots: SnapshotRow[]): ObservedMove[] {
       const cur = rows[i];
       if (prev.price == null || cur.price == null) continue;
       if (Math.abs(cur.price - prev.price) < 1) continue;
+      // The ref switched to another unit of the same development (or a large
+      // jump could not be verified as the same unit): not a price move.
+      if (isUnitBreak(cur)) continue;
       moves.push({
         avn_id: ref,
         date: cur.snapshot_date,

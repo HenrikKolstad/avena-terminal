@@ -38,6 +38,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { startCronLog, finishCronLog } from '@/lib/cron-log';
 import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import { getAllProperties } from '@/lib/properties';
+import { unitSpecOf } from '@/lib/unit-spec';
+import { moveVerdict } from '@/lib/unit-identity';
 import { getFeedGeneratedDate, getFeedGeneratedAt, getFeedMeta } from '@/lib/feed-meta';
 import { judgeUpstream, describeUpstream } from '@/lib/feed-provenance';
 import { findSupersededRefs, classifySupersededRefs } from '@/lib/capture-integrity';
@@ -115,6 +117,11 @@ interface PriorSnap {
   region: string | null;
   type: string | null;
   town: string | null;
+  built_m2?: number | null;
+  plot_m2?: number | null;
+  beds?: number | null;
+  baths?: number | null;
+  img_sig?: string | null;
 }
 
 export async function GET(req: NextRequest) {
@@ -220,7 +227,7 @@ export async function GET(req: NextRequest) {
   const priorDate: string | null = maxRow?.[0]?.snapshot_date ?? null;
 
   const prior: PriorSnap[] = priorDate
-    ? ((await selectAllPages<PriorSnap>('ref, price, pm2, mm2, region, type, town', priorDate)) ?? [])
+    ? ((await selectAllPages<PriorSnap>('ref, price, pm2, mm2, region, type, town, built_m2, plot_m2, beds, baths, img_sig', priorDate)) ?? [])
     : [];
   const priorByRef = new Map(prior.map((r) => [r.ref, r]));
 
@@ -273,6 +280,9 @@ export async function GET(req: NextRequest) {
     type: p.t || null,
     town: townOf(p.l),
     country: p.country || 'ES',
+    // Unit identity: the DB trigger stamps move_status from these
+    // (verified | unit_changed | unverified) — see src/lib/unit-identity.ts.
+    ...unitSpecOf(p),
   }));
   let snapshotted = 0;
   const errors: string[] = [];
@@ -310,7 +320,12 @@ export async function GET(req: NextRequest) {
   let movesSkipped: string | null = null;
   let movesLedgerBlocked: string | null = null;
   let baselineRefs = 0;
-  const inserts: Array<{ avn_prop_id: string; price_eur: number; source_portal: string; status: string }> = [];
+  const inserts: Array<{ avn_prop_id: string; price_eur: number; source_portal: string; status: string; verification: string; verification_note: string | null }> = [];
+  // A price change only counts as a move when the ref still describes the same
+  // unit. Tagged here (and again by a DB trigger as a backstop) so every
+  // reader of the ledger can drop unit swaps — see src/lib/unit-identity.ts.
+  let movesUnitChanged = 0;
+  let movesUnverified = 0;
   for (const p of feed) {
     const priorPrice = trustPrior ? priorByRef.get(p.ref as string)?.price ?? null : null;
     const sameDayPrice = todayByRef.get(p.ref as string)?.price ?? null;
@@ -319,11 +334,23 @@ export async function GET(req: NextRequest) {
     baselineRefs++;
     const now = Math.round(p.pf);
     if (Math.abs(now - Number(observed)) < 1) continue;
+    const base: Partial<PriorSnap> | undefined = priorPrice != null ? priorByRef.get(p.ref as string) : todayByRef.get(p.ref as string);
+    const spec = unitSpecOf(p);
+    const verdict = moveVerdict(
+      { price: Number(observed), pm2: base?.pm2 ?? null, type: base?.type ?? null, built_m2: base?.built_m2 ?? null,
+        plot_m2: base?.plot_m2 ?? null, beds: base?.beds ?? null, baths: base?.baths ?? null, img_sig: base?.img_sig ?? null },
+      { price: now, pm2: p.bm > 0 ? now / p.bm : null, type: p.t || null, ...spec },
+      p.mm2 ?? null,
+    );
+    if (verdict?.status === 'unit_changed') movesUnitChanged++;
+    if (verdict?.status === 'unverified') movesUnverified++;
     inserts.push({
       avn_prop_id: p.ref as string,
       price_eur: now,
       source_portal: p.source_portal || 'redsp',
       status: now < Number(observed) ? 'reduced' : 'increased',
+      verification: verdict?.status ?? 'unverified',
+      verification_note: verdict?.note ?? null,
     });
   }
 
@@ -439,6 +466,8 @@ export async function GET(req: NextRequest) {
     // Already recorded by an earlier run today — a re-run finding only these
     // is correct and idempotent, not a missed capture.
     moves_already_logged: movesAlreadyLogged,
+    moves_unit_changed: movesUnitChanged,
+    moves_unverified: movesUnverified,
     // How many refs we had any usable baseline for. price_moves: 0 means
     // "the market was quiet" only if this is large; if it is 0 while
     // trusted_prior is true, the diff is blind and the zero is a lie.

@@ -1,3 +1,5 @@
+import { moveVerdict, type SnapSide } from '@/lib/unit-identity';
+import { unitSpecOf } from '@/lib/unit-spec';
 import { withCronLog } from '@/lib/cron-log';
 import { isAuthorizedCron } from '@/lib/cron-auth';
 import { NextResponse } from 'next/server';
@@ -137,8 +139,8 @@ export const GET = withCronLog('detect-events', '/api/detect-events', isAuthoriz
   const priorDate: string | null = maxRow?.[0]?.snapshot_date ?? null;
 
   const priorPrices = priorDate
-    ? await selectAllPages<{ ref: string; price: number | null }>(
-        'price_snapshots', 'ref, price', 'snapshot_date', priorDate, 'ref')
+    ? await selectAllPages<{ ref: string; price: number | null } & Partial<SnapSide>>(
+        'price_snapshots', 'ref, price, pm2, type, built_m2, plot_m2, beds, baths, img_sig', 'snapshot_date', priorDate, 'ref')
     : [];
 
   // Score lives in score_history, keyed property_ref/avena_score — NOT in
@@ -149,6 +151,7 @@ export const GET = withCronLog('detect-events', '/api/detect-events', isAuthoriz
     : [];
 
   const priceByRef = new Map(priorPrices.map((r) => [r.ref, r.price]));
+  const priorRowByRef = new Map(priorPrices.map((r) => [r.ref, r]));
   const scoreByRef = new Map(priorScores.map((r) => [r.property_ref, r.avena_score]));
 
   const priorAgeDays = priorDate
@@ -177,6 +180,7 @@ export const GET = withCronLog('detect-events', '/api/detect-events', isAuthoriz
 
   const events: MarketEventRow[] = [];
   let newListings = 0;
+  let unitChanges = 0;
 
   for (const p of props) {
     const ref = p.ref as string;
@@ -203,7 +207,15 @@ export const GET = withCronLog('detect-events', '/api/detect-events', isAuthoriz
       continue;
     }
 
-    if (priorPrice !== null && priorPrice > 0 && p.pf !== priorPrice) {
+    // Unit identity: a ref that now describes a different unit of the same
+    // development did not change price — no PRICE_* event (src/lib/unit-identity.ts).
+    const prior = priorRowByRef.get(ref);
+    const verdict = priorPrice != null && priorPrice > 0 && p.pf !== priorPrice
+      ? moveVerdict({ ...prior, price: Number(priorPrice) },
+          { price: p.pf, pm2: p.bm > 0 ? p.pf / p.bm : null, type: p.t || null, ...unitSpecOf(p) }, p.mm2 ?? null)
+      : null;
+    if (verdict && verdict.status !== 'verified') unitChanges++;
+    if (priorPrice !== null && priorPrice > 0 && p.pf !== priorPrice && verdict?.status === 'verified') {
       const diff = p.pf - priorPrice;
       const pct = (diff / priorPrice) * 100;
       if (Math.abs(pct) >= 1) {
@@ -287,6 +299,7 @@ export const GET = withCronLog('detect-events', '/api/detect-events', isAuthoriz
     events_written: eventsWritten,
     new_listings: newListings,
     price_moves: events.filter((e) => e.event_type === 'PRICE_DROP' || e.event_type === 'PRICE_INCREASE').length,
+    unit_changes_skipped: unitChanges,
     score_changes: events.filter((e) => e.event_type === 'SCORE_CHANGE').length,
     errors: errors.length > 0 ? errors : null,
   });
