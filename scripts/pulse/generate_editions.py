@@ -9,6 +9,12 @@ the subscriber's towns from the live ledger — observed price moves, new
 launches, delistings with final prices, inventory and benchmark position —
 and sends it from pulse@avenaterminal.com via Resend.
 
+Coverage: a subscriber with towns = {'*'} gets the WHOLE book: every price
+change (rises and reductions, no threshold, no top-N), every launch, every
+exit and every town benchmark across all regions, resolved at send time. The
+PDF opens with a summary and highlights, then the complete tables grouped by
+region and town. Named towns still work and get the same complete tables.
+
 Honesty rules, same as everywhere in this codebase:
  - Every number is computed from `public/data.json` (the book) and the
    observation tables. Nothing is estimated or narrated beyond the counts.
@@ -108,13 +114,43 @@ EDITION = TODAY.isoformat()
 ISOWEEK = TODAY.isocalendar()[1]
 
 
+REGION_LABEL = {'costa-del-sol': 'Costa del Sol', 'cb-south': 'Costa Blanca South',
+                'cb-north': 'Costa Blanca North', 'costa-calida': 'Costa Calida'}
+REGION_OF_TOWN = {}
+for _t, _ps in BY_TOWN.items():
+    _rs = [p.get('r') for p in _ps if p.get('r')]
+    if _rs:
+        REGION_OF_TOWN[_t] = max(set(_rs), key=_rs.count)
+SNAP_TOWN = {}  # ref -> town from snapshots, for refs no longer in the book
+
+# How far back to look for the price a ref held when the week opened. A
+# capture gap (e.g. 2026-10-14..20) must not hide a move: the first snapshot
+# inside the week is compared against the last one before it.
+BASELINE_DAYS = 28
+
+
+def region_of(town):
+    slug = REGION_OF_TOWN.get(town) or SNAP_REGION.get(town) or ''
+    return REGION_LABEL.get(slug, slug.replace('-', ' ').title() or 'Other')
+
+
+SNAP_REGION = {}
+
+
 def fetch_moves():
-    """All price changes in the last 7 days, per ref, from the snapshots."""
+    """EVERY price change observed this week, per town, from the snapshots.
+
+    No threshold, no direction filter, no top-N: a move is any change in a
+    ref's asking price between consecutive observations where the newer one
+    falls inside the week (WEEK_AGO, TODAY]. The older observation may be
+    from before the week (baseline), so the first change of the week is never
+    lost. Tuple: (ref, from, to, date, pct, previous_observation_date)."""
+    since = WEEK_AGO - dt.timedelta(days=BASELINE_DAYS)
     rows, page = [], 0
     while True:
         chunk = rest(
-            f'price_snapshots?select=ref,price,snapshot_date'
-            f'&snapshot_date=gte.{WEEK_AGO}&order=ref.asc,snapshot_date.asc'
+            f'price_snapshots?select=ref,price,snapshot_date,town,region'
+            f'&snapshot_date=gte.{since}&order=ref.asc,snapshot_date.asc'
             f'&limit=1000&offset={page * 1000}')
         rows += chunk
         if len(chunk) < 1000:
@@ -125,6 +161,11 @@ def fetch_moves():
         v = round(float(r['price'])) if r['price'] is not None else None
         if not v or v <= 0:
             continue
+        if r.get('town'):
+            t = r['town'].split(',')[0].strip()
+            SNAP_TOWN[r['ref']] = t
+            if r.get('region'):
+                SNAP_REGION.setdefault(t, r['region'])
         d = r['snapshot_date'][:10]
         lst = series.setdefault(r['ref'], [])
         if not lst or lst[-1][0] != d:
@@ -132,19 +173,25 @@ def fetch_moves():
     moves = {}
     for ref, lst in series.items():
         for i in range(1, len(lst)):
+            if lst[i][0] <= str(WEEK_AGO):
+                continue
             if lst[i][1] != lst[i - 1][1]:
-                moves.setdefault(TOWN_OF.get(ref, '?'), []).append(
+                town = TOWN_OF.get(ref) or SNAP_TOWN.get(ref) or 'Unattributed'
+                moves.setdefault(town, []).append(
                     (ref, lst[i - 1][1], lst[i][1], lst[i][0],
-                     round((lst[i][1] - lst[i - 1][1]) / lst[i - 1][1] * 100, 1)))
+                     round((lst[i][1] - lst[i - 1][1]) / lst[i - 1][1] * 100, 1),
+                     lst[i - 1][0]))
     return moves
 
 
 def fetch_delistings():
-    rows = rest(f'sold_properties?select=ref,town,type,last_price,last_pm2,last_seen_date'
+    rows = rest(f'sold_properties?select=ref,town,region,type,last_price,last_pm2,last_seen_date'
                 f'&last_seen_date=gte.{WEEK_AGO}&order=last_seen_date.desc')
     out = {}
     for r in rows:
-        town = (r.get('town') or '').split(',')[0].strip()
+        town = (r.get('town') or '').split(',')[0].strip() or 'Unattributed'
+        if r.get('region'):
+            SNAP_REGION.setdefault(town, r['region'])
         out.setdefault(town, []).append(r)
     return out
 
@@ -177,15 +224,57 @@ W, H = A4
 M = 56
 
 
-def render_edition(path, subscriber_name, towns, moves, delist):
+def render_edition(path, subscriber_name, towns, moves, delist, all_coverage=False):
+    """Flowing edition: a summary up front, then the FULL record — every price
+    change, every new launch, every exit, every town benchmark — grouped by
+    region and town, paginated. Nothing is truncated: the summary's
+    highlights are a reading aid, the tables after them are complete."""
     c = canvas.Canvas(path, pagesize=(W, H))
     c.setTitle(f'Avena Market Pulse — Week {ISOWEEK}, {TODAY.year}')
+    scope = 'All coverage' if all_coverage else ', '.join(towns)
+    st_cache = {t: town_stats(t) for t in towns}
+    regions = {}
+    for t in towns:
+        regions.setdefault(region_of(t), []).append(t)
+    region_order = sorted(regions, key=lambda r: (r == 'Other', r))
+    for r in regions:
+        regions[r].sort()
+
+    all_moves = [m for t in towns for m in moves.get(t, [])]
+    all_del = [d for t in towns for d in delist.get(t, [])]
+    all_new = [n for t in towns if st_cache[t] for n in st_cache[t]['new']]
+    units = sum(st['units'] for st in st_cache.values() if st)
+    ups = sum(1 for m in all_moves if m[2] > m[1])
+    downs = len(all_moves) - ups
+
+    state = {'page': 0, 'y': 0}
+    BOTTOM = 52
 
     def bg(num):
         c.setFillColor(BG); c.rect(0, 0, W, H, stroke=0, fill=1)
         c.setFillColor(FAINT); c.setFont('Courier', 6.5)
         c.drawString(M, 24, f'AVENA MARKET PULSE  ·  PREPARED FOR {subscriber_name.upper()}  ·  DATA: AVENA OBSERVATION LEDGER')
         c.drawRightString(W - M, 24, f'{num:02d}')
+
+    def new_page(running=None):
+        if state['page']:
+            c.showPage()
+        state['page'] += 1
+        bg(state['page'])
+        c.setFillColor(INK); c.setFont('Times-Roman', 13); c.drawString(M, H - 48, 'A V E N A')
+        c.setFillColor(FAINT); c.setFont('Courier', 7)
+        c.drawRightString(W - M, H - 46, f'MARKET PULSE · WEEK {ISOWEEK} · {TODAY.year}' + (f' · {running.upper()}' if running else ''))
+        state['y'] = H - 80
+
+    def need(h, running=None, header=None):
+        """Start a new page if fewer than h points remain; optionally redraw
+        a table header so every continued table stays readable."""
+        if state['y'] - h < BOTTOM:
+            new_page(running)
+            if header:
+                header()
+            return True
+        return False
 
     def wrap(text, font, size, maxw):
         words, lines, cur = text.split(), [], ''
@@ -199,128 +288,232 @@ def render_edition(path, subscriber_name, towns, moves, delist):
             lines.append(cur)
         return lines
 
-    def para(x, y, text, font='Helvetica', size=9.5, leading=14, color=MUTED, maxw=W - 2 * M):
-        c.setFillColor(color); c.setFont(font, size)
+    def para(text, font='Helvetica', size=9.5, leading=14, color=MUTED, x=M, maxw=W - 2 * M):
         for ln in wrap(text, font, size, maxw):
-            c.drawString(x, y, ln); y -= leading
-        return y
+            need(leading)
+            c.setFillColor(color); c.setFont(font, size)
+            c.drawString(x, state['y'], ln); state['y'] -= leading
 
-    def eyebrow(x, y, text):
-        c.setStrokeColor(GOLD); c.setLineWidth(0.8); c.line(x, y + 2.5, x + 26, y + 2.5)
-        c.setFillColor(GOLD); c.setFont('Courier', 7.5); c.drawString(x + 34, y, ' '.join(text.upper()))
+    def eyebrow(text, gap=20):
+        need(gap + 30)
+        y = state['y']
+        c.setStrokeColor(GOLD); c.setLineWidth(0.8); c.line(M, y + 2.5, M + 26, y + 2.5)
+        c.setFillColor(GOLD); c.setFont('Courier', 7.5); c.drawString(M + 34, y, ' '.join(text.upper()))
+        state['y'] -= gap
 
-    def ref_cell(x, y, ref):
-        c.setFillColor(GOLD); c.setFont('Courier', 8.5); c.drawString(x, y, ref)
-        c.setFont('Courier', 6); c.setFillColor(GOLD_DIM)
-        c.drawString(x + 42, y + 0.5, '(click to see)')
-        c.setFont('Courier', 8.5)
-        c.linkURL(f'https://avenaterminal.com/property/{ref}', (x, y - 2, x + 98, y + 9), relative=0)
+    def ref_link(x, y, ref, size=7.5):
+        c.setFillColor(GOLD); c.setFont('Courier', size); c.drawString(x, y, ref)
+        c.linkURL(f'https://avenaterminal.com/property/{ref}', (x, y - 2, x + 46, y + 8), relative=0)
 
-    page = 0
-    for town in towns:
-        st = town_stats(town)
-        page += 1
-        bg(page)
-        c.setFillColor(INK); c.setFont('Times-Roman', 17); c.drawString(M, H - 64, 'A V E N A')
-        c.setFillColor(FAINT); c.setFont('Courier', 7)
-        c.drawRightString(W - M, H - 61, f'MARKET PULSE · WEEK {ISOWEEK} · {TODAY.year}')
-        eyebrow(M, H - 108, f'{town} · new-build market')
-        c.setFillColor(INK); c.setFont('Times-Roman', 30)
-        c.drawString(M, H - 146, f'{town}, week {ISOWEEK}.')
+    def group_head(region, town, count_txt, running):
+        need(34, running)
+        y = state['y'] - 4
+        c.setFillColor(INK); c.setFont('Times-Roman', 11)
+        c.drawString(M, y, town)
+        c.setFillColor(FAINT); c.setFont('Courier', 6.8)
+        c.drawRightString(W - M, y, f'{region.upper()} · {count_txt}')
+        c.setStrokeColor(HexColor('#3a3428')); c.setLineWidth(0.5); c.line(M, y - 4, W - M, y - 4)
+        state['y'] = y - 15
 
-        if not st:
-            para(M, H - 180, 'This town is not currently in the observed book. It enters the report the day inventory appears.', size=10)
-            c.showPage()
-            continue
+    def row(cells, colors=None, size=7.3, step=11):
+        y = state['y']
+        for i, (x, txt) in enumerate(cells):
+            col = (colors or {}).get(i, INK)
+            c.setFillColor(col); c.setFont('Courier', size)
+            if x < 0:
+                c.drawRightString(-x, y, txt)
+            else:
+                c.drawString(x, y, txt)
+        state['y'] -= step
 
-        tmoves = moves.get(town, [])
-        tdel = delist.get(town, [])
-        ups = sum(1 for m in tmoves if m[2] > m[1])
-        downs = len(tmoves) - ups
-        c.setFillColor(GOLD); c.setFont('Times-Italic', 15)
-        c.drawString(M, H - 170, f'{len(tmoves)} price movement(s) · {downs} reduction(s) · {len(tdel)} left the market · {st["units"]} units under daily watch')
+    def money(v):
+        return f'€{v:,.0f}' if v else '—'
 
-        stats = [(f'{st["units"]}', 'units tracked daily'),
-                 (f'€{st["median_price"]:,.0f}', 'median asking price'),
-                 (f'€{st["median_pm2"]:,.0f}', 'median €/m² (new-build)'),
-                 (f'€{st["resale_pm2"]:,.0f}', 'town resale benchmark €/m²')]
-        tx = M; tw = (W - 2 * M - 30) / 4
-        for big, small in stats:
-            c.setFillColor(SURFACE); c.rect(tx, H - 250, tw, 50, stroke=0, fill=1)
-            c.setStrokeColor(HexColor('#3a3428')); c.setLineWidth(0.7); c.rect(tx, H - 250, tw, 50, stroke=1, fill=0)
-            c.setFillColor(GOLD); c.setFont('Times-Roman', 14); c.drawString(tx + 10, H - 222, big)
-            c.setFillColor(MUTED); c.setFont('Helvetica', 6.6)
-            yy2 = H - 234
-            for ln in wrap(small, 'Helvetica', 6.6, tw - 16):
-                c.drawString(tx + 10, yy2, ln); yy2 -= 8
-            tx += tw + 10
+    # ── Page 1: summary ────────────────────────────────────────────────────
+    new_page()
+    y = H - 104
+    c.setStrokeColor(GOLD); c.setLineWidth(0.8); c.line(M, y + 2.5, M + 26, y + 2.5)
+    c.setFillColor(GOLD); c.setFont('Courier', 7.5)
+    c.drawString(M + 34, y, ' '.join(f'{scope} · {WEEK_AGO.strftime("%d %b")} – {TODAY.strftime("%d %b %Y")}'.upper()))
+    c.setFillColor(INK); c.setFont('Times-Roman', 26)
+    c.drawString(M, y - 38, f'Every observed price change, week {ISOWEEK}.' if all_coverage else f'{scope}, week {ISOWEEK}.')
+    c.setFillColor(GOLD); c.setFont('Times-Italic', 12.5)
+    c.drawString(M, y - 62, f'{len(all_moves)} price change(s) · {ups} rise(s) · {downs} reduction(s) · '
+                            f'{len(all_del)} left the market · {len(all_new)} new')
+    stats = [(f'{len(all_moves)}', 'price changes, every one listed'),
+             (f'{downs} / {ups}', 'reductions / rises'),
+             (f'{len(all_del)}', 'left the market'),
+             (f'{units:,}', f'units under daily watch · {len(towns)} towns')]
+    tx = M; tw = (W - 2 * M - 30) / 4; by = y - 132
+    for big, small in stats:
+        c.setFillColor(SURFACE); c.rect(tx, by, tw, 50, stroke=0, fill=1)
+        c.setStrokeColor(HexColor('#3a3428')); c.setLineWidth(0.7); c.rect(tx, by, tw, 50, stroke=1, fill=0)
+        c.setFillColor(GOLD); c.setFont('Times-Roman', 14); c.drawString(tx + 10, by + 28, big)
+        c.setFillColor(MUTED); c.setFont('Helvetica', 6.6)
+        yy2 = by + 16
+        for ln in wrap(small, 'Helvetica', 6.6, tw - 16):
+            c.drawString(tx + 10, yy2, ln); yy2 -= 8
+        tx += tw + 10
+    state['y'] = by - 34
 
-        yy = H - 292
-        eyebrow(M, yy, f'Observed price movements · {WEEK_AGO.strftime("%d %b")} – {TODAY.strftime("%d %b %Y")}')
-        yy -= 22
-        if tmoves:
-            c.setFillColor(FAINT); c.setFont('Courier', 7)
-            c.drawString(M, yy, 'REF                      DATE         FROM           TO             CHANGE')
-            yy -= 14
-            has_big = False
-            for ref, f, t, d, pct in sorted(tmoves, key=lambda m: m[3])[:14]:
-                ref_cell(M, yy, ref)
-                c.setFillColor(INK); c.drawString(M + 112, yy, f'{d}   €{f:>9,}     €{t:>9,}')
-                c.setFillColor(GOLD if t > f else RED)
+    # Region summary table
+    eyebrow('By region')
+    X = [M, M + 150, M + 205, M + 262, M + 312, M + 362, M + 412]
+    row([(X[0], 'REGION'), (X[1], 'TOWNS'), (X[2], 'UNITS'), (X[3], 'CHANGES'),
+         (X[4], 'UP'), (X[5], 'DOWN'), (X[6], 'NEW · LEFT')], {i: FAINT for i in range(7)}, size=6.8)
+    for rg in region_order:
+        ts = regions[rg]
+        mv = [m for t in ts for m in moves.get(t, [])]
+        u = sum(st_cache[t]['units'] for t in ts if st_cache[t])
+        nw = sum(len(st_cache[t]['new']) for t in ts if st_cache[t])
+        lf = sum(len(delist.get(t, [])) for t in ts)
+        up_ = sum(1 for m in mv if m[2] > m[1])
+        row([(X[0], rg), (X[1], str(len(ts))), (X[2], f'{u:,}'), (X[3], str(len(mv))),
+             (X[4], str(up_)), (X[5], str(len(mv) - up_)), (X[6], f'{nw} · {lf}')])
+    state['y'] -= 14
+
+    # Highlights (reading aid only — the full table follows)
+    if all_moves:
+        cuts = sorted([m for m in all_moves if m[4] < 0], key=lambda m: m[4])[:6]
+        rises = sorted([m for m in all_moves if m[4] > 0], key=lambda m: -m[4])[:6]
+        town_of_ref = {m[0]: t for t in towns for m in moves.get(t, [])}
+        for title, lst in (('Largest reductions', cuts), ('Largest rises', rises)):
+            if not lst:
+                continue
+            eyebrow(f'{title} · highlights — full table follows', gap=16)
+            for ref, f, t, d, pct, _pd in lst:
+                need(11)
+                ref_link(M, state['y'], ref)
+                row([(M + 52, town_of_ref.get(ref, '')[:22]), (M + 190, d), (M + 262, money(f)), (M + 332, '→'),
+                     (M + 345, money(t)), (-(W - M), f'{pct:+.1f}%')], {5: GOLD if pct > 0 else RED})
+            state['y'] -= 8
+
+    gap_moves = [m for m in all_moves
+                 if (dt.date.fromisoformat(m[3]) - dt.date.fromisoformat(m[5])).days > 1]
+    if gap_moves:
+        state['y'] -= 4
+        para(f'{len(gap_moves)} of the changes compare against an observation more than a day earlier '
+             f'(a gap in nightly capture); the "since" column in the full table shows the date of the previous '
+             f'observation, so each change is stated against the last price actually seen.', size=7.5, leading=10,
+             color=FAINT)
+
+    # ── Full price-change table ────────────────────────────────────────────
+    RUN = 'all price changes'
+    PX = [M, M + 52, M + 120, M + 190, M + 262, M + 345]
+
+    def mv_header():
+        row([(PX[0], 'REF'), (PX[1], 'SINCE'), (PX[2], 'CHANGED'), (PX[3], 'FROM'),
+             (PX[4], 'TO'), (-(W - M), 'CHANGE')], {i: FAINT for i in range(6)}, size=6.5, step=12)
+
+    new_page(RUN)
+    eyebrow(f'All price changes · {len(all_moves)} · grouped by region and town')
+    para('Every change in asking price observed this week, rises and reductions, with no threshold and no cut-off. '
+         'Each reference links to its full dossier.', size=8.5, leading=12)
+    state['y'] -= 6
+    has_big = False
+    if not all_moves:
+        para('No observed price changes this week — every tracked unit held its asking price. That stability is itself the finding.')
+    for rg in region_order:
+        for t in regions[rg]:
+            tm = moves.get(t, [])
+            if not tm:
+                continue
+            group_head(rg, t, f'{len(tm)} change(s)', RUN)
+            mv_header()
+            for ref, f, to, d, pct, pd in sorted(tm, key=lambda m: (m[4], m[0])):
+                need(11, RUN, mv_header)
                 big = abs(pct) >= 20
-                if big:
-                    has_big = True
-                c.drawString(M + 372, yy, f'{"+" if pct > 0 else ""}{pct}%' + (' ‡' if big else ''))
-                yy -= 15
-            if has_big:
-                # Honesty note: a 20%+ overnight jump is usually the listing's
-                # "from" price stepping to the next unit after a sale, or a
-                # relaunch — real market signal, but not a simple repricing.
-                c.setFillColor(FAINT); c.setFont('Courier', 6.5)
-                c.drawString(M, yy, '‡ Moves of ±20%+ typically reflect a relaunch or unit-mix change (e.g. cheapest unit sold), not a simple repricing.')
-                yy -= 12
-        else:
-            yy = para(M, yy, 'No observed price changes this week — every tracked unit held its asking price. That stability is itself the finding.', size=9.5)
-        yy -= 14
+                has_big |= big
+                ref_link(PX[0], state['y'], ref)
+                row([(PX[1], pd), (PX[2], d), (PX[3], money(f)), (PX[4], money(to)),
+                     (-(W - M), f'{pct:+.1f}%' + (' ‡' if big else ''))],
+                    {4: GOLD if to > f else RED})
+            state['y'] -= 6
+    if has_big:
+        # Honesty note: a 20%+ overnight jump is usually the listing's
+        # "from" price stepping to the next unit after a sale, or a
+        # relaunch — real market signal, but not a simple repricing.
+        para('‡ Moves of ±20%+ typically reflect a relaunch or unit-mix change (e.g. cheapest unit sold), not a simple repricing.',
+             font='Courier', size=6.5, leading=10, color=FAINT)
 
-        if st['new']:
-            eyebrow(M, yy, 'New on the market')
-            yy -= 20
-            for ref, typ, bd, pr, d in st['new'][:8]:
-                ref_cell(M, yy, ref)
-                c.setFillColor(INK)
-                c.drawString(M + 112, yy, f'{(typ or ""):<12} {str(bd or "?")} bed   €{(pr or 0):>9,}   first seen {d}')
-                yy -= 15
-            yy -= 10
+    # ── New on the market ──────────────────────────────────────────────────
+    RUN = 'new on the market'
+    new_page(RUN)
+    eyebrow(f'New on the market · {len(all_new)}')
+    if not all_new:
+        para('No new launches observed this week.')
+    for rg in region_order:
+        for t in regions[rg]:
+            nl = st_cache[t]['new'] if st_cache[t] else []
+            if not nl:
+                continue
+            group_head(rg, t, f'{len(nl)} new', RUN)
+            for ref, typ, bd, pr, d in nl:
+                need(11, RUN)
+                ref_link(M, state['y'], ref)
+                row([(M + 52, (typ or '')[:14]), (M + 150, f'{bd or "?"} bed'), (M + 200, money(pr)),
+                     (M + 290, f'first seen {d}')])
+            state['y'] -= 6
 
-        if tdel:
-            eyebrow(M, yy, 'Left the market · absorption')
-            yy -= 20
-            for r in tdel[:6]:
-                ref_cell(M, yy, r['ref'])
+    # ── Left the market ────────────────────────────────────────────────────
+    RUN = 'left the market'
+    need(120, RUN)
+    state['y'] -= 10
+    eyebrow(f'Left the market · {len(all_del)}')
+    if not all_del:
+        para('No listings left the market this week.')
+    for rg in region_order:
+        for t in regions[rg]:
+            dl = delist.get(t, [])
+            if not dl:
+                continue
+            group_head(rg, t, f'{len(dl)} left', RUN)
+            for r in dl:
+                need(11, RUN)
                 lp = round(float(r['last_price'])) if r.get('last_price') else 0
-                c.setFillColor(INK)
-                c.drawString(M + 112, yy, f'{(r.get("type") or ""):<12} last asking €{lp:>9,}   left {r["last_seen_date"]}')
-                yy -= 15
-            yy -= 10
+                ref_link(M, state['y'], r['ref'])
+                row([(M + 52, (r.get('type') or '')[:14]), (M + 150, f'last asking {money(lp)}'),
+                     (M + 290, f'left {r["last_seen_date"][:10]}')])
+            state['y'] -= 6
 
-        spread = (st['median_pm2'] / st['resale_pm2'] - 1) * 100 if st['resale_pm2'] else 0
-        para(M, yy - 4,
-             f'Benchmark position: new-build median €{st["median_pm2"]:,.0f}/m² against a €{st["resale_pm2"]:,.0f}/m² '
-             f'town resale benchmark — a {abs(spread):.1f}% new-build {"discount" if spread < 0 else "premium"}. '
-             f'Every reference above links to its full dossier on avenaterminal.com.',
-             size=9.5)
-        c.showPage()
+    # ── Benchmarks ─────────────────────────────────────────────────────────
+    RUN = 'town benchmarks'
+    BX = [M, M + 140, M + 190, M + 270, M + 340, M + 410]
 
-    # Closing page
-    page += 1
-    bg(page)
+    def bm_header():
+        row([(BX[0], 'TOWN'), (BX[1], 'UNITS'), (BX[2], 'MEDIAN PRICE'), (BX[3], 'NEW €/M²'),
+             (BX[4], 'RESALE €/M²'), (-(W - M), 'NEW VS RESALE')], {i: FAINT for i in range(6)}, size=6.5, step=12)
+
+    new_page(RUN)
+    eyebrow('Town benchmarks · new-build vs resale €/m²')
+    for rg in region_order:
+        ts = [t for t in regions[rg] if st_cache[t]]
+        if not ts:
+            continue
+        need(40, RUN)
+        c.setFillColor(GOLD); c.setFont('Courier', 7.5); c.drawString(M, state['y'], rg.upper())
+        state['y'] -= 13
+        bm_header()
+        for t in ts:
+            st = st_cache[t]
+            need(11, RUN, bm_header)
+            spread = (st['median_pm2'] / st['resale_pm2'] - 1) * 100 if st['resale_pm2'] and st['median_pm2'] else None
+            row([(BX[0], t[:24]), (BX[1], str(st['units'])), (BX[2], money(st['median_price'])),
+                 (BX[3], money(st['median_pm2'])), (BX[4], money(st['resale_pm2'])),
+                 (-(W - M), f'{spread:+.1f}%' if spread is not None else '—')],
+                {5: (RED if spread and spread > 0 else GOLD)})
+        state['y'] -= 8
+    para('Positive = new-build median €/m² above the town resale benchmark (premium); negative = discount.',
+         size=7.5, leading=10, color=FAINT)
+
+    # ── Closing page ───────────────────────────────────────────────────────
+    new_page()
     c.setFillColor(INK); c.setFont('Times-Roman', 22)
     c.drawString(M, H - 120, 'Questions about anything in this edition?')
     c.setFillColor(GOLD); c.setFont('Times-Italic', 22)
     c.drawString(M, H - 148, 'Reply to this email — a person answers.')
-    para(M, H - 190,
-         'Change your towns any time by replying. Data: the Avena observation ledger — every Spanish coastal '
+    state['y'] = H - 190
+    para('Change your coverage any time by replying. Data: the Avena observation ledger — every Spanish coastal '
          'new-build observed nightly, with the price history the portals delete.',
          size=10, leading=15)
     c.setFillColor(FAINT); c.setFont('Courier', 7)
@@ -331,16 +524,31 @@ def render_edition(path, subscriber_name, towns, moves, delist):
 
 # ── Send ────────────────────────────────────────────────────────────────────
 
+def is_all(sub):
+    """towns = {'*'} means the whole book: every town Avena covers, now and as
+    coverage grows (resolved at send time, never a frozen list)."""
+    return '*' in (sub.get('towns') or [])
+
+
+def scope_towns(sub, moves, delist):
+    if not is_all(sub):
+        return list(sub['towns'])
+    # Book towns plus any town that only appears in this week's moves/exits
+    # (e.g. a development that left the book mid-week) — nothing is dropped.
+    return sorted(set(BY_TOWN) | set(moves) | set(delist))
+
+
 def send_edition(sub, pdf_path):
     pdf_b64 = base64.b64encode(open(pdf_path, 'rb').read()).decode()
-    towns_h = ', '.join(sub['towns'])
+    towns_h = 'All coverage' if is_all(sub) else ', '.join(sub['towns'])
     body = {
         'from': 'Avena Market Pulse <pulse@avenaterminal.com>',
         'reply_to': 'henrik@avenaterminal.com',
         'to': [sub['email']],
         'subject': f'Market Pulse · {towns_h} · week {ISOWEEK}',
         'html': (f'<p>Good morning,</p><p>Your Market Pulse edition for <b>{towns_h}</b> is attached — '
-                 f'every observed price movement, launch and exit in your towns this week, with links to '
+                 f'every observed price movement, launch and exit '
+                 f'{"across every town Avena covers" if is_all(sub) else "in your towns"} this week, with links to '
                  f'the full dossiers.</p><p>Questions or town changes: just reply.</p>'
                  f'<p>— Avena Terminal · <a href="https://avenaterminal.com">avenaterminal.com</a></p>'),
         'attachments': [{'filename': f'Avena-Market-Pulse-W{ISOWEEK}.pdf', 'content': pdf_b64}],
@@ -378,16 +586,18 @@ def main():
             print(f"pulse: {sub['email']} already delivered {EDITION} — skipping.")
             continue
         pdf_path = f"/tmp/pulse-{sub['id']}-{EDITION}.pdf"
-        render_edition(pdf_path, sub.get('name') or sub['email'], sub['towns'], moves, delist)
+        towns = scope_towns(sub, moves, delist)
+        render_edition(pdf_path, sub.get('name') or sub['email'], towns, moves, delist, all_coverage=is_all(sub))
         if DRY:
-            print(f"pulse [dry]: built {pdf_path} for {sub['email']} ({', '.join(sub['towns'])})")
+            n = sum(len(moves.get(t, [])) for t in towns)
+            print(f"pulse [dry]: built {pdf_path} for {sub['email']} ({len(towns)} towns, {n} price changes)")
             continue
         resend_id = send_edition(sub, pdf_path)
         rest('pulse_deliveries', 'POST', {
             'subscriber_id': sub['id'], 'edition_date': EDITION,
             'towns': sub['towns'], 'resend_id': resend_id,
         })
-        print(f"pulse: sent to {sub['email']} ({', '.join(sub['towns'])}) resend={resend_id}")
+        print(f"pulse: sent to {sub['email']} ({'all coverage' if is_all(sub) else ', '.join(sub['towns'])}) resend={resend_id}")
         sent += 1
     print(f'pulse: done — {sent} edition(s) sent.')
 
