@@ -9,10 +9,27 @@ name: Market Pulse weekly delivery
 # edition_date), and the script skips already-delivered rows — a manual
 # re-run after a red Monday fills gaps without double-sending.
 
+#
+# 2026-10-24: GitHub's scheduler has been starting this job 5-7h late (runs
+# began 11:06-13:32 UTC on 09-21..10-19), and 10-19 failed on a one-off DNS
+# error, so no edition went out that week. Fixes: two backstop crons on the
+# same Monday fill any gap (the pulse_deliveries check makes them no-ops once
+# sent), a concurrency group stops two runs overlapping, and the script
+# retries DNS/connection-refused failures.
+#
+# Since 2026-10-24 this is the ONLY scheduled Market Pulse email: the daily
+# same-day alerts (pulse-alerts.yml) are paused at the owner's request.
+
 on:
   schedule:
     - cron: '45 5 * * 1'
+    - cron: '15 8 * * 1'
+    - cron: '15 12 * * 1'
   workflow_dispatch: {}
+
+concurrency:
+  group: pulse-weekly
+  cancel-in-progress: false
 
 permissions:
   contents: read
