@@ -1,31 +1,41 @@
 name: Market Pulse weekly delivery
 
-# The Monday promise from the 2026-08-12 outreach: "your edition lands in
-# your inbox as a PDF every Monday at 08:00 CET." Cron fires 05:45 UTC so
-# generation and send comfortably beat 08:00 CET (06:00 UTC in summer,
-# 07:00 in winter — early beats late for a newspaper).
+# The Monday edition. One row per subscriber per edition date in
+# pulse_deliveries (UNIQUE), and the script skips rows already there, so a
+# re-run fills gaps and does not double-send.
 #
-# Idempotent by design: pulse_deliveries has UNIQUE (subscriber,
-# edition_date), and the script skips already-delivered rows — a manual
-# re-run after a red Monday fills gaps without double-sending.
-
+# 2026-10-26: GitHub created no scheduled run for the 05:45 or 08:15 UTC
+# crons (none by 11:18 UTC), after a month of Monday runs starting at
+# 10:44–13:32 UTC. 2026-10-19's run started at 11:16 UTC and died on DNS
+# "Name or service not known"; retries for that failure were added
+# 2026-10-24. The crons below are extra draws, including 13:32 UTC (the
+# latest observed scheduled start, 2026-10-12) and 17:45 UTC (still Monday
+# in Oslo even several hours late). They are the same weekly scheduler that
+# missed the morning. The durable path is pulse-weekly-backstop.yml, which
+# is daily and dispatches this workflow. workflow_dispatch started in the
+# same second on 2026-10-26; the schedule did not.
 #
-# 2026-10-24: GitHub's scheduler has been starting this job 5-7h late (runs
-# began 11:06-13:32 UTC on 09-21..10-19), and 10-19 failed on a one-off DNS
-# error, so no edition went out that week. Fixes: two backstop crons on the
-# same Monday fill any gap (the pulse_deliveries check makes them no-ops once
-# sent), a concurrency group stops two runs overlapping, and the script
-# retries DNS/connection-refused failures.
+# A run that reaches Tuesday in Europe/Oslo still uses Monday's edition
+# date, so a slip past midnight cannot mint a second edition. Wednesday
+# through Sunday a scheduled run exits without sending. workflow_dispatch
+# remains the manual gap-fill.
 #
-# Since 2026-10-24 this is the ONLY scheduled Market Pulse email: the daily
-# same-day alerts (pulse-alerts.yml) are paused at the owner's request.
+# Daily same-day alerts stay off. pulse-alerts.yml is workflow_dispatch only.
 
 on:
   schedule:
-    - cron: '45 5 * * 1'
-    - cron: '15 8 * * 1'
-    - cron: '15 12 * * 1'
-  workflow_dispatch: {}
+    - cron: '45 5 * * 1'    # 05:45 UTC — primary, before 08:00 CET
+    - cron: '15 8 * * 1'    # 08:15 UTC
+    - cron: '15 12 * * 1'   # 12:15 UTC — inside the hour runs have actually been created
+    - cron: '32 13 * * 1'   # 13:32 UTC — latest observed scheduled start (2026-10-12)
+    - cron: '45 17 * * 1'   # 17:45 UTC — later the same Monday
+  workflow_dispatch:
+    inputs:
+      edition_date:
+        description: 'Edition date YYYY-MM-DD. Empty uses the Monday edition; Tuesday still that Monday.'
+        required: false
+        type: string
+        default: ''
 
 concurrency:
   group: pulse-weekly
@@ -37,15 +47,31 @@ permissions:
 jobs:
   deliver:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
+
+      - name: Weekly window
+        id: gate
+        env:
+          PULSE_TRIGGER: ${{ github.event_name == 'schedule' && 'schedule' || 'dispatch' }}
+        run: python3 scripts/pulse/weekly_window.py --gate
+
       - uses: actions/setup-python@v7
+        if: steps.gate.outputs.send == 'true'
         with:
           python-version: '3.12'
-      - run: pip install reportlab
+
+      - name: Install reportlab
+        if: steps.gate.outputs.send == 'true'
+        run: pip install reportlab
+
       - name: Generate and send editions
+        if: steps.gate.outputs.send == 'true'
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          PULSE_TRIGGER: ${{ github.event_name == 'schedule' && 'schedule' || 'dispatch' }}
+          PULSE_EDITION_DATE: ${{ inputs.edition_date || '' }}
         run: python3 scripts/pulse/generate_editions.py
