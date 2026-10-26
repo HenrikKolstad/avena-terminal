@@ -99,6 +99,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // (JSON/JSON-LD assets removed 2026-08-05 — sitemaps are for indexable
     // HTML; machine endpoints are discovered via robots + on-page links.)
     ['/dataset',          'weekly',  0.9],
+    ['/due-diligence',    'weekly',  0.85],
     ['/papers/delphi',    'monthly', 0.85],
     // ─── Norwegian buyer funnel (2026-08-06) ──────────────────────────────
     ['/no',                                   'daily',   0.9],
