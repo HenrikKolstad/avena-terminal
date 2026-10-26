@@ -22,6 +22,9 @@ Honesty rules, same as everywhere in this codebase:
    this week" is a real finding, not a gap to paper over.
  - Deliveries are logged with a UNIQUE (subscriber, edition_date) constraint,
    so a re-run can never double-send; it fills gaps only.
+ - The edition date is the Monday in Europe/Oslo. A run that starts on
+   Tuesday still uses that Monday, so a scheduler slip past midnight cannot
+   mint a second edition. Wednesday–Sunday a scheduled run does not send.
  - A failed send raises loudly. A missing day of Pulse is visible, never
    silent.
 
@@ -41,6 +44,7 @@ import urllib.error
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import unit_identity as ui  # noqa: E402
+import weekly_window as ww  # noqa: E402
 
 from reportlab.lib.colors import HexColor
 from reportlab.lib.pagesizes import A4
@@ -117,6 +121,16 @@ EDITION = TODAY.isoformat()
 ISOWEEK = TODAY.isocalendar()[1]
 
 
+def bind_edition(day):
+    """Point the week window at one edition date. Called once from main
+    before any read, so a Tuesday catch-up of Monday does not count Tuesday."""
+    global TODAY, WEEK_AGO, EDITION, ISOWEEK
+    TODAY = day
+    WEEK_AGO = day - dt.timedelta(days=7)
+    EDITION = day.isoformat()
+    ISOWEEK = day.isocalendar()[1]
+
+
 REGION_LABEL = {'costa-del-sol': 'Costa del Sol', 'cb-south': 'Costa Blanca South',
                 'cb-north': 'Costa Blanca North', 'costa-calida': 'Costa Calida'}
 REGION_OF_TOWN = {}
@@ -150,9 +164,11 @@ def fetch_moves():
 
     No threshold, no direction filter, no top-N: a move is any change in a
     ref's asking price between consecutive observations where the newer one
-    falls inside the week (WEEK_AGO, TODAY]. The older observation may be
-    from before the week (baseline), so the first change of the week is never
-    lost. Tuple: (ref, from, to, date, pct, previous_observation_date).
+    falls inside the week (WEEK_AGO, TODAY]. Dates after TODAY are ignored so
+    a Tuesday catch-up dated Monday does not pick up Tuesday. The older
+    observation may be from before the week (baseline), so the first change
+    of the week is never lost. Tuple: (ref, from, to, date, pct,
+    previous_observation_date).
 
     UNIT IDENTITY. A change only counts when the ref still describes the same
     unit (unit_identity.py; stamped per row as price_snapshots.move_status).
@@ -189,7 +205,7 @@ def fetch_moves():
     HELD.clear()
     for ref, lst in series.items():
         for i in range(1, len(lst)):
-            if lst[i][0] <= str(WEEK_AGO):
+            if lst[i][0] <= str(WEEK_AGO) or lst[i][0] > str(TODAY):
                 continue
             if lst[i][1] != lst[i - 1][1]:
                 town = TOWN_OF.get(ref) or SNAP_TOWN.get(ref) or 'Unattributed'
@@ -217,6 +233,9 @@ def fetch_delistings():
                 f'&last_seen_date=gte.{WEEK_AGO}&order=last_seen_date.desc')
     out = {}
     for r in rows:
+        seen = (r.get('last_seen_date') or '')[:10]
+        if seen > str(TODAY):
+            continue
         town = (r.get('town') or '').split(',')[0].strip() or 'Unattributed'
         if r.get('region'):
             SNAP_REGION.setdefault(town, r['region'])
@@ -232,7 +251,8 @@ def town_stats(town):
     pm2 = sorted(p['pm2'] for p in props if p.get('pm2'))
     mm2 = sorted(p['mm2'] for p in props if p.get('mm2'))
     new = [(p['ref'], p.get('t', ''), p.get('bd'), p.get('pf'), p.get('_added'))
-           for p in props if (p.get('_added') or '') >= str(WEEK_AGO)]
+           for p in props
+           if (added := (p.get('_added') or '')[:10]) and str(WEEK_AGO) <= added <= str(TODAY)]
     return {
         'units': len(props),
         'median_price': statistics.median(prices) if prices else 0,
@@ -639,6 +659,29 @@ def send_edition(sub, pdf_path):
 
 
 def main():
+    trigger = os.environ.get('PULSE_TRIGGER', 'dispatch').strip() or 'dispatch'
+    if trigger == 'schedule' and not ww.schedule_may_send():
+        oslo = ww.oslo_now()
+        print(
+            f'pulse: {oslo.strftime("%A")} {oslo.date().isoformat()} Europe/Oslo '
+            f'is outside the weekly window — not sending.'
+        )
+        return
+    raw = os.environ.get('PULSE_EDITION_DATE', '').strip()
+    if raw:
+        try:
+            day = ww.parse_edition_override(raw)
+        except ValueError as e:
+            sys.exit(f'pulse: {e}')
+    else:
+        day = ww.edition_date_for()
+    bind_edition(day)
+    utc_today = dt.datetime.now(dt.timezone.utc).date()
+    if day != utc_today:
+        print(f'pulse: edition {EDITION} (runner UTC today is {utc_today.isoformat()}, trigger={trigger})')
+    else:
+        print(f'pulse: edition {EDITION} (trigger={trigger})')
+
     subs = rest('pulse_subscribers?select=*&active=eq.true')
     if ONLY_TO:
         subs = [s for s in subs if s['email'] == ONLY_TO]
@@ -648,6 +691,13 @@ def main():
 
     delivered = {(d['subscriber_id'], d['edition_date'])
                  for d in rest(f'pulse_deliveries?select=subscriber_id,edition_date&edition_date=eq.{EDITION}')}
+
+    pending = [s for s in subs if (s['id'], EDITION) not in delivered]
+    if not pending and not DRY:
+        for sub in subs:
+            print(f"pulse: {sub['email']} already delivered {EDITION} — skipping.")
+        print('pulse: done — 0 edition(s) sent.')
+        return
 
     moves = fetch_moves()
     delist = fetch_delistings()

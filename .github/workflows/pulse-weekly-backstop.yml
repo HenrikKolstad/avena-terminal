@@ -1,0 +1,72 @@
+name: Market Pulse weekly backstop
+
+# Watches the Monday edition. Does not send it.
+#
+# pulse-weekly.yml is Monday-only, and that scheduler has been missing the
+# morning. From 2026-09-07 the run that did appear started at 10:44–13:32 UTC
+# (5–8h after the 05:45 cron). On 2026-10-26 no scheduled run existed by
+# 11:18 UTC. The same days, daily workflows did start: feed-refresh at 06:51
+# and 10:59 UTC on 2026-10-26 (crons 01:37 and 05:10), capture-backstop both
+# slots on 2026-10-25. A manual workflow_dispatch of pulse-weekly at 11:18 UTC
+# started in the same second.
+#
+# So this workflow is daily, on a different schedule from the sender, and the
+# only thing it does on a miss is dispatch pulse-weekly.yml. The send script's
+# already-delivered check makes that dispatch a no-op once the edition is
+# logged. weekly_window.py keeps the action weekly: nothing from Wednesday
+# until 07:00 UTC Monday, and a Tuesday run still asks for Monday's edition
+# date so a slip past midnight cannot send a second email.
+#
+# Daily same-day alerts are not this workflow and stay off (pulse-alerts.yml
+# has no schedule).
+#
+# Slot hours are chosen for the lag already measured, about five hours: a
+# 02:15 UTC cron that starts near 07:15 lands as the backstop window opens
+# (08:15 CET). A punctual 02:15 is before 07:00 UTC and does nothing, leaving
+# the 05:45 primary alone. 07:15 UTC is the draw aimed at the 12:00–13:30 UTC
+# hour when Monday runs have actually been created.
+
+on:
+  schedule:
+    - cron: '15 2 * * *'
+    - cron: '15 7 * * *'
+    - cron: '15 12 * * *'
+    - cron: '15 17 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Decide and report, but never dispatch'
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: pulse-weekly-backstop
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  # workflow_dispatch from GITHUB_TOKEN is the documented exception to
+  # "GITHUB_TOKEN does not start workflows". Reading in-flight runs needs
+  # actions read, which write includes.
+  actions: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout main at its current tip
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Decide, and dispatch the Monday edition only if it is missing
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PULSE_BACKSTOP_DRY: ${{ inputs.dry_run && '1' || '0' }}
+        run: python3 scripts/pulse/weekly_backstop.py
