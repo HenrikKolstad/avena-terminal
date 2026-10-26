@@ -51,6 +51,7 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
       { label: 'Academic Access', href: '/academic' },
       { label: 'Data Partners',   href: '/data-partners' },
       { label: 'Open Dataset',    href: '/dataset' },
+      { label: 'Due diligence',  href: '/due-diligence' },
       { label: 'Portugal market', href: '/portugal' },
       { label: 'Spain official benchmarks', href: '/spain/official' },
       { label: 'Sample fund report', href: '/reports/sample' },

@@ -136,7 +136,10 @@ export default function APIPage() {
 
         <Section id="dataset" title="Open dataset">
           <p>Full Avena dataset under CC BY 4.0. Daily refresh, parquet + JSONL + CSV.</p>
-          <Link href="/dataset" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Download dataset →</Link>
+          <div className="flex flex-wrap gap-4">
+            <Link href="/dataset" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Download dataset →</Link>
+            <Link href="/due-diligence" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Due diligence pack →</Link>
+          </div>
         </Section>
 
         {/* Pricing */}
