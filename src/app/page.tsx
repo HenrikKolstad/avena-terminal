@@ -1,54 +1,83 @@
 /**
- * Homepage — the new front (2026-10-27).
+ * Homepage — the MARE rollout (2026-07-20).
  *
- * One box, one question. Copy agreed with Henrik in chat the same day:
- *   "Is this property overpriced?" / "Free. Takes 5 seconds."
- * Everything else lives behind the two nav items. The old MARE homepage
- * is preserved at /classic.
+ * The luxury marketside as the front door: cinematic hero with living
+ * pool water, the live ticker, this week's ranked deals, the method
+ * statement, the collection plates, the three coasts, and the Private
+ * Office (the real enquiry wire). Every number is live from the
+ * dataset; every Enquire lands in the agent's inbox.
  */
 
 import type { Metadata } from 'next';
-import { FrontNav, FrontFooter } from '@/components/front/FrontNav';
-import { CheckForm } from '@/components/front/CheckForm';
-import { listTownsForClient } from '@/lib/check';
+import { Nav } from '@/components/v2/Nav';
+import { Footer } from '@/components/v2/Footer';
+import { CineHero } from '@/components/mare/CineHero';
+import { AudienceDoors } from '@/components/mare/AudienceDoors';
+import { LuxuryRankings } from '@/components/mare/LuxuryRankings';
+import { TownMarquee, Statement, LuxuryCollection, CoastPanels, PrivateOffice } from '@/components/mare/Sections';
+import { AvenaConcierge } from '@/components/concierge/AvenaConcierge';
+import { getTopDeals } from '@/lib/deals';
 import { getAllProperties } from '@/lib/properties';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Is this property overpriced? — Avena',
-  description: 'Paste an Idealista or Fotocasa link. We compare it with every similar new-build on the Costa Blanca, Costa Cálida and Costa del Sol and tell you if the price is fair.',
-  alternates: { canonical: 'https://avenaterminal.com' },
+  title: 'Underpriced Spanish coastal property, scored daily — Avena',
+  description: 'Every new-build on the Costa Blanca, Cálida and del Sol, scored on discount-to-market, yield and developer quality. The underpriced ones, surfaced first — with the data to prove it.',
+  alternates: {
+    canonical: 'https://avenaterminal.com',
+    // Reciprocal hreflang with the Norwegian buyer funnel — real language
+    // variants only (the old es/de/nl tags pointed at redirects and are gone).
+    languages: { en: 'https://avenaterminal.com', nb: 'https://avenaterminal.com/no' },
+  },
   openGraph: {
-    title: 'Is this property overpriced? — Avena',
-    description: 'Paste a listing link. Free price check against every comparable new-build on the Spanish coast.',
+    title: 'Underpriced Spanish coastal property, scored daily — Avena',
+    description: 'Every new-build on the Costa Blanca, Cálida and del Sol, scored on discount-to-market, yield and developer quality. The underpriced ones, surfaced first.',
     url: 'https://avenaterminal.com',
     siteName: 'Avena',
     images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Underpriced Spanish coastal property, scored daily — Avena',
+    description: 'Every new-build on the Costa Blanca, Cálida and del Sol, scored daily. The underpriced ones, surfaced first.',
+  },
+};
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Avena',
+  alternateName: 'Avena Terminal',
+  description: 'A deal-finder for underpriced Spanish coastal property, built on Europe\'s deepest technical data infrastructure for property.',
+  url: 'https://avenaterminal.com',
+  logo: 'https://avenaterminal.com/logo.png',
+  sameAs: [
+    'https://www.wikidata.org/wiki/Q139165733',
+  ],
 };
 
 export default function HomePage() {
-  const towns = listTownsForClient();
-  const n = getAllProperties().length;
+  const deals = getTopDeals(50);
+  const total = getAllProperties().length;
+
   return (
-    <div className="avena-v2 min-h-screen">
-      <FrontNav />
-      <main className="av-clean flex min-h-screen flex-col items-center justify-center px-4 pt-14 text-center">
-        <div className="mb-5 hidden sm:flex items-center justify-center gap-3">
-          <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
-          <span className="font-mono text-[10px] uppercase tracking-[0.4em]" style={{ color: 'hsl(var(--av-primary))' }}>Spanish coast · price check</span>
-          <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
-        </div>
-        <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[1.05] tracking-[-0.02em] text-foreground mb-8">
-          Is this property <em className="not-italic" style={{ color: 'hsl(var(--av-primary))', fontStyle: 'italic' }}>overpriced?</em>
-        </h1>
-        <CheckForm towns={towns} />
-        <p className="mt-12 max-w-[520px] text-sm leading-relaxed" style={{ color: 'hsl(var(--av-muted-foreground))' }}>
-          We compare the asking price with {n.toLocaleString('en-US').replace(',', ' ')} similar new-builds across the Costa Blanca, Costa Cálida and Costa del Sol.
-        </p>
+    <div className="avena-v2 relative min-h-screen w-full">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <Nav />
+      <main className="av-clean">
+        <CineHero />
+        <AudienceDoors />
+        <LuxuryRankings deals={deals.slice(0, 5)} total={total} seeAllHref="/deals" />
+        <PrivateOffice />
+        <TownMarquee />
+        <Statement />
+        <LuxuryCollection deals={deals.slice(0, 4)} />
+        <CoastPanels />
       </main>
-      <FrontFooter />
+      <Footer />
+      {/* Avena Concierge — the floating property advisor (engine stats moved to /engine) */}
+      <AvenaConcierge />
     </div>
   );
 }
