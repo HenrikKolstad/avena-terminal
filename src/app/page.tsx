@@ -2,7 +2,7 @@
  * Homepage — the new front (2026-10-27).
  *
  * One box, one question. Copy agreed with Henrik in chat the same day:
- *   "Is this villa overpriced?" / "Free. Takes 5 seconds."
+ *   "Is this property overpriced?" / "Free. Takes 5 seconds."
  * Everything else lives behind the two nav items. The old MARE homepage
  * is preserved at /classic.
  */
@@ -16,11 +16,11 @@ import { getAllProperties } from '@/lib/properties';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Is this villa overpriced? — Avena',
+  title: 'Is this property overpriced? — Avena',
   description: 'Paste an Idealista or Fotocasa link. We compare it with every similar new-build on the Costa Blanca, Costa Cálida and Costa del Sol and tell you if the price is fair.',
   alternates: { canonical: 'https://avenaterminal.com' },
   openGraph: {
-    title: 'Is this villa overpriced? — Avena',
+    title: 'Is this property overpriced? — Avena',
     description: 'Paste a listing link. Free price check against every comparable new-build on the Spanish coast.',
     url: 'https://avenaterminal.com',
     siteName: 'Avena',
@@ -41,7 +41,7 @@ export default function HomePage() {
           <span className="h-px w-10" style={{ background: 'hsl(var(--av-primary))' }} />
         </div>
         <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-light leading-[1.05] tracking-[-0.02em] text-foreground mb-8">
-          Is this villa <em className="not-italic" style={{ color: 'hsl(var(--av-primary))', fontStyle: 'italic' }}>overpriced?</em>
+          Is this property <em className="not-italic" style={{ color: 'hsl(var(--av-primary))', fontStyle: 'italic' }}>overpriced?</em>
         </h1>
         <CheckForm towns={towns} />
         <p className="mt-12 max-w-[520px] text-sm leading-relaxed" style={{ color: 'hsl(var(--av-muted-foreground))' }}>
