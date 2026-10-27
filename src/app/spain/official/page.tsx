@@ -92,8 +92,11 @@ export default function SpainOfficialPage() {
             <p className="max-w-3xl text-lg sm:text-xl font-light leading-relaxed text-muted-foreground mb-4">
               For every province in the current Avena corpus, the median new-build asking price per m² sits beside the ministry’s appraised value per m² and the INE new-build house price index. Refreshed from the public files each week.
             </p>
-            <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground mb-8">
+            <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground mb-4">
               {bench.coverage_note ?? 'Official figures are pending the first refresh of data/es-official.json.'}
+            </p>
+            <p className="text-sm mb-8">
+              <Link href="/spain/supply" className="text-primary hover:underline">Supply pipeline for the same provinces</Link>
             </p>
             {pending ? (
               <div className="rounded-sm border p-5 max-w-3xl" style={{ borderColor: 'hsl(var(--av-border))' }}>

@@ -1,0 +1,75 @@
+name: Spain supply pipeline refresh
+
+# Rebuilds data/es-supply.json (the /spain/supply page) from the housing
+# ministry's estimated free-market starts and completions (VDP005_01) and
+# INE registered sales of new dwellings (table 6150). Both are keyless public
+# files, so this job needs NO secrets. The series are monthly; a weekly pull
+# keeps the page within days of a release.
+#
+# Thursday 04:15 UTC sits clear of the Wednesday 04:40 official-benchmark
+# job and of the 05:10 feed refresh.
+#
+# If a required source stops parsing, scripts/ingest-es-supply.ts exits
+# non-zero and nothing is committed: the previous layer stays live and this
+# run goes red. The notarial transaction file is read and, when it prints
+# two counts for one province-quarter, recorded as not ingested. That
+# conflict does not fail the job. The raw visado bulletin is HTML and is
+# not fetched.
+# If nothing changed upstream the script leaves the file untouched and the
+# commit step is a no-op.
+
+on:
+  schedule:
+    - cron: '15 4 * * 4'   # Thursdays 04:15 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: es-supply-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Reachability probe (diagnostic only)
+        continue-on-error: true
+        run: |
+          for u in \
+            https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP005_01.csv \
+            https://www.ine.es/jaxiT3/files/t/csv_bdsc/6150.csv \
+            https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP003_01.csv
+          do
+            curl -sS -L -o /dev/null -w "$u -> %{http_code} %{remote_ip} %{time_total}s\n" --max-time 60 -A 'AvenaTerminal-OfficialStats/1.0' "$u" || echo "$u -> curl failed"
+          done
+
+      - name: Build the Spain supply layer
+        run: npx tsx scripts/ingest-es-supply.ts
+
+      - name: Commit refreshed layer (if changed)
+        run: |
+          git config user.name "avena-feed-bot"
+          git config user.email "feed@avenaterminal.com"
+          git add data/es-supply.json
+          if git diff --staged --quiet; then
+            echo "No Spain supply changes this week."
+          else
+            git commit -m "chore(es): weekly supply pipeline refresh [skip ci]"
+            git pull --rebase origin main
+            git push
+            echo "Pushed refreshed Spain supply layer."
+          fi

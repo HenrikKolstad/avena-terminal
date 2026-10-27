@@ -171,6 +171,7 @@ export default async function DueDiligencePage() {
           <Link href="/api/v1/due-diligence" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">JSON</Link>
           <Link href={pack.sample.href} className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Sample CSV</Link>
           <Link href="/methodology" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Methodology</Link>
+          <Link href="/spain/supply" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Spain supply pipeline</Link>
         </div>
 
         <div className="mt-10 grid gap-px sm:grid-cols-2 lg:grid-cols-4" style={{ background: 'hsl(var(--av-border) / 0.6)' }}>

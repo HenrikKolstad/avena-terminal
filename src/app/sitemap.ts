@@ -70,6 +70,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ['/eu-official',          'daily',  0.75],
     ['/portugal',             'weekly', 0.85],
     ['/spain/official',       'weekly', 0.85],
+    ['/spain/supply',         'weekly', 0.85],
     ['/archive',              'weekly', 0.7],
     ['/alerts/macro',         'daily',  0.7],
     ['/changelog',            'weekly', 0.6],
