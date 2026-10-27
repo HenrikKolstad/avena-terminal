@@ -94,6 +94,7 @@ const pack = assembleDueDiligence({
   manifest: JSON.parse(read('public/open-data/dataset.json')),
   ledgerDates: dates.map((d) => d.date),
   officialGeneratedAt: null,
+  supplyGeneratedAt: null,
   health: null,
   snapshot: { client: false, min: null, max: null, error: null },
 });
@@ -164,13 +165,14 @@ for (const [file, cron] of [
   ['.github/workflows/capture-backstop.yml', '0 7 * * *'],
   ['.github/workflows/capture-backstop.yml', '0 9 * * *'],
   ['.github/workflows/es-official-refresh.yml', '40 4 * * 3'],
+  ['.github/workflows/es-supply-refresh.yml', '15 4 * * 4'],
   ['vercel.json', '"path": "/api/cron/pricing-history", "schedule": "20 2 * * *"'],
   ['vercel.json', '"path": "/api/cron/pricing-history", "schedule": "30 14 * * *"'],
   ['vercel.json', '"path": "/api/cron/scribe",  "schedule": "5 3 * * *"'],
 ] as const) {
   check(`${file} still has ${cron}`, read(file).includes(cron));
 }
-check('cadence text cites those clocks', /01:37 UTC/.test(pack.pipeline[0].cadence) && /02:20 UTC/.test(pack.pipeline[1].cadence) && /07:00 UTC/.test(pack.pipeline[2].cadence) && /04:40 UTC/.test(pack.pipeline[3].cadence));
+check('cadence text cites those clocks', /01:37 UTC/.test(pack.pipeline[0].cadence) && /02:20 UTC/.test(pack.pipeline[1].cadence) && /07:00 UTC/.test(pack.pipeline[2].cadence) && /04:40 UTC/.test(pack.pipeline[3].cadence) && /04:15 UTC/.test(pack.pipeline[4].cadence));
 
 console.log('links and claims');
 check('methodology links the pack', read('src/app/methodology/page.tsx').includes('href="/due-diligence"'));
@@ -196,11 +198,13 @@ const withHealth: HealthReport = {
     { id: 'workflows', label: 'Pipelines', status: 'ok', critical: false, detail: 'feed-refresh: success, capture-backstop: success, tests: success', observed: null },
   ],
 };
-const piped = buildPipeline(withHealth, '2026-10-24T23:22:40.336Z');
+const piped = buildPipeline(withHealth, '2026-10-24T23:22:40.336Z', '2026-10-27T00:00:00.000Z');
 const backstop = piped.find((s) => s.id === 'capture-backstop');
 check('backstop detail is the workflows check, and still has no run clock', backstop?.last_observed === NOT_AVAILABLE && /feed-refresh: success/.test(backstop?.health_detail ?? '') && /tests: success/.test(backstop?.health_detail ?? '') && /together/.test(backstop?.health_detail ?? ''));
 const official = piped.find((s) => s.id === 'es-official');
 check('official artifact time is the file and its health status stays unavailable', official?.last_observed === '2026-10-24T23:22:40.336Z' && official.health_status === NOT_AVAILABLE);
+const supply = piped.find((s) => s.id === 'es-supply');
+check('supply artifact time is the file and its health status stays unavailable', supply?.last_observed === '2026-10-27T00:00:00.000Z' && supply.health_status === NOT_AVAILABLE);
 check('not-available rollup names the missing database read', pack.not_available.some((n) => n.field === 'coverage.price_history.first_date' && /not configured/i.test(n.reason)));
 check('pack has a dictionary entry for every open-data move column', fieldsFor('moves').length === 8);
 
