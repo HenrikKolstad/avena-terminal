@@ -50,13 +50,13 @@
   {
     "town": "Pilar de La Horadada",
     "costa": "Costa Blanca South",
-    "n_listings": 90,
-    "median_price_eur": 369700,
+    "n_listings": 94,
+    "median_price_eur": 364500,
     "median_pm2_eur": 5071,
-    "p25_pm2_eur": 4348,
-    "p75_pm2_eur": 5859,
-    "median_built_m2": 77,
-    "villa_share_pct": 69,
+    "p25_pm2_eur": 4359,
+    "p75_pm2_eur": 5850,
+    "median_built_m2": 75,
+    "villa_share_pct": 70,
     "median_beach_km": 2
   },
   {
