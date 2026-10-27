@@ -4,15 +4,15 @@
   "in_sample": true,
   "n_scored": 2051,
   "n_skipped": 0,
-  "mape_pct": 22,
-  "rmse_pct": 44.2,
+  "mape_pct": 21.96,
+  "rmse_pct": 44.18,
   "median_abs_error_pct": 15.99,
-  "within_10_pct": 33.6,
-  "within_20_pct": 59.7,
-  "mean_bias_pct": 3.18,
+  "within_10_pct": 33.9,
+  "within_20_pct": 60,
+  "mean_bias_pct": 3.28,
   "caveats": [
     "In-sample: town × type medians are drawn from the same book, so each listing contributes to its own baseline. Out-of-sample error is higher.",
     "Target is asking price, not registered transaction price. Spanish coastal new-build transaction prices are not publicly available at listing level."
   ],
-  "computed_at": "2026-10-26T10:59:52.581Z"
+  "computed_at": "2026-10-27T06:46:30.570Z"
 }
