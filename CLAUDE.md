@@ -94,10 +94,3 @@ in chat is normal; commit messages and code in English.
 ## Sibling projects (not in this repo)
 - X-bot: NEVER start/stop it — only Henrik does, via his buttons.
 - POLYBOT/Polymarket bots run on a Vultr VPS, unrelated to Avena.
-
-## Listing fetch (the /api/check link paste, 2026-10-27)
-- Idealista/Fotocasa refuse server fetches (DataDome). `src/lib/listing-fetch.ts` chains
-  direct → paid anti-bot proxy → Jina reader. The proxy only runs when Vercel env has
-  `SCRAPER_PROVIDER` (scrapedo | scrapingbee | zenrows | scraperapi) and `SCRAPER_API_KEY`.
-  Without a key, Idealista pastes drop to the manual form by design — that is not a bug.
-- Parsers in `src/lib/listing-extract.ts` read the portals' embedded JSON first, visible markup second.
