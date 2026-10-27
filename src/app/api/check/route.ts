@@ -14,7 +14,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { normaliseInputs, runCheck, listTownsForClient } from '@/lib/check';
 import { extractFromUrl } from '@/lib/listing-extract';
 
-export const maxDuration = 20;
+export const maxDuration = 45;
 
 export async function GET() {
   return NextResponse.json({ towns: listTownsForClient() });
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
       const r = runCheck(norm.inputs);
       return NextResponse.json({ ok: true, id: r.id });
     }
-    return NextResponse.json({ ok: false, needs: norm.missing, partial: ex.partial, fetched: ex.fetched, portal: ex.portal });
+    return NextResponse.json({ ok: false, needs: norm.missing, partial: ex.partial, fetched: ex.fetched, route: ex.route, portal: ex.portal });
   }
 
   if (body.inputs && typeof body.inputs === 'object') {
