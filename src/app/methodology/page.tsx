@@ -119,6 +119,7 @@ https://avenaterminal.com/methodology`}
               <Link href="/verify" className="text-foreground/85 hover:text-primary">Verify a methodology →</Link>
               <Link href="/due-diligence" className="text-foreground/85 hover:text-primary">Dataset due diligence →</Link>
               <Link href="/spain/supply" className="text-foreground/85 hover:text-primary">Spain supply pipeline →</Link>
+              <Link href="/spain/towns" className="text-foreground/85 hover:text-primary">Spain municipal appraisals →</Link>
               <a href="https://doi.org/10.5281/zenodo.19520064" target="_blank" rel="noopener" className="text-foreground/85 hover:text-primary">Zenodo DOI →</a>
               <Link href="/intelligence#timetravel" className="text-foreground/85 hover:text-primary">Event store →</Link>
             </div>

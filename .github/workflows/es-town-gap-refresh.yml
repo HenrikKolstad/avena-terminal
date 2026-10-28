@@ -1,0 +1,77 @@
+name: Spain municipal appraisal refresh
+
+# Rebuilds data/es-town-gap.json (the /spain/towns page) from the ministry
+# statistical bulletin, file 35103500.XLS: mean appraised €/m² of free-market
+# housing in municipalities of more than 25,000 inhabitants, split by age.
+# The file is a keyless public download, so this job needs NO secrets.
+# The series is quarterly; a weekly pull keeps the page within days of a
+# release.
+#
+# Friday 04:25 UTC sits clear of the Wednesday 04:40 official-benchmark job,
+# the Thursday 04:15 supply job, and the 05:10 feed refresh.
+#
+# If the sheet stops parsing, scripts/ingest-es-town-gap.ts exits non-zero
+# and nothing is committed: the previous layer stays live and this run goes
+# red. The Notariado portal is not fetched. The Registradores portal is
+# probed and, when it refuses the runner, recorded as not ingested. That
+# refusal does not fail the job. A changed VDP003_01 header does fail the
+# job, because the omission that says that file has no municipal €/m² would
+# otherwise go stale.
+# If nothing changed upstream the script leaves the file untouched and the
+# commit step is a no-op.
+
+on:
+  schedule:
+    - cron: '25 4 * * 5'   # Fridays 04:25 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: es-town-gap-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Reachability probe (diagnostic only)
+        continue-on-error: true
+        run: |
+          for u in \
+            https://apps.fomento.gob.es/Boletinonline2/sedal/35103500.XLS \
+            https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP003_01.csv \
+            https://opendata.registradores.org/dataset/es/dataset/compraventas-de-inmuebles-uso-residencial-por-provincia
+          do
+            curl -sS -L -o /dev/null -w "$u -> %{http_code} %{remote_ip} %{time_total}s\n" --max-time 60 -A 'AvenaTerminal-OfficialStats/1.0' "$u" || echo "$u -> curl failed"
+          done
+
+      - name: Build the municipal appraisal layer
+        run: npx tsx scripts/ingest-es-town-gap.ts
+
+      - name: Commit refreshed layer (if changed)
+        run: |
+          git config user.name "avena-feed-bot"
+          git config user.email "feed@avenaterminal.com"
+          git add data/es-town-gap.json
+          if git diff --staged --quiet; then
+            echo "No municipal appraisal changes this week."
+          else
+            git commit -m "chore(es): weekly municipal appraisal refresh [skip ci]"
+            git pull --rebase origin main
+            git push
+            echo "Pushed refreshed municipal appraisal layer."
+          fi
