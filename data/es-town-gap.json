@@ -1,0 +1,1166 @@
+{
+  "status": "ready",
+  "generated_at": "2026-10-28T00:24:14.932Z",
+  "retrieved_at": "2026-10-28",
+  "period": "2026-Q2",
+  "sheet": "T2A2026",
+  "provinces_in_corpus": [
+    "Málaga",
+    "Alicante",
+    "Murcia",
+    "Granada",
+    "Cádiz"
+  ],
+  "coverage_note": "Municipal rows are the ministry appraisal for free-market housing in municipalities of more than 25,000 inhabitants. The sheet splits the mean into homes up to five years old and older homes. Up to five years is the comparison used for Avena's new-build asking prices, and it is still an appraisal of that age, not a transaction price. A cell printed n.r. is withheld by the ministry and stays blank. A place the sheet does not name, including a municipality of 25,000 inhabitants or fewer and a district that is not itself the municipality, has no official figure. A neighbouring municipality is not substituted. A median and a gap are published only for a town with at least 8 listings that have a positive asking €/m². The sheet's own province label is kept, including where two Castellón municipalities are printed in the Alicante block.",
+  "caveats": [
+    "Avena's figure is the median asking price per m² of coastal new-build listings in the current corpus. It is not a price at which a home has sold, and it is not the median of every home in the municipality.",
+    "The ministry figure is the mean appraised value per m² of free-market housing. The up-to-five-years column is homes of that age. It is not limited to dwellings sold as new, and it is not a notarial or registered transaction price.",
+    "The all-ages column mixes those homes with older ones. A gap against it is labelled all-ages. It is not copied into the up-to-five-years gap when that cell is n.r.",
+    "The sheet covers municipalities of more than 25,000 inhabitants. Smaller municipalities, and Avena place names that are districts rather than the municipality, are absent. Their absence is not filled in.",
+    "Towns with fewer than 8 listings that have a positive asking €/m² are marked insufficient. No median and no gap is published for them. The ministry figure is still shown when the town matched a row.",
+    "No comparison on this page is a statistic published by the ministry, INE, the notaries or the registrars."
+  ],
+  "omissions": [
+    {
+      "source": "Colegio de Registradores",
+      "url": "https://opendata.registradores.org/dataset/es/dataset/compraventas-de-inmuebles-uso-residencial-por-provincia",
+      "ingested": false,
+      "reason": "The open-data portal returned HTTP 403 to the refresh job. No registradores series was ingested."
+    },
+    {
+      "source": "Consejo General del Notariado",
+      "url": "https://penotariado.com/inmobiliario/terminos-y-condiciones",
+      "ingested": false,
+      "reason": "The Portal Estadístico del Notariado (penotariado.com) describes aggregate transaction prices down to municipality and postal code. Its terms prohibit commercial use, and they prohibit reproduction or distribution of the contents without authorisation. The access table on those terms gives a public user provincial depth. No keyless municipal €/m² file was ingested."
+    },
+    {
+      "source": "Ministerio de Vivienda y Agenda Urbana, VDP003_01",
+      "url": "https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP003_01.csv",
+      "ingested": false,
+      "reason": "The file was re-read. Its columns are a province, a dwelling type, a quarter, a transaction count and a total transaction value. There is no municipality column and no €/m² column, so it cannot fill this layer. No figure from it was ingested."
+    }
+  ],
+  "sources": {
+    "municipal_appraisal": {
+      "publisher": "Ministerio de Transportes y Movilidad Sostenible",
+      "series": "Valor tasado medio de vivienda libre de los municipios mayores de 25.000 habitantes",
+      "file": "35103500.XLS",
+      "url": "https://apps.fomento.gob.es/Boletinonline2/sedal/35103500.XLS",
+      "bulletin_url": "https://apps.fomento.gob.es/Boletinonline2/?nivel=2&orden=35000000",
+      "licence_note": "Public statistical bulletin download. The sheet does not print a Creative Commons licence, and this layer does not claim one. The provincial appraisal CSV (VDP006_01) is a different file, licensed CC BY 4.0, and it has no municipality column.",
+      "file_modified": "2026-09-17",
+      "file_modified_note": "file_modified is the Last-Modified day of the downloaded workbook, in UTC. It is the timestamp the file server sent. When the server sends no Last-Modified header, file_modified is null.",
+      "period": "2026-Q2",
+      "unit_label": "euros/m2",
+      "up_to_five_years_definition": "Mean appraised value per m² of free-market housing (vivienda libre) up to five years old, in a municipality of more than 25,000 inhabitants. Statistical bulletin of the Ministerio de Transportes y Movilidad Sostenible, file 35103500.XLS. An appraisal of homes of that age. Not a price recorded on a sale, and not a count of new-build deeds.",
+      "over_five_years_definition": "Mean appraised value per m² of free-market housing more than five years old, from the same municipal sheet. Not a second-hand transaction price.",
+      "all_ages_definition": "Mean appraised value per m² of free-market housing of all ages, the column the sheet labels Total. It mixes homes up to five years old with older homes. It is not the up-to-five-years figure.",
+      "municipalities_in_sheet": 306,
+      "municipalities_published": 60
+    }
+  },
+  "municipalities": [
+    {
+      "province_name": "Cádiz",
+      "province_key": "cadiz",
+      "province": "Cádiz",
+      "municipality": "Algeciras",
+      "keys": [
+        "algeciras"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 1593.9,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1595.3,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 10,
+      "appraisals_over_five_years": 403,
+      "appraisals_total": 413
+    },
+    {
+      "province_name": "Cádiz",
+      "province_key": "cadiz",
+      "province": "Cádiz",
+      "municipality": "Arcos de la frontera",
+      "keys": [
+        "arcos de la frontera"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 1322.5,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1325.9,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 7,
+      "appraisals_over_five_years": 110,
+      "appraisals_total": 117
+    },
+    {
+      "province_name": "Cádiz",
+      "province_key": "cadiz",
+      "province": "Cádiz",
+      "municipality": "Cádiz",
+      "keys": [
+        "cadiz"
+      ],
+      "up_to_five_years_eur_m2": 3388.2,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 3011.1,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 3021.1,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 36,
+      "appraisals_over_five_years": 303,
+      "appraisals_total": 339
+    },
+    {
+      "province_name": "Cádiz",
+      "province_key": "cadiz",
+      "province": "Cádiz",
+      "municipality": "Chiclana de la Frontera",
+      "keys": [
+        "chiclana de la frontera"
+      ],
+      "up_to_five_years_eur_m2": 2779.5,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 2218.8,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 2229,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 25,
+      "appraisals_over_five_years": 364,
+      "appraisals_total": 389
+    },
+    {
+      "province_name": "Cádiz",
+      "province_key": "cadiz",
+      "province": "Cádiz",
+      "municipality": "Jerez de la Frontera",
+      "keys": [
+        "jerez de la frontera"
+      ],
+      "up_to_five_years_eur_m2": 2256.6,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 1803.2,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1815,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 79,
+      "appraisals_over_five_years": 768,
+      "appraisals_total": 847
+    },
+    {
+      "province_name": "Cádiz",
+      "province_key": "cadiz",
+      "province": "Cádiz",
+      "municipality": "Línea de la Concepción (La)",
+      "keys": [
+        "linea de la concepcion la",
+        "linea de la concepcion",
+        "la linea de la concepcion"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 1622.5,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1624.1,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 8,
+      "appraisals_over_five_years": 241,
+      "appraisals_total": 249
+    },
+    {
+      "province_name": "Cádiz",
+      "province_key": "cadiz",
+      "province": "Cádiz",
+      "municipality": "Puerto de Santa María",
+      "keys": [
+        "puerto de santa maria"
+      ],
+      "up_to_five_years_eur_m2": 2722.1,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 2555,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 2559.3,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 26,
+      "appraisals_over_five_years": 310,
+      "appraisals_total": 336
+    },
+    {
+      "province_name": "Cádiz",
+      "province_key": "cadiz",
+      "province": "Cádiz",
+      "municipality": "Puerto Real",
+      "keys": [
+        "puerto real"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 1927.2,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1934.2,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 17,
+      "appraisals_over_five_years": 125,
+      "appraisals_total": 142
+    },
+    {
+      "province_name": "Cádiz",
+      "province_key": "cadiz",
+      "province": "Cádiz",
+      "municipality": "Rota",
+      "keys": [
+        "rota"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 2889.9,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 2877.5,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 9,
+      "appraisals_over_five_years": 120,
+      "appraisals_total": 129
+    },
+    {
+      "province_name": "Cádiz",
+      "province_key": "cadiz",
+      "province": "Cádiz",
+      "municipality": "San Fernando",
+      "keys": [
+        "san fernando"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 1957.8,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1962.5,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 18,
+      "appraisals_over_five_years": 313,
+      "appraisals_total": 331
+    },
+    {
+      "province_name": "Cádiz",
+      "province_key": "cadiz",
+      "province": "Cádiz",
+      "municipality": "Sanlúcar de Barrameda",
+      "keys": [
+        "sanlucar de barrameda"
+      ],
+      "up_to_five_years_eur_m2": 2431.3,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 2052.9,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 2064.6,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 21,
+      "appraisals_over_five_years": 192,
+      "appraisals_total": 213
+    },
+    {
+      "province_name": "Cádiz",
+      "province_key": "cadiz",
+      "province": "Cádiz",
+      "municipality": "San Roque",
+      "keys": [
+        "san roque"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 2511.7,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 2568.8,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 8,
+      "appraisals_over_five_years": 167,
+      "appraisals_total": 175
+    },
+    {
+      "province_name": "Granada",
+      "province_key": "granada",
+      "province": "Granada",
+      "municipality": "Granada",
+      "keys": [
+        "granada"
+      ],
+      "up_to_five_years_eur_m2": 3010.2,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 2429.8,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 2446.5,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 63,
+      "appraisals_over_five_years": 726,
+      "appraisals_total": 789
+    },
+    {
+      "province_name": "Granada",
+      "province_key": "granada",
+      "province": "Granada",
+      "municipality": "Motril",
+      "keys": [
+        "motril"
+      ],
+      "up_to_five_years_eur_m2": 2002.9,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 1606.9,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1623.1,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 25,
+      "appraisals_over_five_years": 194,
+      "appraisals_total": 219
+    },
+    {
+      "province_name": "Málaga",
+      "province_key": "malaga",
+      "province": "Málaga",
+      "municipality": "Alhaurín de la Torre",
+      "keys": [
+        "alhaurin de la torre"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 2736.1,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 2753,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 17,
+      "appraisals_over_five_years": 150,
+      "appraisals_total": 167
+    },
+    {
+      "province_name": "Málaga",
+      "province_key": "malaga",
+      "province": "Málaga",
+      "municipality": "Antequera",
+      "keys": [
+        "antequera"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 1531.7,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1532.1,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 5,
+      "appraisals_over_five_years": 132,
+      "appraisals_total": 137
+    },
+    {
+      "province_name": "Málaga",
+      "province_key": "malaga",
+      "province": "Málaga",
+      "municipality": "Benalmádena",
+      "keys": [
+        "benalmadena"
+      ],
+      "up_to_five_years_eur_m2": 3906.5,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 3778.7,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 3782.7,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 39,
+      "appraisals_over_five_years": 363,
+      "appraisals_total": 402
+    },
+    {
+      "province_name": "Málaga",
+      "province_key": "malaga",
+      "province": "Málaga",
+      "municipality": "Estepona",
+      "keys": [
+        "estepona"
+      ],
+      "up_to_five_years_eur_m2": 4046.1,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 3452.5,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 3518.4,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 105,
+      "appraisals_over_five_years": 365,
+      "appraisals_total": 470
+    },
+    {
+      "province_name": "Málaga",
+      "province_key": "malaga",
+      "province": "Málaga",
+      "municipality": "Fuengirola",
+      "keys": [
+        "fuengirola"
+      ],
+      "up_to_five_years_eur_m2": 4546.9,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 3711.2,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 3758,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 163,
+      "appraisals_over_five_years": 260,
+      "appraisals_total": 423
+    },
+    {
+      "province_name": "Málaga",
+      "province_key": "malaga",
+      "province": "Málaga",
+      "municipality": "Málaga",
+      "keys": [
+        "malaga"
+      ],
+      "up_to_five_years_eur_m2": 4140.3,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 3282.7,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 3320.5,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 218,
+      "appraisals_over_five_years": 1504,
+      "appraisals_total": 1722
+    },
+    {
+      "province_name": "Málaga",
+      "province_key": "malaga",
+      "province": "Málaga",
+      "municipality": "Marbella",
+      "keys": [
+        "marbella"
+      ],
+      "up_to_five_years_eur_m2": 5954.8,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 4476.5,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 4528.3,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 79,
+      "appraisals_over_five_years": 669,
+      "appraisals_total": 748
+    },
+    {
+      "province_name": "Málaga",
+      "province_key": "malaga",
+      "province": "Málaga",
+      "municipality": "Mijas",
+      "keys": [
+        "mijas"
+      ],
+      "up_to_five_years_eur_m2": 3760.8,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 3339,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 3365.1,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 147,
+      "appraisals_over_five_years": 528,
+      "appraisals_total": 675
+    },
+    {
+      "province_name": "Málaga",
+      "province_key": "malaga",
+      "province": "Málaga",
+      "municipality": "Rincón de la Victoria",
+      "keys": [
+        "rincon de la victoria"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 3498.4,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 3506.2,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 16,
+      "appraisals_over_five_years": 185,
+      "appraisals_total": 201
+    },
+    {
+      "province_name": "Málaga",
+      "province_key": "malaga",
+      "province": "Málaga",
+      "municipality": "Ronda",
+      "keys": [
+        "ronda"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 1742,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1742.8,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 9,
+      "appraisals_over_five_years": 124,
+      "appraisals_total": 133
+    },
+    {
+      "province_name": "Málaga",
+      "province_key": "malaga",
+      "province": "Málaga",
+      "municipality": "Vélez Málaga",
+      "keys": [
+        "velez malaga"
+      ],
+      "up_to_five_years_eur_m2": 3620,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 2745.3,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 2788.4,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 21,
+      "appraisals_over_five_years": 282,
+      "appraisals_total": 303
+    },
+    {
+      "province_name": "Málaga",
+      "province_key": "malaga",
+      "province": "Málaga",
+      "municipality": "Torremolinos",
+      "keys": [
+        "torremolinos"
+      ],
+      "up_to_five_years_eur_m2": 4247.5,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 3735.5,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 3758.3,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 24,
+      "appraisals_over_five_years": 302,
+      "appraisals_total": 326
+    },
+    {
+      "province_name": "Alicante",
+      "province_key": "alicante",
+      "province": "Alicante",
+      "municipality": "Alcoy/Alcoi",
+      "keys": [
+        "alcoy",
+        "alcoi",
+        "alcoy alcoi"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 1130.7,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1131.6,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 9,
+      "appraisals_over_five_years": 215,
+      "appraisals_total": 224
+    },
+    {
+      "province_name": "Alicante",
+      "province_key": "alicante",
+      "province": "Alicante",
+      "municipality": "Alicante/Alacant",
+      "keys": [
+        "alicante",
+        "alacant",
+        "alicante alacant"
+      ],
+      "up_to_five_years_eur_m2": 2569.8,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 2272.1,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 2279.2,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 48,
+      "appraisals_over_five_years": 1165,
+      "appraisals_total": 1213
+    },
+    {
+      "province_name": "Alicante",
+      "province_key": "alicante",
+      "province": "Alicante",
+      "municipality": "Benidorm",
+      "keys": [
+        "benidorm"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 3213,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 3216.5,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 14,
+      "appraisals_over_five_years": 274,
+      "appraisals_total": 288
+    },
+    {
+      "province_name": "Alicante",
+      "province_key": "alicante",
+      "province": "Alicante",
+      "municipality": "Calpe/Calp",
+      "keys": [
+        "calpe",
+        "calp",
+        "calpe calp"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 3258.1,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 3268.5,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 13,
+      "appraisals_over_five_years": 120,
+      "appraisals_total": 133
+    },
+    {
+      "province_name": "Alicante",
+      "province_key": "alicante",
+      "province": "Alicante",
+      "municipality": "Campello, el",
+      "keys": [
+        "campello el",
+        "campello",
+        "el campello"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 2824.1,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 2836.1,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 12,
+      "appraisals_over_five_years": 157,
+      "appraisals_total": 169
+    },
+    {
+      "province_name": "Alicante",
+      "province_key": "alicante",
+      "province": "Alicante",
+      "municipality": "Crevillent",
+      "keys": [
+        "crevillent"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 1043.9,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1044.4,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 1,
+      "appraisals_over_five_years": 87,
+      "appraisals_total": 88
+    },
+    {
+      "province_name": "Alicante",
+      "province_key": "alicante",
+      "province": "Alicante",
+      "municipality": "Dénia",
+      "keys": [
+        "denia"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 2988.5,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 2984.9,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 20,
+      "appraisals_over_five_years": 262,
+      "appraisals_total": 282
+    },
+    {
+      "province_name": "Alicante",
+      "province_key": "alicante",
+      "province": "Alicante",
+      "municipality": "Elche/Elx",
+      "keys": [
+        "elche",
+        "elx",
+        "elche elx"
+      ],
+      "up_to_five_years_eur_m2": 2060.2,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 1626.2,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1635.1,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 80,
+      "appraisals_over_five_years": 710,
+      "appraisals_total": 790
+    },
+    {
+      "province_name": "Alicante",
+      "province_key": "alicante",
+      "province": "Alicante",
+      "municipality": "Elda",
+      "keys": [
+        "elda"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 1009.9,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1013.1,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 5,
+      "appraisals_over_five_years": 225,
+      "appraisals_total": 230
+    },
+    {
+      "province_name": "Alicante",
+      "province_key": "alicante",
+      "province": "Alicante",
+      "municipality": "Jávea/Xábia",
+      "keys": [
+        "javea",
+        "xabia",
+        "javea xabia"
+      ],
+      "up_to_five_years_eur_m2": 3942,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 3489.4,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 3507.2,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 21,
+      "appraisals_over_five_years": 149,
+      "appraisals_total": 170
+    },
+    {
+      "province_name": "Alicante",
+      "province_key": "alicante",
+      "province": "Alicante",
+      "municipality": "Novelda",
+      "keys": [
+        "novelda"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 1015.9,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1015.4,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 8,
+      "appraisals_over_five_years": 89,
+      "appraisals_total": 97
+    },
+    {
+      "province_name": "Alicante",
+      "province_key": "alicante",
+      "province": "Alicante",
+      "municipality": "Orihuela",
+      "keys": [
+        "orihuela"
+      ],
+      "up_to_five_years_eur_m2": 3088.6,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 2015.1,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 2079.9,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 42,
+      "appraisals_over_five_years": 496,
+      "appraisals_total": 538
+    },
+    {
+      "province_name": "Alicante",
+      "province_key": "alicante",
+      "province": "Alicante",
+      "municipality": "Petrer",
+      "keys": [
+        "petrer"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 1112.4,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1113.1,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 5,
+      "appraisals_over_five_years": 116,
+      "appraisals_total": 121
+    },
+    {
+      "province_name": "Alicante",
+      "province_key": "alicante",
+      "province": "Alicante",
+      "municipality": "Santa Pola",
+      "keys": [
+        "santa pola"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 2604.1,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 2613.9,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 18,
+      "appraisals_over_five_years": 241,
+      "appraisals_total": 259
+    },
+    {
+      "province_name": "Alicante",
+      "province_key": "alicante",
+      "province": "Alicante",
+      "municipality": "San Vicente del Raspeig",
+      "keys": [
+        "san vicente del raspeig"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 1970.8,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1974.2,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 9,
+      "appraisals_over_five_years": 192,
+      "appraisals_total": 201
+    },
+    {
+      "province_name": "Alicante",
+      "province_key": "alicante",
+      "province": "Alicante",
+      "municipality": "Torrevieja",
+      "keys": [
+        "torrevieja"
+      ],
+      "up_to_five_years_eur_m2": 2762.7,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 2241.1,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 2254,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 60,
+      "appraisals_over_five_years": 656,
+      "appraisals_total": 716
+    },
+    {
+      "province_name": "Alicante",
+      "province_key": "alicante",
+      "province": "Alicante",
+      "municipality": "Villajoyosa/Vila Joiosa (La)",
+      "keys": [
+        "villajoyosa",
+        "vila joiosa la",
+        "vila joiosa",
+        "la vila joiosa",
+        "villajoyosa vila joiosa la",
+        "villajoyosa vila joiosa",
+        "la villajoyosa vila joiosa"
+      ],
+      "up_to_five_years_eur_m2": 2402.8,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 2216.1,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 2222.1,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 23,
+      "appraisals_over_five_years": 164,
+      "appraisals_total": 187
+    },
+    {
+      "province_name": "Alicante",
+      "province_key": "alicante",
+      "province": "Alicante",
+      "municipality": "Villena",
+      "keys": [
+        "villena"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 994.4,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 994.4,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 7,
+      "appraisals_over_five_years": 122,
+      "appraisals_total": 129
+    },
+    {
+      "province_name": "Alicante",
+      "province_key": "alicante",
+      "province": "Alicante",
+      "municipality": "Almazora/Almassora",
+      "keys": [
+        "almazora",
+        "almassora",
+        "almazora almassora"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 1191.8,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1192.9,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 9,
+      "appraisals_over_five_years": 149,
+      "appraisals_total": 158
+    },
+    {
+      "province_name": "Alicante",
+      "province_key": "alicante",
+      "province": "Alicante",
+      "municipality": "Benicarló",
+      "keys": [
+        "benicarlo"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 1403,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1403,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 0,
+      "appraisals_over_five_years": 97,
+      "appraisals_total": 97
+    },
+    {
+      "province_name": "Murcia",
+      "province_key": "murcia",
+      "province": "Murcia",
+      "municipality": "Águilas",
+      "keys": [
+        "aguilas"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 1448,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1453.8,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 11,
+      "appraisals_over_five_years": 170,
+      "appraisals_total": 181
+    },
+    {
+      "province_name": "Murcia",
+      "province_key": "murcia",
+      "province": "Murcia",
+      "municipality": "Alcantarilla",
+      "keys": [
+        "alcantarilla"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 1067.6,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1070.2,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 5,
+      "appraisals_over_five_years": 193,
+      "appraisals_total": 198
+    },
+    {
+      "province_name": "Murcia",
+      "province_key": "murcia",
+      "province": "Murcia",
+      "municipality": "Caravaca de la Cruz",
+      "keys": [
+        "caravaca de la cruz"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 900.4,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 902.9,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 8,
+      "appraisals_over_five_years": 92,
+      "appraisals_total": 100
+    },
+    {
+      "province_name": "Murcia",
+      "province_key": "murcia",
+      "province": "Murcia",
+      "municipality": "Cartagena",
+      "keys": [
+        "cartagena"
+      ],
+      "up_to_five_years_eur_m2": 1871.3,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 1479.4,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1485.6,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 68,
+      "appraisals_over_five_years": 866,
+      "appraisals_total": 934
+    },
+    {
+      "province_name": "Murcia",
+      "province_key": "murcia",
+      "province": "Murcia",
+      "municipality": "Cieza",
+      "keys": [
+        "cieza"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 952.2,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 953.9,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 1,
+      "appraisals_over_five_years": 97,
+      "appraisals_total": 98
+    },
+    {
+      "province_name": "Murcia",
+      "province_key": "murcia",
+      "province": "Murcia",
+      "municipality": "Jumilla",
+      "keys": [
+        "jumilla"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 826.4,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 829.1,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 4,
+      "appraisals_over_five_years": 73,
+      "appraisals_total": 77
+    },
+    {
+      "province_name": "Murcia",
+      "province_key": "murcia",
+      "province": "Murcia",
+      "municipality": "Lorca",
+      "keys": [
+        "lorca"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 1165.8,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1170.2,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 14,
+      "appraisals_over_five_years": 266,
+      "appraisals_total": 280
+    },
+    {
+      "province_name": "Murcia",
+      "province_key": "murcia",
+      "province": "Murcia",
+      "municipality": "Mazarrón",
+      "keys": [
+        "mazarron"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 1580.9,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1583.6,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 9,
+      "appraisals_over_five_years": 178,
+      "appraisals_total": 187
+    },
+    {
+      "province_name": "Murcia",
+      "province_key": "murcia",
+      "province": "Murcia",
+      "municipality": "Molina de Segura",
+      "keys": [
+        "molina de segura"
+      ],
+      "up_to_five_years_eur_m2": 1741.5,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 1316.8,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1325.2,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 28,
+      "appraisals_over_five_years": 347,
+      "appraisals_total": 375
+    },
+    {
+      "province_name": "Murcia",
+      "province_key": "murcia",
+      "province": "Murcia",
+      "municipality": "Murcia",
+      "keys": [
+        "murcia"
+      ],
+      "up_to_five_years_eur_m2": 2299.7,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 1560.8,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1579.6,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 227,
+      "appraisals_over_five_years": 1808,
+      "appraisals_total": 2035
+    },
+    {
+      "province_name": "Murcia",
+      "province_key": "murcia",
+      "province": "Murcia",
+      "municipality": "San Javier",
+      "keys": [
+        "san javier"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 1941.2,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1952.8,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 16,
+      "appraisals_over_five_years": 275,
+      "appraisals_total": 291
+    },
+    {
+      "province_name": "Murcia",
+      "province_key": "murcia",
+      "province": "Murcia",
+      "municipality": "Torre-Pacheco",
+      "keys": [
+        "torre pacheco"
+      ],
+      "up_to_five_years_eur_m2": 1575.5,
+      "up_to_five_years_withheld": false,
+      "over_five_years_eur_m2": 1369.5,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 1378.4,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 29,
+      "appraisals_over_five_years": 163,
+      "appraisals_total": 192
+    },
+    {
+      "province_name": "Murcia",
+      "province_key": "murcia",
+      "province": "Murcia",
+      "municipality": "Totana",
+      "keys": [
+        "totana"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 964.2,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 967.9,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 6,
+      "appraisals_over_five_years": 79,
+      "appraisals_total": 85
+    },
+    {
+      "province_name": "Murcia",
+      "province_key": "murcia",
+      "province": "Murcia",
+      "municipality": "Yecla",
+      "keys": [
+        "yecla"
+      ],
+      "up_to_five_years_eur_m2": null,
+      "up_to_five_years_withheld": true,
+      "over_five_years_eur_m2": 880.8,
+      "over_five_years_withheld": false,
+      "total_eur_m2": 881.6,
+      "total_withheld": false,
+      "appraisals_up_to_five_years": 9,
+      "appraisals_over_five_years": 114,
+      "appraisals_total": 123
+    }
+  ]
+}

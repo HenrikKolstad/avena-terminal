@@ -472,6 +472,11 @@ function supplyGeneratedAt(): string | null {
   return isRecord(raw) ? str(raw.generated_at) : null;
 }
 
+function townGeneratedAt(): string | null {
+  const raw = readJson('data/es-town-gap.json');
+  return isRecord(raw) ? str(raw.generated_at) : null;
+}
+
 async function readSnapshotBounds(): Promise<{ client: boolean; min: string | null; max: string | null; error: string | null }> {
   const db = supabaseAdmin;
   if (!db) return { client: false, min: null, max: null, error: null };
@@ -970,7 +975,7 @@ function datasetDates(detail: string | null): { site: OrNA<string>; mirror: OrNA
   };
 }
 
-export function buildPipeline(health: HealthReport | null, officialAt: string | null, supplyAt: string | null = null): PipelineStep[] {
+export function buildPipeline(health: HealthReport | null, officialAt: string | null, supplyAt: string | null = null, townAt: string | null = null): PipelineStep[] {
   const feed = health?.checks.find((c) => c.id === 'feed') ?? null;
   const capture = health?.checks.find((c) => c.id === 'capture') ?? null;
   const workflows = health?.checks.find((c) => c.id === 'workflows') ?? null;
@@ -1037,6 +1042,19 @@ export function buildPipeline(health: HealthReport | null, officialAt: string | 
       health_status: NOT_AVAILABLE,
       health_detail: NOT_AVAILABLE,
     },
+    {
+      id: 'es-town-gap',
+      name: 'Spain municipal appraisal',
+      cadence: 'GitHub Actions es-town-gap-refresh.yml on Friday at 04:25 UTC.',
+      what: 'Rebuilds data/es-town-gap.json from the ministry statistical bulletin of appraised €/m² for municipalities of more than 25,000 inhabitants. The up-to-five-years column is the comparison with new-build asking prices. It is an appraisal, not a transaction price. The Notariado portal is not fetched. The Registradores series is recorded as not ingested when the portal refuses the job.',
+      source_file: '.github/workflows/es-town-gap-refresh.yml',
+      last_observed: townAt ?? NOT_AVAILABLE,
+      last_observed_kind: townAt
+        ? 'data/es-town-gap.json generated_at on this deployment. /api/health does not watch es-town-gap-refresh.yml, so the GitHub run timestamp is not available.'
+        : 'not available. /api/health does not watch es-town-gap-refresh.yml, and data/es-town-gap.json had no generated_at.',
+      health_status: NOT_AVAILABLE,
+      health_detail: NOT_AVAILABLE,
+    },
   ];
 }
 
@@ -1090,6 +1108,7 @@ function delivery(mirror: OrNA<string>): DeliveryOption[] {
     { id: 'sample', method: 'GET', path: '/api/v1/due-diligence/sample', format: 'CSV', auth: 'No key.', note: `First ${SAMPLE_MOVE_ROWS} data rows of ${SAMPLE_SOURCE}, unchanged.` },
     { id: 'spain-official', method: 'GET', path: '/spain/official', format: 'HTML. Source file data/es-official.json.', auth: 'No key.', note: 'Weekly official benchmark. Not the listing history.' },
     { id: 'spain-supply', method: 'GET', path: '/spain/supply', format: 'HTML. Source file data/es-supply.json. JSON at /api/v1/es-supply.', auth: 'No key.', note: 'Weekly supply pipeline. Ministry starts and completions, and INE registered sales of new dwellings. Not the listing history.' },
+    { id: 'spain-towns', method: 'GET', path: '/spain/towns', format: 'HTML. Source file data/es-town-gap.json. JSON at /api/v1/es-town-gap.', auth: 'No key.', note: 'Weekly municipal appraisal. Asking prices beside the ministry appraisal for municipalities over 25,000 inhabitants. Not a transaction price and not the listing history.' },
     { id: 'huggingface', method: 'GET', path: 'https://huggingface.co/datasets/AVENATERMINAL/spain-new-build-properties-2026', format: 'Hugging Face dataset', auth: 'Public page.', note: 'feed-refresh.yml uploads the open-data files here when HF_TOKEN is set, and leaves the existing copy when it is not. /api/health does not report this copy. Freshness is not available.' },
   ];
 }
@@ -1113,6 +1132,7 @@ function licensing(published: PublishedDataset): DueDiligencePack['licensing'] {
       `The observation ledger used for the open dataset starts on ${LEDGER_EPOCH}. Earlier repeated snapshots are excluded.`,
       'The Spain official file is a separate weekly pull from INE table 79563 and the housing ministry appraisal file. Its omissions, including sources the job could not read, are in that file.',
       'The Spain supply file is a separate weekly pull from ministry dataset VDP005_01 and INE table 6150. Sources the job could not read are omissions in that file. It is not the listing book.',
+      'The Spain municipal file is a separate weekly pull from the ministry bulletin of appraised €/m² for municipalities of more than 25,000 inhabitants. It is not a transaction price. Sources the job could not read are omissions in that file.',
       zenodoNote,
     ],
   };
@@ -1140,6 +1160,7 @@ function unavailable(pack: Omit<DueDiligencePack, 'not_available'>): Unavailable
     { field: 'pipeline.capture-backstop.run_clock_time', reason: '/api/health reports the workflow conclusion, not the run timestamp.' },
     { field: 'pipeline.es-official.github_run_timestamp', reason: '/api/health does not watch es-official-refresh.yml. A generated_at on data/es-official.json is the artifact on this deployment, not a GitHub run timestamp.' },
     { field: 'pipeline.es-supply.github_run_timestamp', reason: '/api/health does not watch es-supply-refresh.yml. A generated_at on data/es-supply.json is the artifact on this deployment, not a GitHub run timestamp.' },
+    { field: 'pipeline.es-town-gap.github_run_timestamp', reason: '/api/health does not watch es-town-gap-refresh.yml. A generated_at on data/es-town-gap.json is the artifact on this deployment, not a GitHub run timestamp.' },
     { field: 'delivery.huggingface.freshness', reason: 'Not in /api/health. The feed workflow uploads this copy only when a token is set.' },
   );
   return notes;
@@ -1154,6 +1175,7 @@ export function assembleDueDiligence(args: {
   ledgerDates: string[] | null;
   officialGeneratedAt: string | null;
   supplyGeneratedAt: string | null;
+  townGeneratedAt?: string | null;
   health: HealthReport | null;
   snapshot: { client: boolean; min: string | null; max: string | null; error: string | null };
 }): DueDiligencePack {
@@ -1176,7 +1198,7 @@ export function assembleDueDiligence(args: {
     },
     dictionary: buildDictionary(args.props, args.manifest, today),
     dictionary_scope: 'Fields on the open observation files, on GET /api/v1/properties (default and format=apip), on GET /api/v1/dataset-export, and on the aggregate payload of GET /api/v1/open-dataset. Other routes are not this dataset. Their index is /api/openapi.json.',
-    pipeline: buildPipeline(args.health, args.officialGeneratedAt, args.supplyGeneratedAt),
+    pipeline: buildPipeline(args.health, args.officialGeneratedAt, args.supplyGeneratedAt, args.townGeneratedAt ?? null),
     health_checked_at: args.health?.checked_at ?? NOT_AVAILABLE,
     quality: quality(),
     point_in_time: pointInTime(),
@@ -1208,6 +1230,7 @@ export async function loadDueDiligence(now = new Date()): Promise<DueDiligencePa
     ledgerDates: ledgerDates(),
     officialGeneratedAt: officialGeneratedAt(),
     supplyGeneratedAt: supplyGeneratedAt(),
+    townGeneratedAt: townGeneratedAt(),
     health,
     snapshot,
   });

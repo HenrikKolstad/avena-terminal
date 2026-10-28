@@ -97,6 +97,8 @@ export default function SpainOfficialPage() {
             </p>
             <p className="text-sm mb-8">
               <Link href="/spain/supply" className="text-primary hover:underline">Supply pipeline for the same provinces</Link>
+              <span className="text-muted-foreground"> · </span>
+              <Link href="/spain/towns" className="text-primary hover:underline">Municipal appraisal for the same coast</Link>
             </p>
             {pending ? (
               <div className="rounded-sm border p-5 max-w-3xl" style={{ borderColor: 'hsl(var(--av-border))' }}>

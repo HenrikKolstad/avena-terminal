@@ -19,6 +19,7 @@ const PAGES = [
   { title: 'Portugal intelligence', url: '/portugal', kind: 'page' },
   { title: 'Spain official benchmarks', url: '/spain/official', kind: 'page' },
   { title: 'Spain supply pipeline', url: '/spain/supply', kind: 'page' },
+  { title: 'Spain municipal appraisals', url: '/spain/towns', kind: 'page' },
   { title: 'Press kit', url: '/press/kit', kind: 'page' },
   { title: 'Brand guide', url: '/brand', kind: 'page' },
   { title: 'AVN_PROP_ID spec', url: '/standards/avn-id', kind: 'page' },
