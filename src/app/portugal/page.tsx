@@ -88,8 +88,11 @@ export default function PortugalPage() {
             <p className="max-w-3xl text-lg sm:text-xl font-light leading-relaxed text-muted-foreground mb-4">
               Official median prices per m² for new and existing dwellings across the Algarve, Lisbon, Porto, Madeira and the Silver Coast, down to municipality and parish, with the licensed new-dwelling pipeline behind them. Built from INE Portugal and Banco de Portugal statistics and refreshed every week.
             </p>
-            <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground mb-8">
+            <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground mb-4">
               This is an official-statistics layer. Avena does not yet publish Portuguese listings; listing coverage will be added only from feeds whose owners have given permission.
+            </p>
+            <p className="text-sm mb-8">
+              <Link href="/europe/official" className="text-primary hover:underline">Eurostat house price index for Portugal, Spain, the EU and the euro area</Link>
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10">
               <Stat label={`New-build median, ${PRICE_Q}`} value={`${eur(n.latest.new)}/m²`} sub="Portugal, last 12 months of sales" />

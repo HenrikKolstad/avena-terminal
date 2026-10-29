@@ -20,6 +20,7 @@ const PAGES = [
   { title: 'Spain official benchmarks', url: '/spain/official', kind: 'page' },
   { title: 'Spain supply pipeline', url: '/spain/supply', kind: 'page' },
   { title: 'Spain municipal appraisals', url: '/spain/towns', kind: 'page' },
+  { title: 'Eurostat house price index', url: '/europe/official', kind: 'page' },
   { title: 'Press kit', url: '/press/kit', kind: 'page' },
   { title: 'Brand guide', url: '/brand', kind: 'page' },
   { title: 'AVN_PROP_ID spec', url: '/standards/avn-id', kind: 'page' },

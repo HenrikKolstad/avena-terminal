@@ -96,6 +96,8 @@ export default function SpainSupplyPage() {
               <Link href="/spain/official" className="text-primary hover:underline">Price benchmark for the same provinces</Link>
               <span className="text-muted-foreground"> · </span>
               <Link href="/spain/towns" className="text-primary hover:underline">Municipal appraisal for the same coast</Link>
+              <span className="text-muted-foreground"> · </span>
+              <Link href="/europe/official" className="text-primary hover:underline">Eurostat house price index</Link>
             </p>
             {pending ? (
               <div className="rounded-sm border p-5 max-w-3xl" style={{ borderColor: 'hsl(var(--av-border))' }}>

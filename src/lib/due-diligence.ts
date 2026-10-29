@@ -477,6 +477,11 @@ function townGeneratedAt(): string | null {
   return isRecord(raw) ? str(raw.generated_at) : null;
 }
 
+function hpiGeneratedAt(): string | null {
+  const raw = readJson('data/eu-hpi.json');
+  return isRecord(raw) ? str(raw.generated_at) : null;
+}
+
 async function readSnapshotBounds(): Promise<{ client: boolean; min: string | null; max: string | null; error: string | null }> {
   const db = supabaseAdmin;
   if (!db) return { client: false, min: null, max: null, error: null };
@@ -975,7 +980,7 @@ function datasetDates(detail: string | null): { site: OrNA<string>; mirror: OrNA
   };
 }
 
-export function buildPipeline(health: HealthReport | null, officialAt: string | null, supplyAt: string | null = null, townAt: string | null = null): PipelineStep[] {
+export function buildPipeline(health: HealthReport | null, officialAt: string | null, supplyAt: string | null = null, townAt: string | null = null, hpiAt: string | null = null): PipelineStep[] {
   const feed = health?.checks.find((c) => c.id === 'feed') ?? null;
   const capture = health?.checks.find((c) => c.id === 'capture') ?? null;
   const workflows = health?.checks.find((c) => c.id === 'workflows') ?? null;
@@ -1055,6 +1060,19 @@ export function buildPipeline(health: HealthReport | null, officialAt: string | 
       health_status: NOT_AVAILABLE,
       health_detail: NOT_AVAILABLE,
     },
+    {
+      id: 'eu-hpi',
+      name: 'Eurostat house price index',
+      cadence: 'GitHub Actions eu-hpi-refresh.yml on Monday at 04:50 UTC.',
+      what: 'Rebuilds data/eu-hpi.json from Eurostat dataset prc_hpi_q (new dwellings and total, quarterly index and annual rate of change) for Spain, Portugal, the EU aggregate and the euro area, and records the median asking EUR/m2 of the committed listing book. Asking prices are not transaction prices. If Eurostat does not parse, the previous file stays.',
+      source_file: '.github/workflows/eu-hpi-refresh.yml',
+      last_observed: hpiAt ?? NOT_AVAILABLE,
+      last_observed_kind: hpiAt
+        ? 'data/eu-hpi.json generated_at on this deployment. /api/health does not watch eu-hpi-refresh.yml, so the GitHub run timestamp is not available.'
+        : 'not available. /api/health does not watch eu-hpi-refresh.yml, and data/eu-hpi.json had no generated_at.',
+      health_status: NOT_AVAILABLE,
+      health_detail: NOT_AVAILABLE,
+    },
   ];
 }
 
@@ -1109,6 +1127,7 @@ function delivery(mirror: OrNA<string>): DeliveryOption[] {
     { id: 'spain-official', method: 'GET', path: '/spain/official', format: 'HTML. Source file data/es-official.json.', auth: 'No key.', note: 'Weekly official benchmark. Not the listing history.' },
     { id: 'spain-supply', method: 'GET', path: '/spain/supply', format: 'HTML. Source file data/es-supply.json. JSON at /api/v1/es-supply.', auth: 'No key.', note: 'Weekly supply pipeline. Ministry starts and completions, and INE registered sales of new dwellings. Not the listing history.' },
     { id: 'spain-towns', method: 'GET', path: '/spain/towns', format: 'HTML. Source file data/es-town-gap.json. JSON at /api/v1/es-town-gap.', auth: 'No key.', note: 'Weekly municipal appraisal. Asking prices beside the ministry appraisal for municipalities over 25,000 inhabitants. Not a transaction price and not the listing history.' },
+    { id: 'europe-official', method: 'GET', path: '/europe/official', format: 'HTML. Source file data/eu-hpi.json. JSON at /api/v1/eu-hpi.', auth: 'No key.', note: 'Weekly Eurostat house price index beside Avena asking prices. Not a transaction price and not the listing history.' },
     { id: 'huggingface', method: 'GET', path: 'https://huggingface.co/datasets/AVENATERMINAL/spain-new-build-properties-2026', format: 'Hugging Face dataset', auth: 'Public page.', note: 'feed-refresh.yml uploads the open-data files here when HF_TOKEN is set, and leaves the existing copy when it is not. /api/health does not report this copy. Freshness is not available.' },
   ];
 }
@@ -1133,6 +1152,7 @@ function licensing(published: PublishedDataset): DueDiligencePack['licensing'] {
       'The Spain official file is a separate weekly pull from INE table 79563 and the housing ministry appraisal file. Its omissions, including sources the job could not read, are in that file.',
       'The Spain supply file is a separate weekly pull from ministry dataset VDP005_01 and INE table 6150. Sources the job could not read are omissions in that file. It is not the listing book.',
       'The Spain municipal file is a separate weekly pull from the ministry bulletin of appraised €/m² for municipalities of more than 25,000 inhabitants. It is not a transaction price. Sources the job could not read are omissions in that file.',
+      'The Eurostat house price file is a separate weekly pull of dataset prc_hpi_q. It is an official transaction-price index. The asking-price tape in that file is the median of the committed listing book. It is not a transaction price.',
       zenodoNote,
     ],
   };
@@ -1161,6 +1181,7 @@ function unavailable(pack: Omit<DueDiligencePack, 'not_available'>): Unavailable
     { field: 'pipeline.es-official.github_run_timestamp', reason: '/api/health does not watch es-official-refresh.yml. A generated_at on data/es-official.json is the artifact on this deployment, not a GitHub run timestamp.' },
     { field: 'pipeline.es-supply.github_run_timestamp', reason: '/api/health does not watch es-supply-refresh.yml. A generated_at on data/es-supply.json is the artifact on this deployment, not a GitHub run timestamp.' },
     { field: 'pipeline.es-town-gap.github_run_timestamp', reason: '/api/health does not watch es-town-gap-refresh.yml. A generated_at on data/es-town-gap.json is the artifact on this deployment, not a GitHub run timestamp.' },
+    { field: 'pipeline.eu-hpi.github_run_timestamp', reason: '/api/health does not watch eu-hpi-refresh.yml. A generated_at on data/eu-hpi.json is the artifact on this deployment, not a GitHub run timestamp.' },
     { field: 'delivery.huggingface.freshness', reason: 'Not in /api/health. The feed workflow uploads this copy only when a token is set.' },
   );
   return notes;
@@ -1176,6 +1197,7 @@ export function assembleDueDiligence(args: {
   officialGeneratedAt: string | null;
   supplyGeneratedAt: string | null;
   townGeneratedAt?: string | null;
+  hpiGeneratedAt?: string | null;
   health: HealthReport | null;
   snapshot: { client: boolean; min: string | null; max: string | null; error: string | null };
 }): DueDiligencePack {
@@ -1198,7 +1220,7 @@ export function assembleDueDiligence(args: {
     },
     dictionary: buildDictionary(args.props, args.manifest, today),
     dictionary_scope: 'Fields on the open observation files, on GET /api/v1/properties (default and format=apip), on GET /api/v1/dataset-export, and on the aggregate payload of GET /api/v1/open-dataset. Other routes are not this dataset. Their index is /api/openapi.json.',
-    pipeline: buildPipeline(args.health, args.officialGeneratedAt, args.supplyGeneratedAt, args.townGeneratedAt ?? null),
+    pipeline: buildPipeline(args.health, args.officialGeneratedAt, args.supplyGeneratedAt, args.townGeneratedAt ?? null, args.hpiGeneratedAt ?? null),
     health_checked_at: args.health?.checked_at ?? NOT_AVAILABLE,
     quality: quality(),
     point_in_time: pointInTime(),
@@ -1231,6 +1253,7 @@ export async function loadDueDiligence(now = new Date()): Promise<DueDiligencePa
     officialGeneratedAt: officialGeneratedAt(),
     supplyGeneratedAt: supplyGeneratedAt(),
     townGeneratedAt: townGeneratedAt(),
+    hpiGeneratedAt: hpiGeneratedAt(),
     health,
     snapshot,
   });

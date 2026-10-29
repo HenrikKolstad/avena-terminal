@@ -173,6 +173,7 @@ export default async function DueDiligencePage() {
           <Link href="/methodology" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Methodology</Link>
           <Link href="/spain/supply" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Spain supply pipeline</Link>
           <Link href="/spain/towns" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Spain municipal appraisals</Link>
+          <Link href="/europe/official" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Eurostat house price index</Link>
         </div>
 
         <div className="mt-10 grid gap-px sm:grid-cols-2 lg:grid-cols-4" style={{ background: 'hsl(var(--av-border) / 0.6)' }}>
