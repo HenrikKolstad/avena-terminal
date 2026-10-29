@@ -4394,6 +4394,32 @@
     "still_listed": false
   },
   {
+    "avn_id": "N7360",
+    "town": "Los Alcazares",
+    "region": "costa-calida",
+    "type": "Townhouse",
+    "beds": 3,
+    "built_m2": 100,
+    "last_price_eur": 537900,
+    "last_pm2_eur": 5379,
+    "last_seen_date": "2026-10-29",
+    "relisted_on": null,
+    "still_listed": true
+  },
+  {
+    "avn_id": "N9996",
+    "town": "Torrevieja",
+    "region": "cb-south",
+    "type": "Villa",
+    "beds": 3,
+    "built_m2": 100,
+    "last_price_eur": 799000,
+    "last_pm2_eur": 7990,
+    "last_seen_date": "2026-10-29",
+    "relisted_on": null,
+    "still_listed": true
+  },
+  {
     "avn_id": "SP0417",
     "town": "Marbella",
     "region": "costa-del-sol",

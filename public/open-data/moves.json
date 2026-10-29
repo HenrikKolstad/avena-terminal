@@ -7930,6 +7930,16 @@
     "type": "Apartment"
   },
   {
+    "avn_id": "SP0856",
+    "date": "2026-10-29",
+    "prev_date": "2026-10-28",
+    "prev_price_eur": 406500,
+    "new_price_eur": 389500,
+    "change_pct": -4.18,
+    "town": "Alicante",
+    "type": "Penthouse"
+  },
+  {
     "avn_id": "SP1831",
     "date": "2026-10-29",
     "prev_date": "2026-10-28",
