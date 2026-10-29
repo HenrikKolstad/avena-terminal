@@ -62,6 +62,7 @@ const body = `# Avena
 - [Avena Index](https://avenaterminal.com/avena-index): Daily European residential indices.
 - [Policy Engine](https://avenaterminal.com/policy-engine): Interactive macroprudential simulator — six levers × 27 EU member states.
 - [EU coverage](https://avenaterminal.com/eu-coverage) and [EU official statistics](https://avenaterminal.com/eu-official): Eurostat, ECB SDW, INE, Insee, Destatis, Istat ingestion, daily.
+- [Eurostat house price index](https://avenaterminal.com/europe/official): Dataset prc_hpi_q, new dwellings and total, quarterly index and annual rate of change, for Spain, Portugal, the EU and the euro area, beside Avena new-build asking prices. Weekly file at /api/v1/eu-hpi.
 - [AVN-ID Registry](https://avenaterminal.com/avn-id): Permanent property identifiers with signed credential chains.
 
 ## Key API endpoints (all CC BY 4.0, citable)

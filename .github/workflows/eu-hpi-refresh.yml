@@ -1,0 +1,73 @@
+name: Eurostat house price index refresh
+
+# Rebuilds data/eu-hpi.json (the /europe/official page) from Eurostat dataset
+# prc_hpi_q and the committed listing book. The API is keyless, so this job
+# needs NO secrets. The index is quarterly; a weekly pull keeps the page
+# within days of a release.
+#
+# Monday 04:50 UTC sits clear of the Tuesday Portugal job, the Wednesday
+# Spain benchmark, the Thursday supply job, the Friday municipal job, and
+# the 05:10 feed refresh.
+#
+# If Eurostat stops parsing, or the Spain asking median cannot be computed,
+# scripts/ingest-eu-hpi.ts exits non-zero and nothing is committed: the
+# previous layer stays live and this run goes red. A shallow checkout cannot
+# see the asking-tape history; the script keeps the stored days and upserts
+# the book in the checkout. It does not fill a missing day.
+# If nothing changed upstream the script leaves the file untouched and the
+# commit step is a no-op.
+
+on:
+  schedule:
+    - cron: '50 4 * * 1'   # Mondays 04:50 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: eu-hpi-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          # The asking tape is one day per commit of public/data.json.
+          # A depth-1 checkout would keep the stored tape and add only today.
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Reachability probe (diagnostic only)
+        continue-on-error: true
+        run: |
+          u='https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hpi_q?format=JSON&lang=EN&freq=Q&purchase=DW_NEW&unit=I15_Q&geo=ES&lastTimePeriod=1'
+          curl -sS -L -o /dev/null -w "$u -> %{http_code} %{time_total}s\n" --max-time 60 -A 'AvenaTerminal-OfficialStats/1.0' "$u" || echo "$u -> curl failed"
+
+      - name: Build the Eurostat house price layer
+        run: npx tsx scripts/ingest-eu-hpi.ts
+
+      - name: Commit refreshed layer (if changed)
+        run: |
+          git config user.name "avena-feed-bot"
+          git config user.email "feed@avenaterminal.com"
+          git add data/eu-hpi.json
+          if git diff --staged --quiet; then
+            echo "No Eurostat house price changes this week."
+          else
+            git commit -m "chore(eu): weekly Eurostat house price index refresh [skip ci]"
+            git pull --rebase origin main
+            git push
+            echo "Pushed refreshed Eurostat house price layer."
+          fi

@@ -1,0 +1,3117 @@
+{
+  "generated_at": "2026-10-29T00:19:32.025Z",
+  "status": "ready",
+  "source": {
+    "agency": "Eurostat",
+    "dataset": "prc_hpi_q",
+    "label": "House price index - quarterly data",
+    "doi": "10.2908/PRC_HPI_Q",
+    "updated": "2026-10-01T11:00:00+0200",
+    "latest_period": "2026-Q2",
+    "first_period": "2015-Q1",
+    "retrieved_at": "2026-10-29",
+    "api_url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hpi_q?format=JSON&lang=EN&freq=Q&purchase=DW_NEW&purchase=TOTAL&unit=I15_Q&unit=RCH_A&geo=ES&geo=PT&geo=EU27_2020&geo=EA20&sinceTimePeriod=2015-Q1",
+    "browser_url": "https://ec.europa.eu/eurostat/databrowser/view/prc_hpi_q/default/table?lang=en",
+    "metadata_url": "https://ec.europa.eu/eurostat/cache/metadata/en/prc_hpi_inx_esms.htm",
+    "copyright_url": "https://ec.europa.eu/eurostat/about-us/policies/copyright",
+    "licence_note": "Source: Eurostat, dataset prc_hpi_q, DOI 10.2908/PRC_HPI_Q. Eurostat data may be reused free of charge provided the source is acknowledged. Avena Terminal selected purchases of newly built dwellings (DW_NEW) and total purchases (TOTAL), the quarterly index 2015=100 (I15_Q) and the annual rate of change (RCH_A), for Spain, Portugal, the EU aggregate EU27_2020 and the euro area EA20, plus any further country present in the Avena listing book. The asking-price tape is Avena's, not Eurostat's.",
+    "series": [
+      {
+        "purchase": "DW_NEW",
+        "unit": "I15_Q",
+        "label": "Purchases of newly built dwellings · Quarterly index, 2015=100"
+      },
+      {
+        "purchase": "DW_NEW",
+        "unit": "RCH_A",
+        "label": "Purchases of newly built dwellings · Annual rate of change"
+      },
+      {
+        "purchase": "TOTAL",
+        "unit": "I15_Q",
+        "label": "Total · Quarterly index, 2015=100"
+      },
+      {
+        "purchase": "TOTAL",
+        "unit": "RCH_A",
+        "label": "Total · Annual rate of change"
+      }
+    ]
+  },
+  "geos": [
+    {
+      "code": "ES",
+      "name": "Spain",
+      "role": "avena_book",
+      "quarters": [
+        {
+          "period": "2015-Q1",
+          "new_index": 98.27,
+          "new_index_status": null,
+          "new_yoy_pct": 4,
+          "new_yoy_status": null,
+          "total_index": 96.67,
+          "total_index_status": null,
+          "total_yoy_pct": 1.6,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2015-Q2",
+          "new_index": 99.72,
+          "new_index_status": null,
+          "new_yoy_pct": 4.9,
+          "new_yoy_status": null,
+          "total_index": 100.67,
+          "total_index_status": null,
+          "total_yoy_pct": 4,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2015-Q3",
+          "new_index": 100.33,
+          "new_index_status": null,
+          "new_yoy_pct": 4.3,
+          "new_yoy_status": null,
+          "total_index": 101.34,
+          "total_index_status": null,
+          "total_yoy_pct": 4.5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2015-Q4",
+          "new_index": 101.68,
+          "new_index_status": null,
+          "new_yoy_pct": 5.8,
+          "new_yoy_status": null,
+          "total_index": 101.31,
+          "total_index_status": null,
+          "total_yoy_pct": 4.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2016-Q1",
+          "new_index": 104.1,
+          "new_index_status": null,
+          "new_yoy_pct": 5.9,
+          "new_yoy_status": null,
+          "total_index": 102.74,
+          "total_index_status": null,
+          "total_yoy_pct": 6.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2016-Q2",
+          "new_index": 108.04,
+          "new_index_status": null,
+          "new_yoy_pct": 8.3,
+          "new_yoy_status": null,
+          "total_index": 104.55,
+          "total_index_status": null,
+          "total_yoy_pct": 3.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2016-Q3",
+          "new_index": 107.66,
+          "new_index_status": null,
+          "new_yoy_pct": 7.3,
+          "new_yoy_status": null,
+          "total_index": 105.41,
+          "total_index_status": null,
+          "total_yoy_pct": 4,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2016-Q4",
+          "new_index": 105.99,
+          "new_index_status": null,
+          "new_yoy_pct": 4.2,
+          "new_yoy_status": null,
+          "total_index": 105.78,
+          "total_index_status": null,
+          "total_yoy_pct": 4.4,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2017-Q1",
+          "new_index": 109.99,
+          "new_index_status": null,
+          "new_yoy_pct": 5.7,
+          "new_yoy_status": null,
+          "total_index": 108.2,
+          "total_index_status": null,
+          "total_yoy_pct": 5.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2017-Q2",
+          "new_index": 113.09,
+          "new_index_status": null,
+          "new_yoy_pct": 4.7,
+          "new_yoy_status": null,
+          "total_index": 110.39,
+          "total_index_status": null,
+          "total_yoy_pct": 5.6,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2017-Q3",
+          "new_index": 114.76,
+          "new_index_status": null,
+          "new_yoy_pct": 6.6,
+          "new_yoy_status": null,
+          "total_index": 112.43,
+          "total_index_status": null,
+          "total_yoy_pct": 6.6,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2017-Q4",
+          "new_index": 113.89,
+          "new_index_status": null,
+          "new_yoy_pct": 7.4,
+          "new_yoy_status": null,
+          "total_index": 113.39,
+          "total_index_status": null,
+          "total_yoy_pct": 7.2,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2018-Q1",
+          "new_index": 116.19,
+          "new_index_status": null,
+          "new_yoy_pct": 5.7,
+          "new_yoy_status": null,
+          "total_index": 114.96,
+          "total_index_status": null,
+          "total_yoy_pct": 6.2,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2018-Q2",
+          "new_index": 119.21,
+          "new_index_status": null,
+          "new_yoy_pct": 5.4,
+          "new_yoy_status": null,
+          "total_index": 117.9,
+          "total_index_status": null,
+          "total_yoy_pct": 6.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2018-Q3",
+          "new_index": 121.61,
+          "new_index_status": null,
+          "new_yoy_pct": 6,
+          "new_yoy_status": null,
+          "total_index": 120.48,
+          "total_index_status": null,
+          "total_yoy_pct": 7.2,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2018-Q4",
+          "new_index": 123.2,
+          "new_index_status": null,
+          "new_yoy_pct": 8.2,
+          "new_yoy_status": null,
+          "total_index": 120.97,
+          "total_index_status": null,
+          "total_yoy_pct": 6.7,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2019-Q1",
+          "new_index": 128.52,
+          "new_index_status": null,
+          "new_yoy_pct": 10.6,
+          "new_yoy_status": null,
+          "total_index": 122.88,
+          "total_index_status": null,
+          "total_yoy_pct": 6.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2019-Q2",
+          "new_index": 127.96,
+          "new_index_status": null,
+          "new_yoy_pct": 7.3,
+          "new_yoy_status": null,
+          "total_index": 124.27,
+          "total_index_status": null,
+          "total_yoy_pct": 5.4,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2019-Q3",
+          "new_index": 130.21,
+          "new_index_status": null,
+          "new_yoy_pct": 7.1,
+          "new_yoy_status": null,
+          "total_index": 126.26,
+          "total_index_status": null,
+          "total_yoy_pct": 4.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2019-Q4",
+          "new_index": 129.69,
+          "new_index_status": null,
+          "new_yoy_pct": 5.3,
+          "new_yoy_status": null,
+          "total_index": 125.44,
+          "total_index_status": null,
+          "total_yoy_pct": 3.7,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2020-Q1",
+          "new_index": 136.4,
+          "new_index_status": null,
+          "new_yoy_pct": 6.1,
+          "new_yoy_status": null,
+          "total_index": 126.92,
+          "total_index_status": null,
+          "total_yoy_pct": 3.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2020-Q2",
+          "new_index": 133.37,
+          "new_index_status": null,
+          "new_yoy_pct": 4.2,
+          "new_yoy_status": null,
+          "total_index": 126.98,
+          "total_index_status": null,
+          "total_yoy_pct": 2.2,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2020-Q3",
+          "new_index": 139.71,
+          "new_index_status": null,
+          "new_yoy_pct": 7.3,
+          "new_yoy_status": null,
+          "total_index": 128.56,
+          "total_index_status": null,
+          "total_yoy_pct": 1.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2020-Q4",
+          "new_index": 140.4,
+          "new_index_status": null,
+          "new_yoy_pct": 8.3,
+          "new_yoy_status": null,
+          "total_index": 127.55,
+          "total_index_status": null,
+          "total_yoy_pct": 1.7,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2021-Q1",
+          "new_index": 139.63,
+          "new_index_status": null,
+          "new_yoy_pct": 2.4,
+          "new_yoy_status": null,
+          "total_index": 128.12,
+          "total_index_status": null,
+          "total_yoy_pct": 0.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2021-Q2",
+          "new_index": 141.22,
+          "new_index_status": null,
+          "new_yoy_pct": 5.9,
+          "new_yoy_status": null,
+          "total_index": 131.15,
+          "total_index_status": null,
+          "total_yoy_pct": 3.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2021-Q3",
+          "new_index": 145.34,
+          "new_index_status": null,
+          "new_yoy_pct": 4,
+          "new_yoy_status": null,
+          "total_index": 133.92,
+          "total_index_status": null,
+          "total_yoy_pct": 4.2,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2021-Q4",
+          "new_index": 148.63,
+          "new_index_status": null,
+          "new_yoy_pct": 5.9,
+          "new_yoy_status": null,
+          "total_index": 135.58,
+          "total_index_status": null,
+          "total_yoy_pct": 6.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2022-Q1",
+          "new_index": 153.47,
+          "new_index_status": null,
+          "new_yoy_pct": 9.9,
+          "new_yoy_status": null,
+          "total_index": 139.05,
+          "total_index_status": null,
+          "total_yoy_pct": 8.5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2022-Q2",
+          "new_index": 153.45,
+          "new_index_status": null,
+          "new_yoy_pct": 8.7,
+          "new_yoy_status": null,
+          "total_index": 141.71,
+          "total_index_status": null,
+          "total_yoy_pct": 8.1,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2022-Q3",
+          "new_index": 154.87,
+          "new_index_status": null,
+          "new_yoy_pct": 6.6,
+          "new_yoy_status": null,
+          "total_index": 144.15,
+          "total_index_status": null,
+          "total_yoy_pct": 7.6,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2022-Q4",
+          "new_index": 157.8,
+          "new_index_status": null,
+          "new_yoy_pct": 6.2,
+          "new_yoy_status": null,
+          "total_index": 142.99,
+          "total_index_status": null,
+          "total_yoy_pct": 5.5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2023-Q1",
+          "new_index": 162.8,
+          "new_index_status": null,
+          "new_yoy_pct": 6.1,
+          "new_yoy_status": null,
+          "total_index": 143.98,
+          "total_index_status": null,
+          "total_yoy_pct": 3.5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2023-Q2",
+          "new_index": 165.37,
+          "new_index_status": null,
+          "new_yoy_pct": 7.8,
+          "new_yoy_status": null,
+          "total_index": 146.97,
+          "total_index_status": null,
+          "total_yoy_pct": 3.7,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2023-Q3",
+          "new_index": 171.74,
+          "new_index_status": null,
+          "new_yoy_pct": 10.9,
+          "new_yoy_status": null,
+          "total_index": 150.68,
+          "total_index_status": null,
+          "total_yoy_pct": 4.5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2023-Q4",
+          "new_index": 169.49,
+          "new_index_status": null,
+          "new_yoy_pct": 7.4,
+          "new_yoy_status": null,
+          "total_index": 149.13,
+          "total_index_status": null,
+          "total_yoy_pct": 4.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2024-Q1",
+          "new_index": 178.84,
+          "new_index_status": null,
+          "new_yoy_pct": 9.9,
+          "new_yoy_status": null,
+          "total_index": 153.18,
+          "total_index_status": null,
+          "total_yoy_pct": 6.4,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2024-Q2",
+          "new_index": 183.65,
+          "new_index_status": null,
+          "new_yoy_pct": 11,
+          "new_yoy_status": null,
+          "total_index": 158.63,
+          "total_index_status": null,
+          "total_yoy_pct": 7.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2024-Q3",
+          "new_index": 188.86,
+          "new_index_status": null,
+          "new_yoy_pct": 10,
+          "new_yoy_status": null,
+          "total_index": 163.12,
+          "total_index_status": null,
+          "total_yoy_pct": 8.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2024-Q4",
+          "new_index": 190.41,
+          "new_index_status": null,
+          "new_yoy_pct": 12.3,
+          "new_yoy_status": null,
+          "total_index": 166.07,
+          "total_index_status": null,
+          "total_yoy_pct": 11.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2025-Q1",
+          "new_index": 200.85,
+          "new_index_status": null,
+          "new_yoy_pct": 12.3,
+          "new_yoy_status": null,
+          "total_index": 172,
+          "total_index_status": null,
+          "total_yoy_pct": 12.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2025-Q2",
+          "new_index": 206.17,
+          "new_index_status": null,
+          "new_yoy_pct": 12.3,
+          "new_yoy_status": null,
+          "total_index": 178.89,
+          "total_index_status": null,
+          "total_yoy_pct": 12.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2025-Q3",
+          "new_index": 207.12,
+          "new_index_status": null,
+          "new_yoy_pct": 9.7,
+          "new_yoy_status": null,
+          "total_index": 184.06,
+          "total_index_status": null,
+          "total_yoy_pct": 12.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2025-Q4",
+          "new_index": 211.71,
+          "new_index_status": null,
+          "new_yoy_pct": 11.2,
+          "new_yoy_status": null,
+          "total_index": 187.45,
+          "total_index_status": null,
+          "total_yoy_pct": 12.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2026-Q1",
+          "new_index": 219.1,
+          "new_index_status": null,
+          "new_yoy_pct": 9.1,
+          "new_yoy_status": null,
+          "total_index": 194.06,
+          "total_index_status": null,
+          "total_yoy_pct": 12.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2026-Q2",
+          "new_index": 221.3,
+          "new_index_status": null,
+          "new_yoy_pct": 7.3,
+          "new_yoy_status": null,
+          "total_index": 200.6,
+          "total_index_status": null,
+          "total_yoy_pct": 12.1,
+          "total_yoy_status": null
+        }
+      ]
+    },
+    {
+      "code": "PT",
+      "name": "Portugal",
+      "role": "eurostat_only",
+      "quarters": [
+        {
+          "period": "2015-Q1",
+          "new_index": 96.8,
+          "new_index_status": null,
+          "new_yoy_pct": -1.1,
+          "new_yoy_status": null,
+          "total_index": 96.94,
+          "total_index_status": null,
+          "total_yoy_pct": 0.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2015-Q2",
+          "new_index": 101.9,
+          "new_index_status": null,
+          "new_yoy_pct": 2.5,
+          "new_yoy_status": null,
+          "total_index": 100.57,
+          "total_index_status": null,
+          "total_yoy_pct": 2.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2015-Q3",
+          "new_index": 100.04,
+          "new_index_status": null,
+          "new_yoy_pct": 0.6,
+          "new_yoy_status": null,
+          "total_index": 100.65,
+          "total_index_status": null,
+          "total_yoy_pct": 3.4,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2015-Q4",
+          "new_index": 101.26,
+          "new_index_status": null,
+          "new_yoy_pct": 4.9,
+          "new_yoy_status": null,
+          "total_index": 101.84,
+          "total_index_status": null,
+          "total_yoy_pct": 5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2016-Q1",
+          "new_index": 101.34,
+          "new_index_status": null,
+          "new_yoy_pct": 4.7,
+          "new_yoy_status": null,
+          "total_index": 103.67,
+          "total_index_status": null,
+          "total_yoy_pct": 6.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2016-Q2",
+          "new_index": 103.46,
+          "new_index_status": null,
+          "new_yoy_pct": 1.5,
+          "new_yoy_status": null,
+          "total_index": 106.91,
+          "total_index_status": null,
+          "total_yoy_pct": 6.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2016-Q3",
+          "new_index": 103.76,
+          "new_index_status": null,
+          "new_yoy_pct": 3.7,
+          "new_yoy_status": null,
+          "total_index": 108.31,
+          "total_index_status": null,
+          "total_yoy_pct": 7.6,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2016-Q4",
+          "new_index": 104.77,
+          "new_index_status": null,
+          "new_yoy_pct": 3.5,
+          "new_yoy_status": null,
+          "total_index": 109.57,
+          "total_index_status": null,
+          "total_yoy_pct": 7.6,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2017-Q1",
+          "new_index": 105.58,
+          "new_index_status": null,
+          "new_yoy_pct": 4.2,
+          "new_yoy_status": null,
+          "total_index": 111.89,
+          "total_index_status": null,
+          "total_yoy_pct": 7.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2017-Q2",
+          "new_index": 109.02,
+          "new_index_status": null,
+          "new_yoy_pct": 5.4,
+          "new_yoy_status": null,
+          "total_index": 115.51,
+          "total_index_status": null,
+          "total_yoy_pct": 8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2017-Q3",
+          "new_index": 110.92,
+          "new_index_status": null,
+          "new_yoy_pct": 6.9,
+          "new_yoy_status": null,
+          "total_index": 119.6,
+          "total_index_status": null,
+          "total_yoy_pct": 10.4,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2017-Q4",
+          "new_index": 110.96,
+          "new_index_status": null,
+          "new_yoy_pct": 5.9,
+          "new_yoy_status": null,
+          "total_index": 121.06,
+          "total_index_status": null,
+          "total_yoy_pct": 10.5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2018-Q1",
+          "new_index": 115.8,
+          "new_index_status": null,
+          "new_yoy_pct": 9.7,
+          "new_yoy_status": null,
+          "total_index": 125.58,
+          "total_index_status": null,
+          "total_yoy_pct": 12.2,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2018-Q2",
+          "new_index": 115.86,
+          "new_index_status": null,
+          "new_yoy_pct": 6.3,
+          "new_yoy_status": null,
+          "total_index": 128.49,
+          "total_index_status": null,
+          "total_yoy_pct": 11.2,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2018-Q3",
+          "new_index": 117.19,
+          "new_index_status": null,
+          "new_yoy_pct": 5.7,
+          "new_yoy_status": null,
+          "total_index": 129.72,
+          "total_index_status": null,
+          "total_yoy_pct": 8.5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2018-Q4",
+          "new_index": 120.34,
+          "new_index_status": null,
+          "new_yoy_pct": 8.5,
+          "new_yoy_status": null,
+          "total_index": 132.34,
+          "total_index_status": null,
+          "total_yoy_pct": 9.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2019-Q1",
+          "new_index": 122.76,
+          "new_index_status": null,
+          "new_yoy_pct": 6,
+          "new_yoy_status": null,
+          "total_index": 137.14,
+          "total_index_status": null,
+          "total_yoy_pct": 9.2,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2019-Q2",
+          "new_index": 127.88,
+          "new_index_status": null,
+          "new_yoy_pct": 10.4,
+          "new_yoy_status": null,
+          "total_index": 140.65,
+          "total_index_status": null,
+          "total_yoy_pct": 9.5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2019-Q3",
+          "new_index": 129.43,
+          "new_index_status": null,
+          "new_yoy_pct": 10.4,
+          "new_yoy_status": null,
+          "total_index": 143.67,
+          "total_index_status": null,
+          "total_yoy_pct": 10.7,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2019-Q4",
+          "new_index": 130.27,
+          "new_index_status": null,
+          "new_yoy_pct": 8.2,
+          "new_yoy_status": null,
+          "total_index": 146.07,
+          "total_index_status": null,
+          "total_yoy_pct": 10.4,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2020-Q1",
+          "new_index": 134.99,
+          "new_index_status": null,
+          "new_yoy_pct": 10,
+          "new_yoy_status": null,
+          "total_index": 151.67,
+          "total_index_status": null,
+          "total_yoy_pct": 10.6,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2020-Q2",
+          "new_index": 136.94,
+          "new_index_status": null,
+          "new_yoy_pct": 7.1,
+          "new_yoy_status": null,
+          "total_index": 154.34,
+          "total_index_status": null,
+          "total_yoy_pct": 9.7,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2020-Q3",
+          "new_index": 136.57,
+          "new_index_status": null,
+          "new_yoy_pct": 5.5,
+          "new_yoy_status": null,
+          "total_index": 153.61,
+          "total_index_status": null,
+          "total_yoy_pct": 6.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2020-Q4",
+          "new_index": 140.27,
+          "new_index_status": null,
+          "new_yoy_pct": 7.7,
+          "new_yoy_status": null,
+          "total_index": 157.69,
+          "total_index_status": null,
+          "total_yoy_pct": 7.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2021-Q1",
+          "new_index": 142.35,
+          "new_index_status": null,
+          "new_yoy_pct": 5.4,
+          "new_yoy_status": null,
+          "total_index": 161.7,
+          "total_index_status": null,
+          "total_yoy_pct": 6.6,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2021-Q2",
+          "new_index": 146.63,
+          "new_index_status": null,
+          "new_yoy_pct": 7.1,
+          "new_yoy_status": null,
+          "total_index": 166.4,
+          "total_index_status": null,
+          "total_yoy_pct": 7.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2021-Q3",
+          "new_index": 152.5,
+          "new_index_status": null,
+          "new_yoy_pct": 11.7,
+          "new_yoy_status": null,
+          "total_index": 171.3,
+          "total_index_status": null,
+          "total_yoy_pct": 11.5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2021-Q4",
+          "new_index": 155.12,
+          "new_index_status": null,
+          "new_yoy_pct": 10.6,
+          "new_yoy_status": null,
+          "total_index": 175.96,
+          "total_index_status": null,
+          "total_yoy_pct": 11.6,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2022-Q1",
+          "new_index": 157.93,
+          "new_index_status": null,
+          "new_yoy_pct": 10.9,
+          "new_yoy_status": null,
+          "total_index": 182.64,
+          "total_index_status": null,
+          "total_yoy_pct": 13,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2022-Q2",
+          "new_index": 158.91,
+          "new_index_status": null,
+          "new_yoy_pct": 8.4,
+          "new_yoy_status": null,
+          "total_index": 188.31,
+          "total_index_status": null,
+          "total_yoy_pct": 13.2,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2022-Q3",
+          "new_index": 165.31,
+          "new_index_status": null,
+          "new_yoy_pct": 8.4,
+          "new_yoy_status": null,
+          "total_index": 193.82,
+          "total_index_status": null,
+          "total_yoy_pct": 13.2,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2022-Q4",
+          "new_index": 166.1,
+          "new_index_status": null,
+          "new_yoy_pct": 7.1,
+          "new_yoy_status": null,
+          "total_index": 195.91,
+          "total_index_status": null,
+          "total_yoy_pct": 11.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2023-Q1",
+          "new_index": 166.99,
+          "new_index_status": null,
+          "new_yoy_pct": 5.7,
+          "new_yoy_status": null,
+          "total_index": 198.55,
+          "total_index_status": null,
+          "total_yoy_pct": 8.7,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2023-Q2",
+          "new_index": 171.59,
+          "new_index_status": null,
+          "new_yoy_pct": 8,
+          "new_yoy_status": null,
+          "total_index": 204.74,
+          "total_index_status": null,
+          "total_yoy_pct": 8.7,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2023-Q3",
+          "new_index": 174.95,
+          "new_index_status": null,
+          "new_yoy_pct": 5.8,
+          "new_yoy_status": null,
+          "total_index": 208.48,
+          "total_index_status": null,
+          "total_yoy_pct": 7.6,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2023-Q4",
+          "new_index": 177.59,
+          "new_index_status": null,
+          "new_yoy_pct": 6.9,
+          "new_yoy_status": null,
+          "total_index": 211.27,
+          "total_index_status": null,
+          "total_yoy_pct": 7.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2024-Q1",
+          "new_index": 176.24,
+          "new_index_status": null,
+          "new_yoy_pct": 5.5,
+          "new_yoy_status": null,
+          "total_index": 212.45,
+          "total_index_status": null,
+          "total_yoy_pct": 7,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2024-Q2",
+          "new_index": 182.98,
+          "new_index_status": null,
+          "new_yoy_pct": 6.6,
+          "new_yoy_status": null,
+          "total_index": 220.74,
+          "total_index_status": null,
+          "total_yoy_pct": 7.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2024-Q3",
+          "new_index": 189.04,
+          "new_index_status": null,
+          "new_yoy_pct": 8.1,
+          "new_yoy_status": null,
+          "total_index": 228.89,
+          "total_index_status": null,
+          "total_yoy_pct": 9.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2024-Q4",
+          "new_index": 194.55,
+          "new_index_status": null,
+          "new_yoy_pct": 9.6,
+          "new_yoy_status": null,
+          "total_index": 235.68,
+          "total_index_status": null,
+          "total_yoy_pct": 11.6,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2025-Q1",
+          "new_index": 201.74,
+          "new_index_status": null,
+          "new_yoy_pct": 14.5,
+          "new_yoy_status": null,
+          "total_index": 247.05,
+          "total_index_status": null,
+          "total_yoy_pct": 16.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2025-Q2",
+          "new_index": 209.5,
+          "new_index_status": null,
+          "new_yoy_pct": 14.5,
+          "new_yoy_status": null,
+          "total_index": 258.78,
+          "total_index_status": null,
+          "total_yoy_pct": 17.2,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2025-Q3",
+          "new_index": 215.63,
+          "new_index_status": null,
+          "new_yoy_pct": 14.1,
+          "new_yoy_status": null,
+          "total_index": 269.35,
+          "total_index_status": null,
+          "total_yoy_pct": 17.7,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2025-Q4",
+          "new_index": 221.22,
+          "new_index_status": null,
+          "new_yoy_pct": 13.7,
+          "new_yoy_status": null,
+          "total_index": 280.21,
+          "total_index_status": null,
+          "total_yoy_pct": 18.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2026-Q1",
+          "new_index": 227.18,
+          "new_index_status": null,
+          "new_yoy_pct": 12.6,
+          "new_yoy_status": null,
+          "total_index": 290.98,
+          "total_index_status": null,
+          "total_yoy_pct": 17.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2026-Q2",
+          "new_index": 235.19,
+          "new_index_status": null,
+          "new_yoy_pct": 12.3,
+          "new_yoy_status": null,
+          "total_index": 301.43,
+          "total_index_status": null,
+          "total_yoy_pct": 16.5,
+          "total_yoy_status": null
+        }
+      ]
+    },
+    {
+      "code": "EU27_2020",
+      "name": "European Union - 27 countries (from 2020)",
+      "role": "aggregate",
+      "quarters": [
+        {
+          "period": "2015-Q1",
+          "new_index": 98.44,
+          "new_index_status": null,
+          "new_yoy_pct": 1.7,
+          "new_yoy_status": null,
+          "total_index": 98.27,
+          "total_index_status": null,
+          "total_yoy_pct": 1.4,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2015-Q2",
+          "new_index": 99.58,
+          "new_index_status": null,
+          "new_yoy_pct": 2.1,
+          "new_yoy_status": null,
+          "total_index": 99.83,
+          "total_index_status": null,
+          "total_yoy_pct": 2,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2015-Q3",
+          "new_index": 100.88,
+          "new_index_status": null,
+          "new_yoy_pct": 2.9,
+          "new_yoy_status": null,
+          "total_index": 100.81,
+          "total_index_status": null,
+          "total_yoy_pct": 2.6,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2015-Q4",
+          "new_index": 101.11,
+          "new_index_status": null,
+          "new_yoy_pct": 2.9,
+          "new_yoy_status": null,
+          "total_index": 101.09,
+          "total_index_status": null,
+          "total_yoy_pct": 3.2,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2016-Q1",
+          "new_index": 101.84,
+          "new_index_status": null,
+          "new_yoy_pct": 3.4,
+          "new_yoy_status": null,
+          "total_index": 102.01,
+          "total_index_status": null,
+          "total_yoy_pct": 3.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2016-Q2",
+          "new_index": 102.99,
+          "new_index_status": null,
+          "new_yoy_pct": 3.4,
+          "new_yoy_status": null,
+          "total_index": 103.75,
+          "total_index_status": null,
+          "total_yoy_pct": 3.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2016-Q3",
+          "new_index": 104.12,
+          "new_index_status": null,
+          "new_yoy_pct": 3.2,
+          "new_yoy_status": null,
+          "total_index": 105.36,
+          "total_index_status": null,
+          "total_yoy_pct": 4.5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2016-Q4",
+          "new_index": 105.13,
+          "new_index_status": null,
+          "new_yoy_pct": 4,
+          "new_yoy_status": null,
+          "total_index": 106.11,
+          "total_index_status": null,
+          "total_yoy_pct": 5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2017-Q1",
+          "new_index": 105.24,
+          "new_index_status": null,
+          "new_yoy_pct": 3.4,
+          "new_yoy_status": null,
+          "total_index": 106.89,
+          "total_index_status": null,
+          "total_yoy_pct": 4.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2017-Q2",
+          "new_index": 106.86,
+          "new_index_status": null,
+          "new_yoy_pct": 3.7,
+          "new_yoy_status": null,
+          "total_index": 108.76,
+          "total_index_status": null,
+          "total_yoy_pct": 4.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2017-Q3",
+          "new_index": 108.14,
+          "new_index_status": null,
+          "new_yoy_pct": 3.9,
+          "new_yoy_status": null,
+          "total_index": 110.39,
+          "total_index_status": null,
+          "total_yoy_pct": 4.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2017-Q4",
+          "new_index": 109.38,
+          "new_index_status": null,
+          "new_yoy_pct": 4,
+          "new_yoy_status": null,
+          "total_index": 111.19,
+          "total_index_status": null,
+          "total_yoy_pct": 4.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2018-Q1",
+          "new_index": 110.49,
+          "new_index_status": null,
+          "new_yoy_pct": 5,
+          "new_yoy_status": null,
+          "total_index": 112.27,
+          "total_index_status": null,
+          "total_yoy_pct": 5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2018-Q2",
+          "new_index": 112.21,
+          "new_index_status": null,
+          "new_yoy_pct": 5,
+          "new_yoy_status": null,
+          "total_index": 114.23,
+          "total_index_status": null,
+          "total_yoy_pct": 5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2018-Q3",
+          "new_index": 113.69,
+          "new_index_status": null,
+          "new_yoy_pct": 5.1,
+          "new_yoy_status": null,
+          "total_index": 115.93,
+          "total_index_status": null,
+          "total_yoy_pct": 5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2018-Q4",
+          "new_index": 114.76,
+          "new_index_status": null,
+          "new_yoy_pct": 4.9,
+          "new_yoy_status": null,
+          "total_index": 116.81,
+          "total_index_status": null,
+          "total_yoy_pct": 5.1,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2019-Q1",
+          "new_index": 115.69,
+          "new_index_status": null,
+          "new_yoy_pct": 4.7,
+          "new_yoy_status": null,
+          "total_index": 117.59,
+          "total_index_status": null,
+          "total_yoy_pct": 4.7,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2019-Q2",
+          "new_index": 117.39,
+          "new_index_status": null,
+          "new_yoy_pct": 4.6,
+          "new_yoy_status": null,
+          "total_index": 119.78,
+          "total_index_status": null,
+          "total_yoy_pct": 4.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2019-Q3",
+          "new_index": 118.97,
+          "new_index_status": null,
+          "new_yoy_pct": 4.6,
+          "new_yoy_status": null,
+          "total_index": 121.54,
+          "total_index_status": null,
+          "total_yoy_pct": 4.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2019-Q4",
+          "new_index": 120.74,
+          "new_index_status": null,
+          "new_yoy_pct": 5.2,
+          "new_yoy_status": null,
+          "total_index": 122.7,
+          "total_index_status": null,
+          "total_yoy_pct": 5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2020-Q1",
+          "new_index": 121.95,
+          "new_index_status": null,
+          "new_yoy_pct": 5.4,
+          "new_yoy_status": null,
+          "total_index": 124.44,
+          "total_index_status": null,
+          "total_yoy_pct": 5.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2020-Q2",
+          "new_index": 123.17,
+          "new_index_status": null,
+          "new_yoy_pct": 4.9,
+          "new_yoy_status": null,
+          "total_index": 126.28,
+          "total_index_status": null,
+          "total_yoy_pct": 5.4,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2020-Q3",
+          "new_index": 124.99,
+          "new_index_status": null,
+          "new_yoy_pct": 5.1,
+          "new_yoy_status": null,
+          "total_index": 128.05,
+          "total_index_status": null,
+          "total_yoy_pct": 5.4,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2020-Q4",
+          "new_index": 126.92,
+          "new_index_status": null,
+          "new_yoy_pct": 5.1,
+          "new_yoy_status": null,
+          "total_index": 129.81,
+          "total_index_status": null,
+          "total_yoy_pct": 5.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2021-Q1",
+          "new_index": 128.16,
+          "new_index_status": null,
+          "new_yoy_pct": 5.1,
+          "new_yoy_status": null,
+          "total_index": 132.12,
+          "total_index_status": null,
+          "total_yoy_pct": 6.2,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2021-Q2",
+          "new_index": 130.63,
+          "new_index_status": null,
+          "new_yoy_pct": 6.1,
+          "new_yoy_status": null,
+          "total_index": 135.99,
+          "total_index_status": null,
+          "total_yoy_pct": 7.7,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2021-Q3",
+          "new_index": 134.08,
+          "new_index_status": null,
+          "new_yoy_pct": 7.3,
+          "new_yoy_status": null,
+          "total_index": 140.21,
+          "total_index_status": null,
+          "total_yoy_pct": 9.5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2021-Q4",
+          "new_index": 137.85,
+          "new_index_status": null,
+          "new_yoy_pct": 8.6,
+          "new_yoy_status": null,
+          "total_index": 143.17,
+          "total_index_status": null,
+          "total_yoy_pct": 10.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2022-Q1",
+          "new_index": 140.72,
+          "new_index_status": null,
+          "new_yoy_pct": 9.8,
+          "new_yoy_status": null,
+          "total_index": 146.22,
+          "total_index_status": null,
+          "total_yoy_pct": 10.7,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2022-Q2",
+          "new_index": 144.74,
+          "new_index_status": null,
+          "new_yoy_pct": 10.8,
+          "new_yoy_status": null,
+          "total_index": 149.59,
+          "total_index_status": null,
+          "total_yoy_pct": 10,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2022-Q3",
+          "new_index": 146.81,
+          "new_index_status": null,
+          "new_yoy_pct": 9.5,
+          "new_yoy_status": null,
+          "total_index": 150.9,
+          "total_index_status": null,
+          "total_yoy_pct": 7.6,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2022-Q4",
+          "new_index": 148.34,
+          "new_index_status": null,
+          "new_yoy_pct": 7.6,
+          "new_yoy_status": null,
+          "total_index": 148.73,
+          "total_index_status": null,
+          "total_yoy_pct": 3.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2023-Q1",
+          "new_index": 148.63,
+          "new_index_status": null,
+          "new_yoy_pct": 5.6,
+          "new_yoy_status": null,
+          "total_index": 147.58,
+          "total_index_status": null,
+          "total_yoy_pct": 0.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2023-Q2",
+          "new_index": 150.81,
+          "new_index_status": null,
+          "new_yoy_pct": 4.2,
+          "new_yoy_status": null,
+          "total_index": 148.18,
+          "total_index_status": null,
+          "total_yoy_pct": -0.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2023-Q3",
+          "new_index": 153.66,
+          "new_index_status": null,
+          "new_yoy_pct": 4.7,
+          "new_yoy_status": null,
+          "total_index": 149.13,
+          "total_index_status": null,
+          "total_yoy_pct": -1.2,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2023-Q4",
+          "new_index": 156.37,
+          "new_index_status": null,
+          "new_yoy_pct": 5.4,
+          "new_yoy_status": null,
+          "total_index": 148.85,
+          "total_index_status": null,
+          "total_yoy_pct": 0.1,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2024-Q1",
+          "new_index": 158.44,
+          "new_index_status": null,
+          "new_yoy_pct": 6.6,
+          "new_yoy_status": null,
+          "total_index": 149.78,
+          "total_index_status": null,
+          "total_yoy_pct": 1.5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2024-Q2",
+          "new_index": 161.73,
+          "new_index_status": null,
+          "new_yoy_pct": 7.3,
+          "new_yoy_status": null,
+          "total_index": 152.65,
+          "total_index_status": null,
+          "total_yoy_pct": 3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2024-Q3",
+          "new_index": 164.5,
+          "new_index_status": null,
+          "new_yoy_pct": 7.1,
+          "new_yoy_status": null,
+          "total_index": 155.05,
+          "total_index_status": null,
+          "total_yoy_pct": 4,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2024-Q4",
+          "new_index": 166.16,
+          "new_index_status": null,
+          "new_yoy_pct": 6.3,
+          "new_yoy_status": null,
+          "total_index": 156.19,
+          "total_index_status": null,
+          "total_yoy_pct": 4.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2025-Q1",
+          "new_index": 167.04,
+          "new_index_status": null,
+          "new_yoy_pct": 5.4,
+          "new_yoy_status": null,
+          "total_index": 158.45,
+          "total_index_status": null,
+          "total_yoy_pct": 5.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2025-Q2",
+          "new_index": 169.38,
+          "new_index_status": null,
+          "new_yoy_pct": 4.7,
+          "new_yoy_status": null,
+          "total_index": 160.95,
+          "total_index_status": null,
+          "total_yoy_pct": 5.4,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2025-Q3",
+          "new_index": 171.86,
+          "new_index_status": null,
+          "new_yoy_pct": 4.5,
+          "new_yoy_status": null,
+          "total_index": 163.54,
+          "total_index_status": null,
+          "total_yoy_pct": 5.5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2025-Q4",
+          "new_index": 174.14,
+          "new_index_status": null,
+          "new_yoy_pct": 4.8,
+          "new_yoy_status": null,
+          "total_index": 164.62,
+          "total_index_status": null,
+          "total_yoy_pct": 5.4,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2026-Q1",
+          "new_index": 176.09,
+          "new_index_status": null,
+          "new_yoy_pct": 5.4,
+          "new_yoy_status": null,
+          "total_index": 166.51,
+          "total_index_status": null,
+          "total_yoy_pct": 5.1,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2026-Q2",
+          "new_index": 178.21,
+          "new_index_status": null,
+          "new_yoy_pct": 5.2,
+          "new_yoy_status": null,
+          "total_index": 168.56,
+          "total_index_status": null,
+          "total_yoy_pct": 4.7,
+          "total_yoy_status": null
+        }
+      ]
+    },
+    {
+      "code": "EA20",
+      "name": "Euro area – 20 countries (2023-2025)",
+      "role": "aggregate",
+      "quarters": [
+        {
+          "period": "2015-Q1",
+          "new_index": 98.34,
+          "new_index_status": null,
+          "new_yoy_pct": 1.5,
+          "new_yoy_status": null,
+          "total_index": 98.41,
+          "total_index_status": null,
+          "total_yoy_pct": 0.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2015-Q2",
+          "new_index": 99.47,
+          "new_index_status": null,
+          "new_yoy_pct": 2.2,
+          "new_yoy_status": null,
+          "total_index": 99.87,
+          "total_index_status": null,
+          "total_yoy_pct": 1.4,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2015-Q3",
+          "new_index": 100.91,
+          "new_index_status": null,
+          "new_yoy_pct": 2.8,
+          "new_yoy_status": null,
+          "total_index": 100.77,
+          "total_index_status": null,
+          "total_yoy_pct": 1.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2015-Q4",
+          "new_index": 101.28,
+          "new_index_status": null,
+          "new_yoy_pct": 3.1,
+          "new_yoy_status": null,
+          "total_index": 100.94,
+          "total_index_status": null,
+          "total_yoy_pct": 2.6,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2016-Q1",
+          "new_index": 101.93,
+          "new_index_status": null,
+          "new_yoy_pct": 3.7,
+          "new_yoy_status": null,
+          "total_index": 101.84,
+          "total_index_status": null,
+          "total_yoy_pct": 3.5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2016-Q2",
+          "new_index": 103.4,
+          "new_index_status": null,
+          "new_yoy_pct": 3.9,
+          "new_yoy_status": null,
+          "total_index": 103.53,
+          "total_index_status": null,
+          "total_yoy_pct": 3.7,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2016-Q3",
+          "new_index": 104.43,
+          "new_index_status": null,
+          "new_yoy_pct": 3.5,
+          "new_yoy_status": null,
+          "total_index": 105.07,
+          "total_index_status": null,
+          "total_yoy_pct": 4.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2016-Q4",
+          "new_index": 105.16,
+          "new_index_status": null,
+          "new_yoy_pct": 3.8,
+          "new_yoy_status": null,
+          "total_index": 105.6,
+          "total_index_status": null,
+          "total_yoy_pct": 4.6,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2017-Q1",
+          "new_index": 105.41,
+          "new_index_status": null,
+          "new_yoy_pct": 3.4,
+          "new_yoy_status": null,
+          "total_index": 106.28,
+          "total_index_status": null,
+          "total_yoy_pct": 4.4,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2017-Q2",
+          "new_index": 106.83,
+          "new_index_status": null,
+          "new_yoy_pct": 3.3,
+          "new_yoy_status": null,
+          "total_index": 107.93,
+          "total_index_status": null,
+          "total_yoy_pct": 4.2,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2017-Q3",
+          "new_index": 108.23,
+          "new_index_status": null,
+          "new_yoy_pct": 3.6,
+          "new_yoy_status": null,
+          "total_index": 109.64,
+          "total_index_status": null,
+          "total_yoy_pct": 4.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2017-Q4",
+          "new_index": 109.38,
+          "new_index_status": null,
+          "new_yoy_pct": 4,
+          "new_yoy_status": null,
+          "total_index": 110.5,
+          "total_index_status": null,
+          "total_yoy_pct": 4.6,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2018-Q1",
+          "new_index": 110.31,
+          "new_index_status": null,
+          "new_yoy_pct": 4.7,
+          "new_yoy_status": null,
+          "total_index": 111.44,
+          "total_index_status": null,
+          "total_yoy_pct": 4.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2018-Q2",
+          "new_index": 111.89,
+          "new_index_status": null,
+          "new_yoy_pct": 4.7,
+          "new_yoy_status": null,
+          "total_index": 113.22,
+          "total_index_status": null,
+          "total_yoy_pct": 4.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2018-Q3",
+          "new_index": 113.48,
+          "new_index_status": null,
+          "new_yoy_pct": 4.9,
+          "new_yoy_status": null,
+          "total_index": 114.97,
+          "total_index_status": null,
+          "total_yoy_pct": 4.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2018-Q4",
+          "new_index": 114.08,
+          "new_index_status": null,
+          "new_yoy_pct": 4.3,
+          "new_yoy_status": null,
+          "total_index": 115.71,
+          "total_index_status": null,
+          "total_yoy_pct": 4.7,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2019-Q1",
+          "new_index": 114.75,
+          "new_index_status": null,
+          "new_yoy_pct": 4,
+          "new_yoy_status": null,
+          "total_index": 116.18,
+          "total_index_status": null,
+          "total_yoy_pct": 4.2,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2019-Q2",
+          "new_index": 116.55,
+          "new_index_status": null,
+          "new_yoy_pct": 4.2,
+          "new_yoy_status": null,
+          "total_index": 118.29,
+          "total_index_status": null,
+          "total_yoy_pct": 4.5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2019-Q3",
+          "new_index": 118.32,
+          "new_index_status": null,
+          "new_yoy_pct": 4.3,
+          "new_yoy_status": null,
+          "total_index": 119.96,
+          "total_index_status": null,
+          "total_yoy_pct": 4.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2019-Q4",
+          "new_index": 119.89,
+          "new_index_status": null,
+          "new_yoy_pct": 5.1,
+          "new_yoy_status": null,
+          "total_index": 120.97,
+          "total_index_status": null,
+          "total_yoy_pct": 4.6,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2020-Q1",
+          "new_index": 120.85,
+          "new_index_status": null,
+          "new_yoy_pct": 5.3,
+          "new_yoy_status": null,
+          "total_index": 122.35,
+          "total_index_status": null,
+          "total_yoy_pct": 5.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2020-Q2",
+          "new_index": 122.28,
+          "new_index_status": null,
+          "new_yoy_pct": 4.9,
+          "new_yoy_status": null,
+          "total_index": 124.33,
+          "total_index_status": null,
+          "total_yoy_pct": 5.1,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2020-Q3",
+          "new_index": 124.25,
+          "new_index_status": null,
+          "new_yoy_pct": 5,
+          "new_yoy_status": null,
+          "total_index": 126.01,
+          "total_index_status": null,
+          "total_yoy_pct": 5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2020-Q4",
+          "new_index": 126.24,
+          "new_index_status": null,
+          "new_yoy_pct": 5.3,
+          "new_yoy_status": null,
+          "total_index": 127.78,
+          "total_index_status": null,
+          "total_yoy_pct": 5.6,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2021-Q1",
+          "new_index": 126.85,
+          "new_index_status": null,
+          "new_yoy_pct": 5,
+          "new_yoy_status": null,
+          "total_index": 129.56,
+          "total_index_status": null,
+          "total_yoy_pct": 5.9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2021-Q2",
+          "new_index": 129.2,
+          "new_index_status": null,
+          "new_yoy_pct": 5.7,
+          "new_yoy_status": null,
+          "total_index": 133.21,
+          "total_index_status": null,
+          "total_yoy_pct": 7.1,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2021-Q3",
+          "new_index": 132.66,
+          "new_index_status": null,
+          "new_yoy_pct": 6.8,
+          "new_yoy_status": null,
+          "total_index": 137.42,
+          "total_index_status": null,
+          "total_yoy_pct": 9,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2021-Q4",
+          "new_index": 135.77,
+          "new_index_status": null,
+          "new_yoy_pct": 7.6,
+          "new_yoy_status": null,
+          "total_index": 139.98,
+          "total_index_status": null,
+          "total_yoy_pct": 9.5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2022-Q1",
+          "new_index": 137.61,
+          "new_index_status": null,
+          "new_yoy_pct": 8.5,
+          "new_yoy_status": null,
+          "total_index": 142.49,
+          "total_index_status": null,
+          "total_yoy_pct": 10,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2022-Q2",
+          "new_index": 141.99,
+          "new_index_status": null,
+          "new_yoy_pct": 9.9,
+          "new_yoy_status": null,
+          "total_index": 145.68,
+          "total_index_status": null,
+          "total_yoy_pct": 9.4,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2022-Q3",
+          "new_index": 143.08,
+          "new_index_status": null,
+          "new_yoy_pct": 7.9,
+          "new_yoy_status": null,
+          "total_index": 146.97,
+          "total_index_status": null,
+          "total_yoy_pct": 7,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2022-Q4",
+          "new_index": 144.11,
+          "new_index_status": null,
+          "new_yoy_pct": 6.1,
+          "new_yoy_status": null,
+          "total_index": 144.45,
+          "total_index_status": null,
+          "total_yoy_pct": 3.2,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2023-Q1",
+          "new_index": 144.36,
+          "new_index_status": null,
+          "new_yoy_pct": 4.9,
+          "new_yoy_status": null,
+          "total_index": 143.16,
+          "total_index_status": null,
+          "total_yoy_pct": 0.5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2023-Q2",
+          "new_index": 145.65,
+          "new_index_status": null,
+          "new_yoy_pct": 2.6,
+          "new_yoy_status": null,
+          "total_index": 143.42,
+          "total_index_status": null,
+          "total_yoy_pct": -1.6,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2023-Q3",
+          "new_index": 147.44,
+          "new_index_status": null,
+          "new_yoy_pct": 3,
+          "new_yoy_status": null,
+          "total_index": 143.71,
+          "total_index_status": null,
+          "total_yoy_pct": -2.2,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2023-Q4",
+          "new_index": 148.35,
+          "new_index_status": null,
+          "new_yoy_pct": 2.9,
+          "new_yoy_status": null,
+          "total_index": 142.63,
+          "total_index_status": null,
+          "total_yoy_pct": -1.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2024-Q1",
+          "new_index": 148.98,
+          "new_index_status": null,
+          "new_yoy_pct": 3.2,
+          "new_yoy_status": null,
+          "total_index": 142.78,
+          "total_index_status": null,
+          "total_yoy_pct": -0.3,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2024-Q2",
+          "new_index": 151.94,
+          "new_index_status": null,
+          "new_yoy_pct": 4.3,
+          "new_yoy_status": null,
+          "total_index": 145.42,
+          "total_index_status": null,
+          "total_yoy_pct": 1.4,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2024-Q3",
+          "new_index": 154.57,
+          "new_index_status": null,
+          "new_yoy_pct": 4.8,
+          "new_yoy_status": null,
+          "total_index": 147.71,
+          "total_index_status": null,
+          "total_yoy_pct": 2.8,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2024-Q4",
+          "new_index": 156.23,
+          "new_index_status": null,
+          "new_yoy_pct": 5.3,
+          "new_yoy_status": null,
+          "total_index": 148.54,
+          "total_index_status": null,
+          "total_yoy_pct": 4.1,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2025-Q1",
+          "new_index": 156.67,
+          "new_index_status": null,
+          "new_yoy_pct": 5.2,
+          "new_yoy_status": null,
+          "total_index": 150.49,
+          "total_index_status": null,
+          "total_yoy_pct": 5.4,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2025-Q2",
+          "new_index": 158.65,
+          "new_index_status": null,
+          "new_yoy_pct": 4.4,
+          "new_yoy_status": null,
+          "total_index": 152.94,
+          "total_index_status": null,
+          "total_yoy_pct": 5.2,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2025-Q3",
+          "new_index": 160.89,
+          "new_index_status": null,
+          "new_yoy_pct": 4.1,
+          "new_yoy_status": null,
+          "total_index": 155.25,
+          "total_index_status": null,
+          "total_yoy_pct": 5.1,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2025-Q4",
+          "new_index": 162.81,
+          "new_index_status": null,
+          "new_yoy_pct": 4.2,
+          "new_yoy_status": null,
+          "total_index": 155.94,
+          "total_index_status": null,
+          "total_yoy_pct": 5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2026-Q1",
+          "new_index": 163.57,
+          "new_index_status": null,
+          "new_yoy_pct": 4.4,
+          "new_yoy_status": null,
+          "total_index": 157.2,
+          "total_index_status": null,
+          "total_yoy_pct": 4.5,
+          "total_yoy_status": null
+        },
+        {
+          "period": "2026-Q2",
+          "new_index": 165.02,
+          "new_index_status": null,
+          "new_yoy_pct": 4,
+          "new_yoy_status": null,
+          "total_index": 158.81,
+          "total_index_status": null,
+          "total_yoy_pct": 3.8,
+          "total_yoy_status": null
+        }
+      ]
+    }
+  ],
+  "omissions": [],
+  "avena": {
+    "what": "Median asking EUR per square metre of the committed new-build listing book, by country, on each capture day.",
+    "min_priced_listings": 30,
+    "first_date": "2026-03-31",
+    "latest_date": "2026-10-28",
+    "observation_days": 77,
+    "days": [
+      {
+        "date": "2026-03-31",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 937,
+            "priced_listings": 0,
+            "median_asking_eur_m2": null
+          }
+        ]
+      },
+      {
+        "date": "2026-04-05",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 931,
+            "priced_listings": 0,
+            "median_asking_eur_m2": null
+          }
+        ]
+      },
+      {
+        "date": "2026-04-06",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 1040,
+            "priced_listings": 0,
+            "median_asking_eur_m2": null
+          }
+        ]
+      },
+      {
+        "date": "2026-04-07",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 1040,
+            "priced_listings": 1040,
+            "median_asking_eur_m2": 4713
+          }
+        ]
+      },
+      {
+        "date": "2026-04-08",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 1881,
+            "priced_listings": 1881,
+            "median_asking_eur_m2": 5368
+          }
+        ]
+      },
+      {
+        "date": "2026-08-04",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 1982,
+            "priced_listings": 1982,
+            "median_asking_eur_m2": 5555.5
+          }
+        ]
+      },
+      {
+        "date": "2026-08-05",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 1990,
+            "priced_listings": 1990,
+            "median_asking_eur_m2": 5557
+          }
+        ]
+      },
+      {
+        "date": "2026-08-06",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 1979,
+            "priced_listings": 1979,
+            "median_asking_eur_m2": 5582
+          }
+        ]
+      },
+      {
+        "date": "2026-08-07",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 1981,
+            "priced_listings": 1981,
+            "median_asking_eur_m2": 5580
+          }
+        ]
+      },
+      {
+        "date": "2026-08-08",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 1990,
+            "priced_listings": 1990,
+            "median_asking_eur_m2": 5583
+          }
+        ]
+      },
+      {
+        "date": "2026-08-09",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 1996,
+            "priced_listings": 1996,
+            "median_asking_eur_m2": 5582.5
+          }
+        ]
+      },
+      {
+        "date": "2026-08-10",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 1999,
+            "priced_listings": 1999,
+            "median_asking_eur_m2": 5582
+          }
+        ]
+      },
+      {
+        "date": "2026-08-11",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 1999,
+            "priced_listings": 1999,
+            "median_asking_eur_m2": 5580
+          }
+        ]
+      },
+      {
+        "date": "2026-08-12",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2004,
+            "priced_listings": 2004,
+            "median_asking_eur_m2": 5559
+          }
+        ]
+      },
+      {
+        "date": "2026-08-13",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2000,
+            "priced_listings": 2000,
+            "median_asking_eur_m2": 5570.5
+          }
+        ]
+      },
+      {
+        "date": "2026-08-14",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2007,
+            "priced_listings": 2007,
+            "median_asking_eur_m2": 5557
+          }
+        ]
+      },
+      {
+        "date": "2026-08-15",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2005,
+            "priced_listings": 2005,
+            "median_asking_eur_m2": 5565
+          }
+        ]
+      },
+      {
+        "date": "2026-08-16",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2017,
+            "priced_listings": 2017,
+            "median_asking_eur_m2": 5561
+          }
+        ]
+      },
+      {
+        "date": "2026-08-18",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2026,
+            "priced_listings": 2026,
+            "median_asking_eur_m2": 5546.5
+          }
+        ]
+      },
+      {
+        "date": "2026-08-19",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2011,
+            "priced_listings": 2011,
+            "median_asking_eur_m2": 5548
+          }
+        ]
+      },
+      {
+        "date": "2026-08-20",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2016,
+            "priced_listings": 2016,
+            "median_asking_eur_m2": 5570.5
+          }
+        ]
+      },
+      {
+        "date": "2026-08-21",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2020,
+            "priced_listings": 2020,
+            "median_asking_eur_m2": 5581
+          }
+        ]
+      },
+      {
+        "date": "2026-08-22",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2034,
+            "priced_listings": 2034,
+            "median_asking_eur_m2": 5585
+          }
+        ]
+      },
+      {
+        "date": "2026-08-23",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2035,
+            "priced_listings": 2035,
+            "median_asking_eur_m2": 5586
+          }
+        ]
+      },
+      {
+        "date": "2026-08-24",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2035,
+            "priced_listings": 2035,
+            "median_asking_eur_m2": 5586
+          }
+        ]
+      },
+      {
+        "date": "2026-08-25",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2036,
+            "priced_listings": 2036,
+            "median_asking_eur_m2": 5585
+          }
+        ]
+      },
+      {
+        "date": "2026-08-26",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2036,
+            "priced_listings": 2036,
+            "median_asking_eur_m2": 5583.5
+          }
+        ]
+      },
+      {
+        "date": "2026-08-27",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2041,
+            "priced_listings": 2041,
+            "median_asking_eur_m2": 5584
+          }
+        ]
+      },
+      {
+        "date": "2026-08-28",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2047,
+            "priced_listings": 2047,
+            "median_asking_eur_m2": 5586
+          }
+        ]
+      },
+      {
+        "date": "2026-08-29",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2042,
+            "priced_listings": 2042,
+            "median_asking_eur_m2": 5585
+          }
+        ]
+      },
+      {
+        "date": "2026-08-30",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2044,
+            "priced_listings": 2044,
+            "median_asking_eur_m2": 5588.5
+          }
+        ]
+      },
+      {
+        "date": "2026-08-31",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2042,
+            "priced_listings": 2042,
+            "median_asking_eur_m2": 5588.5
+          }
+        ]
+      },
+      {
+        "date": "2026-09-01",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2043,
+            "priced_listings": 2043,
+            "median_asking_eur_m2": 5586
+          }
+        ]
+      },
+      {
+        "date": "2026-09-02",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2033,
+            "priced_listings": 2033,
+            "median_asking_eur_m2": 5597
+          }
+        ]
+      },
+      {
+        "date": "2026-09-03",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2034,
+            "priced_listings": 2034,
+            "median_asking_eur_m2": 5612.5
+          }
+        ]
+      },
+      {
+        "date": "2026-09-04",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2037,
+            "priced_listings": 2037,
+            "median_asking_eur_m2": 5614
+          }
+        ]
+      },
+      {
+        "date": "2026-09-05",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2026,
+            "priced_listings": 2026,
+            "median_asking_eur_m2": 5597.5
+          }
+        ]
+      },
+      {
+        "date": "2026-09-06",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2034,
+            "priced_listings": 2034,
+            "median_asking_eur_m2": 5599
+          }
+        ]
+      },
+      {
+        "date": "2026-09-07",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2034,
+            "priced_listings": 2034,
+            "median_asking_eur_m2": 5599
+          }
+        ]
+      },
+      {
+        "date": "2026-09-08",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2037,
+            "priced_listings": 2037,
+            "median_asking_eur_m2": 5591
+          }
+        ]
+      },
+      {
+        "date": "2026-09-09",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2036,
+            "priced_listings": 2036,
+            "median_asking_eur_m2": 5593
+          }
+        ]
+      },
+      {
+        "date": "2026-09-10",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2036,
+            "priced_listings": 2036,
+            "median_asking_eur_m2": 5596
+          }
+        ]
+      },
+      {
+        "date": "2026-09-11",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2033,
+            "priced_listings": 2033,
+            "median_asking_eur_m2": 5597
+          }
+        ]
+      },
+      {
+        "date": "2026-09-12",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2036,
+            "priced_listings": 2036,
+            "median_asking_eur_m2": 5597.5
+          }
+        ]
+      },
+      {
+        "date": "2026-09-13",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2042,
+            "priced_listings": 2042,
+            "median_asking_eur_m2": 5596
+          }
+        ]
+      },
+      {
+        "date": "2026-09-15",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2044,
+            "priced_listings": 2044,
+            "median_asking_eur_m2": 5597.5
+          }
+        ]
+      },
+      {
+        "date": "2026-09-16",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2046,
+            "priced_listings": 2046,
+            "median_asking_eur_m2": 5601
+          }
+        ]
+      },
+      {
+        "date": "2026-09-17",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2045,
+            "priced_listings": 2045,
+            "median_asking_eur_m2": 5602
+          }
+        ]
+      },
+      {
+        "date": "2026-09-18",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2038,
+            "priced_listings": 2038,
+            "median_asking_eur_m2": 5588.5
+          }
+        ]
+      },
+      {
+        "date": "2026-09-19",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2039,
+            "priced_listings": 2039,
+            "median_asking_eur_m2": 5598
+          }
+        ]
+      },
+      {
+        "date": "2026-09-20",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2039,
+            "priced_listings": 2039,
+            "median_asking_eur_m2": 5598
+          }
+        ]
+      },
+      {
+        "date": "2026-09-22",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2036,
+            "priced_listings": 2036,
+            "median_asking_eur_m2": 5601
+          }
+        ]
+      },
+      {
+        "date": "2026-09-23",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2036,
+            "priced_listings": 2036,
+            "median_asking_eur_m2": 5599
+          }
+        ]
+      },
+      {
+        "date": "2026-09-24",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2034,
+            "priced_listings": 2034,
+            "median_asking_eur_m2": 5611
+          }
+        ]
+      },
+      {
+        "date": "2026-09-25",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2029,
+            "priced_listings": 2029,
+            "median_asking_eur_m2": 5606
+          }
+        ]
+      },
+      {
+        "date": "2026-09-26",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2028,
+            "priced_listings": 2028,
+            "median_asking_eur_m2": 5593
+          }
+        ]
+      },
+      {
+        "date": "2026-09-27",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2028,
+            "priced_listings": 2028,
+            "median_asking_eur_m2": 5593
+          }
+        ]
+      },
+      {
+        "date": "2026-09-28",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2032,
+            "priced_listings": 2032,
+            "median_asking_eur_m2": 5599
+          }
+        ]
+      },
+      {
+        "date": "2026-09-29",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2023,
+            "priced_listings": 2023,
+            "median_asking_eur_m2": 5611
+          }
+        ]
+      },
+      {
+        "date": "2026-09-30",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2029,
+            "priced_listings": 2029,
+            "median_asking_eur_m2": 5622
+          }
+        ]
+      },
+      {
+        "date": "2026-10-01",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2026,
+            "priced_listings": 2026,
+            "median_asking_eur_m2": 5623.5
+          }
+        ]
+      },
+      {
+        "date": "2026-10-02",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2025,
+            "priced_listings": 2025,
+            "median_asking_eur_m2": 5622
+          }
+        ]
+      },
+      {
+        "date": "2026-10-03",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2023,
+            "priced_listings": 2023,
+            "median_asking_eur_m2": 5620
+          }
+        ]
+      },
+      {
+        "date": "2026-10-04",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2030,
+            "priced_listings": 2030,
+            "median_asking_eur_m2": 5630.5
+          }
+        ]
+      },
+      {
+        "date": "2026-10-05",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2029,
+            "priced_listings": 2029,
+            "median_asking_eur_m2": 5633
+          }
+        ]
+      },
+      {
+        "date": "2026-10-06",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2030,
+            "priced_listings": 2030,
+            "median_asking_eur_m2": 5627.5
+          }
+        ]
+      },
+      {
+        "date": "2026-10-07",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2028,
+            "priced_listings": 2028,
+            "median_asking_eur_m2": 5614.5
+          }
+        ]
+      },
+      {
+        "date": "2026-10-08",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2034,
+            "priced_listings": 2034,
+            "median_asking_eur_m2": 5601
+          }
+        ]
+      },
+      {
+        "date": "2026-10-09",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2039,
+            "priced_listings": 2039,
+            "median_asking_eur_m2": 5620
+          }
+        ]
+      },
+      {
+        "date": "2026-10-13",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2039,
+            "priced_listings": 2039,
+            "median_asking_eur_m2": 5622
+          }
+        ]
+      },
+      {
+        "date": "2026-10-21",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2034,
+            "priced_listings": 2034,
+            "median_asking_eur_m2": 5627.5
+          }
+        ]
+      },
+      {
+        "date": "2026-10-22",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2039,
+            "priced_listings": 2039,
+            "median_asking_eur_m2": 5625
+          }
+        ]
+      },
+      {
+        "date": "2026-10-23",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2043,
+            "priced_listings": 2043,
+            "median_asking_eur_m2": 5622
+          }
+        ]
+      },
+      {
+        "date": "2026-10-24",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2040,
+            "priced_listings": 2040,
+            "median_asking_eur_m2": 5623.5
+          }
+        ]
+      },
+      {
+        "date": "2026-10-25",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2051,
+            "priced_listings": 2051,
+            "median_asking_eur_m2": 5633
+          }
+        ]
+      },
+      {
+        "date": "2026-10-27",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2055,
+            "priced_listings": 2055,
+            "median_asking_eur_m2": 5625
+          }
+        ]
+      },
+      {
+        "date": "2026-10-28",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2058,
+            "priced_listings": 2058,
+            "median_asking_eur_m2": 5623.5
+          }
+        ]
+      }
+    ],
+    "below_threshold": [],
+    "coverage_note": "Avena asking prices are the median EUR/m² of the committed listing book on each capture day. They are asking prices, not transaction prices, and not a house price index. A listing with no country code is counted as Spain only when its location maps to a province in the Spain official benchmark. Other rows are unmapped (0 on 2026-10-28) and are not given a country. Spain has 74 capture days with a median, from 2026-04-07 to 2026-10-28. Calendar days with no committed book are absent and are not filled. The listing book has no Portuguese asking median. Eurostat still publishes Portugal. A median is published only when a country has at least 30 listings with a positive asking EUR/m² that day. A change in that median inside a Eurostat quarter is calculated only when the quarter has at least 8 such days spanning at least 28 days. A shorter run is listed and no rate is calculated."
+  },
+  "caveats": [
+    "Eurostat prc_hpi_q measures price changes of residential properties purchased by households. It is a transaction-price index. It is not an asking price and it is not a price per square metre.",
+    "The new-dwelling series is purchase code DW_NEW (Purchases of newly built dwellings · Quarterly index, 2015=100). The total series is purchase code TOTAL. The index is unit I15_Q. The annual rate of change is unit RCH_A.",
+    "The EU figure is geo EU27_2020. The euro area figure is geo EA20. Eurostat's labels for both are stored on the row. Neither aggregate is an Avena listing book.",
+    "A change in the Avena median can come from the mix of listings on the book, not only from a change in one asking price.",
+    "The price-snapshot ledger declares no capture for 2026-10-14 to 2026-10-20. Tape days inside that span are flagged. They are not treated as a continuous asking series.",
+    "Eurostat's latest quarter in this file is 2026-Q2. The latest Avena capture day is 2026-10-28. Those are not the same period.",
+    "Where Eurostat leaves a cell empty, this file stores null. It does not store zero."
+  ]
+}

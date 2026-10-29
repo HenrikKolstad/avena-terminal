@@ -55,6 +55,7 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
       { label: 'Portugal market', href: '/portugal' },
       { label: 'Spain official benchmarks', href: '/spain/official' },
       { label: 'Spain supply pipeline', href: '/spain/supply' },
+      { label: 'Eurostat house price index', href: '/europe/official' },
       { label: 'Sample fund report', href: '/reports/sample' },
       { label: 'Score track record', href: '/track-record' },
     ],
