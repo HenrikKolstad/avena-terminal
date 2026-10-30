@@ -1,7 +1,7 @@
 {
   "status": "ready",
-  "generated_at": "2026-10-28T00:24:14.932Z",
-  "retrieved_at": "2026-10-28",
+  "generated_at": "2026-10-30T10:55:54.870Z",
+  "retrieved_at": "2026-10-30",
   "period": "2026-Q2",
   "sheet": "T2A2026",
   "provinces_in_corpus": [
@@ -25,7 +25,7 @@
       "source": "Colegio de Registradores",
       "url": "https://opendata.registradores.org/dataset/es/dataset/compraventas-de-inmuebles-uso-residencial-por-provincia",
       "ingested": false,
-      "reason": "The open-data portal returned HTTP 403 to the refresh job. No registradores series was ingested."
+      "reason": "The open-data portal returned HTTP 200, but this job has no parser for that file yet. No registradores series was ingested."
     },
     {
       "source": "Consejo General del Notariado",
