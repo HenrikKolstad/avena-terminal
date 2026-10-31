@@ -4524,6 +4524,19 @@
     "still_listed": false
   },
   {
+    "avn_id": "N8659",
+    "town": "Fortuna",
+    "region": "costa-calida",
+    "type": "Villa",
+    "beds": 3,
+    "built_m2": 100,
+    "last_price_eur": 360000,
+    "last_pm2_eur": 3600,
+    "last_seen_date": "2026-10-31",
+    "relisted_on": null,
+    "still_listed": true
+  },
+  {
     "avn_id": "N8719",
     "town": "Los Alcazares",
     "region": "costa-calida",
@@ -4547,6 +4560,6 @@
     "last_pm2_eur": 4864,
     "last_seen_date": "2026-10-31",
     "relisted_on": null,
-    "still_listed": false
+    "still_listed": true
   }
 ]

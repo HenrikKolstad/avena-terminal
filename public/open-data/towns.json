@@ -14,11 +14,11 @@
   {
     "town": "Mijas",
     "costa": "Costa del Sol",
-    "n_listings": 190,
-    "median_price_eur": 573350,
-    "median_pm2_eur": 6704,
-    "p25_pm2_eur": 5518,
-    "p75_pm2_eur": 8307,
+    "n_listings": 192,
+    "median_price_eur": 565850,
+    "median_pm2_eur": 6660,
+    "p25_pm2_eur": 5491,
+    "p75_pm2_eur": 8302,
     "median_built_m2": 87,
     "villa_share_pct": 18,
     "median_beach_km": 2
@@ -38,11 +38,11 @@
   {
     "town": "Fuengirola",
     "costa": "Costa del Sol",
-    "n_listings": 100,
-    "median_price_eur": 722500,
-    "median_pm2_eur": 7459,
-    "p25_pm2_eur": 6295,
-    "p75_pm2_eur": 9701,
+    "n_listings": 101,
+    "median_price_eur": 720000,
+    "median_pm2_eur": 7450,
+    "p25_pm2_eur": 6281,
+    "p75_pm2_eur": 9686,
     "median_built_m2": 89,
     "villa_share_pct": 13,
     "median_beach_km": 1.5
@@ -158,13 +158,13 @@
   {
     "town": "Manilva",
     "costa": "Costa del Sol",
-    "n_listings": 40,
-    "median_price_eur": 490500,
-    "median_pm2_eur": 5934,
-    "p25_pm2_eur": 4436,
-    "p75_pm2_eur": 7841,
-    "median_built_m2": 92,
-    "villa_share_pct": 13,
+    "n_listings": 41,
+    "median_price_eur": 491000,
+    "median_pm2_eur": 6130,
+    "p25_pm2_eur": 4471,
+    "p75_pm2_eur": 8085,
+    "median_built_m2": 93,
+    "villa_share_pct": 15,
     "median_beach_km": 0.6
   },
   {
@@ -314,13 +314,13 @@
   {
     "town": "San Javier",
     "costa": "Costa Calida",
-    "n_listings": 19,
-    "median_price_eur": 380000,
-    "median_pm2_eur": 4714,
-    "p25_pm2_eur": 3801,
-    "p75_pm2_eur": 5651,
+    "n_listings": 20,
+    "median_price_eur": 384500,
+    "median_pm2_eur": 4789,
+    "p25_pm2_eur": 3818,
+    "p75_pm2_eur": 5481,
     "median_built_m2": 80,
-    "villa_share_pct": 74,
+    "villa_share_pct": 75,
     "median_beach_km": 2.5
   },
   {
@@ -348,6 +348,18 @@
     "median_beach_km": 1.5
   },
   {
+    "town": "Alicante",
+    "costa": "Costa Blanca North",
+    "n_listings": 16,
+    "median_price_eur": 295900,
+    "median_pm2_eur": 4777,
+    "p25_pm2_eur": 4559,
+    "p75_pm2_eur": 5352,
+    "median_built_m2": 64,
+    "villa_share_pct": 0,
+    "median_beach_km": 3
+  },
+  {
     "town": "Calpe",
     "costa": "Costa Blanca North",
     "n_listings": 16,
@@ -370,18 +382,6 @@
     "median_built_m2": 97,
     "villa_share_pct": 100,
     "median_beach_km": 14
-  },
-  {
-    "town": "Alicante",
-    "costa": "Costa Blanca North",
-    "n_listings": 15,
-    "median_price_eur": 301900,
-    "median_pm2_eur": 4752,
-    "p25_pm2_eur": 4549,
-    "p75_pm2_eur": 5356,
-    "median_built_m2": 64,
-    "villa_share_pct": 0,
-    "median_beach_km": 3
   },
   {
     "town": "Fuente Álamo",
@@ -514,6 +514,18 @@
     "median_built_m2": 95,
     "villa_share_pct": 64,
     "median_beach_km": 0
+  },
+  {
+    "town": "Puerto de Mazarron",
+    "costa": "Costa Calida",
+    "n_listings": 11,
+    "median_price_eur": 235000,
+    "median_pm2_eur": 3775,
+    "p25_pm2_eur": 3282,
+    "p75_pm2_eur": 4232,
+    "median_built_m2": 69,
+    "villa_share_pct": 45,
+    "median_beach_km": 0.2
   },
   {
     "town": "Cartagena",
@@ -682,18 +694,6 @@
     "median_built_m2": 273,
     "villa_share_pct": 100,
     "median_beach_km": 2
-  },
-  {
-    "town": "Puerto de Mazarron",
-    "costa": "Costa Calida",
-    "n_listings": 7,
-    "median_price_eur": 235000,
-    "median_pm2_eur": 3863,
-    "p25_pm2_eur": 3753,
-    "p75_pm2_eur": 4382,
-    "median_built_m2": 63,
-    "villa_share_pct": 71,
-    "median_beach_km": 0.2
   },
   {
     "town": "San Fulgencio",
