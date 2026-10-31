@@ -100,6 +100,8 @@ export default function SpainOfficialPage() {
               <span className="text-muted-foreground"> · </span>
               <Link href="/spain/towns" className="text-primary hover:underline">Municipal appraisal for the same coast</Link>
               <span className="text-muted-foreground"> · </span>
+              <Link href="/spain/rents" className="text-primary hover:underline">Habitual rents for the same coast</Link>
+              <span className="text-muted-foreground"> · </span>
               <Link href="/europe/official" className="text-primary hover:underline">Eurostat house price index</Link>
             </p>
             {pending ? (
