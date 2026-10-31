@@ -151,6 +151,8 @@ export default function EuropeOfficialPage() {
               <Link href="/spain/supply" className="text-primary hover:underline">Spain supply</Link>
               <span className="text-muted-foreground"> · </span>
               <Link href="/spain/towns" className="text-primary hover:underline">Spain municipal appraisals</Link>
+              <span className="text-muted-foreground"> · </span>
+              <Link href="/spain/rents" className="text-primary hover:underline">Spain habitual rents</Link>
             </p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-10">
               <Stat label={`Spain, new dwellings, ${quarterLabel(period)}`} value={idx(latest?.new_index ?? null)} sub={`Index, 2015=100${flag(latest?.new_index_status) ? ` · ${flag(latest?.new_index_status)}` : ''}`} />

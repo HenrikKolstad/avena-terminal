@@ -168,13 +168,14 @@ for (const [file, cron] of [
   ['.github/workflows/es-supply-refresh.yml', '15 4 * * 4'],
   ['.github/workflows/es-town-gap-refresh.yml', '25 4 * * 5'],
   ['.github/workflows/eu-hpi-refresh.yml', '50 4 * * 1'],
+  ['.github/workflows/es-rents-refresh.yml', '35 4 * * 2'],
   ['vercel.json', '"path": "/api/cron/pricing-history", "schedule": "20 2 * * *"'],
   ['vercel.json', '"path": "/api/cron/pricing-history", "schedule": "30 14 * * *"'],
   ['vercel.json', '"path": "/api/cron/scribe",  "schedule": "5 3 * * *"'],
 ] as const) {
   check(`${file} still has ${cron}`, read(file).includes(cron));
 }
-check('cadence text cites those clocks', /01:37 UTC/.test(pack.pipeline[0].cadence) && /02:20 UTC/.test(pack.pipeline[1].cadence) && /07:00 UTC/.test(pack.pipeline[2].cadence) && /04:40 UTC/.test(pack.pipeline[3].cadence) && /04:15 UTC/.test(pack.pipeline[4].cadence) && /04:25 UTC/.test(pack.pipeline[5].cadence) && /04:50 UTC/.test(pack.pipeline[6].cadence));
+check('cadence text cites those clocks', /01:37 UTC/.test(pack.pipeline[0].cadence) && /02:20 UTC/.test(pack.pipeline[1].cadence) && /07:00 UTC/.test(pack.pipeline[2].cadence) && /04:40 UTC/.test(pack.pipeline[3].cadence) && /04:15 UTC/.test(pack.pipeline[4].cadence) && /04:25 UTC/.test(pack.pipeline[5].cadence) && /04:50 UTC/.test(pack.pipeline[6].cadence) && /04:35 UTC/.test(pack.pipeline[7].cadence));
 
 console.log('links and claims');
 check('methodology links the pack', read('src/app/methodology/page.tsx').includes('href="/due-diligence"'));
@@ -211,6 +212,8 @@ const supply = piped.find((s) => s.id === 'es-supply');
 check('supply artifact time is the file and its health status stays unavailable', supply?.last_observed === '2026-10-27T00:00:00.000Z' && supply.health_status === NOT_AVAILABLE);
 const towns = piped.find((s) => s.id === 'es-town-gap');
 check('town artifact time is the file and its health status stays unavailable', towns?.last_observed === '2026-10-28T00:00:00.000Z' && towns.health_status === NOT_AVAILABLE);
+const rents = piped.find((s) => s.id === 'es-rents');
+check('rent artifact time stays unavailable when the caller does not pass one', rents?.last_observed === NOT_AVAILABLE && rents.health_status === NOT_AVAILABLE);
 const hpi = piped.find((s) => s.id === 'eu-hpi');
 check('eurostat artifact time stays unavailable when the caller does not pass one', hpi?.last_observed === NOT_AVAILABLE && hpi.health_status === NOT_AVAILABLE);
 check('not-available rollup names the missing database read', pack.not_available.some((n) => n.field === 'coverage.price_history.first_date' && /not configured/i.test(n.reason)));
