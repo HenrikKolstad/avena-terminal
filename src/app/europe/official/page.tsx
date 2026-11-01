@@ -148,6 +148,8 @@ export default function EuropeOfficialPage() {
               <span className="text-muted-foreground"> · </span>
               <Link href="/portugal" className="text-primary hover:underline">Portugal official statistics</Link>
               <span className="text-muted-foreground"> · </span>
+              <Link href="/portugal/official" className="text-primary hover:underline">Portugal bank appraisal and house price index</Link>
+              <span className="text-muted-foreground"> · </span>
               <Link href="/spain/supply" className="text-primary hover:underline">Spain supply</Link>
               <span className="text-muted-foreground"> · </span>
               <Link href="/spain/towns" className="text-primary hover:underline">Spain municipal appraisals</Link>

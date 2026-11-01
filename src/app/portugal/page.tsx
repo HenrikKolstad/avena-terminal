@@ -92,6 +92,8 @@ export default function PortugalPage() {
               This is an official-statistics layer. Avena does not yet publish Portuguese listings; listing coverage will be added only from feeds whose owners have given permission.
             </p>
             <p className="text-sm mb-8">
+              <Link href="/portugal/official" className="text-primary hover:underline">Bank appraisal, sale prices and the house price index</Link>
+              <span className="text-muted-foreground"> · </span>
               <Link href="/europe/official" className="text-primary hover:underline">Eurostat house price index for Portugal, Spain, the EU and the euro area</Link>
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10">

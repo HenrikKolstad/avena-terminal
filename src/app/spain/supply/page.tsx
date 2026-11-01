@@ -100,6 +100,8 @@ export default function SpainSupplyPage() {
               <Link href="/spain/rents" className="text-primary hover:underline">Habitual rents for the same coast</Link>
               <span className="text-muted-foreground"> · </span>
               <Link href="/europe/official" className="text-primary hover:underline">Eurostat house price index</Link>
+              <span className="text-muted-foreground"> · </span>
+              <Link href="/portugal/official" className="text-primary hover:underline">Portugal official benchmark</Link>
             </p>
             {pending ? (
               <div className="rounded-sm border p-5 max-w-3xl" style={{ borderColor: 'hsl(var(--av-border))' }}>

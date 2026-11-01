@@ -98,6 +98,8 @@ export default function SpainRentsPage() {
               <Link href="/spain/supply" className="text-primary hover:underline">Supply pipeline</Link>
               <span className="text-muted-foreground"> · </span>
               <Link href="/europe/official" className="text-primary hover:underline">Eurostat house price index</Link>
+              <span className="text-muted-foreground"> · </span>
+              <Link href="/portugal/official" className="text-primary hover:underline">Portugal official benchmark</Link>
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10">
               <Stat label={`INE rent index, Spain, ${yearLabel(n.ipva_total_index.period)}`} value={idx(n.ipva_total_index.value)} sub="IPVA, base 2015. Not a euro rent." />

@@ -53,6 +53,7 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
       { label: 'Open Dataset',    href: '/dataset' },
       { label: 'Due diligence',  href: '/due-diligence' },
       { label: 'Portugal market', href: '/portugal' },
+      { label: 'Portugal official benchmark', href: '/portugal/official' },
       { label: 'Spain official benchmarks', href: '/spain/official' },
       { label: 'Spain rent benchmark', href: '/spain/rents' },
       { label: 'Spain supply pipeline', href: '/spain/supply' },

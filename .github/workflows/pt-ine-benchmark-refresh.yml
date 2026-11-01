@@ -1,0 +1,69 @@
+name: Portugal INE benchmark refresh
+
+# Rebuilds data/pt-ine-benchmark.json (the /portugal/official page) from
+# Statistics Portugal's keyless JSON API. No secrets.
+#
+# Sunday 04:30 UTC sits clear of the Monday 04:50 Eurostat job, the Tuesday
+# 04:20 Portugal market-layer job, the Tuesday 04:35 Spain rent job, the
+# Wednesday 04:40 Spain benchmark, the Thursday 04:15 supply job, the Friday
+# 04:25 municipal job, and the 05:10 feed refresh.
+#
+# This file is not data/pt-official.json. That one is the /portugal market
+# layer (sales by municipality, licensing, Banco de Portugal) and has its own
+# Tuesday job.
+#
+# Fail soft: if INE is unreachable or a series stops parsing,
+# scripts/ingest-pt-ine-benchmark.ts exits non-zero and this run does not
+# commit. The previous file stays what the site serves. A red run is the
+# signal. Nothing is written over the last good file.
+
+on:
+  schedule:
+    - cron: '30 4 * * 0'   # Sundays 04:30 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pt-ine-benchmark-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Reachability probe (diagnostic only)
+        continue-on-error: true
+        run: |
+          u='https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0012248&Dim1=S3A202609&Dim2=PT&Dim3=T&lang=EN'
+          curl -sS -L -o /dev/null -w "$u -> %{http_code} %{time_total}s\n" --max-time 60 -A 'AvenaTerminal-OfficialStats/1.0' "$u" || echo "$u -> curl failed"
+
+      - name: Build the Portugal INE benchmark
+        run: npx tsx scripts/ingest-pt-ine-benchmark.ts
+
+      - name: Commit refreshed benchmark (if changed)
+        run: |
+          git config user.name "avena-feed-bot"
+          git config user.email "feed@avenaterminal.com"
+          git add data/pt-ine-benchmark.json
+          if git diff --staged --quiet; then
+            echo "No Portugal INE benchmark changes this week."
+          else
+            git commit -m "chore(pt): weekly INE Portugal official benchmark refresh [skip ci]"
+            git pull --rebase origin main
+            git push
+            echo "Pushed refreshed Portugal INE benchmark."
+          fi

@@ -487,6 +487,11 @@ function rentsGeneratedAt(): string | null {
   return isRecord(raw) ? str(raw.generated_at) : null;
 }
 
+function ptBenchmarkGeneratedAt(): string | null {
+  const raw = readJson('data/pt-ine-benchmark.json');
+  return isRecord(raw) ? str(raw.generated_at) : null;
+}
+
 async function readSnapshotBounds(): Promise<{ client: boolean; min: string | null; max: string | null; error: string | null }> {
   const db = supabaseAdmin;
   if (!db) return { client: false, min: null, max: null, error: null };
@@ -985,7 +990,7 @@ function datasetDates(detail: string | null): { site: OrNA<string>; mirror: OrNA
   };
 }
 
-export function buildPipeline(health: HealthReport | null, officialAt: string | null, supplyAt: string | null = null, townAt: string | null = null, hpiAt: string | null = null, rentsAt: string | null = null): PipelineStep[] {
+export function buildPipeline(health: HealthReport | null, officialAt: string | null, supplyAt: string | null = null, townAt: string | null = null, hpiAt: string | null = null, rentsAt: string | null = null, ptAt: string | null = null): PipelineStep[] {
   const feed = health?.checks.find((c) => c.id === 'feed') ?? null;
   const capture = health?.checks.find((c) => c.id === 'capture') ?? null;
   const workflows = health?.checks.find((c) => c.id === 'workflows') ?? null;
@@ -1091,6 +1096,19 @@ export function buildPipeline(health: HealthReport | null, officialAt: string | 
       health_status: NOT_AVAILABLE,
       health_detail: NOT_AVAILABLE,
     },
+    {
+      id: 'pt-ine-benchmark',
+      name: 'Portugal official benchmark',
+      cadence: 'GitHub Actions pt-ine-benchmark-refresh.yml on Sunday at 04:30 UTC.',
+      what: 'Rebuilds data/pt-ine-benchmark.json from Statistics Portugal indicators 0012248 (median bank appraisal €/m²), 0012250 (its published annual change, NUTS II), 0012234 (median sale €/m², new and existing) and 0014765/0014767 (national house price index, new and existing). If INE does not parse, the previous file stays. Separate from the listing history and from the /portugal market layer in data/pt-official.json.',
+      source_file: '.github/workflows/pt-ine-benchmark-refresh.yml',
+      last_observed: ptAt ?? NOT_AVAILABLE,
+      last_observed_kind: ptAt
+        ? 'data/pt-ine-benchmark.json generated_at on this deployment. /api/health does not watch pt-ine-benchmark-refresh.yml, so the GitHub run timestamp is not available.'
+        : 'not available. /api/health does not watch pt-ine-benchmark-refresh.yml, and data/pt-ine-benchmark.json had no generated_at.',
+      health_status: NOT_AVAILABLE,
+      health_detail: NOT_AVAILABLE,
+    },
   ];
 }
 
@@ -1147,6 +1165,7 @@ function delivery(mirror: OrNA<string>): DeliveryOption[] {
     { id: 'spain-towns', method: 'GET', path: '/spain/towns', format: 'HTML. Source file data/es-town-gap.json. JSON at /api/v1/es-town-gap.', auth: 'No key.', note: 'Weekly municipal appraisal. Asking prices beside the ministry appraisal for municipalities over 25,000 inhabitants. Not a transaction price and not the listing history.' },
     { id: 'europe-official', method: 'GET', path: '/europe/official', format: 'HTML. Source file data/eu-hpi.json. JSON at /api/v1/eu-hpi.', auth: 'No key.', note: 'Weekly Eurostat house price index beside Avena asking prices. Not a transaction price and not the listing history.' },
     { id: 'spain-rents', method: 'GET', path: '/spain/rents', format: 'HTML. Source file data/es-rents.json. JSON at /api/v1/es-rents.', auth: 'No key.', note: 'Weekly habitual-residence rents from the ministry SERPAVI workbook and the INE rental-price index. Not the listing history.' },
+    { id: 'portugal-official', method: 'GET', path: '/portugal/official', format: 'HTML. Source file data/pt-ine-benchmark.json. JSON at /api/v1/pt-official.', auth: 'No key.', note: 'Weekly Statistics Portugal benchmark: bank appraisal, sale €/m² and the house price index. Not Portuguese listing coverage and not the listing history.' },
     { id: 'huggingface', method: 'GET', path: 'https://huggingface.co/datasets/AVENATERMINAL/spain-new-build-properties-2026', format: 'Hugging Face dataset', auth: 'Public page.', note: 'feed-refresh.yml uploads the open-data files here when HF_TOKEN is set, and leaves the existing copy when it is not. /api/health does not report this copy. Freshness is not available.' },
   ];
 }
@@ -1173,6 +1192,7 @@ function licensing(published: PublishedDataset): DueDiligencePack['licensing'] {
       'The Spain municipal file is a separate weekly pull from the ministry bulletin of appraised €/m² for municipalities of more than 25,000 inhabitants. It is not a transaction price. Sources the job could not read are omissions in that file.',
       'The Eurostat house price file is a separate weekly pull of dataset prc_hpi_q. It is an official transaction-price index. The asking-price tape in that file is the median of the committed listing book. It is not a transaction price.',
       'The Spain rent file is a separate weekly pull from the ministry SERPAVI workbook and INE table 59058. The implied yield in that file is derived. Sources the job did not read are omissions in that file.',
+      'The Portugal official file is a separate weekly pull from Statistics Portugal indicators 0012248, 0012250, 0012234, 0014765 and 0014767. It is not a Portuguese listing book. A geography the indicator does not publish is an omission in that file.',
       zenodoNote,
     ],
   };
@@ -1203,6 +1223,7 @@ function unavailable(pack: Omit<DueDiligencePack, 'not_available'>): Unavailable
     { field: 'pipeline.es-town-gap.github_run_timestamp', reason: '/api/health does not watch es-town-gap-refresh.yml. A generated_at on data/es-town-gap.json is the artifact on this deployment, not a GitHub run timestamp.' },
     { field: 'pipeline.eu-hpi.github_run_timestamp', reason: '/api/health does not watch eu-hpi-refresh.yml. A generated_at on data/eu-hpi.json is the artifact on this deployment, not a GitHub run timestamp.' },
     { field: 'pipeline.es-rents.github_run_timestamp', reason: '/api/health does not watch es-rents-refresh.yml. A generated_at on data/es-rents.json is the artifact on this deployment, not a GitHub run timestamp.' },
+    { field: 'pipeline.pt-ine-benchmark.github_run_timestamp', reason: '/api/health does not watch pt-ine-benchmark-refresh.yml. A generated_at on data/pt-ine-benchmark.json is the artifact on this deployment, not a GitHub run timestamp.' },
     { field: 'delivery.huggingface.freshness', reason: 'Not in /api/health. The feed workflow uploads this copy only when a token is set.' },
   );
   return notes;
@@ -1220,6 +1241,7 @@ export function assembleDueDiligence(args: {
   townGeneratedAt?: string | null;
   hpiGeneratedAt?: string | null;
   rentsGeneratedAt?: string | null;
+  ptBenchmarkGeneratedAt?: string | null;
   health: HealthReport | null;
   snapshot: { client: boolean; min: string | null; max: string | null; error: string | null };
 }): DueDiligencePack {
@@ -1242,7 +1264,7 @@ export function assembleDueDiligence(args: {
     },
     dictionary: buildDictionary(args.props, args.manifest, today),
     dictionary_scope: 'Fields on the open observation files, on GET /api/v1/properties (default and format=apip), on GET /api/v1/dataset-export, and on the aggregate payload of GET /api/v1/open-dataset. Other routes are not this dataset. Their index is /api/openapi.json.',
-    pipeline: buildPipeline(args.health, args.officialGeneratedAt, args.supplyGeneratedAt, args.townGeneratedAt ?? null, args.hpiGeneratedAt ?? null, args.rentsGeneratedAt ?? null),
+    pipeline: buildPipeline(args.health, args.officialGeneratedAt, args.supplyGeneratedAt, args.townGeneratedAt ?? null, args.hpiGeneratedAt ?? null, args.rentsGeneratedAt ?? null, args.ptBenchmarkGeneratedAt ?? null),
     health_checked_at: args.health?.checked_at ?? NOT_AVAILABLE,
     quality: quality(),
     point_in_time: pointInTime(),
@@ -1277,6 +1299,7 @@ export async function loadDueDiligence(now = new Date()): Promise<DueDiligencePa
     townGeneratedAt: townGeneratedAt(),
     hpiGeneratedAt: hpiGeneratedAt(),
     rentsGeneratedAt: rentsGeneratedAt(),
+    ptBenchmarkGeneratedAt: ptBenchmarkGeneratedAt(),
     health,
     snapshot,
   });
