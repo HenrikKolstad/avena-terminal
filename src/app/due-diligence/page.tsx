@@ -174,6 +174,7 @@ export default async function DueDiligencePage() {
           <Link href="/spain/supply" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Spain supply pipeline</Link>
           <Link href="/spain/towns" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Spain municipal appraisals</Link>
           <Link href="/spain/rents" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Spain rent benchmark</Link>
+          <Link href="/portugal/official" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Portugal official benchmark</Link>
           <Link href="/europe/official" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Eurostat house price index</Link>
         </div>
 

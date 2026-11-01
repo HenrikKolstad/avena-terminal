@@ -17,6 +17,7 @@ const PAGES = [
   { title: 'Watchlist', url: '/watchlist', kind: 'page' },
   { title: 'Bubble scanner', url: '/bubble-scanner', kind: 'page' },
   { title: 'Portugal intelligence', url: '/portugal', kind: 'page' },
+  { title: 'Portugal official benchmark', url: '/portugal/official', kind: 'page' },
   { title: 'Spain official benchmarks', url: '/spain/official', kind: 'page' },
   { title: 'Spain supply pipeline', url: '/spain/supply', kind: 'page' },
   { title: 'Spain municipal appraisals', url: '/spain/towns', kind: 'page' },
