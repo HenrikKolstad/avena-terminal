@@ -102,6 +102,8 @@ export default function PortugalOfficialPage() {
             <p className="text-sm mb-8">
               <Link href="/portugal" className="text-primary hover:underline">Municipality and parish sales, and the licensing pipeline</Link>
               <span className="text-muted-foreground"> · </span>
+              <Link href="/official" className="text-primary hover:underline">Official statistics</Link>
+              <span className="text-muted-foreground"> · </span>
               <Link href="/spain/official" className="text-primary hover:underline">Spain province benchmark</Link>
               <span className="text-muted-foreground"> · </span>
               <Link href="/spain/rents" className="text-primary hover:underline">Spain habitual rents</Link>
