@@ -110,6 +110,8 @@ export default function SpainTownsPage() {
               {view.coverage_note ?? 'Official figures are pending the first refresh of data/es-town-gap.json.'}
             </p>
             <p className="text-sm mb-8">
+              <Link href="/official" className="text-primary hover:underline">Official statistics</Link>
+              <span className="text-muted-foreground"> · </span>
               <Link href="/spain/official" className="text-primary hover:underline">Province benchmark</Link>
               <span className="text-muted-foreground"> · </span>
               <Link href="/spain/rents" className="text-primary hover:underline">Habitual rents for the same coast</Link>

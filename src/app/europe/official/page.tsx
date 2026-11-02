@@ -144,6 +144,8 @@ export default function EuropeOfficialPage() {
               {view.avena.coverage_note}
             </p>
             <p className="text-sm mb-8">
+              <Link href="/official" className="text-primary hover:underline">Official statistics</Link>
+              <span className="text-muted-foreground"> · </span>
               <Link href="/spain/official" className="text-primary hover:underline">Spain province benchmark</Link>
               <span className="text-muted-foreground"> · </span>
               <Link href="/portugal" className="text-primary hover:underline">Portugal official statistics</Link>
