@@ -1,0 +1,65 @@
+name: Weekly vintage freeze
+
+# Freezes one town/province vintage per closed ISO week into
+# data/vintages/YYYY-MM-DD.json and records the SHA-256 in
+# data/vintages/manifest.json. The source is the git history of
+# public/data.json. No secrets.
+#
+# Monday 06:20 UTC is after the week has closed on Sunday. It sits clear of
+# the Monday 04:50 Eurostat job, the 05:10 feed backstop, and the 05:45
+# pulse-weekly primary. The Monday book belongs to the new week and is not
+# frozen by this run.
+#
+# A shallow checkout cannot see earlier captures. scripts/freeze-vintages.ts
+# exits non-zero in that case and nothing is committed: missing weeks must
+# not be published as gaps. If a frozen file would change, the script exits
+# non-zero and the previous file stays.
+
+on:
+  schedule:
+    - cron: '20 6 * * 1'   # Mondays 06:20 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: vintages-freeze
+  cancel-in-progress: false
+
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          # One capture per closed week comes from the commit history of
+          # public/data.json. A depth-1 checkout would hide that history.
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Freeze closed weekly vintages
+        run: npx tsx scripts/freeze-vintages.ts
+
+      - name: Commit new vintages (if any)
+        run: |
+          git config user.name "avena-feed-bot"
+          git config user.email "feed@avenaterminal.com"
+          git add data/vintages
+          if git diff --staged --quiet; then
+            echo "No new weekly vintage."
+          else
+            git commit -m "chore(data): freeze weekly town and province vintages [skip ci]"
+            git pull --rebase origin main
+            git push
+            echo "Pushed frozen vintages."
+          fi

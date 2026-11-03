@@ -169,6 +169,7 @@ for (const [file, cron] of [
   ['.github/workflows/es-town-gap-refresh.yml', '25 4 * * 5'],
   ['.github/workflows/eu-hpi-refresh.yml', '50 4 * * 1'],
   ['.github/workflows/es-rents-refresh.yml', '35 4 * * 2'],
+  ['.github/workflows/vintages-freeze.yml', '20 6 * * 1'],
   ['vercel.json', '"path": "/api/cron/pricing-history", "schedule": "20 2 * * *"'],
   ['vercel.json', '"path": "/api/cron/pricing-history", "schedule": "30 14 * * *"'],
   ['vercel.json', '"path": "/api/cron/scribe",  "schedule": "5 3 * * *"'],
@@ -181,6 +182,7 @@ console.log('links and claims');
 check('methodology links the pack', read('src/app/methodology/page.tsx').includes('href="/due-diligence"'));
 check('methodology links the Eurostat layer', read('src/app/methodology/page.tsx').includes('href="/europe/official"'));
 check('due diligence page links the Eurostat layer', read('src/app/due-diligence/page.tsx').includes('href="/europe/official"'));
+check('due diligence page links the weekly vintages', read('src/app/due-diligence/page.tsx').includes('href="/data/vintages"'));
 check('footer links the pack', read('src/components/v2/Footer.tsx').includes("href: '/due-diligence'"));
 check('API page links the pack', read('src/app/api/page.tsx').includes('href="/due-diligence"'));
 const surfaced = ['src/lib/due-diligence.ts', 'src/app/due-diligence/page.tsx', 'src/app/api/v1/due-diligence/route.ts', 'src/app/api/v1/due-diligence/sample/route.ts'].map(read).join('\n');

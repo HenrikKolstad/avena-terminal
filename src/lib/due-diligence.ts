@@ -15,6 +15,7 @@ import { toAPIP } from '@/lib/apip';
 import { buildTownAggregates } from '@/lib/open-dataset';
 import { LEDGER_EPOCH } from '@/lib/open-dataset-io';
 import { KNOWN_GAPS } from '@/lib/sellthrough';
+import { VINTAGE_GUARANTEE, latestFrozenDate, readVintageManifest } from '@/lib/vintages';
 import { findMissingRanges, type MissingRange } from '@/lib/fund-report';
 import { LARGE_MOVE, PM2_BAND, RECUR_DAYS, SIZE_TOL } from '@/lib/unit-identity';
 import { SCRIBE_SEAM } from '@/lib/institutional-load';
@@ -172,6 +173,7 @@ export interface DueDiligencePack {
     stored_scores: string;
     live_api_scores: string;
     open_dataset: string;
+    weekly_vintages: string;
     scribe_last_run: NotAvailable;
     scribe_last_run_reason: string;
   };
@@ -490,6 +492,14 @@ function rentsGeneratedAt(): string | null {
 function ptBenchmarkGeneratedAt(): string | null {
   const raw = readJson('data/pt-ine-benchmark.json');
   return isRecord(raw) ? str(raw.generated_at) : null;
+}
+
+function vintagesCaptureDate(): string | null {
+  try {
+    return latestFrozenDate(readVintageManifest());
+  } catch {
+    return null;
+  }
 }
 
 async function readSnapshotBounds(): Promise<{ client: boolean; min: string | null; max: string | null; error: string | null }> {
@@ -990,7 +1000,7 @@ function datasetDates(detail: string | null): { site: OrNA<string>; mirror: OrNA
   };
 }
 
-export function buildPipeline(health: HealthReport | null, officialAt: string | null, supplyAt: string | null = null, townAt: string | null = null, hpiAt: string | null = null, rentsAt: string | null = null, ptAt: string | null = null): PipelineStep[] {
+export function buildPipeline(health: HealthReport | null, officialAt: string | null, supplyAt: string | null = null, townAt: string | null = null, hpiAt: string | null = null, rentsAt: string | null = null, ptAt: string | null = null, vintagesAt: string | null = null): PipelineStep[] {
   const feed = health?.checks.find((c) => c.id === 'feed') ?? null;
   const capture = health?.checks.find((c) => c.id === 'capture') ?? null;
   const workflows = health?.checks.find((c) => c.id === 'workflows') ?? null;
@@ -1109,6 +1119,19 @@ export function buildPipeline(health: HealthReport | null, officialAt: string | 
       health_status: NOT_AVAILABLE,
       health_detail: NOT_AVAILABLE,
     },
+    {
+      id: 'weekly-vintages',
+      name: 'Weekly vintages',
+      cadence: 'GitHub Actions vintages-freeze.yml on Monday at 06:20 UTC.',
+      what: 'Freezes town and province aggregates of public/data.json for each closed ISO week into data/vintages. A file is written once and a later run refuses to replace it. A day with no eligible capture, including the declared October gap, is recorded and not interpolated.',
+      source_file: '.github/workflows/vintages-freeze.yml',
+      last_observed: vintagesAt ?? NOT_AVAILABLE,
+      last_observed_kind: vintagesAt
+        ? 'Latest frozen vintage_date in data/vintages/manifest.json. This is the capture date of that file, not the GitHub run timestamp. /api/health does not watch vintages-freeze.yml.'
+        : 'not available. /api/health does not watch vintages-freeze.yml, and data/vintages/manifest.json had no frozen vintage.',
+      health_status: NOT_AVAILABLE,
+      health_detail: NOT_AVAILABLE,
+    },
   ];
 }
 
@@ -1146,6 +1169,7 @@ function pointInTime() {
     stored_scores: `score_history is written by /api/cron/scribe. The Vercel cron is 03:05 UTC (5 3 * * *), and feed-refresh.yml calls the same route after a deploy. Existing rows are not updated. Rows dated before ${SCRIBE_SEAM} can be filed one day after the book they describe. The route dates rows from the feed file after that seam and does not rewrite the earlier rows.`,
     live_api_scores: 'score, yield, and score_confidence on GET /api/v1/properties are computed when the response is built. They are not a read of score_history. A methodology change changes the live score without rewriting stored history.',
     open_dataset: `The open dataset is rebuilt from snapshots on or after ${LEDGER_EPOCH} and from the listing book at build time. Rebuilding it does not create rows for dates that have no snapshot. A same-day replacement of today's snapshot is what a later build of that same day will contain.`,
+    weekly_vintages: `${VINTAGE_GUARANTEE} The index is /data/vintages and the manifest is GET /api/v1/vintages.`,
     scribe_last_run: NOT_AVAILABLE,
     scribe_last_run_reason: '/api/health does not report the scribe job, so its last-run timestamp is not available.',
   };
@@ -1160,6 +1184,7 @@ function delivery(mirror: OrNA<string>): DeliveryOption[] {
     { id: 'git-mirror', method: 'GET', path: 'https://github.com/HenrikKolstad/avena-data', format: 'git, market/ directory', auth: 'Public repository.', note: `Mirror of the observation files. /api/health compares market/dataset.json. Latest mirror date from this health read: ${mirror}.` },
     { id: 'listing-book', method: 'GET', path: '/data.json', format: 'JSON', auth: 'No key.', note: 'Current listing book used by the site, including description text and image URLs that the open observation files omit. It is the current cross-section, not the price history.' },
     { id: 'sample', method: 'GET', path: '/api/v1/due-diligence/sample', format: 'CSV', auth: 'No key.', note: `First ${SAMPLE_MOVE_ROWS} data rows of ${SAMPLE_SOURCE}, unchanged.` },
+    { id: 'weekly-vintages', method: 'GET', path: '/api/v1/vintages', format: 'JSON. One vintage at /api/v1/vintages/YYYY-MM-DD. CSV of those rows with ?format=csv.', auth: 'No key.', note: 'Town and province aggregates frozen once a week from the committed listing book. A file is not rewritten. A week with no capture has no file. The index is /data/vintages.' },
     { id: 'official-summary', method: 'GET', path: '/official', format: 'HTML. JSON at /api/v1/official-summary.', auth: 'No key.', note: 'Index of the official-statistics layers and the asking-versus-benchmark gaps computed from them. Not the listing history.' },
     { id: 'spain-official', method: 'GET', path: '/spain/official', format: 'HTML. Source file data/es-official.json.', auth: 'No key.', note: 'Weekly official benchmark. Not the listing history.' },
     { id: 'spain-supply', method: 'GET', path: '/spain/supply', format: 'HTML. Source file data/es-supply.json. JSON at /api/v1/es-supply.', auth: 'No key.', note: 'Weekly supply pipeline. Ministry starts and completions, and INE registered sales of new dwellings. Not the listing history.' },
@@ -1225,6 +1250,7 @@ function unavailable(pack: Omit<DueDiligencePack, 'not_available'>): Unavailable
     { field: 'pipeline.eu-hpi.github_run_timestamp', reason: '/api/health does not watch eu-hpi-refresh.yml. A generated_at on data/eu-hpi.json is the artifact on this deployment, not a GitHub run timestamp.' },
     { field: 'pipeline.es-rents.github_run_timestamp', reason: '/api/health does not watch es-rents-refresh.yml. A generated_at on data/es-rents.json is the artifact on this deployment, not a GitHub run timestamp.' },
     { field: 'pipeline.pt-ine-benchmark.github_run_timestamp', reason: '/api/health does not watch pt-ine-benchmark-refresh.yml. A generated_at on data/pt-ine-benchmark.json is the artifact on this deployment, not a GitHub run timestamp.' },
+    { field: 'pipeline.weekly-vintages.github_run_timestamp', reason: '/api/health does not watch vintages-freeze.yml. The latest vintage capture date is the file date, not a GitHub run timestamp.' },
     { field: 'delivery.huggingface.freshness', reason: 'Not in /api/health. The feed workflow uploads this copy only when a token is set.' },
   );
   return notes;
@@ -1243,6 +1269,7 @@ export function assembleDueDiligence(args: {
   hpiGeneratedAt?: string | null;
   rentsGeneratedAt?: string | null;
   ptBenchmarkGeneratedAt?: string | null;
+  vintagesCaptureDate?: string | null;
   health: HealthReport | null;
   snapshot: { client: boolean; min: string | null; max: string | null; error: string | null };
 }): DueDiligencePack {
@@ -1265,7 +1292,7 @@ export function assembleDueDiligence(args: {
     },
     dictionary: buildDictionary(args.props, args.manifest, today),
     dictionary_scope: 'Fields on the open observation files, on GET /api/v1/properties (default and format=apip), on GET /api/v1/dataset-export, and on the aggregate payload of GET /api/v1/open-dataset. Other routes are not this dataset. Their index is /api/openapi.json.',
-    pipeline: buildPipeline(args.health, args.officialGeneratedAt, args.supplyGeneratedAt, args.townGeneratedAt ?? null, args.hpiGeneratedAt ?? null, args.rentsGeneratedAt ?? null, args.ptBenchmarkGeneratedAt ?? null),
+    pipeline: buildPipeline(args.health, args.officialGeneratedAt, args.supplyGeneratedAt, args.townGeneratedAt ?? null, args.hpiGeneratedAt ?? null, args.rentsGeneratedAt ?? null, args.ptBenchmarkGeneratedAt ?? null, args.vintagesCaptureDate ?? null),
     health_checked_at: args.health?.checked_at ?? NOT_AVAILABLE,
     quality: quality(),
     point_in_time: pointInTime(),
@@ -1301,6 +1328,7 @@ export async function loadDueDiligence(now = new Date()): Promise<DueDiligencePa
     hpiGeneratedAt: hpiGeneratedAt(),
     rentsGeneratedAt: rentsGeneratedAt(),
     ptBenchmarkGeneratedAt: ptBenchmarkGeneratedAt(),
+    vintagesCaptureDate: vintagesCaptureDate(),
     health,
     snapshot,
   });

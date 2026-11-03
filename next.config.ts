@@ -40,6 +40,9 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     '/api/v1/lender/monitor': ['./data/ref-dev-map.json', './public/data.json'],
     '/lender/report': ['./data/ref-dev-map.json', './public/data.json'],
+    '/api/v1/vintages': ['./data/vintages/**/*.json'],
+    '/api/v1/vintages/[date]': ['./data/vintages/**/*.json'],
+    '/data/vintages': ['./data/vintages/**/*.json'],
   },
   // Explicit Turbopack workspace root — silences "inferred workspace root"
   // warning that fires when a lockfile exists up-tree (e.g. in HOME dir).
