@@ -1,0 +1,393 @@
+{
+  "schema_version": 1,
+  "series_start": "2026-08-05",
+  "town_min_listings": 5,
+  "point_in_time": "Each vintage is the town and province aggregates of public/data.json on the capture date: the last commit of that file in a closed ISO week, Monday to Sunday, UTC. The series starts on 2026-08-05. Commits before that date are not used. A day inside the declared capture gap is not a capture. The JSON file is written once, and a later run refuses to overwrite it. The manifest records the SHA-256 of those exact bytes. A day with no eligible capture is listed and left empty. Nothing is interpolated.",
+  "definitions": {
+    "live_listings": "Listings in the committed book on the capture date. A listing is one feed reference, not one dwelling.",
+    "median_asking_eur_m2": "Median asking EUR per square metre on the capture date. A town median is published only when that town has at least 5 live listings and at least one positive asking EUR per square metre, the same floor as towns.csv. A province median is published when the province has at least one positive asking EUR per square metre. A thinner town has no median. No value is filled in from another day.",
+    "price_cuts": "Same ref, same place, positive asking price on both vintages, and a lower asking price on the capture date. Null on the first vintage, when there is no previous file to compare.",
+    "price_rises": "Same ref, same place, positive asking price on both vintages, and a higher asking price on the capture date. Null when there is no previous vintage.",
+    "price_cut_share": "price_cuts divided by comparable listings, half-up to 4 decimal places, written as a decimal string. Comparable listings are the same ref in the same place with a positive asking price in both vintages. Null when there is no comparison, or when the comparable count is zero.",
+    "price_rise_share": "price_rises divided by the same comparable count, in the same decimal form. Null on the same terms as the cut share.",
+    "new_listings": "A ref in this place on the capture date that was not in the previous book. Null when there is no previous vintage.",
+    "removed_listings": "A ref that was in this place in the previous vintage and is absent from the whole book on the capture date. Leaving the book is not a recorded sale. Null when there is no previous vintage.",
+    "reassigned": "A ref present in both books whose town or province changed. It is not counted as new, removed, or a price move.",
+    "gaps": "gap_dates_in_week are the days in that closed week, on or after the series start, that are not an eligible capture. A commit inside the declared capture gap is not eligible. Those days are listed and left empty."
+  },
+  "known_gaps": [
+    {
+      "from": "2026-10-14",
+      "to": "2026-10-20"
+    }
+  ],
+  "missing_capture_dates": [
+    "2026-08-17",
+    "2026-09-14",
+    "2026-09-21",
+    "2026-10-10",
+    "2026-10-11",
+    "2026-10-12",
+    "2026-10-14",
+    "2026-10-15",
+    "2026-10-16",
+    "2026-10-17",
+    "2026-10-18",
+    "2026-10-19",
+    "2026-10-20",
+    "2026-10-26",
+    "2026-11-01"
+  ],
+  "vintages": [
+    {
+      "iso_week": "2026-W32",
+      "week_start": "2026-08-03",
+      "week_end": "2026-08-09",
+      "status": "frozen",
+      "vintage_date": "2026-08-09",
+      "row_count": 74,
+      "sha256": "41e73a3cca0ba3436219df9aad6553ce0bf884b98831b3a1afb71d47210b49df",
+      "file": "data/vintages/2026-08-09.json",
+      "capture_commit": "5304e4f4ab6db8e1b11f996e20c8610c17f6eab8",
+      "compared_to": null,
+      "capture_dates_in_week": [
+        "2026-08-05",
+        "2026-08-06",
+        "2026-08-07",
+        "2026-08-08",
+        "2026-08-09"
+      ],
+      "gap_dates_in_week": [],
+      "overlaps_declared_capture_gap": false,
+      "missing_days_since_compared_to": null,
+      "reason": null
+    },
+    {
+      "iso_week": "2026-W33",
+      "week_start": "2026-08-10",
+      "week_end": "2026-08-16",
+      "status": "frozen",
+      "vintage_date": "2026-08-16",
+      "row_count": 74,
+      "sha256": "56bd741bc866e25cdf5b3ba2e93bd9a3247b40d197c9d8f7d783c6d072c601de",
+      "file": "data/vintages/2026-08-16.json",
+      "capture_commit": "1983584f69524f1eb534161d162c0690b5f1800f",
+      "compared_to": "2026-08-09",
+      "capture_dates_in_week": [
+        "2026-08-10",
+        "2026-08-11",
+        "2026-08-12",
+        "2026-08-13",
+        "2026-08-14",
+        "2026-08-15",
+        "2026-08-16"
+      ],
+      "gap_dates_in_week": [],
+      "overlaps_declared_capture_gap": false,
+      "missing_days_since_compared_to": [],
+      "reason": null
+    },
+    {
+      "iso_week": "2026-W34",
+      "week_start": "2026-08-17",
+      "week_end": "2026-08-23",
+      "status": "frozen",
+      "vintage_date": "2026-08-23",
+      "row_count": 73,
+      "sha256": "332d01b5e381d716fd201d4c7a8cc6a8b1b5c0d133567f12e45aaa32fa9eb9ae",
+      "file": "data/vintages/2026-08-23.json",
+      "capture_commit": "e612f6830f3a5fd1e8ac6b4eb7fa09442d45ac30",
+      "compared_to": "2026-08-16",
+      "capture_dates_in_week": [
+        "2026-08-18",
+        "2026-08-19",
+        "2026-08-20",
+        "2026-08-21",
+        "2026-08-22",
+        "2026-08-23"
+      ],
+      "gap_dates_in_week": [
+        "2026-08-17"
+      ],
+      "overlaps_declared_capture_gap": false,
+      "missing_days_since_compared_to": [
+        "2026-08-17"
+      ],
+      "reason": null
+    },
+    {
+      "iso_week": "2026-W35",
+      "week_start": "2026-08-24",
+      "week_end": "2026-08-30",
+      "status": "frozen",
+      "vintage_date": "2026-08-30",
+      "row_count": 72,
+      "sha256": "e2f12e2c9c43fce4b56c0f47ae371e7748803f90fc61bffda85f07f50931a960",
+      "file": "data/vintages/2026-08-30.json",
+      "capture_commit": "833ab048f82f89d6b660da44c0f52c7820f5a5c6",
+      "compared_to": "2026-08-23",
+      "capture_dates_in_week": [
+        "2026-08-24",
+        "2026-08-25",
+        "2026-08-26",
+        "2026-08-27",
+        "2026-08-28",
+        "2026-08-29",
+        "2026-08-30"
+      ],
+      "gap_dates_in_week": [],
+      "overlaps_declared_capture_gap": false,
+      "missing_days_since_compared_to": [],
+      "reason": null
+    },
+    {
+      "iso_week": "2026-W36",
+      "week_start": "2026-08-31",
+      "week_end": "2026-09-06",
+      "status": "frozen",
+      "vintage_date": "2026-09-06",
+      "row_count": 73,
+      "sha256": "73d226a0747a5238bc06b10b65defdd526cd25f7851ee09fc58ffa5fbd7c6510",
+      "file": "data/vintages/2026-09-06.json",
+      "capture_commit": "602800495c633378c732ad1a17c697dd17122826",
+      "compared_to": "2026-08-30",
+      "capture_dates_in_week": [
+        "2026-08-31",
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-05",
+        "2026-09-06"
+      ],
+      "gap_dates_in_week": [],
+      "overlaps_declared_capture_gap": false,
+      "missing_days_since_compared_to": [],
+      "reason": null
+    },
+    {
+      "iso_week": "2026-W37",
+      "week_start": "2026-09-07",
+      "week_end": "2026-09-13",
+      "status": "frozen",
+      "vintage_date": "2026-09-13",
+      "row_count": 74,
+      "sha256": "7adb7d43130b7a3369c3a878fdaae5e0be999c8b03629fc92921cd903cc5288f",
+      "file": "data/vintages/2026-09-13.json",
+      "capture_commit": "58a789d7784cbc40a526e6b84a8557e8ee45a9b5",
+      "compared_to": "2026-09-06",
+      "capture_dates_in_week": [
+        "2026-09-07",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-12",
+        "2026-09-13"
+      ],
+      "gap_dates_in_week": [],
+      "overlaps_declared_capture_gap": false,
+      "missing_days_since_compared_to": [],
+      "reason": null
+    },
+    {
+      "iso_week": "2026-W38",
+      "week_start": "2026-09-14",
+      "week_end": "2026-09-20",
+      "status": "frozen",
+      "vintage_date": "2026-09-20",
+      "row_count": 74,
+      "sha256": "2ff5a639fcb911bc8ec3f80822e2f59d3def1cab6aa2d1a55560bf7cc54d9356",
+      "file": "data/vintages/2026-09-20.json",
+      "capture_commit": "7f90c409c2ed93830fb638e0c92f9913a01e6dd6",
+      "compared_to": "2026-09-13",
+      "capture_dates_in_week": [
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-19",
+        "2026-09-20"
+      ],
+      "gap_dates_in_week": [
+        "2026-09-14"
+      ],
+      "overlaps_declared_capture_gap": false,
+      "missing_days_since_compared_to": [
+        "2026-09-14"
+      ],
+      "reason": null
+    },
+    {
+      "iso_week": "2026-W39",
+      "week_start": "2026-09-21",
+      "week_end": "2026-09-27",
+      "status": "frozen",
+      "vintage_date": "2026-09-27",
+      "row_count": 74,
+      "sha256": "c0cae8525996f34b765edf91f6e15068bc56c48d19d83f1af16e588ddab334fd",
+      "file": "data/vintages/2026-09-27.json",
+      "capture_commit": "5baec47e2b944c7a9ecc49415f29f0479f31bfae",
+      "compared_to": "2026-09-20",
+      "capture_dates_in_week": [
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-26",
+        "2026-09-27"
+      ],
+      "gap_dates_in_week": [
+        "2026-09-21"
+      ],
+      "overlaps_declared_capture_gap": false,
+      "missing_days_since_compared_to": [
+        "2026-09-21"
+      ],
+      "reason": null
+    },
+    {
+      "iso_week": "2026-W40",
+      "week_start": "2026-09-28",
+      "week_end": "2026-10-04",
+      "status": "frozen",
+      "vintage_date": "2026-10-04",
+      "row_count": 73,
+      "sha256": "9e62d15527d5caf117f904813f9775d5607e03664f5194bfe7646552c44ec12c",
+      "file": "data/vintages/2026-10-04.json",
+      "capture_commit": "12afc1e726aa5bc0b5d7338e9e213cfb97040efa",
+      "compared_to": "2026-09-27",
+      "capture_dates_in_week": [
+        "2026-09-28",
+        "2026-09-29",
+        "2026-09-30",
+        "2026-10-01",
+        "2026-10-02",
+        "2026-10-03",
+        "2026-10-04"
+      ],
+      "gap_dates_in_week": [],
+      "overlaps_declared_capture_gap": false,
+      "missing_days_since_compared_to": [],
+      "reason": null
+    },
+    {
+      "iso_week": "2026-W41",
+      "week_start": "2026-10-05",
+      "week_end": "2026-10-11",
+      "status": "frozen",
+      "vintage_date": "2026-10-09",
+      "row_count": 74,
+      "sha256": "64f1770e7073eff334e65119eee63325bb193ed2d8972e1da912a7c0b85a4414",
+      "file": "data/vintages/2026-10-09.json",
+      "capture_commit": "dfd1df06abc1ebde495d9ac58a077fb620636f27",
+      "compared_to": "2026-10-04",
+      "capture_dates_in_week": [
+        "2026-10-05",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08",
+        "2026-10-09"
+      ],
+      "gap_dates_in_week": [
+        "2026-10-10",
+        "2026-10-11"
+      ],
+      "overlaps_declared_capture_gap": false,
+      "missing_days_since_compared_to": [],
+      "reason": null
+    },
+    {
+      "iso_week": "2026-W42",
+      "week_start": "2026-10-12",
+      "week_end": "2026-10-18",
+      "status": "frozen",
+      "vintage_date": "2026-10-13",
+      "row_count": 74,
+      "sha256": "fcf4ef68aa5973b054081a8bbdbc36fe623162e049864e5eb30ba4c7a2bac92b",
+      "file": "data/vintages/2026-10-13.json",
+      "capture_commit": "e158eb449cb25189fec7a3e8d338fc4f0ec5aaa1",
+      "compared_to": "2026-10-09",
+      "capture_dates_in_week": [
+        "2026-10-13"
+      ],
+      "gap_dates_in_week": [
+        "2026-10-12",
+        "2026-10-14",
+        "2026-10-15",
+        "2026-10-16",
+        "2026-10-17",
+        "2026-10-18"
+      ],
+      "overlaps_declared_capture_gap": true,
+      "missing_days_since_compared_to": [
+        "2026-10-10",
+        "2026-10-11",
+        "2026-10-12"
+      ],
+      "reason": null
+    },
+    {
+      "iso_week": "2026-W43",
+      "week_start": "2026-10-19",
+      "week_end": "2026-10-25",
+      "status": "frozen",
+      "vintage_date": "2026-10-25",
+      "row_count": 74,
+      "sha256": "cae10214538b33f3d89590958f2ca92d78306673185b7253cc941172afdb8f11",
+      "file": "data/vintages/2026-10-25.json",
+      "capture_commit": "c5c20ca0c2c8eb5489ee18fc9ff584aafc6d62e1",
+      "compared_to": "2026-10-13",
+      "capture_dates_in_week": [
+        "2026-10-21",
+        "2026-10-22",
+        "2026-10-23",
+        "2026-10-24",
+        "2026-10-25"
+      ],
+      "gap_dates_in_week": [
+        "2026-10-19",
+        "2026-10-20"
+      ],
+      "overlaps_declared_capture_gap": true,
+      "missing_days_since_compared_to": [
+        "2026-10-14",
+        "2026-10-15",
+        "2026-10-16",
+        "2026-10-17",
+        "2026-10-18",
+        "2026-10-19",
+        "2026-10-20"
+      ],
+      "reason": null
+    },
+    {
+      "iso_week": "2026-W44",
+      "week_start": "2026-10-26",
+      "week_end": "2026-11-01",
+      "status": "frozen",
+      "vintage_date": "2026-10-31",
+      "row_count": 73,
+      "sha256": "0db4387d0f089b2e876546ddf0d1cc264edce321e7748bf7ff9cb6ba11b77ff1",
+      "file": "data/vintages/2026-10-31.json",
+      "capture_commit": "8354539ed4dc9851b496cc041aebc75ca366f701",
+      "compared_to": "2026-10-25",
+      "capture_dates_in_week": [
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30",
+        "2026-10-31"
+      ],
+      "gap_dates_in_week": [
+        "2026-10-26",
+        "2026-11-01"
+      ],
+      "overlaps_declared_capture_gap": false,
+      "missing_days_since_compared_to": [
+        "2026-10-26"
+      ],
+      "reason": null
+    }
+  ]
+}

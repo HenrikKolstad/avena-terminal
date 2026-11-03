@@ -52,6 +52,7 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
       { label: 'Data Partners',   href: '/data-partners' },
       { label: 'Open Dataset',    href: '/dataset' },
       { label: 'Due diligence',  href: '/due-diligence' },
+      { label: 'Weekly vintages', href: '/data/vintages' },
       { label: 'Portugal market', href: '/portugal' },
       { label: 'Official statistics', href: '/official' },
       { label: 'Portugal official benchmark', href: '/portugal/official' },

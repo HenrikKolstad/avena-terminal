@@ -177,6 +177,7 @@ export default async function DueDiligencePage() {
           <Link href="/spain/rents" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Spain rent benchmark</Link>
           <Link href="/portugal/official" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Portugal official benchmark</Link>
           <Link href="/europe/official" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Eurostat house price index</Link>
+          <Link href="/data/vintages" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Weekly vintages</Link>
         </div>
 
         <div className="mt-10 grid gap-px sm:grid-cols-2 lg:grid-cols-4" style={{ background: 'hsl(var(--av-border) / 0.6)' }}>
@@ -335,6 +336,12 @@ export default async function DueDiligencePage() {
           <p>{pack.point_in_time.stored_scores}</p>
           <p>{pack.point_in_time.live_api_scores}</p>
           <p>{pack.point_in_time.open_dataset}</p>
+          <p>{pack.point_in_time.weekly_vintages}</p>
+          <p>
+            <Link href="/data/vintages" className="text-primary hover:text-foreground">Weekly vintages</Link>
+            {' · '}
+            <Link href="/api/v1/vintages" className="text-primary hover:text-foreground">JSON manifest</Link>
+          </p>
           <p>Scribe last run: {pack.point_in_time.scribe_last_run}. {pack.point_in_time.scribe_last_run_reason}</p>
         </Section>
 
