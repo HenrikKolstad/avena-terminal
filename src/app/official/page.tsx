@@ -398,6 +398,18 @@ export default function OfficialHubPage() {
               <p>{summary.method.headline}</p>
               <p>{summary.method.widening}</p>
             </div>
+            <div className="mt-10 border-t pt-10" style={{ borderColor: BORDER }}>
+              <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-3">Avena asking prices</div>
+              <h2 className="font-serif text-3xl font-light text-foreground mb-4">Same-unit index, separate from these files.</h2>
+              <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground mb-4">
+                The layers above are official statistics. The weekly same-unit asking-price index is built from Avena&apos;s own listing captures. It is not a transaction price and it is not one of the official files.
+              </p>
+              <p className="text-sm">
+                <Link href="/data/price-index" className="text-primary hover:underline">Same-unit asking-price index</Link>
+                <span className="text-muted-foreground"> · </span>
+                <Link href="/api/v1/price-index" className="text-primary hover:underline">/api/v1/price-index</Link>
+              </p>
+            </div>
             <div className="mt-10">
               <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-3">Data gaps</div>
               <ul className="max-w-3xl space-y-3">

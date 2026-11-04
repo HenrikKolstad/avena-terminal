@@ -39,14 +39,19 @@ export interface SnapSide {
   img_sig?: string | null;
 }
 
-/** Same rules as public.price_move_verdict(). Returns null when the price did not change. */
-export function moveVerdict(prev: SnapSide, cur: SnapSide, mm2?: number | null, priceRecurs = false):
-  { status: MoveStatus; note: string | null } | null {
+/** Built area, or price divided by EUR/m² when built area is absent. */
+function builtArea(side: SnapSide, price: number): number | null {
+  return pos(side.built_m2) ?? (pos(side.pm2) && price > 0 ? price / Number(side.pm2) : null);
+}
+
+/**
+ * Specification differences that mean the ref is a different unit.
+ * Same comparisons as public.price_move_verdict(). Null when nothing present
+ * on both sides disagrees. A missing field on one side is not a disagreement.
+ */
+export function specChangeNote(prev: SnapSide, cur: SnapSide): string | null {
   const pp = Number(prev.price), cp = Number(cur.price);
-  if (!(pp > 0) || !(cp > 0) || Math.abs(cp - pp) < 1) return null;
-  const pct = (cp - pp) / pp;
-  const built = (s: SnapSide, price: number) => pos(s.built_m2) ?? (pos(s.pm2) ? price / Number(s.pm2) : null);
-  const ba = built(prev, pp), bb = built(cur, cp);
+  const ba = builtArea(prev, pp), bb = builtArea(cur, cp);
   const rel = (a: number, b: number) => Math.abs(a - b) / Math.max(a, b);
   const notes: string[] = [];
   if (prev.type && cur.type && prev.type !== cur.type) notes.push(`type ${prev.type}→${cur.type}`);
@@ -55,7 +60,18 @@ export function moveVerdict(prev: SnapSide, cur: SnapSide, mm2?: number | null, 
   if (ba && bb && rel(ba, bb) > SIZE_TOL) notes.push(`built ${Math.round(ba)}→${Math.round(bb)} m²`);
   const pa = pos(prev.plot_m2), pb = pos(cur.plot_m2);
   if (pa && pb && rel(pa, pb) > SIZE_TOL) notes.push(`plot ${Math.round(pa)}→${Math.round(pb)} m²`);
-  if (notes.length) return { status: 'unit_changed', note: notes.join('; ') };
+  return notes.length ? notes.join('; ') : null;
+}
+
+/** Same rules as public.price_move_verdict(). Returns null when the price did not change. */
+export function moveVerdict(prev: SnapSide, cur: SnapSide, mm2?: number | null, priceRecurs = false):
+  { status: MoveStatus; note: string | null } | null {
+  const pp = Number(prev.price), cp = Number(cur.price);
+  if (!(pp > 0) || !(cp > 0) || Math.abs(cp - pp) < 1) return null;
+  const pct = (cp - pp) / pp;
+  const ba = builtArea(prev, pp), bb = builtArea(cur, cp);
+  const spec = specChangeNote(prev, cur);
+  if (spec) return { status: 'unit_changed', note: spec };
   if (Math.abs(pct) >= LARGE_MOVE) {
     const why: string[] = [];
     if (!ba || !bb || prev.beds == null || cur.beds == null || !prev.type || !cur.type) why.push('spec data missing');
