@@ -8420,6 +8420,26 @@
     "type": "Apartment"
   },
   {
+    "avn_id": "N10065",
+    "date": "2026-11-04",
+    "prev_date": "2026-11-03",
+    "prev_price_eur": 399900,
+    "new_price_eur": 429900,
+    "change_pct": 7.5,
+    "town": "Torrevieja",
+    "type": "Apartment"
+  },
+  {
+    "avn_id": "N10067",
+    "date": "2026-11-04",
+    "prev_date": "2026-11-03",
+    "prev_price_eur": 499900,
+    "new_price_eur": 529900,
+    "change_pct": 6,
+    "town": "Torrevieja",
+    "type": "Penthouse"
+  },
+  {
     "avn_id": "N6552",
     "date": "2026-11-04",
     "prev_date": "2026-11-03",
@@ -8498,6 +8518,16 @@
     "change_pct": 2.95,
     "town": "Polop",
     "type": "Villa"
+  },
+  {
+    "avn_id": "N9344",
+    "date": "2026-11-04",
+    "prev_date": "2026-11-03",
+    "prev_price_eur": 580000,
+    "new_price_eur": 595000,
+    "change_pct": 2.59,
+    "town": "Finestrat",
+    "type": "Penthouse"
   },
   {
     "avn_id": "SP0279",
