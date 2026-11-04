@@ -94,6 +94,7 @@ export default function VintagesPage() {
         </p>
         <p className="mt-4 flex flex-wrap gap-4">
           <Link href="/api/v1/vintages" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">JSON manifest</Link>
+          <Link href="/data/price-index" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Same-unit price index</Link>
           <Link href="/due-diligence#point-in-time" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Point-in-time policy</Link>
           <Link href="/license" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">License</Link>
         </p>

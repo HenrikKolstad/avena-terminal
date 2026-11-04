@@ -50,15 +50,18 @@ jobs:
       - name: Freeze closed weekly vintages
         run: npx tsx scripts/freeze-vintages.ts
 
+      - name: Build same-unit asking-price index
+        run: npx tsx scripts/build-price-index.ts
+
       - name: Commit new vintages (if any)
         run: |
           git config user.name "avena-feed-bot"
           git config user.email "feed@avenaterminal.com"
-          git add data/vintages
+          git add data/vintages data/price-index.json
           if git diff --staged --quiet; then
             echo "No new weekly vintage."
           else
-            git commit -m "chore(data): freeze weekly town and province vintages [skip ci]"
+            git commit -m "chore(data): freeze weekly vintages and same-unit price index [skip ci]"
             git pull --rebase origin main
             git push
             echo "Pushed frozen vintages."

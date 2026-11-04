@@ -18,6 +18,7 @@ const PAGES = [
   { title: 'Bubble scanner', url: '/bubble-scanner', kind: 'page' },
   { title: 'Portugal intelligence', url: '/portugal', kind: 'page' },
   { title: 'Official statistics', url: '/official', kind: 'page' },
+  { title: 'Same-unit asking-price index', url: '/data/price-index', kind: 'page' },
   { title: 'Portugal official benchmark', url: '/portugal/official', kind: 'page' },
   { title: 'Spain official benchmarks', url: '/spain/official', kind: 'page' },
   { title: 'Spain supply pipeline', url: '/spain/supply', kind: 'page' },
