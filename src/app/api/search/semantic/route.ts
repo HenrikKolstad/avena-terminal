@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { getAllProperties } from '@/lib/properties';
+import { strBadgeFor } from '@/lib/str-regulation';
 import { Property } from '@/lib/types';
 import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
@@ -227,6 +228,7 @@ export async function POST(req: NextRequest) {
       score: p._sc,
       relevance,
       yield: p._yield ? { gross: p._yield.gross, net: p._yield.net, annual: p._yield.annual } : null,
+      str_risk: strBadgeFor(p.l),
       categories: p.cats ?? [],
       views: p.views ?? [],
       pool: p.pool,

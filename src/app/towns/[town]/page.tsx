@@ -5,6 +5,8 @@ import { getUniqueTowns, getPropertiesByTown, getCanonicalTownSlug, avg, slugify
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { TownLedgerPulse, getTownPulse } from '@/components/v2/TownLedgerPulse';
+import { StrRiskBadge } from '@/components/str/StrRiskBadge';
+import { strBadgeFor } from '@/lib/str-regulation';
 
 export const revalidate = 86400;
 
@@ -57,6 +59,7 @@ export default async function TownPage({ params }: { params: Promise<{ town: str
   const avgScore = Math.round(avg(props.filter(p => p._sc).map(p => p._sc!)));
   const avgPm2 = Math.round(avg(props.filter(p => p.pm2).map(p => p.pm2!)));
   const avgYield = avg(props.filter(p => p._yield).map(p => p._yield!.gross)).toFixed(1);
+  const strRisk = strBadgeFor(name);
   const costa = props.find(p => p.costa)?.costa;
   const top10 = props.slice(0, 10);
   const townOnly = name.split(',')[0].trim();
@@ -141,6 +144,9 @@ export default async function TownPage({ params }: { params: Promise<{ town: str
                 <div key={s.label} className="p-6" style={{ background: 'hsl(var(--av-background))' }}>
                   <div className="font-serif text-3xl md:text-4xl font-light tabular text-foreground">{s.value}</div>
                   <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">{s.label}</div>
+                  {s.label === 'Avg Gross Yield' && strRisk && (
+                    <div className="mt-2"><StrRiskBadge level={strRisk.level} reason={strRisk.reason} href={strRisk.href} /></div>
+                  )}
                 </div>
               ))}
             </div>
@@ -188,6 +194,9 @@ export default async function TownPage({ params }: { params: Promise<{ town: str
                     <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
                       {p._yield ? `${p._yield.gross.toFixed(1)}% gross` : ''}
                     </div>
+                    {p._yield && strRisk && (
+                      <div className="mt-1"><StrRiskBadge level={strRisk.level} reason={strRisk.reason} href={strRisk.href} /></div>
+                    )}
                   </div>
                 </Link>
               ))}

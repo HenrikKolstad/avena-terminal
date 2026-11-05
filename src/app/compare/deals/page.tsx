@@ -3,6 +3,7 @@ import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { getAllProperties, slugify } from '@/lib/properties';
 import { CompareClient } from './CompareClient';
+import { strBadgeFor, type StrBadge } from '@/lib/str-regulation';
 
 export const revalidate = 3600;
 
@@ -29,6 +30,7 @@ export interface CompareProp {
   discount: number;
   score: number;
   yield_gross: number;
+  str_risk: StrBadge | null;
   status: string | null;
   completion: number | null;
   developer: string | null;
@@ -68,6 +70,7 @@ export default async function CompareDealsPage({
         discount: Math.min(rawDiscount, 35),
         score: Math.round(p._sc ?? 0),
         yield_gross: p._yield?.gross ?? 0,
+        str_risk: strBadgeFor(p.l),
         status: p.s ?? null,
         completion: p.c ? Number(p.c) : null,
         developer: p.d ?? null,

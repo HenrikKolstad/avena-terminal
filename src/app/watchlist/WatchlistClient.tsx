@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Star, Trash2 } from 'lucide-react';
 import { getWatchlist, removeFromWatchlist, clearWatchlist } from '@/lib/watchlist';
 import type { WatchItem } from './page';
+import { StrRiskBadge } from '@/components/str/StrRiskBadge';
 
 export function WatchlistClient({ properties }: { properties: WatchItem[] }) {
   const [savedRefs, setSavedRefs] = useState<string[]>([]);
@@ -145,6 +146,9 @@ export function WatchlistClient({ properties }: { properties: WatchItem[] }) {
                     <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">
                       yield
                     </div>
+                    {p.yield_gross && p.str_risk ? (
+                      <div className="mt-1"><StrRiskBadge level={p.str_risk.level} reason={p.str_risk.reason} href={p.str_risk.href} /></div>
+                    ) : null}
                   </div>
                 </div>
               </div>

@@ -4,6 +4,8 @@ import { permanentRedirect } from 'next/navigation';
 import { getUniqueCostas, getPropertiesByCosta, getCanonicalCostaSlug, avg, slugify } from '@/lib/properties';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
+import { StrRiskBadge } from '@/components/str/StrRiskBadge';
+import { strBadgeFor } from '@/lib/str-regulation';
 
 export const revalidate = 86400;
 
@@ -156,6 +158,10 @@ export default async function CostaPage({ params }: { params: Promise<{ costa: s
                     <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
                       {p._yield ? `${p._yield.gross.toFixed(1)}% gross` : ''}
                     </div>
+                    {p._yield && (() => {
+                      const strRisk = strBadgeFor(p.l);
+                      return strRisk ? <div className="mt-1"><StrRiskBadge level={strRisk.level} reason={strRisk.reason} href={strRisk.href} /></div> : null;
+                    })()}
                   </div>
                 </Link>
               ))}

@@ -3,6 +3,7 @@ import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { getAllProperties } from '@/lib/properties';
 import { WatchlistClient } from './WatchlistClient';
+import { strBadgeFor, type StrBadge } from '@/lib/str-regulation';
 
 export const revalidate = 3600;
 
@@ -27,6 +28,7 @@ export interface WatchItem {
   score: number;
   yield_gross: number;
   imgs: string[];
+  str_risk: StrBadge | null;
 }
 
 export default function WatchlistPage() {
@@ -45,6 +47,7 @@ export default function WatchlistPage() {
       score: Math.round(p._sc ?? 0),
       yield_gross: p._yield?.gross ?? 0,
       imgs: (p.imgs ?? []).slice(0, 1),
+      str_risk: strBadgeFor(p.l),
     }));
 
   return (

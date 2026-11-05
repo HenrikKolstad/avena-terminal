@@ -90,6 +90,10 @@ export default function OfficialHubPage() {
               Machine-readable copy:{' '}
               <Link href="/api/v1/official-summary" className="text-primary hover:underline">/api/v1/official-summary</Link>
             </p>
+            <p className="text-sm mt-4">
+              <Link href="/spain/short-let-rules" className="text-primary hover:underline">Short-let rules for the same coast</Link>
+              <span className="text-muted-foreground">. The short-let yield is unchanged. The flag says whether that use is legally available.</span>
+            </p>
           </div>
         </section>
 

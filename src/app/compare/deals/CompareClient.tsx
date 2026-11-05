@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { X, Plus, Copy, Check } from 'lucide-react';
 import type { CompareProp } from './page';
+import { StrRiskBadge } from '@/components/str/StrRiskBadge';
 
 interface LiteProp {
   ref: string;
@@ -217,6 +218,9 @@ export function CompareClient({ initial, pool }: { initial: CompareProp[]; pool:
                         <span className={`font-mono tabular ${isAccent ? 'text-primary font-semibold' : 'text-foreground'}`}>
                           {value}
                         </span>
+                        {row.label === 'Gross yield' && p.str_risk ? (
+                          <div className="mt-1"><StrRiskBadge level={p.str_risk.level} reason={p.str_risk.reason} href={p.str_risk.href} /></div>
+                        ) : null}
                       </td>
                     );
                   })}

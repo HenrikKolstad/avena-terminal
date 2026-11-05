@@ -5,6 +5,8 @@ import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { getEsRents } from '@/lib/es-rents-view';
 import type { DwellingRent, ProvinceRentRow, TownRentRow } from '@/lib/data-sources/es-rents';
+import { StrRiskBadge } from '@/components/str/StrRiskBadge';
+import { strBadgeFor } from '@/lib/str-regulation';
 
 const BORDER = 'hsl(var(--av-border) / 0.6)';
 
@@ -99,6 +101,8 @@ export default function SpainRentsPage() {
               <span className="text-muted-foreground"> · </span>
               <Link href="/spain/supply" className="text-primary hover:underline">Supply pipeline</Link>
               <span className="text-muted-foreground"> · </span>
+              <Link href="/spain/short-let-rules" className="text-primary hover:underline">Short-let rules for the same coast</Link>
+              <span className="text-muted-foreground"> · </span>
               <Link href="/europe/official" className="text-primary hover:underline">Eurostat house price index</Link>
               <span className="text-muted-foreground"> · </span>
               <Link href="/portugal/official" className="text-primary hover:underline">Portugal official benchmark</Link>
@@ -117,7 +121,7 @@ export default function SpainRentsPage() {
             <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-3">Provinces in the corpus</div>
             <h2 className="font-serif text-3xl sm:text-4xl font-light text-foreground mb-4">Asking price, official rent, index.</h2>
             <p className="max-w-3xl text-sm text-muted-foreground leading-relaxed mb-10">
-              The flat rent is the SERPAVI median €/m²/month for collective dwellings in {view.serpavi_year}. The implied yield annualises that rent and divides it by the Avena median asking price. It is computed here. Avena’s gross yield is the short-stay estimate already on the listings, and it is a different measurement.
+              The flat rent is the SERPAVI median €/m²/month for collective dwellings in {view.serpavi_year}. The implied yield annualises that rent and divides it by the Avena median asking price. It is computed here. Avena’s gross yield is the short-stay estimate already on the listings, and it is a different measurement. A provincial short-let yield mixes towns. The risk flag is on the town rows.
             </p>
 
             <div className="lg:hidden space-y-4">
@@ -226,7 +230,10 @@ export default function SpainRentsPage() {
                         <Mono strong>{t.avena_median_asking_eur_m2 == null ? '–' : `${eur(t.avena_median_asking_eur_m2, 0)}`}</Mono>
                         <span className="block text-[11px] text-muted-foreground">{t.priced_listings.toLocaleString('en-GB')} priced</span>
                       </Td>
-                      <Td align="right"><Mono>{pct(t.avena_gross_yield_pct)}</Mono></Td>
+                      <Td align="right">
+                        <Mono>{pct(t.avena_gross_yield_pct)}</Mono>
+                        {t.avena_gross_yield_pct != null && <TownStrFlag place={t.town} province={t.province} />}
+                      </Td>
                       <Td align="right">
                         <Mono strong>{rentM2(t.colectiva)}</Mono>
                         <span className="block text-[11px] text-muted-foreground">{band(t.colectiva)}</span>
@@ -354,7 +361,7 @@ function TownCard({ town, year }: { town: TownRentRow; year: number }) {
       </p>
       <dl className="grid grid-cols-2 gap-4">
         <Field label="Avena median asking" value={town.avena_median_asking_eur_m2 == null ? '–' : `${eur(town.avena_median_asking_eur_m2, 0)}/m²`} note={`${town.listings.toLocaleString('en-GB')} listings`} />
-        <Field label="Avena gross yield" value={pct(town.avena_gross_yield_pct)} note="Short-stay estimate" />
+        <Field label="Avena gross yield" value={pct(town.avena_gross_yield_pct)} note={<TownStrFlag place={town.town} province={town.province} fallback="Short-stay estimate" />} />
         <Field label={`Flat rent, ${year}`} value={rentM2(town.colectiva)} note={rentNote(town.colectiva)} />
         <Field label="Implied habitual yield" value={pct(town.implied_flat_gross_yield_pct)} note={town.status === 'compared' ? 'Derived' : 'Not published'} />
       </dl>
@@ -372,7 +379,13 @@ function SourceCard({ title, body, href }: { title: string; body: string; href: 
   );
 }
 
-function Field({ label, value, note }: { label: string; value: string; note?: string }) {
+function TownStrFlag({ place, province, fallback }: { place: string; province: string; fallback?: string }) {
+  const flag = strBadgeFor(place, province);
+  if (!flag) return fallback ? <>{fallback}</> : null;
+  return <StrRiskBadge level={flag.level} reason={flag.reason} href={flag.href} />;
+}
+
+function Field({ label, value, note }: { label: string; value: string; note?: ReactNode }) {
   return (
     <div>
       <dt className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground mb-1">{label}</dt>

@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 import Link from 'next/link';
+import { StrRiskBadge } from '@/components/str/StrRiskBadge';
+import { strBadgeFor } from '@/lib/str-regulation';
 import { notFound } from 'next/navigation';
 
 export const revalidate = 3600;
@@ -281,6 +283,10 @@ export default async function PulseEditionPage({ params }: { params: Promise<{ d
                     EUR {formatPrice(edition.deal_of_day.price)}
                   </span>
                   <span className="text-xs text-gray-500">{edition.deal_of_day.yield}% gross yield</span>
+                  {(() => {
+                    const flag = strBadgeFor(edition.deal_of_day.town);
+                    return flag ? <span className="ml-2"><StrRiskBadge level={flag.level} reason={flag.reason} href={flag.href} /></span> : null;
+                  })()}
                 </div>
                 {edition.deal_of_day.ref && (
                   <Link href={`/property/${encodeURIComponent(edition.deal_of_day.ref)}`} className="inline-block mt-3 text-[10px] font-bold tracking-wider uppercase hover:opacity-80 transition-opacity" style={{ color: '#c9a84c' }}>

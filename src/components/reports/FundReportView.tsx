@@ -5,6 +5,8 @@ import type { InstitutionalSample } from '@/lib/institutional-load';
 import type { AbsorptionRow, Bucket, GroupRow, LedgerTape, PairedSlice, PipelineRow } from '@/lib/fund-report';
 import { MIN_TOWN_ABSORPTION, MIN_TOWN_N, rate } from '@/lib/fund-report';
 import { fmtCount, fmtEur, fmtNum, fmtPct, fmtPoints, fmtSignedPct } from '@/lib/report-format';
+import { StrRiskBadge } from '@/components/str/StrRiskBadge';
+import { strBadgeFor } from '@/lib/str-regulation';
 
 function Eyebrow({ children }: { children: ReactNode }) {
   return (
@@ -347,7 +349,8 @@ export function FundReportView({
               <Buckets rows={book.yieldBuckets} total={book.withYield} />
               <p className="mt-3 text-xs text-muted-foreground leading-relaxed">
                 {fmtCount(book.yieldTownCard)} listings used a town rental card. {fmtCount(book.yieldEstimated)} used a regional or estimated card.
-                The yield is not observed rent on the unit.
+                The yield is not observed rent on the unit.{' '}
+                <Link href="/spain/short-let-rules" className="text-primary hover:underline">Short-let rules by town</Link>.
               </p>
             </div>
           </div>
@@ -547,6 +550,12 @@ function TapeBlock({ tape }: { tape: LedgerTape }) {
   );
 }
 
+function TownYieldFlag({ place }: { place: string }) {
+  const flag = strBadgeFor(place);
+  if (!flag) return null;
+  return <div className="mt-1"><StrRiskBadge level={flag.level} reason={flag.reason} href={flag.href} /></div>;
+}
+
 function GroupTable({ rows, name }: { rows: GroupRow[]; name: string }) {
   return (
     <TableWrap>
@@ -574,7 +583,10 @@ function GroupTable({ rows, name }: { rows: GroupRow[]; name: string }) {
             <Td align="right">{fmtEur(row.p25Pm2)}</Td>
             <Td align="right">{fmtEur(row.p75Pm2)}</Td>
             <Td align="right">{fmtNum(row.medianScore, 0)}</Td>
-            <Td align="right">{fmtPoints(row.medianYield)}</Td>
+            <Td align="right">
+              <span>{fmtPoints(row.medianYield)}</span>
+              {name === 'Town' && row.medianYield != null ? <TownYieldFlag place={row.label} /> : null}
+            </Td>
           </tr>
         ))}
       </tbody>

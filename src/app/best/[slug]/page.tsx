@@ -7,6 +7,8 @@ import { Footer } from '@/components/v2/Footer';
 import { DataFreshness } from '@/components/v2/DataFreshness';
 import { BEST_CATEGORIES, getCategory } from '../_categories';
 import { getAllProperties } from '@/lib/properties';
+import { StrRiskBadge } from '@/components/str/StrRiskBadge';
+import { strBadgeFor } from '@/lib/str-regulation';
 
 export const revalidate = 3600;
 
@@ -135,6 +137,7 @@ export default async function BestCategoryPage({ params }: { params: Promise<{ s
                         </div>
                         <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground truncate">
                           {p.l}{p.costa ? ` · ${p.costa}` : ''} · {p.t} · {p.bd}bed · {p.bm}m²{p._yield?.gross ? ` · yield ${p._yield.gross.toFixed(1)}%` : ''}
+                          {p._yield?.gross ? <> · <StrRiskBadge {...(strBadgeFor(p.l) ?? { level: null })} /></> : null}
                           {disc > 0 ? ` · −${disc}% vs market` : ''}
                         </div>
                       </div>

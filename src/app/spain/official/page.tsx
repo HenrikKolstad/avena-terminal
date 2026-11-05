@@ -104,6 +104,8 @@ export default function SpainOfficialPage() {
               <span className="text-muted-foreground"> · </span>
               <Link href="/spain/rents" className="text-primary hover:underline">Habitual rents for the same coast</Link>
               <span className="text-muted-foreground"> · </span>
+              <Link href="/spain/short-let-rules" className="text-primary hover:underline">Short-let rules for the same coast</Link>
+              <span className="text-muted-foreground"> · </span>
               <Link href="/europe/official" className="text-primary hover:underline">Eurostat house price index</Link>
               <span className="text-muted-foreground"> · </span>
               <Link href="/portugal/official" className="text-primary hover:underline">Portugal official benchmark</Link>

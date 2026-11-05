@@ -9,6 +9,8 @@ import { getAllProperties, getFeedUpdatedAt } from '@/lib/properties';
 import type { Property } from '@/lib/types';
 import { cookies } from 'next/headers';
 import { Shield, Lock, ArrowUpRight, FileJson, MapPin, Building, Cloud, Briefcase, Scale, TrendingUp, History } from 'lucide-react';
+import { StrRiskBadge } from '@/components/str/StrRiskBadge';
+import { strBadgeFor } from '@/lib/str-regulation';
 
 const ADMIN_EMAILS = new Set(
   ['henrik@xaviaestate.com', 'henrik@betongsproyting.no', 'jesper.troan@gmail.com'].map((e) => e.toLowerCase())
@@ -453,7 +455,14 @@ export default async function DataSheetPage({ params }: { params: Promise<{ ref:
             <MetricRow label="Price ceiling" value={fmtEur(c.price_max_eur)} />
             <MetricRow label="Price / m²" value={fmtEur(c.price_per_m2_eur)} />
             <MetricRow label="Avena Score" value={c.avena_score != null ? <span className="text-primary">{c.avena_score}/100</span> : '—'} />
-            <MetricRow label="Gross yield" value={fmtPct(c.yield_gross_pct)} />
+            <MetricRow label="Gross yield" value={
+              <span className="inline-flex flex-wrap items-center justify-end gap-2">
+                <span>{fmtPct(c.yield_gross_pct)}</span>
+                {c.yield_gross_pct != null && c.municipality ? (
+                  <StrRiskBadge {...(strBadgeFor(c.municipality, c.province) ?? { level: null })} />
+                ) : null}
+              </span>
+            } />
             <MetricRow label="Developer" value={c.developer || '—'} />
           </Section>
 
