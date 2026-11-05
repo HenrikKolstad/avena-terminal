@@ -16,6 +16,8 @@ import Image from 'next/image';
 import { Nav } from '@/components/v2/Nav';
 import { Footer } from '@/components/v2/Footer';
 import { CLIENT_CORPUS_SIZE_LABEL } from '@/lib/corpus-size-client';
+import { StrRiskBadge } from '@/components/str/StrRiskBadge';
+import type { StrRiskLevel } from '@/lib/str-regulation';
 
 interface SearchResult {
   ref: string;
@@ -34,6 +36,7 @@ interface SearchResult {
   score: number | null;
   relevance: number;
   yield: { gross: number; net: number; annual: number } | null;
+  str_risk: { level: StrRiskLevel; reason: string; href: string } | null;
   categories: string[];
   views: string[];
   pool: string | null;
@@ -278,8 +281,9 @@ export default function SemanticSearchPage() {
 
                     <div className="flex items-center gap-4 font-mono text-[9px] uppercase tracking-[0.15em] text-muted-foreground">
                       {r.yield && (
-                        <span>
+                        <span className="inline-flex items-center gap-2">
                           Yield <span className="text-foreground/80">{r.yield.gross.toFixed(1)}%</span>
+                          {r.str_risk ? <StrRiskBadge level={r.str_risk.level} reason={r.str_risk.reason} href={r.str_risk.href} /> : null}
                         </span>
                       )}
                       {r.beachKm !== null && (

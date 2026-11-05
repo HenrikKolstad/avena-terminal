@@ -10,6 +10,8 @@
 
 import Link from 'next/link';
 import { getAllProperties } from '@/lib/properties';
+import { StrRiskBadge } from '@/components/str/StrRiskBadge';
+import { strBadgeFor } from '@/lib/str-regulation';
 
 const fmt = (n: number) => n.toLocaleString('en-US').replace(/,/g, ' ');
 const DISPLAY_CAP_PCT = 35;
@@ -53,6 +55,7 @@ export function HeroSpotlight() {
     ? Math.round(mm2 * built * (DISPLAY_CAP_PCT / 100))
     : Math.round((mm2 - pm2) * built);
   const yieldGross = top._yield?.gross ?? null;
+  const strRisk = strBadgeFor(top.l);
   const marketPrice = Math.round(mm2 * built);
 
   return (
@@ -91,17 +94,20 @@ export function HeroSpotlight() {
         {/* stats */}
         <div className="mt-5 grid grid-cols-4 gap-3 border-t pt-4" style={{ borderColor: 'hsl(var(--av-border) / 0.4)' }}>
           {[
-            { k: 'Price', v: `€${fmt(top.pf)}` },
-            { k: 'Market', v: `€${fmt(marketPrice)}` },
-            { k: 'Saved', v: `€${fmt(saved)}`, gold: true },
+            { k: 'Price', v: `€${fmt(top.pf)}`, gold: false, flag: false },
+            { k: 'Market', v: `€${fmt(marketPrice)}`, gold: false, flag: false },
+            { k: 'Saved', v: `€${fmt(saved)}`, gold: true, flag: false },
             // 'Est.' matters: this is a modelled figure resting on a town-level
             // occupancy assumption, not an observed return. The full assumption
             // set is disclosed on the property page.
-            { k: 'Est. yield', v: yieldGross ? `${yieldGross.toFixed(1)}%` : '—' },
+            { k: 'Est. yield', v: yieldGross ? `${yieldGross.toFixed(1)}%` : '—', flag: true },
           ].map(s => (
             <div key={s.k} className="min-w-0">
               <div className="font-mono text-[8px] uppercase tracking-[0.24em] text-muted-foreground mb-1">{s.k}</div>
               <div className={`font-mono text-[13px] sm:text-sm tabular truncate ${s.gold ? 'font-bold text-gold' : 'text-foreground/90'}`}>{s.v}</div>
+              {s.flag && strRisk && (
+                <div className="mt-1"><StrRiskBadge level={strRisk.level} reason={strRisk.reason} href={strRisk.href} /></div>
+              )}
             </div>
           ))}
         </div>

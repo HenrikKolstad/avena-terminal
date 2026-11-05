@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Copy, Check, ArrowRight } from 'lucide-react';
+import { StrRiskLookup } from '@/components/str/StrRiskBadge';
 
 interface ScoreComponent {
   code: string;
@@ -288,7 +289,10 @@ function ScoreClientInner() {
                     </span>
                   )}
                   {result.yield_gross_pct != null && (
-                    <span className="text-muted-foreground">{result.yield_gross_pct}% est. gross yield</span>
+                    <span className="inline-flex items-center gap-2 text-muted-foreground">
+                      {result.yield_gross_pct}% est. gross yield
+                      <StrRiskLookup town={typeof result.input?.town === 'string' ? result.input.town : null} />
+                    </span>
                   )}
                 </div>
               </div>

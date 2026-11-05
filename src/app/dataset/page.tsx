@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { getAllProperties, getUniqueTowns, getUniqueCostas } from '@/lib/properties';
+import { StrRiskBadge } from '@/components/str/StrRiskBadge';
+import { strBadgeFor } from '@/lib/str-regulation';
 
 export const revalidate = 86400;
 
@@ -196,7 +198,8 @@ export default function DatasetPage() {
                       {p.pf.toLocaleString('en', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}
                     </td>
                     <td className="px-4 py-3 text-right text-primary">
-                      {p._yield ? `${p._yield.gross.toFixed(1)}%` : 'N/A'}
+                      <span>{p._yield ? `${p._yield.gross.toFixed(1)}%` : 'N/A'}</span>
+                      {p._yield ? <span className="mt-1 block"><StrRiskBadge {...(strBadgeFor(p.l) ?? { level: null })} /></span> : null}
                     </td>
                     <td className="px-4 py-3 text-right font-mono text-white">{p._sc ?? 'N/A'}</td>
                     <td className="px-4 py-3 text-right text-gray-300">

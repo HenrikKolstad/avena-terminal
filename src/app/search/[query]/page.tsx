@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { getAllProperties, getUniqueTowns, slugify, avg } from '@/lib/properties';
+import { StrRiskBadge } from '@/components/str/StrRiskBadge';
+import { strBadgeFor } from '@/lib/str-regulation';
 import { Property } from '@/lib/types';
 
 export const revalidate = 86400;
@@ -260,6 +262,7 @@ export default async function SearchQueryPage({ params }: { params: Promise<{ qu
                   <div className="text-right flex-shrink-0">
                     <div className="text-primary font-bold text-sm">&euro;{p.pf.toLocaleString()}</div>
                     <div className="text-gray-500 text-[10px]">{p._sc ? `Score ${Math.round(p._sc)}` : ''}{p._yield ? ` \u00B7 ${p._yield.gross.toFixed(1)}%` : ''}</div>
+                    {p._yield ? <div className="mt-1"><StrRiskBadge {...(strBadgeFor(p.l) ?? { level: null })} /></div> : null}
                   </div>
                 </Link>
               ))}

@@ -1,0 +1,3257 @@
+{
+  "reviewed_at": "2026-11-05",
+  "next_review": "2027-05-05",
+  "review_cadence": "Manual. These are legal texts, not a statistical table, so there is no scheduled fetch. Read the file again each May and November, and sooner when a gazette this file cites publishes a change. A town with no row stays unknown. Do not fill a gap from a news report.",
+  "not_legal_advice": "This layer is not legal advice and not a determination that any dwelling can or cannot be let. It is a reading of published legal texts, dated on each row. A licence, a community resolution and a planning rule are decided on the building. The gross-yield figure is unchanged.",
+  "yield_maths": "The short-let yield on a listing is the existing estimate. This file does not change the nightly rate, the occupied weeks, the gross yield, the net yield, or the score.",
+  "method": {
+    "question": "For a new buyer of a new-build in this place, do the published rules let the modelled short-let yield be treated as legally available?",
+    "risk_levels": {
+      "high": "A published municipal or regional instrument currently refuses new tourist-dwelling authorisations across the place this row covers.",
+      "elevated": "A published rule conditions a new tourist-use registration on a municipal report, a zoning limit, or another step that is not a pure notification, and no current total freeze was verified.",
+      "low": "Reserved for a place where the regional regime is a responsible declaration and a municipal instrument was read that adds no further limit. No town in this file met that test.",
+      "unknown": "The regional regime is recorded, and the municipal instrument was not read, or the place could not be tied to one town hall. Silence is not treated as permission."
+    },
+    "national_note": "Two national rules sit on every town and are not used to push every town to the same level. In a building under the Horizontal Property Act, a new tourist letting needs a prior express community vote of three fifths of the owners and of the shares, from 3 April 2025, with a saving for an owner who was already letting under the tourism rules before that date. A house that is not in a community is outside that Act. The Supreme Court judgment of 19 May 2026 annulled the state single-lease-register procedure and the duty to obtain a Land Registry number in order to advertise. It did not annul the digital one-stop shop, the platforms’ data-sharing duties, or the regional tourism registers.",
+    "municipal_note": "A town is marked unknown when this review did not read a municipal instrument. That is not a finding that the town hall is permissive."
+  },
+  "limitations": [
+    "Municipal gazettes were not read for every town. Where no instrument was read, the row is unknown.",
+    "Alicante city’s December 2024 suspension was approved in plenary, and the council’s later notice says it was published in the DOGV on 13 January 2025 and lifts if the plan was not exhibited within a year. That condition was not re-checked, so the city is not marked as a current freeze.",
+    "No municipal ordinance was opened for the other Andalusian towns. A web index mentioned a December 2025 Manilva ordinance, and the provincial gazette’s date links did not return that issue, so it is not recorded.",
+    "Plan steps after Málaga’s August 2025 suspension were not re-read. The high flag relies on that suspension, which by its own text runs for up to three years from gazette publication or until the plan change is approved.",
+    "Districts are tied to a municipality from their ordinary administrative identity. Listings were not checked one by one against the cadastre. La Manga del Mar Menor, La Manga Club and La Marina were left unresolved.",
+    "Bilingual and accented official municipality names were not re-checked against the INE code list in this pass.",
+    "Community statutes, an existing regional registration, and the planning class of a plot are not in this file. They can allow or block a particular dwelling either way.",
+    "The judgment of 19 May 2026 does not remove the regional tourism registers of Andalusia, the Valencian Community or Murcia."
+  ],
+  "national": [
+    {
+      "id": "lph-2025",
+      "title": "Community consent under the Horizontal Property Act",
+      "summary": "From 3 April 2025, the owner who wants to use a dwelling in a community for the tourist letting described in article 5(e) of the Urban Leases Act needs the community’s prior express approval. The vote is three fifths of the owners and three fifths of the shares. The same majority can limit, condition or prohibit that activity, and can raise that dwelling’s share of common costs by up to 20 percent. An owner who was already exercising the activity under the tourism rules before 3 April 2025 may continue on those rules. The Act governs horizontal property. A house that is not in a community is outside it.",
+      "sources": [
+        {
+          "title": "Ley 49/1960, de propiedad horizontal, texto consolidado, artículos 7.3 y 17.12 y disposición adicional segunda",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-1960-10906",
+          "published": "2025-04-03"
+        },
+        {
+          "title": "Ley Orgánica 1/2025, de 2 de enero, BOE-A-2025-76, disposición final que modifica la Ley de propiedad horizontal",
+          "url": "https://www.boe.es/buscar/doc.php?id=BOE-A-2025-76",
+          "published": "2025-01-03"
+        }
+      ]
+    },
+    {
+      "id": "registro-unico-2026",
+      "title": "State single register after the Supreme Court judgment of 19 May 2026",
+      "summary": "Royal Decree 1312/2024 created a state single register of short leases and a digital one-stop shop, to apply Regulation (EU) 2024/1028. Judgment 620/2026 of 19 May 2026, published in the BOE on 8 June 2026, upheld part of the Valencian government’s challenge. It annulled the single-register procedure and the duty to register in the Land Registry or the Movable Property Registry in order to obtain a number and advertise a short let on an online platform. It dismissed the rest. The General Council of the Judiciary’s note of 21 May 2026 says the digital one-stop shop, the platforms’ duty to transmit data, and the statistical transmission were not annulled, and that the state lacked competence to lay a national register over the regional tourism registers.",
+      "sources": [
+        {
+          "title": "Real Decreto 1312/2024, de 23 de diciembre",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2024-26931",
+          "published": "2024-12-24"
+        },
+        {
+          "title": "Sentencia de 19 de mayo de 2026, Sala Tercera, BOE-A-2026-12300",
+          "url": "https://www.boe.es/buscar/doc.php?id=BOE-A-2026-12300",
+          "published": "2026-06-08"
+        },
+        {
+          "title": "Nota del Consejo General del Poder Judicial, 21 de mayo de 2026",
+          "url": "https://www.poderjudicial.es/cgpj/es/Poder-Judicial/Tribunal-Supremo/Oficina-de-Comunicacion/Notas-de-prensa/El-Tribunal-Supremo-anula-el-Registro-Unico-de-arrendamientos-de-corta-duracion-por-considerar-que-el-Estado-carece-de-competencia-para-su-creacion",
+          "published": "2026-05-21"
+        },
+        {
+          "title": "Regulation (EU) 2024/1028 on short-term rental data",
+          "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32024R1028",
+          "published": "2024-04-11"
+        }
+      ]
+    }
+  ],
+  "regions": [
+    {
+      "id": "andalucia",
+      "name": "Andalusia",
+      "provinces": [
+        "Málaga",
+        "Cádiz",
+        "Granada"
+      ],
+      "summary": "Decree 28/2016, as amended by Decree 31/2024 and Decree-law 1/2025, orders viviendas de uso turístico. The operator files a responsible declaration with the regional tourism department and may advertise from that filing. The declaration must say the dwelling is compatible with the planning rules and, where planning law requires it, that a municipal licence or change-of-use declaration is held. The town hall is told of the inscription and can ask for it to be cancelled if the dwelling does not fit its planning rules. Decree-law 1/2025, article 6, lets a municipality that justifies imperative reasons of general interest regulate whether tourist use is compatible with residential use, and, when it starts the planning change, suspend new licences and responsible declarations for up to three years. Where this review did not read such a municipal decision, the town is unknown.",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "id": "valenciana",
+      "name": "Valencian Community",
+      "provinces": [
+        "Alicante"
+      ],
+      "summary": "Decree-law 9/2024, validated by the Corts on 5 September 2024, defines a tourist dwelling as a whole dwelling let for ten days or less that has a favourable municipal urban-compatibility report. Letting by the room is not allowed. The inscription lasts five years and renewal needs a fresh report. A change of owner after 8 August 2024 needs a new declaration and that report. Law 3/2026, in force on 3 July 2026, keeps the report and adds a declaration that the Horizontal Property Act’s express community approval was obtained before inscription, with a narrower rule for dwellings already inscribed before Decree-law 9/2024 when they renew. The report requirement is regional, so every Alicante place in the book is at least elevated. A current municipal freeze is marked only where this review verified that it is still in force.",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "id": "murcia",
+      "name": "Region of Murcia",
+      "provinces": [
+        "Murcia"
+      ],
+      "summary": "Decree 256/2019 of 10 October orders tourist dwellings and rooms let as tourist lodging. Before the service starts, the operator files a responsible declaration with the regional tourism institute. A complete filing lets the activity start, without replacing any other licence another authority requires. The decree does not itself impose a municipal compatibility report of the Valencian kind. No municipal ordinance in this province was read, so every Murcia place in the book is unknown.",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    }
+  ],
+  "towns": [
+    {
+      "town": "Aguilas, Murcia",
+      "slug": "aguilas-murcia",
+      "place": "Aguilas",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida",
+      "region_id": "murcia",
+      "municipality": "Águilas",
+      "municipality_resolution": "alias",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "Alfas del Pi, Alicante",
+      "slug": "alfas-del-pi-alicante",
+      "place": "Alfas del Pi",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North",
+      "region_id": "valenciana",
+      "municipality": "L'Alfàs del Pi",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Algorfa, Alicante",
+      "slug": "algorfa-alicante",
+      "place": "Algorfa",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South",
+      "region_id": "valenciana",
+      "municipality": "Algorfa",
+      "municipality_resolution": "name",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Alhama De Murcia, Murcia",
+      "slug": "alhama-de-murcia-murcia",
+      "place": "Alhama De Murcia",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida - Inland",
+      "region_id": "murcia",
+      "municipality": "Alhama de Murcia",
+      "municipality_resolution": "alias",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "Alhaurín De La Torre, Málaga",
+      "slug": "alhaurin-de-la-torre-malaga",
+      "place": "Alhaurín De La Torre",
+      "province": "Málaga",
+      "province_key": "malaga",
+      "costa": "Costa del Sol",
+      "region_id": "andalucia",
+      "municipality": "Alhaurín de la Torre",
+      "municipality_resolution": "alias",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "Alicante, Alicante",
+      "slug": "alicante-alicante",
+      "place": "Alicante",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North",
+      "region_id": "valenciana",
+      "municipality": "Alicante",
+      "municipality_resolution": "name",
+      "risk": "elevated",
+      "reason": "The city plenary of 19 December 2024 suspended new tourist-dwelling compatibility reports and change-of-use titles. The council’s later notice says that agreement was published in the DOGV on 13 January 2025, lasts at most two years, and lifts if the plan was not put on public display within a year. Whether that condition was met was not re-verified, so a freeze still in force on the review date is not stated. The regional requirement of a favourable compatibility report still applies.",
+      "municipal_status": "suspension_published_currency_not_reverified",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        },
+        {
+          "title": "Extracto del Pleno del Ayuntamiento de Alicante, 19 de diciembre de 2024",
+          "url": "https://w3.alicante.es/ayuntamiento/plenos/extracto.php?fecha=19%2F12%2F2024&sesion=1",
+          "published": "2024-12-19"
+        },
+        {
+          "title": "DOGV n.º 10159, 25 de julio de 2025, ampliación de la suspensión, que cita el DOGV n.º 10023 de 13 de enero de 2025",
+          "url": "https://www.alicante.es/sites/default/files/documentos/202507/pub-dogv-10159-25-07-25.pdf",
+          "published": "2025-07-25"
+        }
+      ]
+    },
+    {
+      "town": "Almoradi, Alicante",
+      "slug": "almoradi-alicante",
+      "place": "Almoradi",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South - Inland",
+      "region_id": "valenciana",
+      "municipality": "Almoradí",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Almuñecar, Granada",
+      "slug": "almunecar-granada",
+      "place": "Almuñecar",
+      "province": "Granada",
+      "province_key": "granada",
+      "costa": "Costa Tropical",
+      "region_id": "andalucia",
+      "municipality": "Almuñécar",
+      "municipality_resolution": "alias",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "Altea, Alicante",
+      "slug": "altea-alicante",
+      "place": "Altea",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North",
+      "region_id": "valenciana",
+      "municipality": "Altea",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Aspe, Alicante",
+      "slug": "aspe-alicante",
+      "place": "Aspe",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South - Inland",
+      "region_id": "valenciana",
+      "municipality": "Aspe",
+      "municipality_resolution": "name",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Avileses, Murcia",
+      "slug": "avileses-murcia",
+      "place": "Avileses",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida - Inland",
+      "region_id": "murcia",
+      "municipality": "Murcia",
+      "municipality_resolution": "part",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review. Avena lists this place separately. It is treated as part of Murcia. Listings were not checked one by one against the cadastre.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "Baños y Mendigo, Murcia",
+      "slug": "banos-y-mendigo-murcia",
+      "place": "Baños y Mendigo",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida",
+      "region_id": "murcia",
+      "municipality": "Murcia",
+      "municipality_resolution": "part",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review. Avena lists this place separately. It is treated as part of Murcia. Listings were not checked one by one against the cadastre.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "Benahavís, Málaga",
+      "slug": "benahavis-malaga",
+      "place": "Benahavís",
+      "province": "Málaga",
+      "province_key": "malaga",
+      "costa": "Costa del Sol",
+      "region_id": "andalucia",
+      "municipality": "Benahavís",
+      "municipality_resolution": "name",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "Benalmádena, Málaga",
+      "slug": "benalmadena-malaga",
+      "place": "Benalmádena",
+      "province": "Málaga",
+      "province_key": "malaga",
+      "costa": "Costa del Sol",
+      "region_id": "andalucia",
+      "municipality": "Benalmádena",
+      "municipality_resolution": "name",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "Benejúzar, Alicante",
+      "slug": "benejuzar-alicante",
+      "place": "Benejúzar",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South - Inland",
+      "region_id": "valenciana",
+      "municipality": "Benejúzar",
+      "municipality_resolution": "name",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Benidorm, Alicante",
+      "slug": "benidorm-alicante",
+      "place": "Benidorm",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North",
+      "region_id": "valenciana",
+      "municipality": "Benidorm",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Benijofar, Alicante",
+      "slug": "benijofar-alicante",
+      "place": "Benijofar",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South",
+      "region_id": "valenciana",
+      "municipality": "Benijófar",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Benissa, Alicante",
+      "slug": "benissa-alicante",
+      "place": "Benissa",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North",
+      "region_id": "valenciana",
+      "municipality": "Benissa",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Benitachell, Alicante",
+      "slug": "benitachell-alicante",
+      "place": "Benitachell",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North",
+      "region_id": "valenciana",
+      "municipality": "El Poble Nou de Benitatxell",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Bigastro, Alicante",
+      "slug": "bigastro-alicante",
+      "place": "Bigastro",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South",
+      "region_id": "valenciana",
+      "municipality": "Bigastro",
+      "municipality_resolution": "name",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Cabo de Palos, Murcia",
+      "slug": "cabo-de-palos-murcia",
+      "place": "Cabo de Palos",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida",
+      "region_id": "murcia",
+      "municipality": "Cartagena",
+      "municipality_resolution": "part",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review. Avena lists this place separately. It is treated as part of Cartagena. Listings were not checked one by one against the cadastre.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "Calasparra, Murcia",
+      "slug": "calasparra-murcia",
+      "place": "Calasparra",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida - Inland",
+      "region_id": "murcia",
+      "municipality": "Calasparra",
+      "municipality_resolution": "name",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "Calpe, Alicante",
+      "slug": "calpe-alicante",
+      "place": "Calpe",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North",
+      "region_id": "valenciana",
+      "municipality": "Calp",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Cartagena, Murcia",
+      "slug": "cartagena-murcia",
+      "place": "Cartagena",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida",
+      "region_id": "murcia",
+      "municipality": "Cartagena",
+      "municipality_resolution": "name",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "Casares, Málaga",
+      "slug": "casares-malaga",
+      "place": "Casares",
+      "province": "Málaga",
+      "province_key": "malaga",
+      "costa": "Costa del Sol",
+      "region_id": "andalucia",
+      "municipality": "Casares",
+      "municipality_resolution": "name",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "Catral, Alicante",
+      "slug": "catral-alicante",
+      "place": "Catral",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South - Inland",
+      "region_id": "valenciana",
+      "municipality": "Catral",
+      "municipality_resolution": "name",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Ciudad Quesada, Alicante",
+      "slug": "ciudad-quesada-alicante",
+      "place": "Ciudad Quesada",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South",
+      "region_id": "valenciana",
+      "municipality": "Rojales",
+      "municipality_resolution": "part",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified. Avena lists this place separately. It is treated as part of Rojales. Listings were not checked one by one against the cadastre.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Cox, Alicante",
+      "slug": "cox-alicante",
+      "place": "Cox",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South - Inland",
+      "region_id": "valenciana",
+      "municipality": "Cox",
+      "municipality_resolution": "name",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Daya Nueva, Alicante",
+      "slug": "daya-nueva-alicante",
+      "place": "Daya Nueva",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South",
+      "region_id": "valenciana",
+      "municipality": "Daya Nueva",
+      "municipality_resolution": "name",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Denia, Alicante",
+      "slug": "denia-alicante",
+      "place": "Denia",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North",
+      "region_id": "valenciana",
+      "municipality": "Dénia",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Dolores, Alicante",
+      "slug": "dolores-alicante",
+      "place": "Dolores",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South",
+      "region_id": "valenciana",
+      "municipality": "Dolores",
+      "municipality_resolution": "name",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "El Campello, Alicante",
+      "slug": "el-campello-alicante",
+      "place": "El Campello",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North",
+      "region_id": "valenciana",
+      "municipality": "El Campello",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "El Verger, Alicante",
+      "slug": "el-verger-alicante",
+      "place": "El Verger",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North",
+      "region_id": "valenciana",
+      "municipality": "El Verger",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Estepona, Málaga",
+      "slug": "estepona-malaga",
+      "place": "Estepona",
+      "province": "Málaga",
+      "province_key": "malaga",
+      "costa": "Costa del Sol",
+      "region_id": "andalucia",
+      "municipality": "Estepona",
+      "municipality_resolution": "name",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "Finestrat, Alicante",
+      "slug": "finestrat-alicante",
+      "place": "Finestrat",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North",
+      "region_id": "valenciana",
+      "municipality": "Finestrat",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Formentera del Segura, Alicante",
+      "slug": "formentera-del-segura-alicante",
+      "place": "Formentera del Segura",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South",
+      "region_id": "valenciana",
+      "municipality": "Formentera del Segura",
+      "municipality_resolution": "name",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Fortuna, Murcia",
+      "slug": "fortuna-murcia",
+      "place": "Fortuna",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida - Inland",
+      "region_id": "murcia",
+      "municipality": "Fortuna",
+      "municipality_resolution": "name",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "Fuengirola, Málaga",
+      "slug": "fuengirola-malaga",
+      "place": "Fuengirola",
+      "province": "Málaga",
+      "province_key": "malaga",
+      "costa": "Costa del Sol",
+      "region_id": "andalucia",
+      "municipality": "Fuengirola",
+      "municipality_resolution": "name",
+      "risk": "elevated",
+      "reason": "The council states that, for applications from 22 February 2024, a dwelling without its own entrance is not processed as a tourist dwelling under article 7.1.6 of the local plan. That notice does not freeze dwellings that have their own entrance. No whole-municipality suspension was verified.",
+      "municipal_status": "verified_limit",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        },
+        {
+          "title": "Ayuntamiento de Fuengirola, 13 de agosto de 2024, limitación por el artículo 7.1.6 del PGOU",
+          "url": "https://www.fuengirola.es/el-ayuntamiento-limitara-el-registro-de-mas-viviendas-turisticas-en-fuengirola/",
+          "published": "2024-08-13"
+        }
+      ]
+    },
+    {
+      "town": "Fuente Álamo, Murcia",
+      "slug": "fuente-alamo-murcia",
+      "place": "Fuente Álamo",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida - Inland",
+      "region_id": "murcia",
+      "municipality": "Fuente Álamo de Murcia",
+      "municipality_resolution": "alias",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "Gran Alacant, Alicante",
+      "slug": "gran-alacant-alicante",
+      "place": "Gran Alacant",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South",
+      "region_id": "valenciana",
+      "municipality": "Santa Pola",
+      "municipality_resolution": "part",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified. Avena lists this place separately. It is treated as part of Santa Pola. Listings were not checked one by one against the cadastre.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Guardamar del Segura, Alicante",
+      "slug": "guardamar-del-segura-alicante",
+      "place": "Guardamar del Segura",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South",
+      "region_id": "valenciana",
+      "municipality": "Guardamar del Segura",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Hondón de las Nieves, Alicante",
+      "slug": "hondon-de-las-nieves-alicante",
+      "place": "Hondón de las Nieves",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South - Inland",
+      "region_id": "valenciana",
+      "municipality": "Hondón de las Nieves",
+      "municipality_resolution": "name",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Istán, Málaga",
+      "slug": "istan-malaga",
+      "place": "Istán",
+      "province": "Málaga",
+      "province_key": "malaga",
+      "costa": "Costa del Sol",
+      "region_id": "andalucia",
+      "municipality": "Istán",
+      "municipality_resolution": "name",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "Jacarilla, Alicante",
+      "slug": "jacarilla-alicante",
+      "place": "Jacarilla",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South - Inland",
+      "region_id": "valenciana",
+      "municipality": "Jacarilla",
+      "municipality_resolution": "name",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Jávea Xàbia, Alicante",
+      "slug": "javea-xabia-alicante",
+      "place": "Jávea Xàbia",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North",
+      "region_id": "valenciana",
+      "municipality": "Xàbia",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "La Linea De La Concepcion, Cádiz",
+      "slug": "la-linea-de-la-concepcion-cadiz",
+      "place": "La Linea De La Concepcion",
+      "province": "Cádiz",
+      "province_key": "cadiz",
+      "costa": "Costa del Sol (Cadiz)",
+      "region_id": "andalucia",
+      "municipality": "La Línea de la Concepción",
+      "municipality_resolution": "alias",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "La Manga Club, Murcia",
+      "slug": "la-manga-club-murcia",
+      "place": "La Manga Club",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida",
+      "region_id": "murcia",
+      "municipality": null,
+      "municipality_resolution": "unresolved",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review. This place name is not a municipality, and the town hall was not identified.",
+      "municipal_status": "unresolved_place",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "La Manga del Mar Menor, Murcia",
+      "slug": "la-manga-del-mar-menor-murcia",
+      "place": "La Manga del Mar Menor",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida",
+      "region_id": "murcia",
+      "municipality": null,
+      "municipality_resolution": "unresolved",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review. This place name is not a municipality, and the town hall was not identified.",
+      "municipal_status": "unresolved_place",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "La Marina, Alicante",
+      "slug": "la-marina-alicante",
+      "place": "La Marina",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South",
+      "region_id": "valenciana",
+      "municipality": null,
+      "municipality_resolution": "unresolved",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified. This place name is not a municipality, and the town hall was not identified.",
+      "municipal_status": "unresolved_place",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "la Nucia, Alicante",
+      "slug": "la-nucia-alicante",
+      "place": "la Nucia",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North",
+      "region_id": "valenciana",
+      "municipality": "La Nucía",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "La Romana, Alicante",
+      "slug": "la-romana-alicante",
+      "place": "La Romana",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South - Inland",
+      "region_id": "valenciana",
+      "municipality": "La Romana",
+      "municipality_resolution": "name",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "La Union, Murcia",
+      "slug": "la-union-murcia",
+      "place": "La Union",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida",
+      "region_id": "murcia",
+      "municipality": "La Unión",
+      "municipality_resolution": "alias",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "Lliber, Alicante",
+      "slug": "lliber-alicante",
+      "place": "Lliber",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North - Inland",
+      "region_id": "valenciana",
+      "municipality": "Llíber",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Lorca, Murcia",
+      "slug": "lorca-murcia",
+      "place": "Lorca",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida - Inland",
+      "region_id": "murcia",
+      "municipality": "Lorca",
+      "municipality_resolution": "name",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "Los Alcazares, Murcia",
+      "slug": "los-alcazares-murcia",
+      "place": "Los Alcazares",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida",
+      "region_id": "murcia",
+      "municipality": "Los Alcázares",
+      "municipality_resolution": "alias",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "Los Montesinos, Alicante",
+      "slug": "los-montesinos-alicante",
+      "place": "Los Montesinos",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South",
+      "region_id": "valenciana",
+      "municipality": "Los Montesinos",
+      "municipality_resolution": "name",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Los Nietos, Murcia",
+      "slug": "los-nietos-murcia",
+      "place": "Los Nietos",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida",
+      "region_id": "murcia",
+      "municipality": "Cartagena",
+      "municipality_resolution": "part",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review. Avena lists this place separately. It is treated as part of Cartagena. Listings were not checked one by one against the cadastre.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "Los Urrutias, Murcia",
+      "slug": "los-urrutias-murcia",
+      "place": "Los Urrutias",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida",
+      "region_id": "murcia",
+      "municipality": "Cartagena",
+      "municipality_resolution": "part",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review. Avena lists this place separately. It is treated as part of Cartagena. Listings were not checked one by one against the cadastre.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "Málaga, Málaga",
+      "slug": "malaga-malaga",
+      "place": "Málaga",
+      "province": "Málaga",
+      "province_key": "malaga",
+      "costa": "Costa del Sol",
+      "region_id": "andalucia",
+      "municipality": "Málaga",
+      "municipality_resolution": "name",
+      "risk": "high",
+      "reason": "The local-government agreement of 14 August 2025 suspends new tourist-dwelling licences and responsible declarations across the municipality of Málaga for up to three years from publication in the provincial gazette. The council notice dated 22 August 2025 says the provincial gazette published the agreement that day and that the suspension takes effect the next day.",
+      "municipal_status": "verified_freeze",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        },
+        {
+          "title": "Acuerdo de la Junta de Gobierno Local de Málaga de 14 de agosto de 2025",
+          "url": "https://urbanismo.malaga.eu/export/sites/urbanismo/anuncios-de-planeamiento/planificacion/otros-anuncios/.galleries/PL43-25/02_Acuerdo-JGL-aprobar-acuerdo-de-inicio-procedimiento..pdf",
+          "published": "2025-08-14"
+        },
+        {
+          "title": "Nota del Ayuntamiento de Málaga, 22 de agosto de 2025: el BOP publicó el acuerdo ese día y la suspensión entra en vigor al día siguiente",
+          "url": "https://www.malaga.eu/el-ayuntamiento/notas-de-prensa/detalle-de-la-nota-de-prensa/index.html?id=176369",
+          "published": "2025-08-22"
+        }
+      ]
+    },
+    {
+      "town": "Manilva, Málaga",
+      "slug": "manilva-malaga",
+      "place": "Manilva",
+      "province": "Málaga",
+      "province_key": "malaga",
+      "costa": "Costa del Sol",
+      "region_id": "andalucia",
+      "municipality": "Manilva",
+      "municipality_resolution": "name",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "Marbella, Málaga",
+      "slug": "marbella-malaga",
+      "place": "Marbella",
+      "province": "Málaga",
+      "province_key": "malaga",
+      "costa": "Costa del Sol",
+      "region_id": "andalucia",
+      "municipality": "Marbella",
+      "municipality_resolution": "name",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "Mazarron, Murcia",
+      "slug": "mazarron-murcia",
+      "place": "Mazarron",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida - Inland",
+      "region_id": "murcia",
+      "municipality": "Mazarrón",
+      "municipality_resolution": "alias",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "Mijas, Málaga",
+      "slug": "mijas-malaga",
+      "place": "Mijas",
+      "province": "Málaga",
+      "province_key": "malaga",
+      "costa": "Costa del Sol",
+      "region_id": "andalucia",
+      "municipality": "Mijas",
+      "municipality_resolution": "name",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "Monforte del Cid, Alicante",
+      "slug": "monforte-del-cid-alicante",
+      "place": "Monforte del Cid",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North - Inland",
+      "region_id": "valenciana",
+      "municipality": "Monforte del Cid",
+      "municipality_resolution": "name",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Moraira_Teulada, Alicante",
+      "slug": "moraira-teulada-alicante",
+      "place": "Moraira_Teulada",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North",
+      "region_id": "valenciana",
+      "municipality": "Teulada",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Mutxamel, Alicante",
+      "slug": "mutxamel-alicante",
+      "place": "Mutxamel",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North",
+      "region_id": "valenciana",
+      "municipality": "Mutxamel",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Nerja, Málaga",
+      "slug": "nerja-malaga",
+      "place": "Nerja",
+      "province": "Málaga",
+      "province_key": "malaga",
+      "costa": "Costa del Sol",
+      "region_id": "andalucia",
+      "municipality": "Nerja",
+      "municipality_resolution": "name",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "Ojen, Málaga",
+      "slug": "ojen-malaga",
+      "place": "Ojen",
+      "province": "Málaga",
+      "province_key": "malaga",
+      "costa": "Costa del Sol",
+      "region_id": "andalucia",
+      "municipality": "Ojén",
+      "municipality_resolution": "alias",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "Orihuela Costa, Alicante",
+      "slug": "orihuela-costa-alicante",
+      "place": "Orihuela Costa",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South",
+      "region_id": "valenciana",
+      "municipality": "Orihuela",
+      "municipality_resolution": "part",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified. Avena lists this place separately. It is treated as part of Orihuela. Listings were not checked one by one against the cadastre.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Orihuela, Alicante",
+      "slug": "orihuela-alicante",
+      "place": "Orihuela",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South",
+      "region_id": "valenciana",
+      "municipality": "Orihuela",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Penaguila, Alicante",
+      "slug": "penaguila-alicante",
+      "place": "Penaguila",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North - Inland",
+      "region_id": "valenciana",
+      "municipality": "Penàguila",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Pilar de La Horadada, Alicante",
+      "slug": "pilar-de-la-horadada-alicante",
+      "place": "Pilar de La Horadada",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South",
+      "region_id": "valenciana",
+      "municipality": "Pilar de la Horadada",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Pinoso, Alicante",
+      "slug": "pinoso-alicante",
+      "place": "Pinoso",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South - Inland",
+      "region_id": "valenciana",
+      "municipality": "Pinoso",
+      "municipality_resolution": "name",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Polop, Alicante",
+      "slug": "polop-alicante",
+      "place": "Polop",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North",
+      "region_id": "valenciana",
+      "municipality": "Polop",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Puerto de Mazarron, Murcia",
+      "slug": "puerto-de-mazarron-murcia",
+      "place": "Puerto de Mazarron",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida",
+      "region_id": "murcia",
+      "municipality": "Mazarrón",
+      "municipality_resolution": "part",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review. Avena lists this place separately. It is treated as part of Mazarrón. Listings were not checked one by one against the cadastre.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "Rafal, Alicante",
+      "slug": "rafal-alicante",
+      "place": "Rafal",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South - Inland",
+      "region_id": "valenciana",
+      "municipality": "Rafal",
+      "municipality_resolution": "name",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "rincon de la victoria, Málaga",
+      "slug": "rincon-de-la-victoria-malaga",
+      "place": "rincon de la victoria",
+      "province": "Málaga",
+      "province_key": "malaga",
+      "costa": "Costa del Sol",
+      "region_id": "andalucia",
+      "municipality": "Rincón de la Victoria",
+      "municipality_resolution": "alias",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "Rojales, Alicante",
+      "slug": "rojales-alicante",
+      "place": "Rojales",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South",
+      "region_id": "valenciana",
+      "municipality": "Rojales",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "San Fulgencio, Alicante",
+      "slug": "san-fulgencio-alicante",
+      "place": "San Fulgencio",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South",
+      "region_id": "valenciana",
+      "municipality": "San Fulgencio",
+      "municipality_resolution": "name",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "San Javier, Murcia",
+      "slug": "san-javier-murcia",
+      "place": "San Javier",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida",
+      "region_id": "murcia",
+      "municipality": "San Javier",
+      "municipality_resolution": "name",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "San Juan Alicante, Alicante",
+      "slug": "san-juan-alicante-alicante",
+      "place": "San Juan Alicante",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North",
+      "region_id": "valenciana",
+      "municipality": "Sant Joan d'Alacant",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "San Miguel de Salinas, Alicante",
+      "slug": "san-miguel-de-salinas-alicante",
+      "place": "San Miguel de Salinas",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South",
+      "region_id": "valenciana",
+      "municipality": "San Miguel de Salinas",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "San Pedro De Alcantara, Málaga",
+      "slug": "san-pedro-de-alcantara-malaga",
+      "place": "San Pedro De Alcantara",
+      "province": "Málaga",
+      "province_key": "malaga",
+      "costa": "Costa del Sol",
+      "region_id": "andalucia",
+      "municipality": "Marbella",
+      "municipality_resolution": "part",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review. Avena lists this place separately. It is treated as part of Marbella. Listings were not checked one by one against the cadastre.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "San Pedro del Pinatar, Murcia",
+      "slug": "san-pedro-del-pinatar-murcia",
+      "place": "San Pedro del Pinatar",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida",
+      "region_id": "murcia",
+      "municipality": "San Pedro del Pinatar",
+      "municipality_resolution": "name",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "San Roque, Cádiz",
+      "slug": "san-roque-cadiz",
+      "place": "San Roque",
+      "province": "Cádiz",
+      "province_key": "cadiz",
+      "costa": "Costa del Sol (Cadiz)",
+      "region_id": "andalucia",
+      "municipality": "San Roque",
+      "municipality_resolution": "name",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "Santa Pola, Alicante",
+      "slug": "santa-pola-alicante",
+      "place": "Santa Pola",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South",
+      "region_id": "valenciana",
+      "municipality": "Santa Pola",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Santiago de la Ribera, Murcia",
+      "slug": "santiago-de-la-ribera-murcia",
+      "place": "Santiago de la Ribera",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida",
+      "region_id": "murcia",
+      "municipality": "San Javier",
+      "municipality_resolution": "part",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review. Avena lists this place separately. It is treated as part of San Javier. Listings were not checked one by one against the cadastre.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "Sotogrande, Cádiz",
+      "slug": "sotogrande-cadiz",
+      "place": "Sotogrande",
+      "province": "Cádiz",
+      "province_key": "cadiz",
+      "costa": "Costa del Sol (Cadiz)",
+      "region_id": "andalucia",
+      "municipality": "San Roque",
+      "municipality_resolution": "part",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review. Avena lists this place separately. It is treated as part of San Roque. Listings were not checked one by one against the cadastre.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "Sucina, Murcia",
+      "slug": "sucina-murcia",
+      "place": "Sucina",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida - Inland",
+      "region_id": "murcia",
+      "municipality": "Murcia",
+      "municipality_resolution": "part",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review. Avena lists this place separately. It is treated as part of Murcia. Listings were not checked one by one against the cadastre.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "Torre Pacheco, Murcia",
+      "slug": "torre-pacheco-murcia",
+      "place": "Torre Pacheco",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida",
+      "region_id": "murcia",
+      "municipality": "Torre-Pacheco",
+      "municipality_resolution": "alias",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    },
+    {
+      "town": "Torremolinos, Málaga",
+      "slug": "torremolinos-malaga",
+      "place": "Torremolinos",
+      "province": "Málaga",
+      "province_key": "malaga",
+      "costa": "Costa del Sol",
+      "region_id": "andalucia",
+      "municipality": "Torremolinos",
+      "municipality_resolution": "name",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "Torrevieja, Alicante",
+      "slug": "torrevieja-alicante",
+      "place": "Torrevieja",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca South",
+      "region_id": "valenciana",
+      "municipality": "Torrevieja",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Torrox, Málaga",
+      "slug": "torrox-malaga",
+      "place": "Torrox",
+      "province": "Málaga",
+      "province_key": "malaga",
+      "costa": "Costa del Sol",
+      "region_id": "andalucia",
+      "municipality": "Torrox",
+      "municipality_resolution": "name",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "Vélez Málaga, Málaga",
+      "slug": "velez-malaga-malaga",
+      "place": "Vélez Málaga",
+      "province": "Málaga",
+      "province_key": "malaga",
+      "costa": "Costa del Sol",
+      "region_id": "andalucia",
+      "municipality": "Vélez-Málaga",
+      "municipality_resolution": "alias",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "Villajoyosa, Alicante",
+      "slug": "villajoyosa-alicante",
+      "place": "Villajoyosa",
+      "province": "Alicante",
+      "province_key": "alicante",
+      "costa": "Costa Blanca North",
+      "region_id": "valenciana",
+      "municipality": "La Vila Joiosa",
+      "municipality_resolution": "alias",
+      "risk": "elevated",
+      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
+          "published": "2024-08-07"
+        },
+        {
+          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
+          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
+          "published": "2024-09-13"
+        },
+        {
+          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
+          "published": "2026-07-02"
+        },
+        {
+          "title": "Normativa de turismo, Generalitat Valenciana",
+          "url": "https://cindi.gva.es/va/web/turisme/normativa",
+          "published": null
+        }
+      ]
+    },
+    {
+      "town": "Yecla, Murcia",
+      "slug": "yecla-murcia",
+      "place": "Yecla",
+      "province": "Murcia",
+      "province_key": "murcia",
+      "costa": "Costa Calida - Inland",
+      "region_id": "murcia",
+      "municipality": "Yecla",
+      "municipality_resolution": "name",
+      "risk": "unknown",
+      "reason": "Decree 256/2019 of 10 October requires a responsible declaration to the regional tourism institute before a dwelling is marketed as tourist lodging, whole or by the room. Other licences another authority requires still apply. No municipal ordinance limiting new tourist dwellings in this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto n.º 256/2019, de 10 de octubre, viviendas de uso turístico (BORM n.º 242)",
+          "url": "https://www.borm.es/services/anuncio/780550/pdf",
+          "published": "2019-10-19"
+        }
+      ]
+    }
+  ]
+}

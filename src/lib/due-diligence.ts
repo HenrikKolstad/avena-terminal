@@ -22,6 +22,7 @@ import { LARGE_MOVE, PM2_BAND, RECUR_DAYS, SIZE_TOL } from '@/lib/unit-identity'
 import { SCRIBE_SEAM } from '@/lib/institutional-load';
 import { computeConfidence } from '@/lib/score-confidence';
 import { ES_PROVINCE_DEFS, provinceFromLocation } from '@/lib/data-sources/ine-es';
+import { readStrFile } from '@/lib/str-regulation';
 import { collectHealth, type HealthReport } from '@/lib/health';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import type { Property } from '@/lib/types';
@@ -1147,7 +1148,24 @@ export function buildPipeline(health: HealthReport | null, officialAt: string | 
       health_status: NOT_AVAILABLE,
       health_detail: NOT_AVAILABLE,
     },
+    {
+      id: 'str-regulation',
+      name: 'Spain short-let rules',
+      cadence: 'Manual review each May and November. No scheduled fetch. Legal texts are not a weekly statistical file.',
+      what: 'data/str-regulation.json is a reading of official gazettes for the towns in the listing book: regional tourist-dwelling regime, any municipal limit that was read, a risk level, and the source URL. A town that was not read is unknown. It does not change the yield. The page is /spain/short-let-rules.',
+      source_file: 'data/str-regulation.json',
+      last_observed: strReviewedAt() ?? NOT_AVAILABLE,
+      last_observed_kind: strReviewedAt()
+        ? 'reviewed_at in data/str-regulation.json. This is the date the gazettes were read, not a job clock. There is no workflow.'
+        : 'not available. data/str-regulation.json had no reviewed_at.',
+      health_status: NOT_AVAILABLE,
+      health_detail: NOT_AVAILABLE,
+    },
   ];
+}
+
+function strReviewedAt(): string | null {
+  return readStrFile()?.reviewed_at ?? null;
 }
 
 function priceIndexAsOf(): string | null {
@@ -1216,6 +1234,7 @@ function delivery(mirror: OrNA<string>): DeliveryOption[] {
     { id: 'spain-towns', method: 'GET', path: '/spain/towns', format: 'HTML. Source file data/es-town-gap.json. JSON at /api/v1/es-town-gap.', auth: 'No key.', note: 'Weekly municipal appraisal. Asking prices beside the ministry appraisal for municipalities over 25,000 inhabitants. Not a transaction price and not the listing history.' },
     { id: 'europe-official', method: 'GET', path: '/europe/official', format: 'HTML. Source file data/eu-hpi.json. JSON at /api/v1/eu-hpi.', auth: 'No key.', note: 'Weekly Eurostat house price index beside Avena asking prices. Not a transaction price and not the listing history.' },
     { id: 'spain-rents', method: 'GET', path: '/spain/rents', format: 'HTML. Source file data/es-rents.json. JSON at /api/v1/es-rents.', auth: 'No key.', note: 'Weekly habitual-residence rents from the ministry SERPAVI workbook and the INE rental-price index. Not the listing history.' },
+    { id: 'spain-short-let-rules', method: 'GET', path: '/spain/short-let-rules', format: 'HTML. Source file data/str-regulation.json. JSON at /api/v1/str-regulation.', auth: 'No key.', note: 'Manual reading of official short-let rules by town. Not a yield and not the listing history. A missing file returns an empty JSON list.' },
     { id: 'portugal-official', method: 'GET', path: '/portugal/official', format: 'HTML. Source file data/pt-ine-benchmark.json. JSON at /api/v1/pt-official.', auth: 'No key.', note: 'Weekly Statistics Portugal benchmark: bank appraisal, sale €/m² and the house price index. Not Portuguese listing coverage and not the listing history.' },
     { id: 'huggingface', method: 'GET', path: 'https://huggingface.co/datasets/AVENATERMINAL/spain-new-build-properties-2026', format: 'Hugging Face dataset', auth: 'Public page.', note: 'feed-refresh.yml uploads the open-data files here when HF_TOKEN is set, and leaves the existing copy when it is not. /api/health does not report this copy. Freshness is not available.' },
   ];
@@ -1243,6 +1262,7 @@ function licensing(published: PublishedDataset): DueDiligencePack['licensing'] {
       'The Spain municipal file is a separate weekly pull from the ministry bulletin of appraised €/m² for municipalities of more than 25,000 inhabitants. It is not a transaction price. Sources the job could not read are omissions in that file.',
       'The Eurostat house price file is a separate weekly pull of dataset prc_hpi_q. It is an official transaction-price index. The asking-price tape in that file is the median of the committed listing book. It is not a transaction price.',
       'The Spain rent file is a separate weekly pull from the ministry SERPAVI workbook and INE table 59058. The implied yield in that file is derived. Sources the job did not read are omissions in that file.',
+      'The short-let file is a manual reading of official gazettes. It is not a scheduled pull. A town whose municipal instrument was not read is marked unknown. It does not change the yield.',
       'The Portugal official file is a separate weekly pull from Statistics Portugal indicators 0012248, 0012250, 0012234, 0014765 and 0014767. It is not a Portuguese listing book. A geography the indicator does not publish is an omission in that file.',
       zenodoNote,
     ],

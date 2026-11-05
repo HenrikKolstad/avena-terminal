@@ -16,6 +16,8 @@ import { ShareButtons } from '@/components/v2/ShareButtons';
 import { ScoreDeltaBadge } from '@/components/v2/ScoreDeltaBadge';
 import { getObservationRecord, observationSentence, longDate } from '@/lib/observations';
 import { PropertyEnquiry } from '@/components/v2/PropertyEnquiry';
+import { StrRiskBadge } from '@/components/str/StrRiskBadge';
+import { strBadgeFor } from '@/lib/str-regulation';
 
 function findProperty(ref: string): Property | null {
   return getAllProperties().find((p) => p.ref === ref) ?? null;
@@ -492,6 +494,9 @@ export default async function PropertyPage({ params }: { params: Promise<{ ref: 
                   </div>
                   <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
                     Net {p._yield.net.toFixed(1)}%
+                  </div>
+                  <div className="mt-3">
+                    <StrRiskBadge {...(strBadgeFor(p.l) ?? { level: null })} />
                   </div>
                 </div>
                 <div className="p-6 text-center" style={{ background: 'hsl(var(--av-background))' }}>
