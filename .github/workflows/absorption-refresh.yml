@@ -1,0 +1,66 @@
+name: Listing absorption refresh
+
+# Rebuilds data/absorption.json from price_snapshots. Coast, region and town
+# only. The lender monitor is a different route and is not touched.
+#
+# This is not part of vintages-freeze.yml. That job has no database secret
+# and rebuilds the same-unit index from the git history of public/data.json.
+# Absorption needs the daily series, which lives in Supabase.
+#
+# 06:40 UTC is after the 02:20 pricing-history cron and before the Monday
+# 06:20 vintage freeze has to share a runner with this job. A day the
+# capture backstop recovers later is picked up the next morning. The as-of
+# date is the latest snapshot actually present, so a missed morning does
+# not invent a day. If the read fails, the script exits non-zero and the
+# previous file stays.
+
+on:
+  schedule:
+    - cron: '40 6 * * *'   # 06:40 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: absorption-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Check the public aggregate before publishing
+        run: npx tsx scripts/test-absorption.ts
+
+      - name: Rebuild absorption from price_snapshots
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npx tsx scripts/build-absorption.ts
+
+      - name: Commit refreshed snapshot (if changed)
+        run: |
+          git config user.name "avena-feed-bot"
+          git config user.email "feed@avenaterminal.com"
+          git add data/absorption.json
+          if git diff --staged --quiet; then
+            echo "No absorption change this morning."
+          else
+            git commit -m "chore(data): refresh listing absorption snapshot [skip ci]"
+            git pull --rebase origin main
+            git push
+            echo "Pushed listing absorption."
+          fi

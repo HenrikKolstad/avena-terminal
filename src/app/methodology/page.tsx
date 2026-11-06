@@ -100,6 +100,10 @@ export default function MethodologyPage() {
           body={`A developer often advertises several units of one building under a single listing reference and changes which unit it shows: the smallest flat one week, the largest the next. Read on price alone, that looks like a large move. So a change in asking price counts as a price move only when it is the same unit: same property type, bedrooms and bathrooms, and built and plot size within ${Math.round(SIZE_TOL * 100)}%. When the specification changed, the row is recorded as "unit re-listed / spec change" and excluded from every move count, tape and report. A move of ${Math.round(LARGE_MOVE * 100)}% or more also needs full specs on both sides, the same photo set, a new €/m² within ${PM2_BAND[0]}–${PM2_BAND[1]}× the area benchmark, and must not return exactly to an asking price the listing showed in the previous ${RECUR_DAYS} days (two units alternating); otherwise it is marked unverified and not counted. Every observation is kept; the verdict is stored alongside it, never by deleting history.`}
           link={{ href: '/data/price-index', label: 'Same-unit asking-price index →' }} />
 
+        <Section id="absorption" title="Absorption — listings leaving the book"
+          body="A listing is one captured reference, often a unit type rather than one dwelling. An exit is a delisting: the reference left the feed, sold out or withdrawn, and the feed cannot tell which. Cuts and rises are changes in the asking price. The public file is coast, region and town only, from 5 August 2026, with the 14–20 October 2026 gap marked and not filled in. Days to sell are not estimated. Project rows are not in the file."
+          link={{ href: '/data/absorption', label: 'Listing absorption →' }} />
+
         <Section id="confidence" title="Confidence — adversarial residual layer"
           body="Every Avena Score returns alongside a confidence float in [0, 1] and reason codes for low confidence. Confidence derives from a deterministic adversarial heuristic v1: comp sparsity, extreme price/m² vs market median, missing key inputs, edge-case score values. Properties whose adversarial residual exceeds threshold flag for human review. v2 will swap in a trained residual model once labelled out-of-sample resolution mass exceeds 10k samples." />
 
@@ -124,6 +128,7 @@ https://avenaterminal.com/methodology`}
               <Link href="/spain/towns" className="text-foreground/85 hover:text-primary">Spain municipal appraisals →</Link>
               <Link href="/spain/rents" className="text-foreground/85 hover:text-primary">Spain rent benchmark →</Link>
               <Link href="/spain/short-let-rules" className="text-foreground/85 hover:text-primary">Short-let rules →</Link>
+              <Link href="/data/absorption" className="text-foreground/85 hover:text-primary">Listing absorption →</Link>
               <Link href="/portugal/official" className="text-foreground/85 hover:text-primary">Portugal official benchmark →</Link>
               <Link href="/europe/official" className="text-foreground/85 hover:text-primary">Eurostat house price index →</Link>
               <a href="https://doi.org/10.5281/zenodo.19520064" target="_blank" rel="noopener" className="text-foreground/85 hover:text-primary">Zenodo DOI →</a>

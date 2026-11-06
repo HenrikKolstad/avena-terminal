@@ -73,6 +73,10 @@ export default function ShortLetRulesPage() {
               <span className="text-muted-foreground"> · </span>
               <Link href="/due-diligence" className="text-primary hover:underline">Due diligence</Link>
               <span className="text-muted-foreground"> · </span>
+              <Link href="/data/price-index" className="text-primary hover:underline">Same-unit asking-price index</Link>
+              <span className="text-muted-foreground"> · </span>
+              <Link href="/data/absorption" className="text-primary hover:underline">Listing absorption</Link>
+              <span className="text-muted-foreground"> · </span>
               <Link href="/methodology" className="text-primary hover:underline">Methodology</Link>
               <span className="text-muted-foreground"> · </span>
               <Link href="/api/v1/str-regulation" className="text-primary hover:underline">JSON</Link>
