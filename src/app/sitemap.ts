@@ -109,6 +109,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ['/due-diligence',    'weekly',  0.85],
     ['/data/vintages',    'weekly',  0.8],
     ['/data/price-index', 'weekly',  0.8],
+    ['/data/absorption',  'weekly',  0.8],
     ['/papers/delphi',    'monthly', 0.85],
     // ─── Norwegian buyer funnel (2026-08-06) ──────────────────────────────
     ['/no',                                   'daily',   0.9],

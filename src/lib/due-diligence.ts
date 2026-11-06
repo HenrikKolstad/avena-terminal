@@ -16,6 +16,7 @@ import { buildTownAggregates } from '@/lib/open-dataset';
 import { LEDGER_EPOCH } from '@/lib/open-dataset-io';
 import { KNOWN_GAPS } from '@/lib/sellthrough';
 import { VINTAGE_GUARANTEE, latestFrozenDate, readVintageManifest } from '@/lib/vintages';
+import { ABSORPTION_METHOD, readAbsorption } from '@/lib/absorption';
 import { PRICE_INDEX_METHOD, readPriceIndex } from '@/lib/price-index';
 import { findMissingRanges, type MissingRange } from '@/lib/fund-report';
 import { LARGE_MOVE, PM2_BAND, RECUR_DAYS, SIZE_TOL } from '@/lib/unit-identity';
@@ -177,6 +178,7 @@ export interface DueDiligencePack {
     open_dataset: string;
     weekly_vintages: string;
     same_unit_index: string;
+    absorption: string;
     scribe_last_run: NotAvailable;
     scribe_last_run_reason: string;
   };
@@ -1161,6 +1163,19 @@ export function buildPipeline(health: HealthReport | null, officialAt: string | 
       health_status: NOT_AVAILABLE,
       health_detail: NOT_AVAILABLE,
     },
+    {
+      id: 'listing-absorption',
+      name: 'Listing absorption',
+      cadence: 'GitHub Actions absorption-refresh.yml daily at 06:40 UTC.',
+      what: 'Rebuilds data/absorption.json from price_snapshots since 2026-08-05. Coast, region and town only. An exit is a delisting, not a confirmed sale. The declared October gap is marked and not filled. Project rows are not written. A read that fails leaves the previous file in place.',
+      source_file: '.github/workflows/absorption-refresh.yml',
+      last_observed: absorptionAsOf() ?? NOT_AVAILABLE,
+      last_observed_kind: absorptionAsOf()
+        ? 'asOf in data/absorption.json. This is the latest snapshot date in the series, not the GitHub run timestamp. /api/health does not watch absorption-refresh.yml.'
+        : 'not available. /api/health does not watch absorption-refresh.yml, and data/absorption.json had no asOf.',
+      health_status: NOT_AVAILABLE,
+      health_detail: NOT_AVAILABLE,
+    },
   ];
 }
 
@@ -1171,6 +1186,14 @@ function strReviewedAt(): string | null {
 function priceIndexAsOf(): string | null {
   try {
     return readPriceIndex().data_as_of;
+  } catch {
+    return null;
+  }
+}
+
+function absorptionAsOf(): string | null {
+  try {
+    return readAbsorption().asOf;
   } catch {
     return null;
   }
@@ -1212,6 +1235,7 @@ function pointInTime() {
     open_dataset: `The open dataset is rebuilt from snapshots on or after ${LEDGER_EPOCH} and from the listing book at build time. Rebuilding it does not create rows for dates that have no snapshot. A same-day replacement of today's snapshot is what a later build of that same day will contain.`,
     weekly_vintages: `${VINTAGE_GUARANTEE} The index is /data/vintages and the manifest is GET /api/v1/vintages.`,
     same_unit_index: `${PRICE_INDEX_METHOD} The page is /data/price-index and the file is GET /api/v1/price-index.`,
+    absorption: `${ABSORPTION_METHOD} The page is /data/absorption and the file is GET /api/v1/absorption.`,
     scribe_last_run: NOT_AVAILABLE,
     scribe_last_run_reason: '/api/health does not report the scribe job, so its last-run timestamp is not available.',
   };
@@ -1228,6 +1252,7 @@ function delivery(mirror: OrNA<string>): DeliveryOption[] {
     { id: 'sample', method: 'GET', path: '/api/v1/due-diligence/sample', format: 'CSV', auth: 'No key.', note: `First ${SAMPLE_MOVE_ROWS} data rows of ${SAMPLE_SOURCE}, unchanged.` },
     { id: 'weekly-vintages', method: 'GET', path: '/api/v1/vintages', format: 'JSON. One vintage at /api/v1/vintages/YYYY-MM-DD. CSV of those rows with ?format=csv.', auth: 'No key.', note: 'Town and province aggregates frozen once a week from the committed listing book. A file is not rewritten. A week with no capture has no file. The index is /data/vintages.' },
     { id: 'same-unit-price-index', method: 'GET', path: '/api/v1/price-index', format: 'JSON. CSV of the rows with ?format=csv. level=coast, province or town limits the rows.', auth: 'No key.', note: 'Weekly same-unit asking-price index from the committed listing book. The page is /data/price-index. A gap week has no value. A cell under its matched-pair minimum is blank. Not a transaction price and not the AVENA composite.' },
+    { id: 'listing-absorption', method: 'GET', path: '/api/v1/absorption', format: 'JSON. CSV of town rows with ?format=csv. level=coast, region or town limits the groups.', auth: 'No key.', note: 'Coast, region and town listing absorption from the daily capture. The page is /data/absorption. An exit is a delisting, not a confirmed sale. Days to sell are not estimated. Project rows are not in the file.' },
     { id: 'official-summary', method: 'GET', path: '/official', format: 'HTML. JSON at /api/v1/official-summary.', auth: 'No key.', note: 'Index of the official-statistics layers and the asking-versus-benchmark gaps computed from them. Not the listing history.' },
     { id: 'spain-official', method: 'GET', path: '/spain/official', format: 'HTML. Source file data/es-official.json.', auth: 'No key.', note: 'Weekly official benchmark. Not the listing history.' },
     { id: 'spain-supply', method: 'GET', path: '/spain/supply', format: 'HTML. Source file data/es-supply.json. JSON at /api/v1/es-supply.', auth: 'No key.', note: 'Weekly supply pipeline. Ministry starts and completions, and INE registered sales of new dwellings. Not the listing history.' },
@@ -1297,6 +1322,7 @@ function unavailable(pack: Omit<DueDiligencePack, 'not_available'>): Unavailable
     { field: 'pipeline.pt-ine-benchmark.github_run_timestamp', reason: '/api/health does not watch pt-ine-benchmark-refresh.yml. A generated_at on data/pt-ine-benchmark.json is the artifact on this deployment, not a GitHub run timestamp.' },
     { field: 'pipeline.weekly-vintages.github_run_timestamp', reason: '/api/health does not watch vintages-freeze.yml. The latest vintage capture date is the file date, not a GitHub run timestamp.' },
     { field: 'pipeline.same-unit-price-index.github_run_timestamp', reason: '/api/health does not watch vintages-freeze.yml. The price-index data_as_of is the latest capture in the chain, not a GitHub run timestamp.' },
+    { field: 'pipeline.listing-absorption.github_run_timestamp', reason: '/api/health does not watch absorption-refresh.yml. The absorption asOf is the latest snapshot date in the series, not a GitHub run timestamp.' },
     { field: 'delivery.huggingface.freshness', reason: 'Not in /api/health. The feed workflow uploads this copy only when a token is set.' },
   );
   return notes;

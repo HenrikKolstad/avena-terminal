@@ -413,6 +413,15 @@ export default function OfficialHubPage() {
                 <span className="text-muted-foreground"> · </span>
                 <Link href="/api/v1/price-index" className="text-primary hover:underline">/api/v1/price-index</Link>
               </p>
+              <h2 className="mt-10 font-serif text-3xl font-light text-foreground mb-4">Listing absorption, from the same captures.</h2>
+              <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground mb-4">
+                How fast listings leave the book, and where asking prices are being cut. An exit is a delisting, not a confirmed sale. Coast, region and town only. This is not one of the official files.
+              </p>
+              <p className="text-sm">
+                <Link href="/data/absorption" className="text-primary hover:underline">Listing absorption</Link>
+                <span className="text-muted-foreground"> · </span>
+                <Link href="/api/v1/absorption" className="text-primary hover:underline">/api/v1/absorption</Link>
+              </p>
             </div>
             <div className="mt-10">
               <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-3">Data gaps</div>
