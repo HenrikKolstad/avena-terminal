@@ -96,6 +96,7 @@ export default function VintagesPage() {
           <Link href="/api/v1/vintages" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">JSON manifest</Link>
           <Link href="/data/price-index" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Same-unit price index</Link>
           <Link href="/data/absorption" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Listing absorption</Link>
+          <Link href="/data/listing-duration" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Listing duration</Link>
           <Link href="/due-diligence#point-in-time" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Point-in-time policy</Link>
           <Link href="/license" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">License</Link>
         </p>

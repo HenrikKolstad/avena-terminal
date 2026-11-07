@@ -55,6 +55,7 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
       { label: 'Weekly vintages', href: '/data/vintages' },
       { label: 'Same-unit price index', href: '/data/price-index' },
       { label: 'Listing absorption', href: '/data/absorption' },
+      { label: 'Listing duration', href: '/data/listing-duration' },
       { label: 'Portugal market', href: '/portugal' },
       { label: 'Official statistics', href: '/official' },
       { label: 'Portugal official benchmark', href: '/portugal/official' },

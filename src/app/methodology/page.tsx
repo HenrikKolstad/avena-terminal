@@ -104,6 +104,10 @@ export default function MethodologyPage() {
           body="A listing is one captured reference, often a unit type rather than one dwelling. An exit is a delisting: the reference left the feed, sold out or withdrawn, and the feed cannot tell which. Cuts and rises are changes in the asking price. The public file is coast, region and town only, from 5 August 2026, with the 14–20 October 2026 gap marked and not filled in. Days to sell are not estimated. Project rows are not in the file."
           link={{ href: '/data/absorption', label: 'Listing absorption →' }} />
 
+        <Section id="listing-duration" title="Listing duration — time in the book"
+          body="Live median days listed runs from the first captured snapshot to the as-of date, for references still in the latest snapshot. _added is used only when that listing has no snapshot. Exit duration runs from the first snapshot to the delisting-ledger date, and stops on 13 October 2026 when that date would cross the 14–20 October gap. Days to sell are not estimated. The history starts 5 August 2026 and is short. Coast, region and town only."
+          link={{ href: '/data/listing-duration', label: 'Listing duration →' }} />
+
         <Section id="confidence" title="Confidence — adversarial residual layer"
           body="Every Avena Score returns alongside a confidence float in [0, 1] and reason codes for low confidence. Confidence derives from a deterministic adversarial heuristic v1: comp sparsity, extreme price/m² vs market median, missing key inputs, edge-case score values. Properties whose adversarial residual exceeds threshold flag for human review. v2 will swap in a trained residual model once labelled out-of-sample resolution mass exceeds 10k samples." />
 
@@ -129,6 +133,7 @@ https://avenaterminal.com/methodology`}
               <Link href="/spain/rents" className="text-foreground/85 hover:text-primary">Spain rent benchmark →</Link>
               <Link href="/spain/short-let-rules" className="text-foreground/85 hover:text-primary">Short-let rules →</Link>
               <Link href="/data/absorption" className="text-foreground/85 hover:text-primary">Listing absorption →</Link>
+              <Link href="/data/listing-duration" className="text-foreground/85 hover:text-primary">Listing duration →</Link>
               <Link href="/portugal/official" className="text-foreground/85 hover:text-primary">Portugal official benchmark →</Link>
               <Link href="/europe/official" className="text-foreground/85 hover:text-primary">Eurostat house price index →</Link>
               <a href="https://doi.org/10.5281/zenodo.19520064" target="_blank" rel="noopener" className="text-foreground/85 hover:text-primary">Zenodo DOI →</a>

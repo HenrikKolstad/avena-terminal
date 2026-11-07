@@ -422,6 +422,15 @@ export default function OfficialHubPage() {
                 <span className="text-muted-foreground"> · </span>
                 <Link href="/api/v1/absorption" className="text-primary hover:underline">/api/v1/absorption</Link>
               </p>
+              <h2 className="mt-10 font-serif text-3xl font-light text-foreground mb-4">Listing duration, from the same captures.</h2>
+              <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground mb-4">
+                How long listings have been in the book, and how long delisted listings had been observed. An exit is a delisting, not a confirmed sale. Coast, region and town only. This is not one of the official files.
+              </p>
+              <p className="text-sm">
+                <Link href="/data/listing-duration" className="text-primary hover:underline">Listing duration</Link>
+                <span className="text-muted-foreground"> · </span>
+                <Link href="/api/v1/listing-duration" className="text-primary hover:underline">/api/v1/listing-duration</Link>
+              </p>
             </div>
             <div className="mt-10">
               <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-3">Data gaps</div>
