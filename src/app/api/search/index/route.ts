@@ -20,6 +20,7 @@ const PAGES = [
   { title: 'Official statistics', url: '/official', kind: 'page' },
   { title: 'Same-unit asking-price index', url: '/data/price-index', kind: 'page' },
   { title: 'Listing absorption', url: '/data/absorption', kind: 'page' },
+  { title: 'Listing duration', url: '/data/listing-duration', kind: 'page' },
   { title: 'Portugal official benchmark', url: '/portugal/official', kind: 'page' },
   { title: 'Spain official benchmarks', url: '/spain/official', kind: 'page' },
   { title: 'Spain supply pipeline', url: '/spain/supply', kind: 'page' },

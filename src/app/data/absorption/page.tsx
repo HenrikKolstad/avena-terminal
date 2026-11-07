@@ -228,6 +228,7 @@ export default function AbsorptionPage() {
         <p className="mt-4 flex flex-wrap gap-4">
           <Link href="/api/v1/absorption" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">JSON</Link>
           <Link href="/api/v1/absorption?format=csv" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Town CSV</Link>
+          <Link href="/data/listing-duration" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Listing duration</Link>
           <Link href="/data/price-index" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Same-unit price index</Link>
           <Link href="/spain/short-let-rules" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Short-let rules</Link>
           <Link href="/data/vintages" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Weekly vintages</Link>
