@@ -62,6 +62,13 @@ function base(): OfficialSummaryInput {
       omissions: [],
       provinces: [],
     },
+    notary: {
+      source: 'CIEN',
+      source_url: 'https://example.test/cien',
+      latest_period: '2026-08',
+      retrieved_at: '2026-10-30',
+      provinces: [],
+    },
     municipal: {
       source: 'Ministry sheet',
       source_url: null,
@@ -223,9 +230,11 @@ check('Portugal listings match the Portugal view', live.portugal_listings, getPt
 check('supply is not a price gap', live.layers.find((l) => l.id === 'es-supply')?.headline.available, false);
 check('eurostat is not a price gap', live.layers.find((l) => l.id === 'eu-hpi')?.headline.available, false);
 check('Portugal headline is not a price gap', live.layers.find((l) => l.id === 'pt-official')?.headline.available, false);
+check('notary headline is the median of the notary gaps', live.layers.find((l) => l.id === 'es-notary')?.headline.value, medianRounded(live.notary_gaps.flatMap((r) => r.gap_pct == null ? [] : [r.gap_pct])));
 checkTrue('unavailable headlines are null', live.layers.filter((l) => !l.headline.available).every((l) => l.headline.value === null));
 checkTrue('live data gaps say history is accumulating', live.data_gaps.some((g) => /accumulating/i.test(g)));
-checkTrue('six layers', live.layers.length === 6);
+checkTrue('seven layers', live.layers.length === 7);
+checkTrue('notary layer is on the hub', live.layers.some((l) => l.id === 'es-notary' && l.href === '/spain/notary'));
 
 console.log('wiring');
 const root = join(__dirname, '..');

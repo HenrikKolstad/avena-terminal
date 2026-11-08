@@ -164,7 +164,8 @@ const NOTARY_OMISSION: LayerOmission = {
   reason:
     'The Portal Estadístico del Notariado (penotariado.com) describes aggregate transaction prices down to municipality and postal code. ' +
     'Its terms prohibit commercial use, and they prohibit reproduction or distribution of the contents without authorisation. ' +
-    'The access table on those terms gives a public user provincial depth. No keyless municipal €/m² file was ingested.',
+    'The access table on those terms gives a public user provincial depth. No keyless municipal €/m² file was ingested. ' +
+    'The CIEN statistical annex is a separate workbook, published at /spain/notary. It has no municipality.',
 };
 
 function vdp003Omission(header: string | null): LayerOmission {

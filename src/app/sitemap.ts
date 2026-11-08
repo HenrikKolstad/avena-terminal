@@ -71,6 +71,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ['/portugal',             'weekly', 0.85],
     ['/portugal/official',    'weekly', 0.85],
     ['/spain/official',       'weekly', 0.85],
+    ['/spain/notary',         'weekly', 0.85],
     ['/spain/supply',         'weekly', 0.85],
     ['/spain/towns',          'weekly', 0.85],
     ['/spain/rents',          'weekly', 0.85],

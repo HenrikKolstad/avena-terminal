@@ -59,6 +59,7 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
       { label: 'Official statistics', href: '/official' },
       { label: 'Portugal official benchmark', href: '/portugal/official' },
       { label: 'Spain official benchmarks', href: '/spain/official' },
+      { label: 'Spain notary prices', href: '/spain/notary' },
       { label: 'Spain rent benchmark', href: '/spain/rents' },
       { label: 'Spain supply pipeline', href: '/spain/supply' },
       { label: 'Eurostat house price index', href: '/europe/official' },

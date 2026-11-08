@@ -1,8 +1,8 @@
 /**
  * Live official-statistics summary. Page and JSON route both call this.
  *
- * priors is empty on purpose. data/es-official.json, data/es-town-gap.json
- * and data/es-rents.json each hold one period. data/pt-ine-benchmark.json
+ * priors is empty on purpose. data/es-official.json, data/es-notary.json,
+ * data/es-town-gap.json and data/es-rents.json each hold one period. data/pt-ine-benchmark.json
  * holds official history and no Avena asking series. data/eu-hpi.json holds
  * an asking tape and an index, which are not a euro gap. A previous official
  * price without a previous Avena median is not a previous gap.
@@ -10,6 +10,7 @@
 
 import { latestQuarter } from './data-sources/eu-hpi';
 import { getEsBenchmark } from './es-official-view';
+import { getEsNotary } from './es-notary-view';
 import { getEsRents } from './es-rents-view';
 import { getEsSupply } from './es-supply-view';
 import { getEsTownGap } from './es-town-gap-view';
@@ -19,6 +20,7 @@ import { getPtOfficial } from './pt-official-view';
 
 export function getOfficialSummary(): OfficialSummary {
   const spain = getEsBenchmark();
+  const notary = getEsNotary();
   const towns = getEsTownGap();
   const rents = getEsRents();
   const supply = getEsSupply();
@@ -38,7 +40,7 @@ export function getOfficialSummary(): OfficialSummary {
   };
 
   return buildOfficialSummary({
-    generated_at: [spain.generated_at, towns.generated_at, rents.generated_at, supply.generated_at, hpi.generated_at, portugal.generated_at],
+    generated_at: [spain.generated_at, notary.generated_at, towns.generated_at, rents.generated_at, supply.generated_at, hpi.generated_at, portugal.generated_at],
     book_date: hpi.current_book.date,
     priors: [],
     spain: {
@@ -59,6 +61,22 @@ export function getOfficialSummary(): OfficialSummary {
         ine_new_yoy_pct: p.ine_new_yoy_pct?.value ?? null,
         ine_new_yoy_period: p.ine_new_yoy_pct?.period ?? null,
         ine_territory_equals_province: p.ine_territory_equals_province,
+      })),
+    },
+    notary: {
+      source: `${notary.sources.housing.publisher}, housing sales annex`,
+      source_url: notary.sources.housing.index_url,
+      latest_period: notary.period,
+      retrieved_at: notary.retrieved_at,
+      provinces: notary.provinces.map((p) => ({
+        name: p.name,
+        slug: p.slug,
+        listings: p.listings,
+        avena_eur_m2: p.avena_median_asking_eur_m2,
+        official_eur_m2: p.notary?.eur_m2 ?? null,
+        official_period: p.period,
+        geo_name: p.geo_name,
+        territory_equals_province: p.territory_equals_province,
       })),
     },
     municipal: {

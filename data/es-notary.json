@@ -1,0 +1,2155 @@
+{
+  "status": "ready",
+  "generated_at": "2026-11-08T00:26:01.907Z",
+  "retrieved_at": "2026-11-08",
+  "period": "2026-08",
+  "provisional": true,
+  "provinces_in_corpus": [
+    "malaga",
+    "alicante",
+    "murcia",
+    "granada",
+    "cadiz"
+  ],
+  "coverage_note": "Notary €/m² and transaction counts are the CIEN autonomous-community series. A province other than Murcia is shown with its community's figure, and the row says so. Murcia is a single-province community. Andalucía in the workbook includes Ceuta and Melilla. No town has a notary price in this file. A town is not given the community price. The series is all free-market housing signed before a notary. It is not new-build only and not the coast only.",
+  "caveats": [
+    "Avena's figure is the median asking price per m² of coastal new-build listings in the current corpus. It is not a price on a deed, and it is not the median of every home in the province.",
+    "The notary figure is the average price per m² of housing sales authorised by a notary. The comparison uses the all-housing average for the autonomous community. It mixes flats and houses, new and second-hand, coast and inland.",
+    "Andalucía in the workbook includes Ceuta and Melilla. That figure is not the province of Málaga, Cádiz, Granada or Almería. The Valencian Community figure is not Alicante, Valencia or Castellón on its own. Murcia is the province.",
+    "Flat and single-family are the split the workbook publishes. Flat is not new-build. Single-family is not second-hand. Neither is copied into the asking-versus-closing gap.",
+    "The last three months are provisional because the workbook says so. A provisional transaction count is kept as the cell the workbook stored, which is not always a whole number. The nearest whole number is labelled as rounded.",
+    "The asking-versus-closing gap is derived here. It is not published by the notaries. The homes, the geography and the new-versus-second-hand mix are not the same on the two sides.",
+    "Foreign-buyer counts and prices are a semester from a separate annex. They are not the latest month, and they are not used as the closing price in the gap.",
+    "No municipality, district or postcode price is filled in. The portal that describes those prices is not read."
+  ],
+  "method": {
+    "avena_median": "Median asking €/m² of new-build listings in the deployed corpus whose province is this place. €/m² is the midpoint of the asking price range divided by built area, the same figure shown on each listing. Listings with no positive €/m² are counted and excluded from the median. A town median is published only when at least 8 listings in that town have a positive asking €/m². A province median has no separate floor.",
+    "asking_vs_closing": "asking_vs_closing_pct = (Avena median asking €/m² − notary average €/m²) / notary average €/m², in percent, rounded to 0.1. Positive means the asking median sits above the notary average. Derived by Avena. It is not a statistic published by the notaries. The notary side is the all-housing average for the autonomous community, not a provincial new-build price. Flat and single-family averages are published beside it and are not substituted into the gap.",
+    "transactions": "transactions is the workbook cell, rounded half-away-from-zero to 6 decimal places. transactions_nearest is that cell rounded half-away-from-zero to a whole transaction, which is how the CIEN press note prints a count. When the cell is already a whole number the two are equal. A fraction is not replaced with zero and is not dropped. The workbook says the last three months are provisional, and those are the months marked provisional here.",
+    "price": "eur_m2 is the workbook cell rounded half-away-from-zero to the cent. An annual €/m² is published only for the last complete calendar year, and only after it matches the simple average of that year's twelve monthly cells within two cents. The workbook describes the annual price as that average. A year that fails the check is not published.",
+    "foreign": "Foreign-buyer figures are the latest semester in the CIEN foreign-buyer annex, which is not the latest month of the price series. peso_pct is the workbook's own weight times 100, rounded to 0.1. For the foreign and Spanish totals the weight is their share of all sales. For a residence row the weight is that row's share of its parent group, which is checked against the counts before it is labelled. nationality_share_pct is the nationality's count divided by the table total, in percent, rounded to 0.1. That division is done here. It is not a separate column. No foreign share of a community is computed from the monthly series. The periods and the dwelling mix are not the same."
+  },
+  "omissions": [
+    {
+      "source": "Portal Estadístico del Notariado",
+      "url": "https://penotariado.com/inmobiliario/terminos-y-condiciones",
+      "ingested": false,
+      "reason": "The portal describes transaction prices down to municipality and postcode. Its terms prohibit commercial use, and they prohibit reproduction or distribution of the contents without authorisation. No municipal €/m² was read from the portal. A town is not given its community's price."
+    },
+    {
+      "source": "Consejo General del Notariado, new versus second-hand",
+      "url": "https://www.notariado.org/liferay/web/cien/sala-de-prensa/informes",
+      "ingested": false,
+      "reason": "The CIEN housing annex splits flats (piso) and single-family houses (unifamiliar). It does not split new dwellings and second-hand dwellings. That split is not in this file. Flat is not treated as new, and single-family is not treated as second-hand."
+    },
+    {
+      "source": "CIEN foreign-buyer annex, province and municipality",
+      "url": "https://www.notariado.org/liferay/web/cien/sala-de-prensa/informes",
+      "ingested": false,
+      "reason": "The foreign-buyer annex names Spain, the autonomous communities and the buyer's nationality. It does not name a province or a municipality, and it does not cross a nationality with a coastal town. A community foreign share is not computed from the monthly all-buyer series."
+    },
+    {
+      "source": "Ministerio de Vivienda y Agenda Urbana, VDP003_01",
+      "url": "https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP003_01.csv",
+      "ingested": false,
+      "reason": "The ministry transaction file is not read by this job. It has no €/m² column. The supply layer records its own finding about that file."
+    },
+    {
+      "source": "Colegio de Registradores",
+      "url": "https://opendata.registradores.org/dataset/es/dataset/compraventas-de-inmuebles-uso-residencial-por-provincia",
+      "ingested": false,
+      "reason": "Registered sales are a different source from notarial deeds. They are not mixed into this file."
+    }
+  ],
+  "sources": {
+    "housing": {
+      "publisher": "Centro de Información Estadística del Notariado (Consejo General del Notariado)",
+      "title": "Anexo tablas: series estadísticas correspondientes al informe (hasta ago-26)",
+      "file_date": "2026-10-30",
+      "file_url": "https://www.notariado.org/liferay/c/document_library/get_file?uuid=bd4db5ed-31d0-49aa-b010-026c3d53bf35&groupId=2289837",
+      "index_url": "https://www.notariado.org/liferay/web/cien/sala-de-prensa/informes",
+      "period_label": "2026-08",
+      "licence_note": "The workbooks are the public statistical annexes linked from the CIEN press room. Each housing sheet carries a source line naming the Centro de Información Estadística del Notariado and the Portal Estadístico del Notariado. They are not published under a Creative Commons licence. This file quotes the published aggregates and names the workbook, the period and the source line. It does not redistribute the workbook. The Portal Estadístico del Notariado is a different surface. Its terms prohibit commercial use and unauthorised reproduction, which is why municipal and postcode prices are not here.",
+      "source_line": "Fuente: Centro de Información Estadística del Notariado y Portal Estadísitco del Notariado. Los datos mensuales desde ene-07 se encuentran ocultos y pueden desplegarse. Los datos de Céuta y Melilla se agregan en Andalucía. (*) Dato provisional para los últimos tres meses.",
+      "latest_period": "2026-08",
+      "provisional_periods": [
+        "2026-06",
+        "2026-07",
+        "2026-08"
+      ],
+      "notes": [
+        "Fuente: Centro de Información Estadística del Notariado y Portal Estadísitco del Notariado. Los datos mensuales desde ene-07 se encuentran ocultos y pueden desplegarse. Los datos de Céuta y Melilla se agregan en Andalucía. (*) Dato provisional para los últimos tres meses.",
+        "Fuente: Centro de Información Estadística del Notariado y Portal Estadísitco del Notariado. Los datos mensuales desde ene-07 se encuentran ocultos y pueden desplegarse. Los datos de Céuta y Melilla se agregan en Andalucía. (*) Dato provisional para los últimos tres meses.",
+        "▪  Con motivo de la puesta en funcionamiento del nuevo Portal Estadístico del Notariado, se ha llevado a cabo una revisión integral de las series históricas de precios y precios por metro cuadrado de la vivienda. Esta actualización metodológica tiene como objetivo mejorar la representatividad y la precisión de los indicadores, de forma que reflejen con mayor fidelidad los precios efectivos de las operaciones de compraventa. Para ello, se han revisado y perfeccionado determinados supuestos metodológicos y procedimientos de tratamiento de la información, así como corregido y homogeneizado posibles inconsistencias detectadas en las series anteriores. Adicionalmente, las nuevas series excluyen del ámbito de cómputo las operaciones correspondientes a vivienda de protección oficial (VPO) y se circunscriben exclusivamente a las compraventas que implican la transmisión del 100 % del pleno dominio",
+        "▪  Se ha realizado una revisión de los criterios metodológicos aplicados a las series de precios de la vivienda. En concreto, se ha modificado el criterio utilizado para excluir las operaciones correspondientes a vivienda en construcción. Como consecuencia de esta revisión, se han actualizado los datos de precios correspondientes a 2024, 2025 y 2026, si bien el impacto sobre las series es limitado"
+      ],
+      "dwelling_split": "all housing, flats, single-family houses",
+      "geography": "autonomous community and Spain"
+    },
+    "foreign_buyers": {
+      "publisher": "Centro de Información Estadística del Notariado (Consejo General del Notariado)",
+      "title": "Anexo tablas: series estadísticas correspondientes al informe de extranjeros (hasta 2S25)",
+      "file_date": "2026-04-09",
+      "file_url": "https://www.notariado.org/liferay/c/document_library/get_file?uuid=125f548a-e4f2-498c-b9ea-3a736e10941a&groupId=2289837",
+      "index_url": "https://www.notariado.org/liferay/web/cien/sala-de-prensa/informes",
+      "period_label": "2025-H2",
+      "licence_note": "The workbooks are the public statistical annexes linked from the CIEN press room. Each housing sheet carries a source line naming the Centro de Información Estadística del Notariado and the Portal Estadístico del Notariado. They are not published under a Creative Commons licence. This file quotes the published aggregates and names the workbook, the period and the source line. It does not redistribute the workbook. The Portal Estadístico del Notariado is a different surface. Its terms prohibit commercial use and unauthorised reproduction, which is why municipal and postcode prices are not here.",
+      "source_line": null,
+      "period": "2025-H2",
+      "geography": "Spain, autonomous community, and nationality at national level"
+    }
+  },
+  "regions": [
+    {
+      "code": "AND",
+      "name": "Andalucía",
+      "ceuta_melilla_included": true,
+      "period": "2026-08",
+      "provisional": true,
+      "all": {
+        "transactions": 7226.987208,
+        "transactions_whole": false,
+        "transactions_nearest": 7227,
+        "transactions_yoy_pct": -8.1,
+        "eur_m2": 1816.52,
+        "eur_m2_yoy_pct": 10.5,
+        "surface_m2": 112.63,
+        "surface_yoy_pct": -2.3
+      },
+      "flat": {
+        "transactions": 4961.295977,
+        "transactions_whole": false,
+        "transactions_nearest": 4961,
+        "transactions_yoy_pct": -8.2,
+        "eur_m2": 2111.38,
+        "eur_m2_yoy_pct": 12.8,
+        "surface_m2": 92.87,
+        "surface_yoy_pct": -5.8
+      },
+      "house": {
+        "transactions": 2265.691231,
+        "transactions_whole": false,
+        "transactions_nearest": 2266,
+        "transactions_yoy_pct": -8,
+        "eur_m2": 1443.77,
+        "eur_m2_yoy_pct": 10.6,
+        "surface_m2": 157.06,
+        "surface_yoy_pct": 2.6
+      }
+    },
+    {
+      "code": "ARA",
+      "name": "Aragón",
+      "ceuta_melilla_included": false,
+      "period": "2026-08",
+      "provisional": true,
+      "all": {
+        "transactions": 948.769334,
+        "transactions_whole": false,
+        "transactions_nearest": 949,
+        "transactions_yoy_pct": -16,
+        "eur_m2": 1320.7,
+        "eur_m2_yoy_pct": 10.3,
+        "surface_m2": 116.54,
+        "surface_yoy_pct": -1.3
+      },
+      "flat": {
+        "transactions": 692.164039,
+        "transactions_whole": false,
+        "transactions_nearest": 692,
+        "transactions_yoy_pct": -18.2,
+        "eur_m2": 1773.17,
+        "eur_m2_yoy_pct": 15.2,
+        "surface_m2": 92.09,
+        "surface_yoy_pct": -5.2
+      },
+      "house": {
+        "transactions": 256.605295,
+        "transactions_whole": false,
+        "transactions_nearest": 257,
+        "transactions_yoy_pct": -9.6,
+        "eur_m2": 581.95,
+        "eur_m2_yoy_pct": -2.1,
+        "surface_m2": 199.97,
+        "surface_yoy_pct": 2
+      }
+    },
+    {
+      "code": "AST",
+      "name": "Asturias",
+      "ceuta_melilla_included": false,
+      "period": "2026-08",
+      "provisional": true,
+      "all": {
+        "transactions": 1026.404948,
+        "transactions_whole": false,
+        "transactions_nearest": 1026,
+        "transactions_yoy_pct": -11.2,
+        "eur_m2": 1542.79,
+        "eur_m2_yoy_pct": 23.6,
+        "surface_m2": 100.31,
+        "surface_yoy_pct": -9.8
+      },
+      "flat": {
+        "transactions": 818.582497,
+        "transactions_whole": false,
+        "transactions_nearest": 819,
+        "transactions_yoy_pct": -9.4,
+        "eur_m2": 1871.37,
+        "eur_m2_yoy_pct": 31,
+        "surface_m2": 84.41,
+        "surface_yoy_pct": -8.3
+      },
+      "house": {
+        "transactions": 207.822451,
+        "transactions_whole": false,
+        "transactions_nearest": 208,
+        "transactions_yoy_pct": -17.5,
+        "eur_m2": 851.36,
+        "eur_m2_yoy_pct": -4.1,
+        "surface_m2": 178.08,
+        "surface_yoy_pct": -6.2
+      }
+    },
+    {
+      "code": "IB",
+      "name": "Illes Balears",
+      "ceuta_melilla_included": false,
+      "period": "2026-08",
+      "provisional": true,
+      "all": {
+        "transactions": 695.564029,
+        "transactions_whole": false,
+        "transactions_nearest": 696,
+        "transactions_yoy_pct": -17.8,
+        "eur_m2": 3976.48,
+        "eur_m2_yoy_pct": -4.9,
+        "surface_m2": 116.89,
+        "surface_yoy_pct": -3.6
+      },
+      "flat": {
+        "transactions": 565.804404,
+        "transactions_whole": false,
+        "transactions_nearest": 566,
+        "transactions_yoy_pct": -16.2,
+        "eur_m2": 3942.61,
+        "eur_m2_yoy_pct": 3.7,
+        "surface_m2": 94.64,
+        "surface_yoy_pct": -2.4
+      },
+      "house": {
+        "transactions": 129.759625,
+        "transactions_whole": false,
+        "transactions_nearest": 130,
+        "transactions_yoy_pct": -24.1,
+        "eur_m2": 4044.02,
+        "eur_m2_yoy_pct": -17.8,
+        "surface_m2": 207.6,
+        "surface_yoy_pct": -3.1
+      }
+    },
+    {
+      "code": "IC",
+      "name": "Canarias",
+      "ceuta_melilla_included": false,
+      "period": "2026-08",
+      "provisional": true,
+      "all": {
+        "transactions": 1408.245023,
+        "transactions_whole": false,
+        "transactions_nearest": 1408,
+        "transactions_yoy_pct": -3.3,
+        "eur_m2": 2497.37,
+        "eur_m2_yoy_pct": 17.7,
+        "surface_m2": 94.26,
+        "surface_yoy_pct": -3.5
+      },
+      "flat": {
+        "transactions": 1073.921013,
+        "transactions_whole": false,
+        "transactions_nearest": 1074,
+        "transactions_yoy_pct": -1,
+        "eur_m2": 2759,
+        "eur_m2_yoy_pct": 20.2,
+        "surface_m2": 77.99,
+        "surface_yoy_pct": -4.2
+      },
+      "house": {
+        "transactions": 334.32401,
+        "transactions_whole": false,
+        "transactions_nearest": 334,
+        "transactions_yoy_pct": -10.1,
+        "eur_m2": 2033.73,
+        "eur_m2_yoy_pct": 10.9,
+        "surface_m2": 145.88,
+        "surface_yoy_pct": 0.2
+      }
+    },
+    {
+      "code": "CAN",
+      "name": "Cantabria",
+      "ceuta_melilla_included": false,
+      "period": "2026-08",
+      "provisional": true,
+      "all": {
+        "transactions": 642.036209,
+        "transactions_whole": false,
+        "transactions_nearest": 642,
+        "transactions_yoy_pct": 0.8,
+        "eur_m2": 2129.2,
+        "eur_m2_yoy_pct": 23.6,
+        "surface_m2": 108.8,
+        "surface_yoy_pct": 3.5
+      },
+      "flat": {
+        "transactions": 410.706832,
+        "transactions_whole": false,
+        "transactions_nearest": 411,
+        "transactions_yoy_pct": -16.2,
+        "eur_m2": 2559.32,
+        "eur_m2_yoy_pct": 32.6,
+        "surface_m2": 84,
+        "surface_yoy_pct": -5.9
+      },
+      "house": {
+        "transactions": 231.329376,
+        "transactions_whole": false,
+        "transactions_nearest": 231,
+        "transactions_yoy_pct": 57.4,
+        "eur_m2": 1513.06,
+        "eur_m2_yoy_pct": 12.3,
+        "surface_m2": 204.94,
+        "surface_yoy_pct": 30.3
+      }
+    },
+    {
+      "code": "CyL",
+      "name": "Castilla y León",
+      "ceuta_melilla_included": false,
+      "period": "2026-08",
+      "provisional": true,
+      "all": {
+        "transactions": 2521.162662,
+        "transactions_whole": false,
+        "transactions_nearest": 2521,
+        "transactions_yoy_pct": -9.3,
+        "eur_m2": 1093.43,
+        "eur_m2_yoy_pct": 17.5,
+        "surface_m2": 124.55,
+        "surface_yoy_pct": -2.6
+      },
+      "flat": {
+        "transactions": 1507.232036,
+        "transactions_whole": false,
+        "transactions_nearest": 1507,
+        "transactions_yoy_pct": -18.2,
+        "eur_m2": 1503.2,
+        "eur_m2_yoy_pct": 26.2,
+        "surface_m2": 88.77,
+        "surface_yoy_pct": -12.5
+      },
+      "house": {
+        "transactions": 1013.930626,
+        "transactions_whole": false,
+        "transactions_nearest": 1014,
+        "transactions_yoy_pct": 8.3,
+        "eur_m2": 718.78,
+        "eur_m2_yoy_pct": 17.9,
+        "surface_m2": 189.76,
+        "surface_yoy_pct": 2.1
+      }
+    },
+    {
+      "code": "CLM",
+      "name": "Castilla-La Mancha",
+      "ceuta_melilla_included": false,
+      "period": "2026-08",
+      "provisional": true,
+      "all": {
+        "transactions": 1916.96129,
+        "transactions_whole": false,
+        "transactions_nearest": 1917,
+        "transactions_yoy_pct": -12.6,
+        "eur_m2": 871.43,
+        "eur_m2_yoy_pct": 12.2,
+        "surface_m2": 135.49,
+        "surface_yoy_pct": -3.5
+      },
+      "flat": {
+        "transactions": 944.048247,
+        "transactions_whole": false,
+        "transactions_nearest": 944,
+        "transactions_yoy_pct": -23.6,
+        "eur_m2": 1156.18,
+        "eur_m2_yoy_pct": 27.7,
+        "surface_m2": 100.7,
+        "surface_yoy_pct": -11.5
+      },
+      "house": {
+        "transactions": 972.913043,
+        "transactions_whole": false,
+        "transactions_nearest": 973,
+        "transactions_yoy_pct": 1.6,
+        "eur_m2": 707.17,
+        "eur_m2_yoy_pct": 5.8,
+        "surface_m2": 172.77,
+        "surface_yoy_pct": -2.5
+      }
+    },
+    {
+      "code": "CAT",
+      "name": "Cataluña",
+      "ceuta_melilla_included": false,
+      "period": "2026-08",
+      "provisional": true,
+      "all": {
+        "transactions": 5039.046105,
+        "transactions_whole": false,
+        "transactions_nearest": 5039,
+        "transactions_yoy_pct": -6.2,
+        "eur_m2": 2403.51,
+        "eur_m2_yoy_pct": 10,
+        "surface_m2": 103.76,
+        "surface_yoy_pct": -1.1
+      },
+      "flat": {
+        "transactions": 3922.444555,
+        "transactions_whole": false,
+        "transactions_nearest": 3922,
+        "transactions_yoy_pct": -5.1,
+        "eur_m2": 2783.5,
+        "eur_m2_yoy_pct": 11.7,
+        "surface_m2": 81.46,
+        "surface_yoy_pct": -5.3
+      },
+      "house": {
+        "transactions": 1116.60155,
+        "transactions_whole": false,
+        "transactions_nearest": 1117,
+        "transactions_yoy_pct": -9.8,
+        "eur_m2": 1807.14,
+        "eur_m2_yoy_pct": 8.9,
+        "surface_m2": 181.84,
+        "surface_yoy_pct": 7.7
+      }
+    },
+    {
+      "code": "CV",
+      "name": "Comunitat Valenciana",
+      "ceuta_melilla_included": false,
+      "period": "2026-08",
+      "provisional": true,
+      "all": {
+        "transactions": 4997.032348,
+        "transactions_whole": false,
+        "transactions_nearest": 4997,
+        "transactions_yoy_pct": -14,
+        "eur_m2": 1957.94,
+        "eur_m2_yoy_pct": 18.2,
+        "surface_m2": 103.96,
+        "surface_yoy_pct": -2.4
+      },
+      "flat": {
+        "transactions": 3702.600809,
+        "transactions_whole": false,
+        "transactions_nearest": 3703,
+        "transactions_yoy_pct": -13.2,
+        "eur_m2": 2133.57,
+        "eur_m2_yoy_pct": 23.8,
+        "surface_m2": 87.96,
+        "surface_yoy_pct": -4.7
+      },
+      "house": {
+        "transactions": 1294.431539,
+        "transactions_whole": false,
+        "transactions_nearest": 1294,
+        "transactions_yoy_pct": -16.2,
+        "eur_m2": 1670.18,
+        "eur_m2_yoy_pct": 8.3,
+        "surface_m2": 150.2,
+        "surface_yoy_pct": 2.9
+      }
+    },
+    {
+      "code": "EXT",
+      "name": "Extremadura",
+      "ceuta_melilla_included": false,
+      "period": "2026-08",
+      "provisional": true,
+      "all": {
+        "transactions": 924.771108,
+        "transactions_whole": false,
+        "transactions_nearest": 925,
+        "transactions_yoy_pct": -4.3,
+        "eur_m2": 686.16,
+        "eur_m2_yoy_pct": 0.7,
+        "surface_m2": 133.65,
+        "surface_yoy_pct": -3
+      },
+      "flat": {
+        "transactions": 470.383497,
+        "transactions_whole": false,
+        "transactions_nearest": 470,
+        "transactions_yoy_pct": -23.8,
+        "eur_m2": 976.67,
+        "eur_m2_yoy_pct": 12,
+        "surface_m2": 100.93,
+        "surface_yoy_pct": -14.2
+      },
+      "house": {
+        "transactions": 454.387611,
+        "transactions_whole": false,
+        "transactions_nearest": 454,
+        "transactions_yoy_pct": 30.2,
+        "eur_m2": 510.3,
+        "eur_m2_yoy_pct": 15.5,
+        "surface_m2": 171.28,
+        "surface_yoy_pct": -3.8
+      }
+    },
+    {
+      "code": "GAL",
+      "name": "Galicia",
+      "ceuta_melilla_included": false,
+      "period": "2026-08",
+      "provisional": true,
+      "all": {
+        "transactions": 1816.843858,
+        "transactions_whole": false,
+        "transactions_nearest": 1817,
+        "transactions_yoy_pct": -7.3,
+        "eur_m2": 1279.7,
+        "eur_m2_yoy_pct": 9.7,
+        "surface_m2": 125.11,
+        "surface_yoy_pct": -0.1
+      },
+      "flat": {
+        "transactions": 1239.041022,
+        "transactions_whole": false,
+        "transactions_nearest": 1239,
+        "transactions_yoy_pct": -5.8,
+        "eur_m2": 1757.86,
+        "eur_m2_yoy_pct": 18.7,
+        "surface_m2": 92.32,
+        "surface_yoy_pct": -1.4
+      },
+      "house": {
+        "transactions": 577.802836,
+        "transactions_whole": false,
+        "transactions_nearest": 578,
+        "transactions_yoy_pct": -10.1,
+        "eur_m2": 752.33,
+        "eur_m2_yoy_pct": -8.6,
+        "surface_m2": 204.73,
+        "surface_yoy_pct": 2.3
+      }
+    },
+    {
+      "code": "MAD",
+      "name": "Madrid",
+      "ceuta_melilla_included": false,
+      "period": "2026-08",
+      "provisional": true,
+      "all": {
+        "transactions": 2701.877678,
+        "transactions_whole": false,
+        "transactions_nearest": 2702,
+        "transactions_yoy_pct": -11,
+        "eur_m2": 3617.61,
+        "eur_m2_yoy_pct": 17.2,
+        "surface_m2": 101.51,
+        "surface_yoy_pct": -6.4
+      },
+      "flat": {
+        "transactions": 2319.044096,
+        "transactions_whole": false,
+        "transactions_nearest": 2319,
+        "transactions_yoy_pct": -11.1,
+        "eur_m2": 3989.65,
+        "eur_m2_yoy_pct": 17.4,
+        "surface_m2": 83.2,
+        "surface_yoy_pct": -8.4
+      },
+      "house": {
+        "transactions": 382.833583,
+        "transactions_whole": false,
+        "transactions_nearest": 383,
+        "transactions_yoy_pct": -10.1,
+        "eur_m2": 2757.23,
+        "eur_m2_yoy_pct": 19.9,
+        "surface_m2": 211.01,
+        "surface_yoy_pct": -1.3
+      }
+    },
+    {
+      "code": "MUR",
+      "name": "Murcia",
+      "ceuta_melilla_included": false,
+      "period": "2026-08",
+      "provisional": true,
+      "all": {
+        "transactions": 1213.257958,
+        "transactions_whole": false,
+        "transactions_nearest": 1213,
+        "transactions_yoy_pct": -11.4,
+        "eur_m2": 1463.71,
+        "eur_m2_yoy_pct": 20.6,
+        "surface_m2": 105.27,
+        "surface_yoy_pct": -7.7
+      },
+      "flat": {
+        "transactions": 800.979587,
+        "transactions_whole": false,
+        "transactions_nearest": 801,
+        "transactions_yoy_pct": -4.6,
+        "eur_m2": 1593.45,
+        "eur_m2_yoy_pct": 24.4,
+        "surface_m2": 91.31,
+        "surface_yoy_pct": -5
+      },
+      "house": {
+        "transactions": 412.278371,
+        "transactions_whole": false,
+        "transactions_nearest": 412,
+        "transactions_yoy_pct": -22.2,
+        "eur_m2": 1291.62,
+        "eur_m2_yoy_pct": 13,
+        "surface_m2": 132.91,
+        "surface_yoy_pct": -6.1
+      }
+    },
+    {
+      "code": "NAV",
+      "name": "Navarra",
+      "ceuta_melilla_included": false,
+      "period": "2026-08",
+      "provisional": true,
+      "all": {
+        "transactions": 414.973089,
+        "transactions_whole": false,
+        "transactions_nearest": 415,
+        "transactions_yoy_pct": -18.8,
+        "eur_m2": 1798.1,
+        "eur_m2_yoy_pct": -7,
+        "surface_m2": 111.82,
+        "surface_yoy_pct": 4.5
+      },
+      "flat": {
+        "transactions": 294.883342,
+        "transactions_whole": false,
+        "transactions_nearest": 295,
+        "transactions_yoy_pct": -26.3,
+        "eur_m2": 2339.73,
+        "eur_m2_yoy_pct": -2.8,
+        "surface_m2": 88.94,
+        "surface_yoy_pct": 3.3
+      },
+      "house": {
+        "transactions": 120.089748,
+        "transactions_whole": false,
+        "transactions_nearest": 120,
+        "transactions_yoy_pct": 8.2,
+        "eur_m2": 1265.62,
+        "eur_m2_yoy_pct": 8.7,
+        "surface_m2": 158.31,
+        "surface_yoy_pct": -11.4
+      }
+    },
+    {
+      "code": "PV",
+      "name": "País Vasco",
+      "ceuta_melilla_included": false,
+      "period": "2026-08",
+      "provisional": true,
+      "all": {
+        "transactions": 812.827617,
+        "transactions_whole": false,
+        "transactions_nearest": 813,
+        "transactions_yoy_pct": -13.6,
+        "eur_m2": 3347.15,
+        "eur_m2_yoy_pct": 10.7,
+        "surface_m2": 88.97,
+        "surface_yoy_pct": -8
+      },
+      "flat": {
+        "transactions": 750.257488,
+        "transactions_whole": false,
+        "transactions_nearest": 750,
+        "transactions_yoy_pct": -12.6,
+        "eur_m2": 3668.17,
+        "eur_m2_yoy_pct": 7.5,
+        "surface_m2": 81.57,
+        "surface_yoy_pct": -1.1
+      },
+      "house": {
+        "transactions": 62.570129,
+        "transactions_whole": false,
+        "transactions_nearest": 63,
+        "transactions_yoy_pct": -24.6,
+        "eur_m2": 1723.21,
+        "eur_m2_yoy_pct": -2.7,
+        "surface_m2": 176.59,
+        "surface_yoy_pct": -25.4
+      }
+    },
+    {
+      "code": "LR",
+      "name": "La Rioja",
+      "ceuta_melilla_included": false,
+      "period": "2026-08",
+      "provisional": true,
+      "all": {
+        "transactions": 291.75095,
+        "transactions_whole": false,
+        "transactions_nearest": 292,
+        "transactions_yoy_pct": -10.8,
+        "eur_m2": 1159.41,
+        "eur_m2_yoy_pct": 11.9,
+        "surface_m2": 121.43,
+        "surface_yoy_pct": -6
+      },
+      "flat": {
+        "transactions": 228.958006,
+        "transactions_whole": false,
+        "transactions_nearest": 229,
+        "transactions_yoy_pct": -15.5,
+        "eur_m2": 1540.17,
+        "eur_m2_yoy_pct": 15.1,
+        "surface_m2": 92.57,
+        "surface_yoy_pct": -11.2
+      },
+      "house": {
+        "transactions": 62.792944,
+        "transactions_whole": false,
+        "transactions_nearest": 63,
+        "transactions_yoy_pct": 12.1,
+        "eur_m2": 532.05,
+        "eur_m2_yoy_pct": 15,
+        "surface_m2": 240.25,
+        "surface_yoy_pct": -12.8
+      }
+    },
+    {
+      "code": "TOTAL",
+      "name": "Spain",
+      "ceuta_melilla_included": false,
+      "period": "2026-08",
+      "provisional": true,
+      "all": {
+        "transactions": 34598.511416,
+        "transactions_whole": false,
+        "transactions_nearest": 34599,
+        "transactions_yoy_pct": -9.8,
+        "eur_m2": 1958.86,
+        "eur_m2_yoy_pct": 12.8,
+        "surface_m2": 110.06,
+        "surface_yoy_pct": -3.3
+      },
+      "flat": {
+        "transactions": 24702.347448,
+        "transactions_whole": false,
+        "transactions_nearest": 24702,
+        "transactions_yoy_pct": -11.1,
+        "eur_m2": 2361.04,
+        "eur_m2_yoy_pct": 17.6,
+        "surface_m2": 87.93,
+        "surface_yoy_pct": -6.6
+      },
+      "house": {
+        "transactions": 9896.163968,
+        "transactions_whole": false,
+        "transactions_nearest": 9896,
+        "transactions_yoy_pct": -6.3,
+        "eur_m2": 1407.76,
+        "eur_m2_yoy_pct": 6.5,
+        "surface_m2": 169.87,
+        "surface_yoy_pct": 1.1
+      }
+    }
+  ],
+  "annual": {
+    "year": 2025,
+    "definition": "Annual €/m² is the workbook's annual cell for the last complete calendar year. It was checked against the simple average of that year's twelve monthly €/m² cells and matched within two cents. It is not an average computed for publication. The cell is the published figure.",
+    "regions": [
+      {
+        "code": "AND",
+        "name": "Andalucía",
+        "all": {
+          "year": 2025,
+          "eur_m2": 1687.8,
+          "eur_m2_yoy_pct": 4.5,
+          "transactions": 150555,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "flat": {
+          "year": 2025,
+          "eur_m2": 1905.61,
+          "eur_m2_yoy_pct": 8.6,
+          "transactions": 106731,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "house": {
+          "year": 2025,
+          "eur_m2": 1367.02,
+          "eur_m2_yoy_pct": -1.8,
+          "transactions": 43824,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        }
+      },
+      {
+        "code": "ARA",
+        "name": "Aragón",
+        "all": {
+          "year": 2025,
+          "eur_m2": 1264.78,
+          "eur_m2_yoy_pct": 7.7,
+          "transactions": 20524,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "flat": {
+          "year": 2025,
+          "eur_m2": 1559.43,
+          "eur_m2_yoy_pct": 10.5,
+          "transactions": 16039,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "house": {
+          "year": 2025,
+          "eur_m2": 652.72,
+          "eur_m2_yoy_pct": 7.5,
+          "transactions": 4485,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        }
+      },
+      {
+        "code": "AST",
+        "name": "Asturias",
+        "all": {
+          "year": 2025,
+          "eur_m2": 1315.62,
+          "eur_m2_yoy_pct": 8.8,
+          "transactions": 17790,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "flat": {
+          "year": 2025,
+          "eur_m2": 1462.08,
+          "eur_m2_yoy_pct": 11.1,
+          "transactions": 14359,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "house": {
+          "year": 2025,
+          "eur_m2": 964.42,
+          "eur_m2_yoy_pct": 3.1,
+          "transactions": 3431,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        }
+      },
+      {
+        "code": "IB",
+        "name": "Illes Balears",
+        "all": {
+          "year": 2025,
+          "eur_m2": 4082.96,
+          "eur_m2_yoy_pct": 9.3,
+          "transactions": 15570,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "flat": {
+          "year": 2025,
+          "eur_m2": 3849.5,
+          "eur_m2_yoy_pct": 11.4,
+          "transactions": 12484,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "house": {
+          "year": 2025,
+          "eur_m2": 4529.24,
+          "eur_m2_yoy_pct": 5.1,
+          "transactions": 3086,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        }
+      },
+      {
+        "code": "IC",
+        "name": "Canarias",
+        "all": {
+          "year": 2025,
+          "eur_m2": 2179.11,
+          "eur_m2_yoy_pct": 11.4,
+          "transactions": 26460,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "flat": {
+          "year": 2025,
+          "eur_m2": 2327.65,
+          "eur_m2_yoy_pct": 14.4,
+          "transactions": 20356,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "house": {
+          "year": 2025,
+          "eur_m2": 1936.69,
+          "eur_m2_yoy_pct": 6.6,
+          "transactions": 6104,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        }
+      },
+      {
+        "code": "CAN",
+        "name": "Cantabria",
+        "all": {
+          "year": 2025,
+          "eur_m2": 1738.51,
+          "eur_m2_yoy_pct": 14.4,
+          "transactions": 10234,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "flat": {
+          "year": 2025,
+          "eur_m2": 2093.84,
+          "eur_m2_yoy_pct": 21,
+          "transactions": 7797,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "house": {
+          "year": 2025,
+          "eur_m2": 1234.45,
+          "eur_m2_yoy_pct": 5,
+          "transactions": 2437,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        }
+      },
+      {
+        "code": "CyL",
+        "name": "Castilla y León",
+        "all": {
+          "year": 2025,
+          "eur_m2": 976.91,
+          "eur_m2_yoy_pct": 6.5,
+          "transactions": 41597,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "flat": {
+          "year": 2025,
+          "eur_m2": 1211.7,
+          "eur_m2_yoy_pct": 7.8,
+          "transactions": 28739,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "house": {
+          "year": 2025,
+          "eur_m2": 661.18,
+          "eur_m2_yoy_pct": 8.3,
+          "transactions": 12858,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        }
+      },
+      {
+        "code": "CLM",
+        "name": "Castilla-La Mancha",
+        "all": {
+          "year": 2025,
+          "eur_m2": 799.52,
+          "eur_m2_yoy_pct": 9,
+          "transactions": 38102,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "flat": {
+          "year": 2025,
+          "eur_m2": 953.81,
+          "eur_m2_yoy_pct": 11.7,
+          "transactions": 22161,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "house": {
+          "year": 2025,
+          "eur_m2": 662.14,
+          "eur_m2_yoy_pct": 7.8,
+          "transactions": 15941,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        }
+      },
+      {
+        "code": "CAT",
+        "name": "Cataluña",
+        "all": {
+          "year": 2025,
+          "eur_m2": 2328.15,
+          "eur_m2_yoy_pct": 9,
+          "transactions": 117351,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "flat": {
+          "year": 2025,
+          "eur_m2": 2623.02,
+          "eur_m2_yoy_pct": 10,
+          "transactions": 94072,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "house": {
+          "year": 2025,
+          "eur_m2": 1778.13,
+          "eur_m2_yoy_pct": 8.1,
+          "transactions": 23279,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        }
+      },
+      {
+        "code": "CV",
+        "name": "Comunitat Valenciana",
+        "all": {
+          "year": 2025,
+          "eur_m2": 1619.71,
+          "eur_m2_yoy_pct": 9.5,
+          "transactions": 115873,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "flat": {
+          "year": 2025,
+          "eur_m2": 1680.93,
+          "eur_m2_yoy_pct": 11.4,
+          "transactions": 86193,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "house": {
+          "year": 2025,
+          "eur_m2": 1510.69,
+          "eur_m2_yoy_pct": 6.2,
+          "transactions": 29680,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        }
+      },
+      {
+        "code": "EXT",
+        "name": "Extremadura",
+        "all": {
+          "year": 2025,
+          "eur_m2": 695.84,
+          "eur_m2_yoy_pct": 9.2,
+          "transactions": 14923,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "flat": {
+          "year": 2025,
+          "eur_m2": 867.39,
+          "eur_m2_yoy_pct": 11.3,
+          "transactions": 9529,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "house": {
+          "year": 2025,
+          "eur_m2": 490.58,
+          "eur_m2_yoy_pct": 10.1,
+          "transactions": 5394,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        }
+      },
+      {
+        "code": "GAL",
+        "name": "Galicia",
+        "all": {
+          "year": 2025,
+          "eur_m2": 1199.63,
+          "eur_m2_yoy_pct": 4.7,
+          "transactions": 30668,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "flat": {
+          "year": 2025,
+          "eur_m2": 1546.81,
+          "eur_m2_yoy_pct": 8.1,
+          "transactions": 21662,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "house": {
+          "year": 2025,
+          "eur_m2": 788.98,
+          "eur_m2_yoy_pct": 3.5,
+          "transactions": 9006,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        }
+      },
+      {
+        "code": "MAD",
+        "name": "Madrid",
+        "all": {
+          "year": 2025,
+          "eur_m2": 3472.35,
+          "eur_m2_yoy_pct": 13.4,
+          "transactions": 84382,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "flat": {
+          "year": 2025,
+          "eur_m2": 3792.63,
+          "eur_m2_yoy_pct": 14.5,
+          "transactions": 74071,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "house": {
+          "year": 2025,
+          "eur_m2": 2540.03,
+          "eur_m2_yoy_pct": 11.8,
+          "transactions": 10311,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        }
+      },
+      {
+        "code": "MUR",
+        "name": "Murcia",
+        "all": {
+          "year": 2025,
+          "eur_m2": 1206.29,
+          "eur_m2_yoy_pct": 13.9,
+          "transactions": 28945,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "flat": {
+          "year": 2025,
+          "eur_m2": 1266.31,
+          "eur_m2_yoy_pct": 16.5,
+          "transactions": 18300,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "house": {
+          "year": 2025,
+          "eur_m2": 1135.27,
+          "eur_m2_yoy_pct": 10.9,
+          "transactions": 10645,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        }
+      },
+      {
+        "code": "NAV",
+        "name": "Navarra",
+        "all": {
+          "year": 2025,
+          "eur_m2": 1743.73,
+          "eur_m2_yoy_pct": 7.5,
+          "transactions": 8119,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "flat": {
+          "year": 2025,
+          "eur_m2": 2221.41,
+          "eur_m2_yoy_pct": 6.7,
+          "transactions": 6278,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "house": {
+          "year": 2025,
+          "eur_m2": 981.89,
+          "eur_m2_yoy_pct": 16.8,
+          "transactions": 1841,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        }
+      },
+      {
+        "code": "PV",
+        "name": "País Vasco",
+        "all": {
+          "year": 2025,
+          "eur_m2": 2999.48,
+          "eur_m2_yoy_pct": 8.2,
+          "transactions": 29098,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "flat": {
+          "year": 2025,
+          "eur_m2": 3170.77,
+          "eur_m2_yoy_pct": 9.8,
+          "transactions": 27137,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "house": {
+          "year": 2025,
+          "eur_m2": 2061,
+          "eur_m2_yoy_pct": -0.1,
+          "transactions": 1961,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        }
+      },
+      {
+        "code": "LR",
+        "name": "La Rioja",
+        "all": {
+          "year": 2025,
+          "eur_m2": 1108.47,
+          "eur_m2_yoy_pct": 4.5,
+          "transactions": 5778,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "flat": {
+          "year": 2025,
+          "eur_m2": 1262.35,
+          "eur_m2_yoy_pct": 8.5,
+          "transactions": 4827,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "house": {
+          "year": 2025,
+          "eur_m2": 682.41,
+          "eur_m2_yoy_pct": -2.9,
+          "transactions": 951,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        }
+      },
+      {
+        "code": "TOTAL",
+        "name": "Spain",
+        "all": {
+          "year": 2025,
+          "eur_m2": 1906.8,
+          "eur_m2_yoy_pct": 7.6,
+          "transactions": 755969,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "flat": {
+          "year": 2025,
+          "eur_m2": 2190.75,
+          "eur_m2_yoy_pct": 10.3,
+          "transactions": 570735,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        },
+        "house": {
+          "year": 2025,
+          "eur_m2": 1425.74,
+          "eur_m2_yoy_pct": 3.7,
+          "transactions": 185234,
+          "transactions_basis": "sum_of_months",
+          "transactions_note": "The annual cell matches the sum of the twelve monthly transaction cells within one transaction. It is that cell, rounded to a whole number."
+        }
+      }
+    ]
+  },
+  "foreign": {
+    "period": "2025-H2",
+    "buyers": [
+      {
+        "key": "foreign",
+        "name": "Foreign buyers",
+        "transactions": 66629,
+        "peso_pct": 18.4,
+        "peso_basis": "of_all_sales",
+        "transactions_yoy_pct": -4.4,
+        "eur_m2": 2479,
+        "eur_m2_yoy_pct": 5
+      },
+      {
+        "key": "foreign_non_resident",
+        "name": "Foreign buyers, non-resident",
+        "transactions": 24793,
+        "peso_pct": 37.2,
+        "peso_basis": "of_foreign_buyers",
+        "transactions_yoy_pct": -15.1,
+        "eur_m2": 3242,
+        "eur_m2_yoy_pct": 5.8
+      },
+      {
+        "key": "foreign_resident",
+        "name": "Foreign buyers, resident",
+        "transactions": 41836,
+        "peso_pct": 62.8,
+        "peso_basis": "of_foreign_buyers",
+        "transactions_yoy_pct": 3.3,
+        "eur_m2": 1963,
+        "eur_m2_yoy_pct": 9.4
+      },
+      {
+        "key": "national",
+        "name": "Spanish buyers",
+        "transactions": 295546,
+        "peso_pct": 81.6,
+        "peso_basis": "of_all_sales",
+        "transactions_yoy_pct": 2.5,
+        "eur_m2": 1839,
+        "eur_m2_yoy_pct": 7.4
+      },
+      {
+        "key": "national_non_resident",
+        "name": "Spanish buyers, non-resident",
+        "transactions": 1841,
+        "peso_pct": 0.6,
+        "peso_basis": "of_spanish_buyers",
+        "transactions_yoy_pct": -2.1,
+        "eur_m2": 2769,
+        "eur_m2_yoy_pct": 3.8
+      },
+      {
+        "key": "national_resident",
+        "name": "Spanish buyers, resident",
+        "transactions": 293705,
+        "peso_pct": 99.4,
+        "peso_basis": "of_spanish_buyers",
+        "transactions_yoy_pct": 2.5,
+        "eur_m2": 1832,
+        "eur_m2_yoy_pct": 7.4
+      },
+      {
+        "key": "total",
+        "name": "Total",
+        "transactions": 362175,
+        "peso_pct": null,
+        "peso_basis": null,
+        "transactions_yoy_pct": 1.1,
+        "eur_m2": 1964,
+        "eur_m2_yoy_pct": 6.3
+      }
+    ],
+    "communities": [
+      {
+        "code": "AND",
+        "name": "Andalucía",
+        "transactions": 12427,
+        "transactions_yoy_pct": -3.9,
+        "eur_m2": 2708.12,
+        "eur_m2_yoy_pct": 4.4
+      },
+      {
+        "code": "ARA",
+        "name": "Aragón",
+        "transactions": 1262,
+        "transactions_yoy_pct": 11,
+        "eur_m2": 967.51,
+        "eur_m2_yoy_pct": 9.2
+      },
+      {
+        "code": "AST",
+        "name": "Asturias",
+        "transactions": 974,
+        "transactions_yoy_pct": 7.3,
+        "eur_m2": 1269.02,
+        "eur_m2_yoy_pct": 10.5
+      },
+      {
+        "code": "IB",
+        "name": "Islas Baleares",
+        "transactions": 2776,
+        "transactions_yoy_pct": -10.2,
+        "eur_m2": 5201.08,
+        "eur_m2_yoy_pct": 7
+      },
+      {
+        "code": "IC",
+        "name": "Islas Canarias",
+        "transactions": 3667,
+        "transactions_yoy_pct": -10.8,
+        "eur_m2": 2801.16,
+        "eur_m2_yoy_pct": 9
+      },
+      {
+        "code": "CAN",
+        "name": "Cantabria",
+        "transactions": 328,
+        "transactions_yoy_pct": -4.4,
+        "eur_m2": 1745.31,
+        "eur_m2_yoy_pct": 17.2
+      },
+      {
+        "code": "CyL",
+        "name": "Castilla y León",
+        "transactions": 1654,
+        "transactions_yoy_pct": 10.4,
+        "eur_m2": 826.38,
+        "eur_m2_yoy_pct": 1.8
+      },
+      {
+        "code": "CLM",
+        "name": "Castilla-La Mancha",
+        "transactions": 2394,
+        "transactions_yoy_pct": 21.5,
+        "eur_m2": 805.3,
+        "eur_m2_yoy_pct": 7
+      },
+      {
+        "code": "CAT",
+        "name": "Cataluña",
+        "transactions": 11155,
+        "transactions_yoy_pct": 0.7,
+        "eur_m2": 2726.84,
+        "eur_m2_yoy_pct": 5
+      },
+      {
+        "code": "CV",
+        "name": "Comunidad Valenciana",
+        "transactions": 18722,
+        "transactions_yoy_pct": -7.3,
+        "eur_m2": 2044.36,
+        "eur_m2_yoy_pct": 9.1
+      },
+      {
+        "code": "EXT",
+        "name": "Extremadura",
+        "transactions": 354,
+        "transactions_yoy_pct": 13.8,
+        "eur_m2": 688.43,
+        "eur_m2_yoy_pct": 10.3
+      },
+      {
+        "code": "GAL",
+        "name": "Galicia",
+        "transactions": 1109,
+        "transactions_yoy_pct": 6.6,
+        "eur_m2": 1005.59,
+        "eur_m2_yoy_pct": -4.9
+      },
+      {
+        "code": "MAD",
+        "name": "Comunidad de Madrid",
+        "transactions": 4378,
+        "transactions_yoy_pct": -20.3,
+        "eur_m2": 3862.41,
+        "eur_m2_yoy_pct": 11.6
+      },
+      {
+        "code": "MUR",
+        "name": "Región de Murcia",
+        "transactions": 3703,
+        "transactions_yoy_pct": -5.4,
+        "eur_m2": 1545.63,
+        "eur_m2_yoy_pct": 14.1
+      },
+      {
+        "code": "NAV",
+        "name": "Navarra",
+        "transactions": 407,
+        "transactions_yoy_pct": -4.7,
+        "eur_m2": 1357.25,
+        "eur_m2_yoy_pct": 12.6
+      },
+      {
+        "code": "PV",
+        "name": "País Vasco",
+        "transactions": 900,
+        "transactions_yoy_pct": 9.9,
+        "eur_m2": 2869.07,
+        "eur_m2_yoy_pct": 8.1
+      },
+      {
+        "code": "LR",
+        "name": "La Rioja",
+        "transactions": 375,
+        "transactions_yoy_pct": 0.5,
+        "eur_m2": 946.02,
+        "eur_m2_yoy_pct": 13.4
+      },
+      {
+        "code": "TOTAL",
+        "name": "Spain",
+        "transactions": 66629,
+        "transactions_yoy_pct": -4.4,
+        "eur_m2": 2478.83,
+        "eur_m2_yoy_pct": 5
+      }
+    ],
+    "nationalities": [
+      {
+        "name": "Alemania",
+        "transactions": 4351,
+        "nationality_share_pct": 6.5,
+        "transactions_yoy_pct": -6.4,
+        "eur_m2": 3558.77,
+        "eur_m2_yoy_pct": 10.4
+      },
+      {
+        "name": "Argentina",
+        "transactions": 926,
+        "nationality_share_pct": 1.4,
+        "transactions_yoy_pct": -4.8,
+        "eur_m2": 2156.12,
+        "eur_m2_yoy_pct": 10
+      },
+      {
+        "name": "Bélgica",
+        "transactions": 2609,
+        "nationality_share_pct": 3.9,
+        "transactions_yoy_pct": -17.5,
+        "eur_m2": 2736.89,
+        "eur_m2_yoy_pct": 8.3
+      },
+      {
+        "name": "Bulgaria",
+        "transactions": 803,
+        "nationality_share_pct": 1.2,
+        "transactions_yoy_pct": -4.6,
+        "eur_m2": 1617.94,
+        "eur_m2_yoy_pct": 23
+      },
+      {
+        "name": "China",
+        "transactions": 2110,
+        "nationality_share_pct": 3.2,
+        "transactions_yoy_pct": -22.9,
+        "eur_m2": 2150.73,
+        "eur_m2_yoy_pct": -0.4
+      },
+      {
+        "name": "Colombia",
+        "transactions": 1270,
+        "nationality_share_pct": 1.9,
+        "transactions_yoy_pct": 10.4,
+        "eur_m2": 1506.96,
+        "eur_m2_yoy_pct": -6.3
+      },
+      {
+        "name": "Ecuador",
+        "transactions": 558,
+        "nationality_share_pct": 0.8,
+        "transactions_yoy_pct": -5.1,
+        "eur_m2": 1410.09,
+        "eur_m2_yoy_pct": 11.5
+      },
+      {
+        "name": "EE.UU.",
+        "transactions": 1314,
+        "nationality_share_pct": 2,
+        "transactions_yoy_pct": -8.2,
+        "eur_m2": 3500.9,
+        "eur_m2_yoy_pct": 3.3
+      },
+      {
+        "name": "Francia",
+        "transactions": 3639,
+        "nationality_share_pct": 5.5,
+        "transactions_yoy_pct": -6.9,
+        "eur_m2": 2672.97,
+        "eur_m2_yoy_pct": 9.3
+      },
+      {
+        "name": "Irlanda",
+        "transactions": 1086,
+        "nationality_share_pct": 1.6,
+        "transactions_yoy_pct": -3.1,
+        "eur_m2": 2804.83,
+        "eur_m2_yoy_pct": 18.6
+      },
+      {
+        "name": "Italia",
+        "transactions": 4397,
+        "nationality_share_pct": 6.6,
+        "transactions_yoy_pct": 8.1,
+        "eur_m2": 2720,
+        "eur_m2_yoy_pct": 13.6
+      },
+      {
+        "name": "Marruecos",
+        "transactions": 5154,
+        "nationality_share_pct": 7.7,
+        "transactions_yoy_pct": 1.9,
+        "eur_m2": 767.69,
+        "eur_m2_yoy_pct": 1.9
+      },
+      {
+        "name": "Noruega",
+        "transactions": 499,
+        "nationality_share_pct": 0.7,
+        "transactions_yoy_pct": -19.3,
+        "eur_m2": 3085.35,
+        "eur_m2_yoy_pct": 10.2
+      },
+      {
+        "name": "Países Bajos",
+        "transactions": 4153,
+        "nationality_share_pct": 6.2,
+        "transactions_yoy_pct": 5.6,
+        "eur_m2": 2595.6,
+        "eur_m2_yoy_pct": -0.4
+      },
+      {
+        "name": "Polonia",
+        "transactions": 2639,
+        "nationality_share_pct": 4,
+        "transactions_yoy_pct": -7.1,
+        "eur_m2": 3052.92,
+        "eur_m2_yoy_pct": 10.7
+      },
+      {
+        "name": "Portugal",
+        "transactions": 1158,
+        "nationality_share_pct": 1.7,
+        "transactions_yoy_pct": 15.9,
+        "eur_m2": 2095.66,
+        "eur_m2_yoy_pct": 2.2
+      },
+      {
+        "name": "Reino Unido",
+        "transactions": 5178,
+        "nationality_share_pct": 7.8,
+        "transactions_yoy_pct": -14.4,
+        "eur_m2": 2626.75,
+        "eur_m2_yoy_pct": 8.7
+      },
+      {
+        "name": "Rumanía",
+        "transactions": 4339,
+        "nationality_share_pct": 6.5,
+        "transactions_yoy_pct": 1.6,
+        "eur_m2": 1350.5,
+        "eur_m2_yoy_pct": 12.1
+      },
+      {
+        "name": "Rusia",
+        "transactions": 1043,
+        "nationality_share_pct": 1.6,
+        "transactions_yoy_pct": -28.6,
+        "eur_m2": 2555.49,
+        "eur_m2_yoy_pct": -1.2
+      },
+      {
+        "name": "Suecia",
+        "transactions": 1386,
+        "nationality_share_pct": 2.1,
+        "transactions_yoy_pct": -5.7,
+        "eur_m2": 3653.92,
+        "eur_m2_yoy_pct": 10.9
+      },
+      {
+        "name": "Suiza",
+        "transactions": 600,
+        "nationality_share_pct": 0.9,
+        "transactions_yoy_pct": -6.5,
+        "eur_m2": 3079.92,
+        "eur_m2_yoy_pct": 8
+      },
+      {
+        "name": "Ucrania",
+        "transactions": 2043,
+        "nationality_share_pct": 3.1,
+        "transactions_yoy_pct": -1,
+        "eur_m2": 2017.05,
+        "eur_m2_yoy_pct": 7.8
+      },
+      {
+        "name": "Venezuela",
+        "transactions": 1002,
+        "nationality_share_pct": 1.5,
+        "transactions_yoy_pct": 14.4,
+        "eur_m2": 1611.41,
+        "eur_m2_yoy_pct": 1.4
+      },
+      {
+        "name": "Otros UE",
+        "transactions": 4316,
+        "nationality_share_pct": 6.5,
+        "transactions_yoy_pct": -1.8,
+        "eur_m2": 3129.29,
+        "eur_m2_yoy_pct": 7.6
+      },
+      {
+        "name": "Otros fuera UE",
+        "transactions": 8213,
+        "nationality_share_pct": 12.3,
+        "transactions_yoy_pct": -3.2,
+        "eur_m2": 2192.14,
+        "eur_m2_yoy_pct": -8.5
+      },
+      {
+        "name": "Otros mixto",
+        "transactions": 1843,
+        "nationality_share_pct": 2.8,
+        "transactions_yoy_pct": -2.8,
+        "eur_m2": 2768.14,
+        "eur_m2_yoy_pct": 10.6
+      },
+      {
+        "name": "Total",
+        "transactions": 66629,
+        "nationality_share_pct": null,
+        "transactions_yoy_pct": -4.4,
+        "eur_m2": 2479,
+        "eur_m2_yoy_pct": 5
+      }
+    ],
+    "nationalities_resident": [
+      {
+        "name": "Alemania",
+        "transactions": 1393,
+        "nationality_share_pct": 3.3,
+        "transactions_yoy_pct": 9.9,
+        "eur_m2": 2605,
+        "eur_m2_yoy_pct": -0.4
+      },
+      {
+        "name": "Argentina",
+        "transactions": 853,
+        "nationality_share_pct": 2,
+        "transactions_yoy_pct": 0.8,
+        "eur_m2": 2024,
+        "eur_m2_yoy_pct": 4.4
+      },
+      {
+        "name": "Bélgica",
+        "transactions": 594,
+        "nationality_share_pct": 1.4,
+        "transactions_yoy_pct": 3.5,
+        "eur_m2": 2254,
+        "eur_m2_yoy_pct": 9.3
+      },
+      {
+        "name": "Bulgaria",
+        "transactions": 703,
+        "nationality_share_pct": 1.7,
+        "transactions_yoy_pct": -3.2,
+        "eur_m2": 1384,
+        "eur_m2_yoy_pct": 19.7
+      },
+      {
+        "name": "China",
+        "transactions": 2078,
+        "nationality_share_pct": 5,
+        "transactions_yoy_pct": -14.3,
+        "eur_m2": 2139,
+        "eur_m2_yoy_pct": 8.5
+      },
+      {
+        "name": "Colombia",
+        "transactions": 1200,
+        "nationality_share_pct": 2.9,
+        "transactions_yoy_pct": 10.4,
+        "eur_m2": 1408,
+        "eur_m2_yoy_pct": -0.9
+      },
+      {
+        "name": "Ecuador",
+        "transactions": 550,
+        "nationality_share_pct": 1.3,
+        "transactions_yoy_pct": -4.2,
+        "eur_m2": 1297,
+        "eur_m2_yoy_pct": 10
+      },
+      {
+        "name": "EE.UU",
+        "transactions": 670,
+        "nationality_share_pct": 1.6,
+        "transactions_yoy_pct": 10.6,
+        "eur_m2": 2951,
+        "eur_m2_yoy_pct": 8.8
+      },
+      {
+        "name": "Francia",
+        "transactions": 1781,
+        "nationality_share_pct": 4.3,
+        "transactions_yoy_pct": 4.8,
+        "eur_m2": 2585,
+        "eur_m2_yoy_pct": 10.5
+      },
+      {
+        "name": "Irlanda",
+        "transactions": 307,
+        "nationality_share_pct": 0.7,
+        "transactions_yoy_pct": 0.7,
+        "eur_m2": 2421,
+        "eur_m2_yoy_pct": 21.5
+      },
+      {
+        "name": "Italia",
+        "transactions": 3865,
+        "nationality_share_pct": 9.2,
+        "transactions_yoy_pct": 13.3,
+        "eur_m2": 2640,
+        "eur_m2_yoy_pct": 15.8
+      },
+      {
+        "name": "Marruecos",
+        "transactions": 5064,
+        "nationality_share_pct": 12.1,
+        "transactions_yoy_pct": 2.1,
+        "eur_m2": 746,
+        "eur_m2_yoy_pct": 6
+      },
+      {
+        "name": "Noruega",
+        "transactions": 93,
+        "nationality_share_pct": 0.2,
+        "transactions_yoy_pct": 3.3,
+        "eur_m2": 2616,
+        "eur_m2_yoy_pct": 12
+      },
+      {
+        "name": "Países Bajos",
+        "transactions": 1029,
+        "nationality_share_pct": 2.5,
+        "transactions_yoy_pct": 11.4,
+        "eur_m2": 2185,
+        "eur_m2_yoy_pct": 9.8
+      },
+      {
+        "name": "Polonia",
+        "transactions": 787,
+        "nationality_share_pct": 1.9,
+        "transactions_yoy_pct": 3.4,
+        "eur_m2": 2359,
+        "eur_m2_yoy_pct": 16.4
+      },
+      {
+        "name": "Portugal",
+        "transactions": 959,
+        "nationality_share_pct": 2.3,
+        "transactions_yoy_pct": 18.2,
+        "eur_m2": 1981,
+        "eur_m2_yoy_pct": -0.9
+      },
+      {
+        "name": "Reino Unido",
+        "transactions": 2322,
+        "nationality_share_pct": 5.6,
+        "transactions_yoy_pct": -1.9,
+        "eur_m2": 2215,
+        "eur_m2_yoy_pct": 14.6
+      },
+      {
+        "name": "Rumanía",
+        "transactions": 3895,
+        "nationality_share_pct": 9.3,
+        "transactions_yoy_pct": -1.2,
+        "eur_m2": 1215,
+        "eur_m2_yoy_pct": 9
+      },
+      {
+        "name": "Rusia",
+        "transactions": 854,
+        "nationality_share_pct": 2,
+        "transactions_yoy_pct": -19.5,
+        "eur_m2": 2281,
+        "eur_m2_yoy_pct": 2.3
+      },
+      {
+        "name": "Suecia",
+        "transactions": 245,
+        "nationality_share_pct": 0.6,
+        "transactions_yoy_pct": 19.5,
+        "eur_m2": 3293,
+        "eur_m2_yoy_pct": 28.1
+      },
+      {
+        "name": "Suiza",
+        "transactions": 174,
+        "nationality_share_pct": 0.4,
+        "transactions_yoy_pct": -9.8,
+        "eur_m2": 2171,
+        "eur_m2_yoy_pct": -4.1
+      },
+      {
+        "name": "Ucrania",
+        "transactions": 1672,
+        "nationality_share_pct": 4,
+        "transactions_yoy_pct": 2.7,
+        "eur_m2": 1828,
+        "eur_m2_yoy_pct": 18.1
+      },
+      {
+        "name": "Venezuela",
+        "transactions": 975,
+        "nationality_share_pct": 2.3,
+        "transactions_yoy_pct": 15.4,
+        "eur_m2": 1562,
+        "eur_m2_yoy_pct": 6.2
+      },
+      {
+        "name": "Otros UE",
+        "transactions": 1580,
+        "nationality_share_pct": 3.8,
+        "transactions_yoy_pct": 7.8,
+        "eur_m2": 2695,
+        "eur_m2_yoy_pct": 16.8
+      },
+      {
+        "name": "Otros fuera UE",
+        "transactions": 7002,
+        "nationality_share_pct": 16.7,
+        "transactions_yoy_pct": 7.6,
+        "eur_m2": 1839,
+        "eur_m2_yoy_pct": 2
+      },
+      {
+        "name": "Otros mixto",
+        "transactions": 1191,
+        "nationality_share_pct": 2.8,
+        "transactions_yoy_pct": -1.2,
+        "eur_m2": 2422,
+        "eur_m2_yoy_pct": 14
+      },
+      {
+        "name": "Total",
+        "transactions": 41836,
+        "nationality_share_pct": null,
+        "transactions_yoy_pct": 3.3,
+        "eur_m2": 1963,
+        "eur_m2_yoy_pct": 9.4
+      }
+    ],
+    "nationalities_non_resident": [
+      {
+        "name": "Alemania",
+        "transactions": 2958,
+        "nationality_share_pct": 11.9,
+        "transactions_yoy_pct": -12.5,
+        "eur_m2": 3962,
+        "eur_m2_yoy_pct": 15.3
+      },
+      {
+        "name": "Argentina",
+        "transactions": 73,
+        "nationality_share_pct": 0.3,
+        "transactions_yoy_pct": -42.5,
+        "eur_m2": 4162,
+        "eur_m2_yoy_pct": 93
+      },
+      {
+        "name": "Bélgica",
+        "transactions": 2015,
+        "nationality_share_pct": 8.1,
+        "transactions_yoy_pct": -22.2,
+        "eur_m2": 2880,
+        "eur_m2_yoy_pct": 9.2
+      },
+      {
+        "name": "Bulgaria",
+        "transactions": 100,
+        "nationality_share_pct": 0.4,
+        "transactions_yoy_pct": -13.8,
+        "eur_m2": 3050,
+        "eur_m2_yoy_pct": 29.5
+      },
+      {
+        "name": "China",
+        "transactions": 32,
+        "nationality_share_pct": 0.1,
+        "transactions_yoy_pct": -89.7,
+        "eur_m2": 2877,
+        "eur_m2_yoy_pct": -22.3
+      },
+      {
+        "name": "Colombia",
+        "transactions": 70,
+        "nationality_share_pct": 0.3,
+        "transactions_yoy_pct": 11.1,
+        "eur_m2": 3279,
+        "eur_m2_yoy_pct": -33.8
+      },
+      {
+        "name": "Ecuador",
+        "transactions": 8,
+        "nationality_share_pct": 0,
+        "transactions_yoy_pct": -42.9,
+        "eur_m2": 7400,
+        "eur_m2_yoy_pct": 92.7
+      },
+      {
+        "name": "EE.UU.",
+        "transactions": 644,
+        "nationality_share_pct": 2.6,
+        "transactions_yoy_pct": -22,
+        "eur_m2": 4071,
+        "eur_m2_yoy_pct": 5
+      },
+      {
+        "name": "Francia",
+        "transactions": 1858,
+        "nationality_share_pct": 7.5,
+        "transactions_yoy_pct": -15.9,
+        "eur_m2": 2765,
+        "eur_m2_yoy_pct": 9.1
+      },
+      {
+        "name": "Irlanda",
+        "transactions": 779,
+        "nationality_share_pct": 3.1,
+        "transactions_yoy_pct": -4.5,
+        "eur_m2": 2970,
+        "eur_m2_yoy_pct": 16.7
+      },
+      {
+        "name": "Italia",
+        "transactions": 532,
+        "nationality_share_pct": 2.1,
+        "transactions_yoy_pct": -18.9,
+        "eur_m2": 3285,
+        "eur_m2_yoy_pct": 6.7
+      },
+      {
+        "name": "Marruecos",
+        "transactions": 90,
+        "nationality_share_pct": 0.4,
+        "transactions_yoy_pct": -8.2,
+        "eur_m2": 1651,
+        "eur_m2_yoy_pct": -40
+      },
+      {
+        "name": "Noruega",
+        "transactions": 406,
+        "nationality_share_pct": 1.6,
+        "transactions_yoy_pct": -23.1,
+        "eur_m2": 3202,
+        "eur_m2_yoy_pct": 10.5
+      },
+      {
+        "name": "Países Bajos",
+        "transactions": 3124,
+        "nationality_share_pct": 12.6,
+        "transactions_yoy_pct": 3.8,
+        "eur_m2": 2729,
+        "eur_m2_yoy_pct": -2.4
+      },
+      {
+        "name": "Polonia",
+        "transactions": 1852,
+        "nationality_share_pct": 7.5,
+        "transactions_yoy_pct": -11,
+        "eur_m2": 3359,
+        "eur_m2_yoy_pct": 9.7
+      },
+      {
+        "name": "Portugal",
+        "transactions": 199,
+        "nationality_share_pct": 0.8,
+        "transactions_yoy_pct": 5.9,
+        "eur_m2": 2638,
+        "eur_m2_yoy_pct": 16.2
+      },
+      {
+        "name": "Reino Unido",
+        "transactions": 2856,
+        "nationality_share_pct": 11.5,
+        "transactions_yoy_pct": -22.4,
+        "eur_m2": 2952,
+        "eur_m2_yoy_pct": 8.6
+      },
+      {
+        "name": "Rumanía",
+        "transactions": 444,
+        "nationality_share_pct": 1.8,
+        "transactions_yoy_pct": 36.2,
+        "eur_m2": 2563,
+        "eur_m2_yoy_pct": 8.4
+      },
+      {
+        "name": "Rusia",
+        "transactions": 189,
+        "nationality_share_pct": 0.8,
+        "transactions_yoy_pct": -52.6,
+        "eur_m2": 3559,
+        "eur_m2_yoy_pct": 10.3
+      },
+      {
+        "name": "Suecia",
+        "transactions": 1141,
+        "nationality_share_pct": 4.6,
+        "transactions_yoy_pct": -9.7,
+        "eur_m2": 3755,
+        "eur_m2_yoy_pct": 9.1
+      },
+      {
+        "name": "Suiza",
+        "transactions": 426,
+        "nationality_share_pct": 1.7,
+        "transactions_yoy_pct": -5.1,
+        "eur_m2": 3470,
+        "eur_m2_yoy_pct": 12.5
+      },
+      {
+        "name": "Ucrania",
+        "transactions": 371,
+        "nationality_share_pct": 1.5,
+        "transactions_yoy_pct": -14.9,
+        "eur_m2": 2881,
+        "eur_m2_yoy_pct": -4.9
+      },
+      {
+        "name": "Venezuela",
+        "transactions": 27,
+        "nationality_share_pct": 0.1,
+        "transactions_yoy_pct": -12.9,
+        "eur_m2": 3813,
+        "eur_m2_yoy_pct": -31.2
+      },
+      {
+        "name": "Otros UE",
+        "transactions": 2736,
+        "nationality_share_pct": 11,
+        "transactions_yoy_pct": -6.6,
+        "eur_m2": 3398,
+        "eur_m2_yoy_pct": 5.9
+      },
+      {
+        "name": "Otros fuera UE",
+        "transactions": 1211,
+        "nationality_share_pct": 4.9,
+        "transactions_yoy_pct": -38.8,
+        "eur_m2": 3836,
+        "eur_m2_yoy_pct": -4.3
+      },
+      {
+        "name": "Otros mixto",
+        "transactions": 652,
+        "nationality_share_pct": 2.6,
+        "transactions_yoy_pct": -5.6,
+        "eur_m2": 3346,
+        "eur_m2_yoy_pct": 7.7
+      },
+      {
+        "name": "Total",
+        "transactions": 24793,
+        "nationality_share_pct": null,
+        "transactions_yoy_pct": -15.1,
+        "eur_m2": 3242,
+        "eur_m2_yoy_pct": 5.8
+      }
+    ]
+  }
+}

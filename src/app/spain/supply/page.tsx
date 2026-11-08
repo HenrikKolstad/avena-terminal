@@ -95,6 +95,8 @@ export default function SpainSupplyPage() {
             <p className="text-sm mb-8">
               <Link href="/official" className="text-primary hover:underline">Official statistics</Link>
               <span className="text-muted-foreground"> · </span>
+              <Link href="/spain/notary" className="text-primary hover:underline">Notary transaction prices</Link>
+              <span className="text-muted-foreground"> · </span>
               <Link href="/spain/official" className="text-primary hover:underline">Price benchmark for the same provinces</Link>
               <span className="text-muted-foreground"> · </span>
               <Link href="/spain/towns" className="text-primary hover:underline">Municipal appraisal for the same coast</Link>

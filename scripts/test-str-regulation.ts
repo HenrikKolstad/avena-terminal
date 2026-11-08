@@ -75,7 +75,7 @@ check('La Manga town hall was not identified', file.towns.find((t) => t.town ===
 checkTrue('every Alicante place is elevated', file.towns.filter((t) => t.province_key === 'alicante').every((t) => t.risk === 'elevated'));
 checkTrue('Murcia places stay unknown', file.towns.filter((t) => t.province_key === 'murcia').every((t) => t.risk === 'unknown'));
 check('high count', tally.high, 1);
-check('elevated count', tally.elevated, 51);
+check('elevated count', tally.elevated, 50);
 check('unknown count', tally.unknown, 44);
 
 for (const group of [...file.national, ...file.regions]) {

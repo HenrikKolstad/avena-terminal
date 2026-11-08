@@ -494,6 +494,11 @@ function rentsGeneratedAt(): string | null {
   return isRecord(raw) ? str(raw.generated_at) : null;
 }
 
+function notaryGeneratedAt(): string | null {
+  const raw = readJson('data/es-notary.json');
+  return isRecord(raw) ? str(raw.generated_at) : null;
+}
+
 function ptBenchmarkGeneratedAt(): string | null {
   const raw = readJson('data/pt-ine-benchmark.json');
   return isRecord(raw) ? str(raw.generated_at) : null;
@@ -1005,7 +1010,7 @@ function datasetDates(detail: string | null): { site: OrNA<string>; mirror: OrNA
   };
 }
 
-export function buildPipeline(health: HealthReport | null, officialAt: string | null, supplyAt: string | null = null, townAt: string | null = null, hpiAt: string | null = null, rentsAt: string | null = null, ptAt: string | null = null, vintagesAt: string | null = null): PipelineStep[] {
+export function buildPipeline(health: HealthReport | null, officialAt: string | null, supplyAt: string | null = null, townAt: string | null = null, hpiAt: string | null = null, rentsAt: string | null = null, ptAt: string | null = null, vintagesAt: string | null = null, notaryAt: string | null = null): PipelineStep[] {
   const feed = health?.checks.find((c) => c.id === 'feed') ?? null;
   const capture = health?.checks.find((c) => c.id === 'capture') ?? null;
   const workflows = health?.checks.find((c) => c.id === 'workflows') ?? null;
@@ -1108,6 +1113,19 @@ export function buildPipeline(health: HealthReport | null, officialAt: string | 
       last_observed_kind: rentsAt
         ? 'data/es-rents.json generated_at on this deployment. /api/health does not watch es-rents-refresh.yml, so the GitHub run timestamp is not available.'
         : 'not available. /api/health does not watch es-rents-refresh.yml, and data/es-rents.json had no generated_at.',
+      health_status: NOT_AVAILABLE,
+      health_detail: NOT_AVAILABLE,
+    },
+    {
+      id: 'es-notary',
+      name: 'Spain notary transaction prices',
+      cadence: 'GitHub Actions es-notary-refresh.yml on Saturday at 04:20 UTC.',
+      what: 'Rebuilds data/es-notary.json from the CIEN housing annex and the CIEN foreign-buyer annex of the Consejo General del Notariado. Asking prices are not transaction prices. The community figure is not a provincial new-build price, except for Murcia. Municipal prices are not read from the Notariado portal. Separate from the listing history.',
+      source_file: '.github/workflows/es-notary-refresh.yml',
+      last_observed: notaryAt ?? NOT_AVAILABLE,
+      last_observed_kind: notaryAt
+        ? 'data/es-notary.json generated_at on this deployment. /api/health does not watch es-notary-refresh.yml, so the GitHub run timestamp is not available.'
+        : 'not available. /api/health does not watch es-notary-refresh.yml, and data/es-notary.json had no generated_at.',
       health_status: NOT_AVAILABLE,
       health_detail: NOT_AVAILABLE,
     },
@@ -1259,6 +1277,7 @@ function delivery(mirror: OrNA<string>): DeliveryOption[] {
     { id: 'spain-towns', method: 'GET', path: '/spain/towns', format: 'HTML. Source file data/es-town-gap.json. JSON at /api/v1/es-town-gap.', auth: 'No key.', note: 'Weekly municipal appraisal. Asking prices beside the ministry appraisal for municipalities over 25,000 inhabitants. Not a transaction price and not the listing history.' },
     { id: 'europe-official', method: 'GET', path: '/europe/official', format: 'HTML. Source file data/eu-hpi.json. JSON at /api/v1/eu-hpi.', auth: 'No key.', note: 'Weekly Eurostat house price index beside Avena asking prices. Not a transaction price and not the listing history.' },
     { id: 'spain-rents', method: 'GET', path: '/spain/rents', format: 'HTML. Source file data/es-rents.json. JSON at /api/v1/es-rents.', auth: 'No key.', note: 'Weekly habitual-residence rents from the ministry SERPAVI workbook and the INE rental-price index. Not the listing history.' },
+    { id: 'spain-notary', method: 'GET', path: '/spain/notary', format: 'HTML. Source file data/es-notary.json. JSON at /api/v1/es-notary.', auth: 'No key.', note: 'Weekly notarial transaction prices from the CIEN annexes. Asking prices are not transaction prices. Not the listing history.' },
     { id: 'spain-short-let-rules', method: 'GET', path: '/spain/short-let-rules', format: 'HTML. Source file data/str-regulation.json. JSON at /api/v1/str-regulation.', auth: 'No key.', note: 'Manual reading of official short-let rules by town. Not a yield and not the listing history. A missing file returns an empty JSON list.' },
     { id: 'portugal-official', method: 'GET', path: '/portugal/official', format: 'HTML. Source file data/pt-ine-benchmark.json. JSON at /api/v1/pt-official.', auth: 'No key.', note: 'Weekly Statistics Portugal benchmark: bank appraisal, sale €/m² and the house price index. Not Portuguese listing coverage and not the listing history.' },
     { id: 'huggingface', method: 'GET', path: 'https://huggingface.co/datasets/AVENATERMINAL/spain-new-build-properties-2026', format: 'Hugging Face dataset', auth: 'Public page.', note: 'feed-refresh.yml uploads the open-data files here when HF_TOKEN is set, and leaves the existing copy when it is not. /api/health does not report this copy. Freshness is not available.' },
@@ -1287,6 +1306,7 @@ function licensing(published: PublishedDataset): DueDiligencePack['licensing'] {
       'The Spain municipal file is a separate weekly pull from the ministry bulletin of appraised €/m² for municipalities of more than 25,000 inhabitants. It is not a transaction price. Sources the job could not read are omissions in that file.',
       'The Eurostat house price file is a separate weekly pull of dataset prc_hpi_q. It is an official transaction-price index. The asking-price tape in that file is the median of the committed listing book. It is not a transaction price.',
       'The Spain rent file is a separate weekly pull from the ministry SERPAVI workbook and INE table 59058. The implied yield in that file is derived. Sources the job did not read are omissions in that file.',
+      'The Spain notary file is a separate weekly pull of the CIEN housing annex and the CIEN foreign-buyer annex. Asking prices are not transaction prices. A municipality the annex does not publish is an omission in that file.',
       'The short-let file is a manual reading of official gazettes. It is not a scheduled pull. A town whose municipal instrument was not read is marked unknown. It does not change the yield.',
       'The Portugal official file is a separate weekly pull from Statistics Portugal indicators 0012248, 0012250, 0012234, 0014765 and 0014767. It is not a Portuguese listing book. A geography the indicator does not publish is an omission in that file.',
       zenodoNote,
@@ -1319,6 +1339,7 @@ function unavailable(pack: Omit<DueDiligencePack, 'not_available'>): Unavailable
     { field: 'pipeline.es-town-gap.github_run_timestamp', reason: '/api/health does not watch es-town-gap-refresh.yml. A generated_at on data/es-town-gap.json is the artifact on this deployment, not a GitHub run timestamp.' },
     { field: 'pipeline.eu-hpi.github_run_timestamp', reason: '/api/health does not watch eu-hpi-refresh.yml. A generated_at on data/eu-hpi.json is the artifact on this deployment, not a GitHub run timestamp.' },
     { field: 'pipeline.es-rents.github_run_timestamp', reason: '/api/health does not watch es-rents-refresh.yml. A generated_at on data/es-rents.json is the artifact on this deployment, not a GitHub run timestamp.' },
+    { field: 'pipeline.es-notary.github_run_timestamp', reason: '/api/health does not watch es-notary-refresh.yml. A generated_at on data/es-notary.json is the artifact on this deployment, not a GitHub run timestamp.' },
     { field: 'pipeline.pt-ine-benchmark.github_run_timestamp', reason: '/api/health does not watch pt-ine-benchmark-refresh.yml. A generated_at on data/pt-ine-benchmark.json is the artifact on this deployment, not a GitHub run timestamp.' },
     { field: 'pipeline.weekly-vintages.github_run_timestamp', reason: '/api/health does not watch vintages-freeze.yml. The latest vintage capture date is the file date, not a GitHub run timestamp.' },
     { field: 'pipeline.same-unit-price-index.github_run_timestamp', reason: '/api/health does not watch vintages-freeze.yml. The price-index data_as_of is the latest capture in the chain, not a GitHub run timestamp.' },
@@ -1341,6 +1362,7 @@ export function assembleDueDiligence(args: {
   hpiGeneratedAt?: string | null;
   rentsGeneratedAt?: string | null;
   ptBenchmarkGeneratedAt?: string | null;
+  notaryGeneratedAt?: string | null;
   vintagesCaptureDate?: string | null;
   health: HealthReport | null;
   snapshot: { client: boolean; min: string | null; max: string | null; error: string | null };
@@ -1364,7 +1386,7 @@ export function assembleDueDiligence(args: {
     },
     dictionary: buildDictionary(args.props, args.manifest, today),
     dictionary_scope: 'Fields on the open observation files, on GET /api/v1/properties (default and format=apip), on GET /api/v1/dataset-export, and on the aggregate payload of GET /api/v1/open-dataset. Other routes are not this dataset. Their index is /api/openapi.json.',
-    pipeline: buildPipeline(args.health, args.officialGeneratedAt, args.supplyGeneratedAt, args.townGeneratedAt ?? null, args.hpiGeneratedAt ?? null, args.rentsGeneratedAt ?? null, args.ptBenchmarkGeneratedAt ?? null, args.vintagesCaptureDate ?? null),
+    pipeline: buildPipeline(args.health, args.officialGeneratedAt, args.supplyGeneratedAt, args.townGeneratedAt ?? null, args.hpiGeneratedAt ?? null, args.rentsGeneratedAt ?? null, args.ptBenchmarkGeneratedAt ?? null, args.vintagesCaptureDate ?? null, args.notaryGeneratedAt ?? null),
     health_checked_at: args.health?.checked_at ?? NOT_AVAILABLE,
     quality: quality(),
     point_in_time: pointInTime(),
@@ -1399,6 +1421,7 @@ export async function loadDueDiligence(now = new Date()): Promise<DueDiligencePa
     townGeneratedAt: townGeneratedAt(),
     hpiGeneratedAt: hpiGeneratedAt(),
     rentsGeneratedAt: rentsGeneratedAt(),
+    notaryGeneratedAt: notaryGeneratedAt(),
     ptBenchmarkGeneratedAt: ptBenchmarkGeneratedAt(),
     vintagesCaptureDate: vintagesCaptureDate(),
     health,

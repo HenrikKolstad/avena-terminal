@@ -22,6 +22,7 @@ const PAGES = [
   { title: 'Listing absorption', url: '/data/absorption', kind: 'page' },
   { title: 'Portugal official benchmark', url: '/portugal/official', kind: 'page' },
   { title: 'Spain official benchmarks', url: '/spain/official', kind: 'page' },
+  { title: 'Spain notary transaction prices', url: '/spain/notary', kind: 'page' },
   { title: 'Spain supply pipeline', url: '/spain/supply', kind: 'page' },
   { title: 'Spain municipal appraisals', url: '/spain/towns', kind: 'page' },
   { title: 'Spain rent benchmark', url: '/spain/rents', kind: 'page' },

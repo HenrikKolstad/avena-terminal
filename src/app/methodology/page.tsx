@@ -124,6 +124,7 @@ https://avenaterminal.com/methodology`}
               <Link href="/verify" className="text-foreground/85 hover:text-primary">Verify a methodology →</Link>
               <Link href="/due-diligence" className="text-foreground/85 hover:text-primary">Dataset due diligence →</Link>
               <Link href="/official" className="text-foreground/85 hover:text-primary">Official statistics →</Link>
+              <Link href="/spain/notary" className="text-foreground/85 hover:text-primary">Spain notary transaction prices →</Link>
               <Link href="/spain/supply" className="text-foreground/85 hover:text-primary">Spain supply pipeline →</Link>
               <Link href="/spain/towns" className="text-foreground/85 hover:text-primary">Spain municipal appraisals →</Link>
               <Link href="/spain/rents" className="text-foreground/85 hover:text-primary">Spain rent benchmark →</Link>

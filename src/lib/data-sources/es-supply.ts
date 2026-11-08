@@ -222,7 +222,7 @@ const NOTARY_OMISSION: SupplyOmission = {
   source: 'Consejo General del Notariado',
   url: null,
   ingested: false,
-  reason: 'No keyless CSV or JSON endpoint is read by this job. A direct notarial series is not in this file. The ministry file that republishes notarial transactions is assessed separately.',
+  reason: 'No keyless CSV or JSON endpoint is read by this job. A direct notarial series is not in this file. The CIEN annex is published separately at /spain/notary. The ministry file that republishes notarial transactions is assessed separately.',
 };
 
 export function parseSemicolonTable(text: string, expected: readonly string[], label: string): Record<string, string>[] {

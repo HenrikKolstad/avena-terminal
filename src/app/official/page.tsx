@@ -81,7 +81,7 @@ export default function OfficialHubPage() {
               <span className="text-gold italic">in one place.</span>
             </h1>
             <p className="max-w-3xl text-lg sm:text-xl font-light leading-relaxed text-muted-foreground mb-4">
-              Six public files, each with its source, geography, latest period and refresh. Where the Avena book and the official benchmark are both a price or a yield, the gap is ranked below. Where one side is missing, the row stays blank.
+              {summary.layers.length} public files, each with its source, geography, latest period and refresh. Where the Avena book and the official benchmark are both a price or a yield, the gap is ranked below. Where one side is missing, the row stays blank.
             </p>
             <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground mb-8">
               {summary.history.note}
@@ -91,6 +91,8 @@ export default function OfficialHubPage() {
               <Link href="/api/v1/official-summary" className="text-primary hover:underline">/api/v1/official-summary</Link>
             </p>
             <p className="text-sm mt-4">
+              <Link href="/spain/notary" className="text-primary hover:underline">Notary transaction prices</Link>
+              <span className="text-muted-foreground">. Asking prices beside the CIEN closing average. </span>
               <Link href="/spain/short-let-rules" className="text-primary hover:underline">Short-let rules for the same coast</Link>
               <span className="text-muted-foreground">. The short-let yield is unchanged. The flag says whether that use is legally available.</span>
             </p>
@@ -160,6 +162,64 @@ export default function OfficialHubPage() {
                         <span className="block text-[11px] text-muted-foreground">{p.ine_new_yoy_pct == null ? '' : p.ine_territory_equals_province ? quarterLabel(p.ine_new_yoy_period) : `${quarterLabel(p.ine_new_yoy_period)} · community`}</span>
                       </Td>
                       <Td><Previous change={p.previous} /></Td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-b" style={{ borderColor: BORDER }}>
+          <div className="mx-auto max-w-[1200px] px-5 sm:px-12 py-16">
+            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-3">Asking versus notary closing</div>
+            <h2 className="font-serif text-3xl sm:text-4xl font-light text-foreground mb-4">Signed prices, by community.</h2>
+            <p className="max-w-3xl text-sm text-muted-foreground leading-relaxed mb-4">
+              The notary column is the CIEN average €/m² of all housing sales in the autonomous community. It is a transaction price. It is not a new-build price and, except for Murcia, not the province alone. The gap is derived here.
+            </p>
+            <p className="text-sm mb-10">
+              <Link href="/spain/notary" className="text-primary hover:underline">Notary table</Link>
+            </p>
+            <div className="lg:hidden space-y-4">
+              {summary.notary_gaps.map((p) => (
+                <article key={p.id} className="rounded-sm border p-5" style={{ borderColor: 'hsl(var(--av-border))' }}>
+                  <h3 className="font-serif text-3xl font-light text-foreground mb-4">{p.name}</h3>
+                  <dl className="grid grid-cols-2 gap-4">
+                    <Field label="Avena median asking" value={`${eur(p.avena_eur_m2)}/m²`} note={`${p.listings.toLocaleString('en-GB')} listings`} />
+                    <Field label="Notary closing" value={p.notary_eur_m2 == null ? 'Missing' : `${eur(p.notary_eur_m2)}/m²`} note={p.notary_period ?? 'Missing'} />
+                    <Field label="Asking vs closing" value={p.gap_pct == null ? 'Missing' : pct(p.gap_pct)} note={p.missing ?? (p.territory_equals_province ? 'Province' : p.geo_name)} />
+                  </dl>
+                </article>
+              ))}
+            </div>
+            <div className="hidden lg:block rounded-sm border overflow-x-auto" style={{ borderColor: 'hsl(var(--av-border))' }}>
+              <table className="w-full">
+                <thead style={{ background: 'hsl(var(--av-surface) / 0.4)' }}>
+                  <tr>
+                    <Th>Province</Th>
+                    <Th align="right">Avena asking</Th>
+                    <Th align="right">Notary closing</Th>
+                    <Th align="right">Gap</Th>
+                    <Th>Geography</Th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {summary.notary_gaps.map((p) => (
+                    <tr key={p.id} className="border-t" style={{ borderColor: 'hsl(var(--av-border) / 0.3)' }}>
+                      <Td>
+                        <span className="text-sm text-foreground">{p.name}</span>
+                        <span className="block text-[11px] text-muted-foreground">{p.listings.toLocaleString('en-GB')} listings</span>
+                      </Td>
+                      <Td align="right"><Mono strong>{p.avena_eur_m2 == null ? 'Missing' : eur(p.avena_eur_m2)}</Mono></Td>
+                      <Td align="right">
+                        <Mono strong>{p.notary_eur_m2 == null ? 'Missing' : eur(p.notary_eur_m2)}</Mono>
+                        <span className="block text-[11px] text-muted-foreground">{p.notary_period ?? ''}</span>
+                      </Td>
+                      <Td align="right">
+                        <Mono>{p.gap_pct == null ? 'Missing' : pct(p.gap_pct)}</Mono>
+                        <span className="block text-[11px] text-muted-foreground">{p.missing ?? gapWord(p.gap_pct)}</span>
+                      </Td>
+                      <Td><span className="text-sm text-muted-foreground">{p.territory_equals_province ? 'Province' : p.geo_name}</span></Td>
                     </tr>
                   ))}
                 </tbody>

@@ -169,6 +169,7 @@ for (const [file, cron] of [
   ['.github/workflows/es-town-gap-refresh.yml', '25 4 * * 5'],
   ['.github/workflows/eu-hpi-refresh.yml', '50 4 * * 1'],
   ['.github/workflows/es-rents-refresh.yml', '35 4 * * 2'],
+  ['.github/workflows/es-notary-refresh.yml', '20 4 * * 6'],
   ['.github/workflows/vintages-freeze.yml', '20 6 * * 1'],
   ['vercel.json', '"path": "/api/cron/pricing-history", "schedule": "20 2 * * *"'],
   ['vercel.json', '"path": "/api/cron/pricing-history", "schedule": "30 14 * * *"'],
@@ -216,6 +217,8 @@ const towns = piped.find((s) => s.id === 'es-town-gap');
 check('town artifact time is the file and its health status stays unavailable', towns?.last_observed === '2026-10-28T00:00:00.000Z' && towns.health_status === NOT_AVAILABLE);
 const rents = piped.find((s) => s.id === 'es-rents');
 check('rent artifact time stays unavailable when the caller does not pass one', rents?.last_observed === NOT_AVAILABLE && rents.health_status === NOT_AVAILABLE);
+const notaryStep = piped.find((s) => s.id === 'es-notary');
+check('notary artifact time stays unavailable when the caller does not pass one', notaryStep?.last_observed === NOT_AVAILABLE && notaryStep.health_status === NOT_AVAILABLE && /04:20 UTC/.test(notaryStep?.cadence ?? ''));
 const hpi = piped.find((s) => s.id === 'eu-hpi');
 check('eurostat artifact time stays unavailable when the caller does not pass one', hpi?.last_observed === NOT_AVAILABLE && hpi.health_status === NOT_AVAILABLE);
 check('not-available rollup names the missing database read', pack.not_available.some((n) => n.field === 'coverage.price_history.first_date' && /not configured/i.test(n.reason)));

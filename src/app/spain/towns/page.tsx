@@ -112,6 +112,8 @@ export default function SpainTownsPage() {
             <p className="text-sm mb-8">
               <Link href="/official" className="text-primary hover:underline">Official statistics</Link>
               <span className="text-muted-foreground"> · </span>
+              <Link href="/spain/notary" className="text-primary hover:underline">Notary transaction prices</Link>
+              <span className="text-muted-foreground"> · </span>
               <Link href="/spain/official" className="text-primary hover:underline">Province benchmark</Link>
               <span className="text-muted-foreground"> · </span>
               <Link href="/spain/rents" className="text-primary hover:underline">Habitual rents for the same coast</Link>

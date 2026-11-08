@@ -22,6 +22,11 @@ export const LAYER_REFRESH = {
     workflow: '.github/workflows/es-official-refresh.yml',
     cron: '40 4 * * 3',
   },
+  'es-notary': {
+    cadence: 'Weekly, Saturdays 04:20 UTC',
+    workflow: '.github/workflows/es-notary-refresh.yml',
+    cron: '20 4 * * 6',
+  },
   'es-town-gap': {
     cadence: 'Weekly, Fridays 04:25 UTC',
     workflow: '.github/workflows/es-town-gap-refresh.yml',
@@ -251,6 +256,7 @@ export interface OfficialSummary {
   caveats: string[];
   layers: LayerCard[];
   price_gaps: PriceRow[];
+  notary_gaps: NotaryGapRow[];
   municipal_provinces: MunicipalProvinceRow[];
   municipalities: MunicipalTownRow[];
   municipal_all_ages_only: MunicipalAllAgesRow[];
@@ -274,6 +280,34 @@ export interface OfficialSummary {
     note: string;
   };
   data_gaps: string[];
+}
+
+export interface NotaryGapRow {
+  id: string;
+  name: string;
+  slug: string;
+  href: string;
+  listings: number;
+  avena_eur_m2: number | null;
+  notary_eur_m2: number | null;
+  notary_period: string | null;
+  geo_name: string;
+  territory_equals_province: boolean;
+  gap_pct: number | null;
+  status: 'compared' | 'missing';
+  missing: string | null;
+  previous: GapChange | null;
+}
+
+export interface NotaryProvinceInput {
+  name: string;
+  slug: string;
+  listings: number;
+  avena_eur_m2: number | null;
+  official_eur_m2: number | null;
+  official_period: string | null;
+  geo_name: string;
+  territory_equals_province: boolean;
 }
 
 export interface SpainProvinceInput {
@@ -335,6 +369,13 @@ export interface OfficialSummaryInput {
     provinces: SpainProvinceInput[];
     omissions: string[];
   };
+  notary: {
+    source: string;
+    source_url: string | null;
+    latest_period: string | null;
+    retrieved_at: string | null;
+    provinces: NotaryProvinceInput[];
+  };
   municipal: {
     source: string;
     source_url: string | null;
@@ -385,6 +426,7 @@ export interface OfficialSummaryInput {
 export const SUMMARY_CAVEATS = [
   'A positive asking-versus-appraisal figure means the Avena median asking price per m2 sits above the official benchmark. It is derived here. It is not a statistic published by INE, the housing ministry, or Statistics Portugal.',
   'Avena\'s figure is the median asking price per m2 of coastal new-build listings in the current book. It is not a price at which a home sold.',
+  'The notary gap compares that asking median with the CIEN average transaction price per m2 for the autonomous community, all housing. It is not a new-build closing price. Except for Murcia it is not a provincial price. Andalucía in that file includes Ceuta and Melilla.',
   'The Spanish provincial benchmark is the ministry mean appraised value per m2 of free-market housing of all ages, for the whole province. It is not limited to new builds and not limited to the coast.',
   'The municipal gap uses the published appraisal for free-market dwellings up to five years old, and only a town with at least 8 priced listings. An all-ages appraisal is a different column and is not copied into that gap.',
   'The rent spread is Avena\'s short-stay gross-yield estimate minus the yield implied by the ministry habitual-residence rent per m2. The rent year and the asking book are not the same period. The dwellings are not the same stock.',
@@ -602,6 +644,31 @@ export function buildOfficialSummary(input: OfficialSummaryInput): OfficialSumma
     };
   }), (row) => row.gap_pct);
 
+  const notary_gaps = byAbs(input.notary.provinces.map((p): NotaryGapRow => {
+    const id = `es-notary:${p.slug}`;
+    const gap = askingVsAppraisalPct(p.avena_eur_m2, p.official_eur_m2);
+    let missing: string | null = null;
+    if (p.avena_eur_m2 == null && p.official_eur_m2 == null) missing = 'No Avena asking median and no notary price.';
+    else if (p.avena_eur_m2 == null) missing = 'No Avena asking median for this province.';
+    else if (p.official_eur_m2 == null) missing = 'No notary price in this refresh.';
+    return {
+      id,
+      name: p.name,
+      slug: p.slug,
+      href: '/spain/notary',
+      listings: p.listings,
+      avena_eur_m2: p.avena_eur_m2,
+      notary_eur_m2: p.official_eur_m2,
+      notary_period: p.official_period,
+      geo_name: p.geo_name,
+      territory_equals_province: p.territory_equals_province,
+      gap_pct: gap,
+      status: gap == null ? 'missing' : 'compared',
+      missing,
+      previous: previousFor(id, gap, priors),
+    };
+  }), (row) => row.gap_pct);
+
   const municipalTowns = input.municipal.towns.map((t): MunicipalTownRow => {
     const id = `es-town-gap:${t.province_key}:${t.town}`;
     const gap = t.gap_pct;
@@ -746,6 +813,7 @@ export function buildOfficialSummary(input: OfficialSummaryInput): OfficialSumma
   };
 
   const priceValues = price_gaps.filter((r) => r.gap_pct != null).map((r) => ({ name: r.name, value: r.gap_pct as number }));
+  const notaryValues = notary_gaps.filter((r) => r.gap_pct != null).map((r) => ({ name: r.name, value: r.gap_pct as number }));
   const townValues = municipalities.filter((r) => r.gap_pct != null).map((r) => ({ name: r.name, value: r.gap_pct as number }));
   const yieldValues = yields.filter((r) => r.spread_pp != null).map((r) => ({ name: r.name, value: r.spread_pp as number }));
 
@@ -765,6 +833,23 @@ export function buildOfficialSummary(input: OfficialSummaryInput): OfficialSumma
         'Median provincial asking-versus-appraisal gap',
         price_gaps.length - priceValues.length,
         'No province has both an Avena asking median and a ministry appraisal.',
+      ),
+    }),
+    card('es-notary', {
+      title: 'Spain notary transaction prices',
+      href: '/spain/notary',
+      api: '/api/v1/es-notary',
+      source: input.notary.source,
+      source_url: input.notary.source_url,
+      geography: 'Spain, autonomous communities joined to provinces in the Avena book',
+      latest_period: input.notary.latest_period,
+      retrieved_at: input.notary.retrieved_at,
+      headline: headlineFrom(
+        notaryValues,
+        'pct',
+        'Median provincial asking-versus-notary-closing gap',
+        notary_gaps.length - notaryValues.length,
+        'No province has both an Avena asking median and a notary closing price.',
       ),
     }),
     card('es-town-gap', {
@@ -852,6 +937,7 @@ export function buildOfficialSummary(input: OfficialSummaryInput): OfficialSumma
 
   const comparable = [
     ...price_gaps.filter((r) => r.gap_pct != null),
+    ...notary_gaps.filter((r) => r.gap_pct != null),
     ...municipal_provinces.filter((r) => r.gap_pct != null),
     ...municipalities.filter((r) => r.gap_pct != null),
     ...yields.filter((r) => r.spread_pp != null),
@@ -887,6 +973,7 @@ export function buildOfficialSummary(input: OfficialSummaryInput): OfficialSumma
     caveats: SUMMARY_CAVEATS,
     layers,
     price_gaps,
+    notary_gaps,
     municipal_provinces,
     municipalities,
     municipal_all_ages_only,
@@ -913,6 +1000,16 @@ function dataGaps(input: OfficialSummaryInput, summary: OfficialSummary): string
   const priceMissing = summary.price_gaps.filter((r) => r.status === 'missing');
   if (priceMissing.length > 0) {
     gaps.push(`Spain provincial appraisal: ${priceMissing.map((r) => `${r.name} (${r.missing})`).join(' ')}`);
+  }
+  const notaryShared = summary.notary_gaps.filter((r) => r.status === 'compared' && !r.territory_equals_province);
+  if (notaryShared.length > 0) {
+    gaps.push(
+      `Notary closing prices are the autonomous-community average, not a provincial new-build price. ${notaryShared.map((r) => `${r.name} uses ${r.geo_name}`).join('; ')}.`,
+    );
+  }
+  const notaryMissing = summary.notary_gaps.filter((r) => r.status === 'missing');
+  if (notaryMissing.length > 0) {
+    gaps.push(`Spain notary gap: ${notaryMissing.map((r) => `${r.name} (${r.missing})`).join(' ')}`);
   }
   const cov = summary.municipal_coverage;
   if (cov.all_ages_only || cov.insufficient_listings || cov.not_in_ministry_table || cov.withheld) {
