@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-02T12:54:36.877Z",
+  "generated_at": "2026-11-09T13:25:53.124Z",
   "status": "ready",
   "source": {
     "agency": "Eurostat",
@@ -9,7 +9,7 @@
     "updated": "2026-10-01T11:00:00+0200",
     "latest_period": "2026-Q2",
     "first_period": "2015-Q1",
-    "retrieved_at": "2026-11-02",
+    "retrieved_at": "2026-11-09",
     "api_url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hpi_q?format=JSON&lang=EN&freq=Q&purchase=DW_NEW&purchase=TOTAL&unit=I15_Q&unit=RCH_A&geo=ES&geo=PT&geo=EU27_2020&geo=EA20&sinceTimePeriod=2015-Q1",
     "browser_url": "https://ec.europa.eu/eurostat/databrowser/view/prc_hpi_q/default/table?lang=en",
     "metadata_url": "https://ec.europa.eu/eurostat/cache/metadata/en/prc_hpi_inx_esms.htm",
@@ -2097,8 +2097,8 @@
     "what": "Median asking EUR per square metre of the committed new-build listing book, by country, on each capture day.",
     "min_priced_listings": 30,
     "first_date": "2026-03-31",
-    "latest_date": "2026-11-02",
-    "observation_days": 81,
+    "latest_date": "2026-11-08",
+    "observation_days": 87,
     "days": [
       {
         "date": "2026-03-31",
@@ -3152,10 +3152,88 @@
             "median_asking_eur_m2": 5614.5
           }
         ]
+      },
+      {
+        "date": "2026-11-03",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2061,
+            "priced_listings": 2061,
+            "median_asking_eur_m2": 5611
+          }
+        ]
+      },
+      {
+        "date": "2026-11-04",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2069,
+            "priced_listings": 2069,
+            "median_asking_eur_m2": 5606
+          }
+        ]
+      },
+      {
+        "date": "2026-11-05",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2073,
+            "priced_listings": 2073,
+            "median_asking_eur_m2": 5602
+          }
+        ]
+      },
+      {
+        "date": "2026-11-06",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2075,
+            "priced_listings": 2075,
+            "median_asking_eur_m2": 5606
+          }
+        ]
+      },
+      {
+        "date": "2026-11-07",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2074,
+            "priced_listings": 2074,
+            "median_asking_eur_m2": 5608.5
+          }
+        ]
+      },
+      {
+        "date": "2026-11-08",
+        "during_declared_capture_gap": false,
+        "unmapped_listings": 0,
+        "countries": [
+          {
+            "code": "ES",
+            "listings": 2075,
+            "priced_listings": 2075,
+            "median_asking_eur_m2": 5611
+          }
+        ]
       }
     ],
     "below_threshold": [],
-    "coverage_note": "Avena asking prices are the median EUR/m² of the committed listing book on each capture day. They are asking prices, not transaction prices, and not a house price index. A listing with no country code is counted as Spain only when its location maps to a province in the Spain official benchmark. Other rows are unmapped (0 on 2026-11-02) and are not given a country. Spain has 78 capture days with a median, from 2026-04-07 to 2026-11-02. Calendar days with no committed book are absent and are not filled. The listing book has no Portuguese asking median. Eurostat still publishes Portugal. A median is published only when a country has at least 30 listings with a positive asking EUR/m² that day. A change in that median inside a Eurostat quarter is calculated only when the quarter has at least 8 such days spanning at least 28 days. A shorter run is listed and no rate is calculated."
+    "coverage_note": "Avena asking prices are the median EUR/m² of the committed listing book on each capture day. They are asking prices, not transaction prices, and not a house price index. A listing with no country code is counted as Spain only when its location maps to a province in the Spain official benchmark. Other rows are unmapped (0 on 2026-11-08) and are not given a country. Spain has 84 capture days with a median, from 2026-04-07 to 2026-11-08. Calendar days with no committed book are absent and are not filled. The listing book has no Portuguese asking median. Eurostat still publishes Portugal. A median is published only when a country has at least 30 listings with a positive asking EUR/m² that day. A change in that median inside a Eurostat quarter is calculated only when the quarter has at least 8 such days spanning at least 28 days. A shorter run is listed and no rate is calculated."
   },
   "caveats": [
     "Eurostat prc_hpi_q measures price changes of residential properties purchased by households. It is a transaction-price index. It is not an asking price and it is not a price per square metre.",
@@ -3163,7 +3241,7 @@
     "The EU figure is geo EU27_2020. The euro area figure is geo EA20. Eurostat's labels for both are stored on the row. Neither aggregate is an Avena listing book.",
     "A change in the Avena median can come from the mix of listings on the book, not only from a change in one asking price.",
     "The price-snapshot ledger declares no capture for 2026-10-14 to 2026-10-20. Tape days inside that span are flagged. They are not treated as a continuous asking series.",
-    "Eurostat's latest quarter in this file is 2026-Q2. The latest Avena capture day is 2026-11-02. Those are not the same period.",
+    "Eurostat's latest quarter in this file is 2026-Q2. The latest Avena capture day is 2026-11-08. Those are not the same period.",
     "Where Eurostat leaves a cell empty, this file stores null. It does not store zero."
   ]
 }
