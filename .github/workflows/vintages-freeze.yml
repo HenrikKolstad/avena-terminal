@@ -13,7 +13,9 @@ name: Weekly vintage freeze
 # A shallow checkout cannot see earlier captures. scripts/freeze-vintages.ts
 # exits non-zero in that case and nothing is committed: missing weeks must
 # not be published as gaps. If a frozen file would change, the script exits
-# non-zero and the previous file stays.
+# non-zero and the previous file stays. data/vintages/manifest.json is the
+# exception: a new closed week is appended, and a change to an existing
+# entry fails the run.
 
 on:
   schedule:

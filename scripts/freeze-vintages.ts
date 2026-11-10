@@ -5,8 +5,10 @@
  *   npx tsx scripts/freeze-vintages.ts --as-of 2026-11-03
  *
  * No secrets. The weekly job is .github/workflows/vintages-freeze.yml.
- * Existing vintage files are never rewritten. A short git history is refused,
- * because a shallow clone would publish the missing weeks as gaps.
+ * Existing vintage files are never rewritten. The manifest is append-only:
+ * a new closed week may be added, and an existing entry is never revised.
+ * A short git history is refused, because a shallow clone would publish the
+ * missing weeks as gaps.
  */
 import { execFileSync } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
