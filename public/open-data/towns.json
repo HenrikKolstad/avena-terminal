@@ -14,13 +14,13 @@
   {
     "town": "Mijas",
     "costa": "Costa del Sol",
-    "n_listings": 195,
-    "median_price_eur": 565000,
-    "median_pm2_eur": 6638,
-    "p25_pm2_eur": 5401,
-    "p75_pm2_eur": 8304,
-    "median_built_m2": 86,
-    "villa_share_pct": 18,
+    "n_listings": 189,
+    "median_price_eur": 581000,
+    "median_pm2_eur": 6731,
+    "p25_pm2_eur": 5464,
+    "p75_pm2_eur": 8344,
+    "median_built_m2": 87,
+    "villa_share_pct": 19,
     "median_beach_km": 2
   },
   {
@@ -51,7 +51,7 @@
     "town": "Pilar de La Horadada",
     "costa": "Costa Blanca South",
     "n_listings": 92,
-    "median_price_eur": 361500,
+    "median_price_eur": 359500,
     "median_pm2_eur": 5025,
     "p25_pm2_eur": 4350,
     "p75_pm2_eur": 5839,
@@ -134,11 +134,11 @@
   {
     "town": "Torre Pacheco",
     "costa": "Costa Calida",
-    "n_listings": 51,
-    "median_price_eur": 315900,
+    "n_listings": 49,
+    "median_price_eur": 321000,
     "median_pm2_eur": 4165,
-    "p25_pm2_eur": 3688,
-    "p75_pm2_eur": 4860,
+    "p25_pm2_eur": 3683,
+    "p75_pm2_eur": 4864,
     "median_built_m2": 80,
     "villa_share_pct": 65,
     "median_beach_km": 8
@@ -158,14 +158,14 @@
   {
     "town": "Manilva",
     "costa": "Costa del Sol",
-    "n_listings": 41,
-    "median_price_eur": 491000,
-    "median_pm2_eur": 6130,
-    "p25_pm2_eur": 4471,
-    "p75_pm2_eur": 8085,
-    "median_built_m2": 93,
+    "n_listings": 40,
+    "median_price_eur": 485500,
+    "median_pm2_eur": 5934,
+    "p25_pm2_eur": 4436,
+    "p75_pm2_eur": 8196,
+    "median_built_m2": 94,
     "villa_share_pct": 15,
-    "median_beach_km": 0.6
+    "median_beach_km": 0.45
   },
   {
     "town": "Benahavís",
@@ -180,23 +180,11 @@
     "median_beach_km": 5.75
   },
   {
-    "town": "San Miguel de Salinas",
-    "costa": "Costa Blanca South",
-    "n_listings": 32,
-    "median_price_eur": 270376,
-    "median_pm2_eur": 4078,
-    "p25_pm2_eur": 3632,
-    "p75_pm2_eur": 5090,
-    "median_built_m2": 70,
-    "villa_share_pct": 59,
-    "median_beach_km": 9
-  },
-  {
     "town": "Algorfa",
     "costa": "Costa Blanca South",
     "n_listings": 30,
     "median_price_eur": 431000,
-    "median_pm2_eur": 4830,
+    "median_pm2_eur": 4856,
     "p25_pm2_eur": 3559,
     "p75_pm2_eur": 5696,
     "median_built_m2": 85,
@@ -214,6 +202,18 @@
     "median_built_m2": 140,
     "villa_share_pct": 100,
     "median_beach_km": 50
+  },
+  {
+    "town": "San Miguel de Salinas",
+    "costa": "Costa Blanca South",
+    "n_listings": 30,
+    "median_price_eur": 278450,
+    "median_pm2_eur": 4086,
+    "p25_pm2_eur": 3565,
+    "p75_pm2_eur": 5118,
+    "median_built_m2": 73,
+    "villa_share_pct": 57,
+    "median_beach_km": 9
   },
   {
     "town": "Villajoyosa",
@@ -401,7 +401,7 @@
     "n_listings": 15,
     "median_price_eur": 374900,
     "median_pm2_eur": 3759,
-    "p25_pm2_eur": 3241,
+    "p25_pm2_eur": 3302,
     "p75_pm2_eur": 4491,
     "median_built_m2": 95,
     "villa_share_pct": 87,
@@ -495,8 +495,8 @@
     "town": "rincon de la victoria",
     "costa": "Costa del Sol",
     "n_listings": 12,
-    "median_price_eur": 463500,
-    "median_pm2_eur": 5861,
+    "median_price_eur": 457500,
+    "median_pm2_eur": 5743,
     "p25_pm2_eur": 5137,
     "p75_pm2_eur": 6546,
     "median_built_m2": 85,
@@ -526,6 +526,18 @@
     "median_built_m2": 250,
     "villa_share_pct": 100,
     "median_beach_km": 2
+  },
+  {
+    "town": "Dolores",
+    "costa": "Costa Blanca South",
+    "n_listings": 11,
+    "median_price_eur": 420000,
+    "median_pm2_eur": 3999,
+    "p25_pm2_eur": 3632,
+    "p75_pm2_eur": 4606,
+    "median_built_m2": 90,
+    "villa_share_pct": 100,
+    "median_beach_km": 12
   },
   {
     "town": "Puerto de Mazarron",
@@ -562,18 +574,6 @@
     "median_built_m2": 105,
     "villa_share_pct": 100,
     "median_beach_km": 7
-  },
-  {
-    "town": "Dolores",
-    "costa": "Costa Blanca South",
-    "n_listings": 10,
-    "median_price_eur": 422500,
-    "median_pm2_eur": 4041,
-    "p25_pm2_eur": 3785,
-    "p75_pm2_eur": 4671,
-    "median_built_m2": 85,
-    "villa_share_pct": 100,
-    "median_beach_km": 12
   },
   {
     "town": "La Manga Club",
