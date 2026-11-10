@@ -4719,6 +4719,32 @@
     "still_listed": false
   },
   {
+    "avn_id": "N10086",
+    "town": "Puerto de Mazarron",
+    "region": "costa-calida",
+    "type": "Apartment",
+    "beds": 3,
+    "built_m2": 69,
+    "last_price_eur": 285000,
+    "last_pm2_eur": 4130,
+    "last_seen_date": "2026-11-10",
+    "relisted_on": null,
+    "still_listed": true
+  },
+  {
+    "avn_id": "N7598",
+    "town": "Mijas",
+    "region": "costa-del-sol",
+    "type": "Penthouse",
+    "beds": 3,
+    "built_m2": 85,
+    "last_price_eur": 495000,
+    "last_pm2_eur": 5824,
+    "last_seen_date": "2026-11-10",
+    "relisted_on": null,
+    "still_listed": true
+  },
+  {
     "avn_id": "N8517",
     "town": "Torre Pacheco",
     "region": "costa-calida",
@@ -4795,6 +4821,32 @@
     "last_seen_date": "2026-11-10",
     "relisted_on": null,
     "still_listed": false
+  },
+  {
+    "avn_id": "SP0857",
+    "town": "Alicante",
+    "region": "cb-north",
+    "type": "Penthouse",
+    "beds": 4,
+    "built_m2": 84,
+    "last_price_eur": 456500,
+    "last_pm2_eur": 5435,
+    "last_seen_date": "2026-11-10",
+    "relisted_on": null,
+    "still_listed": true
+  },
+  {
+    "avn_id": "SP1344",
+    "town": "Torremolinos",
+    "region": "costa-del-sol",
+    "type": "Penthouse",
+    "beds": 2,
+    "built_m2": 74,
+    "last_price_eur": 481000,
+    "last_pm2_eur": 6500,
+    "last_seen_date": "2026-11-10",
+    "relisted_on": null,
+    "still_listed": true
   },
   {
     "avn_id": "SP1345",

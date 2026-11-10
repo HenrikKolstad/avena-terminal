@@ -811,11 +811,11 @@
   },
   {
     "date": "2026-11-10",
-    "listings_observed": 2064,
-    "price_increases": 10,
-    "price_reductions": 5,
-    "median_abs_move_pct": 3.45,
-    "delistings": 12,
+    "listings_observed": 2066,
+    "price_increases": 22,
+    "price_reductions": 6,
+    "median_abs_move_pct": 2.75,
+    "delistings": 16,
     "relistings": 0
   }
 ]

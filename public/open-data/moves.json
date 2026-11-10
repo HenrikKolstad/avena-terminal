@@ -8880,6 +8880,46 @@
     "type": "Bungalow"
   },
   {
+    "avn_id": "N10036",
+    "date": "2026-11-10",
+    "prev_date": "2026-11-09",
+    "prev_price_eur": 493590,
+    "new_price_eur": 499194,
+    "change_pct": 1.14,
+    "town": "La Romana",
+    "type": "Villa"
+  },
+  {
+    "avn_id": "N10037",
+    "date": "2026-11-10",
+    "prev_date": "2026-11-09",
+    "prev_price_eur": 369927,
+    "new_price_eur": 373771,
+    "change_pct": 1.04,
+    "town": "La Romana",
+    "type": "Villa"
+  },
+  {
+    "avn_id": "N10087",
+    "date": "2026-11-10",
+    "prev_date": "2026-11-09",
+    "prev_price_eur": 187000,
+    "new_price_eur": 198000,
+    "change_pct": 5.88,
+    "town": "Puerto de Mazarron",
+    "type": "Apartment"
+  },
+  {
+    "avn_id": "N10089",
+    "date": "2026-11-10",
+    "prev_date": "2026-11-09",
+    "prev_price_eur": 328000,
+    "new_price_eur": 348000,
+    "change_pct": 6.1,
+    "town": "Puerto de Mazarron",
+    "type": "Penthouse"
+  },
+  {
     "avn_id": "N7434",
     "date": "2026-11-10",
     "prev_date": "2026-11-09",
@@ -8900,6 +8940,26 @@
     "type": "Townhouse"
   },
   {
+    "avn_id": "N7591",
+    "date": "2026-11-10",
+    "prev_date": "2026-11-09",
+    "prev_price_eur": 470000,
+    "new_price_eur": 570000,
+    "change_pct": 21.28,
+    "town": "Mijas",
+    "type": "Apartment"
+  },
+  {
+    "avn_id": "N7606",
+    "date": "2026-11-10",
+    "prev_date": "2026-11-09",
+    "prev_price_eur": 390000,
+    "new_price_eur": 365000,
+    "change_pct": -6.41,
+    "town": "Estepona",
+    "type": "Apartment"
+  },
+  {
     "avn_id": "N8618",
     "date": "2026-11-10",
     "prev_date": "2026-11-09",
@@ -8908,6 +8968,16 @@
     "change_pct": 3.64,
     "town": "Fuente Álamo",
     "type": "Villa"
+  },
+  {
+    "avn_id": "N9206",
+    "date": "2026-11-10",
+    "prev_date": "2026-11-09",
+    "prev_price_eur": 280000,
+    "new_price_eur": 270000,
+    "change_pct": -3.57,
+    "town": "San Javier",
+    "type": "Apartment"
   },
   {
     "avn_id": "N9262",
@@ -8970,6 +9040,76 @@
     "type": "Townhouse"
   },
   {
+    "avn_id": "N9949",
+    "date": "2026-11-10",
+    "prev_date": "2026-11-09",
+    "prev_price_eur": 357927,
+    "new_price_eur": 361771,
+    "change_pct": 1.07,
+    "town": "Pinoso",
+    "type": "Villa"
+  },
+  {
+    "avn_id": "N9950",
+    "date": "2026-11-10",
+    "prev_date": "2026-11-09",
+    "prev_price_eur": 446117,
+    "new_price_eur": 451216,
+    "change_pct": 1.14,
+    "town": "Pinoso",
+    "type": "Villa"
+  },
+  {
+    "avn_id": "N9951",
+    "date": "2026-11-10",
+    "prev_date": "2026-11-09",
+    "prev_price_eur": 383761,
+    "new_price_eur": 387973,
+    "change_pct": 1.1,
+    "town": "Pinoso",
+    "type": "Villa"
+  },
+  {
+    "avn_id": "N9952",
+    "date": "2026-11-10",
+    "prev_date": "2026-11-09",
+    "prev_price_eur": 512590,
+    "new_price_eur": 518465,
+    "change_pct": 1.15,
+    "town": "Pinoso",
+    "type": "Villa"
+  },
+  {
+    "avn_id": "N9953",
+    "date": "2026-11-10",
+    "prev_date": "2026-11-09",
+    "prev_price_eur": 500590,
+    "new_price_eur": 574010,
+    "change_pct": 14.67,
+    "town": "Pinoso",
+    "type": "Villa"
+  },
+  {
+    "avn_id": "N9955",
+    "date": "2026-11-10",
+    "prev_date": "2026-11-09",
+    "prev_price_eur": 408927,
+    "new_price_eur": 412771,
+    "change_pct": 0.94,
+    "town": "Aspe",
+    "type": "Villa"
+  },
+  {
+    "avn_id": "N9956",
+    "date": "2026-11-10",
+    "prev_date": "2026-11-09",
+    "prev_price_eur": 434761,
+    "new_price_eur": 438973,
+    "change_pct": 0.97,
+    "town": "Aspe",
+    "type": "Villa"
+  },
+  {
     "avn_id": "N9983",
     "date": "2026-11-10",
     "prev_date": "2026-11-09",
@@ -8978,16 +9118,6 @@
     "change_pct": 1.1,
     "town": "Algorfa",
     "type": "Bungalow"
-  },
-  {
-    "avn_id": "SP0856",
-    "date": "2026-11-10",
-    "prev_date": "2026-11-09",
-    "prev_price_eur": 406500,
-    "new_price_eur": 389500,
-    "change_pct": -4.18,
-    "town": "Alicante",
-    "type": "Penthouse"
   },
   {
     "avn_id": "SP0965",
