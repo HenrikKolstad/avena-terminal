@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "changes": [
+    {
+      "schema_version": 1,
+      "effective": "2026-11-10",
+      "format": "csv.gz",
+      "summary": "First published bulk schema. One gzipped CSV per frozen vintage week. Columns are the town and province rows already in that vintage, with the capture date and ISO week repeated on each row. An empty cell is a null on the vintage row. A week with no frozen vintage has no file. Parquet is not part of schema 1.",
+      "columns": [
+        {
+          "name": "vintage_date",
+          "description": "Capture date of the frozen vintage: the last eligible public/data.json commit in that closed ISO week. Repeated on every row so weeks can be concatenated."
+        },
+        {
+          "name": "iso_week",
+          "description": "ISO week of the capture date, Monday to Sunday, UTC."
+        },
+        {
+          "name": "week_start",
+          "description": "Monday of that ISO week, UTC."
+        },
+        {
+          "name": "week_end",
+          "description": "Sunday of that ISO week, UTC."
+        },
+        {
+          "name": "level",
+          "description": "province or town. Copied from the vintage row."
+        },
+        {
+          "name": "key",
+          "description": "Province key or town name, copied from the vintage row."
+        },
+        {
+          "name": "name",
+          "description": "Display name, copied from the vintage row."
+        },
+        {
+          "name": "province",
+          "description": "Province name on a town row. Empty on a province row. Copied from the vintage row."
+        },
+        {
+          "name": "costa",
+          "description": "Costa label, copied from the vintage row. Empty when the vintage left it empty."
+        },
+        {
+          "name": "live_listings",
+          "description": "Listings in that place on the capture date. A listing is one feed reference, not one dwelling."
+        },
+        {
+          "name": "priced_listings",
+          "description": "Listings in that place with a positive asking EUR per square metre."
+        },
+        {
+          "name": "median_asking_eur_m2",
+          "description": "Median asking EUR per square metre, copied from the vintage row. Empty when the vintage published no median. No value is filled in from another day."
+        },
+        {
+          "name": "comparable_listings",
+          "description": "Same ref and same place with a positive asking price in this vintage and the previous one. Empty when there is no previous vintage."
+        },
+        {
+          "name": "price_cuts",
+          "description": "Comparable listings with a lower asking price on the capture date. Empty when there is no previous vintage."
+        },
+        {
+          "name": "price_rises",
+          "description": "Comparable listings with a higher asking price on the capture date. Empty when there is no previous vintage."
+        },
+        {
+          "name": "price_cut_share",
+          "description": "price_cuts divided by comparable listings, the decimal string already on the vintage row. Empty when the vintage left it empty."
+        },
+        {
+          "name": "price_rise_share",
+          "description": "price_rises divided by the same comparable count, the decimal string already on the vintage row. Empty when the vintage left it empty."
+        },
+        {
+          "name": "new_listings",
+          "description": "A ref in this place on the capture date that was not in the previous book. Empty when there is no previous vintage."
+        },
+        {
+          "name": "removed_listings",
+          "description": "A ref that was in this place in the previous vintage and is absent from the whole book on the capture date. Leaving the book is not a recorded sale. Empty when there is no previous vintage."
+        },
+        {
+          "name": "reassigned_in",
+          "description": "A ref present in both books that moved into this place. Empty when there is no previous vintage."
+        },
+        {
+          "name": "reassigned_out",
+          "description": "A ref present in both books that moved out of this place. Empty when there is no previous vintage."
+        }
+      ]
+    }
+  ]
+}

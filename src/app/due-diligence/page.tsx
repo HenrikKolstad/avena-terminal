@@ -179,6 +179,7 @@ export default async function DueDiligencePage() {
           <Link href="/portugal/official" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Portugal official benchmark</Link>
           <Link href="/europe/official" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Eurostat house price index</Link>
           <Link href="/data/vintages" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Weekly vintages</Link>
+          <Link href="/data/bulk" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Weekly bulk files</Link>
           <Link href="/data/price-index" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Same-unit price index</Link>
           <Link href="/data/absorption" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Listing absorption</Link>
         </div>
@@ -344,6 +345,8 @@ export default async function DueDiligencePage() {
           <p>{pack.point_in_time.absorption}</p>
           <p>
             <Link href="/data/vintages" className="text-primary hover:text-foreground">Weekly vintages</Link>
+            {' · '}
+            <Link href="/data/bulk" className="text-primary hover:text-foreground">Weekly bulk files</Link>
             {' · '}
             <Link href="/data/price-index" className="text-primary hover:text-foreground">Same-unit price index</Link>
             {' · '}

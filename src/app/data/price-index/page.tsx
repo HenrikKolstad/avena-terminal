@@ -260,6 +260,7 @@ export default function PriceIndexPage() {
           <Link href="/api/v1/price-index" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">JSON</Link>
           <Link href="/api/v1/price-index?format=csv" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">CSV</Link>
           <Link href="/data/vintages" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Weekly vintages</Link>
+          <Link href="/data/bulk" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Bulk files</Link>
           <Link href="/data/absorption" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Listing absorption</Link>
           <Link href="/methodology#price-moves" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Unit-identity rule</Link>
           <Link href="/official" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Official statistics</Link>

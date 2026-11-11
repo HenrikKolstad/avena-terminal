@@ -43,6 +43,10 @@ const nextConfig: NextConfig = {
     '/api/v1/vintages': ['./data/vintages/**/*.json'],
     '/api/v1/vintages/[date]': ['./data/vintages/**/*.json'],
     '/data/vintages': ['./data/vintages/**/*.json'],
+    '/api/v1/bulk': ['./data/bulk/**/*', './data/vintages/**/*.json'],
+    '/api/v1/bulk/[date]': ['./data/bulk/**/*', './data/vintages/**/*.json'],
+    '/api/v1/bulk/schema': ['./data/bulk/**/*'],
+    '/data/bulk': ['./data/bulk/**/*', './data/vintages/**/*.json'],
   },
   // Explicit Turbopack workspace root — silences "inferred workspace root"
   // warning that fires when a lockfile exists up-tree (e.g. in HOME dir).

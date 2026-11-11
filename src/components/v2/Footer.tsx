@@ -53,6 +53,7 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
       { label: 'Open Dataset',    href: '/dataset' },
       { label: 'Due diligence',  href: '/due-diligence' },
       { label: 'Weekly vintages', href: '/data/vintages' },
+      { label: 'Weekly bulk files', href: '/data/bulk' },
       { label: 'Same-unit price index', href: '/data/price-index' },
       { label: 'Listing absorption', href: '/data/absorption' },
       { label: 'Portugal market', href: '/portugal' },

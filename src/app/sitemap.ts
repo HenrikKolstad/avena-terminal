@@ -108,6 +108,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ['/dataset',          'weekly',  0.9],
     ['/due-diligence',    'weekly',  0.85],
     ['/data/vintages',    'weekly',  0.8],
+    ['/data/bulk',        'weekly',  0.8],
     ['/data/price-index', 'weekly',  0.8],
     ['/data/absorption',  'weekly',  0.8],
     ['/papers/delphi',    'monthly', 0.85],
