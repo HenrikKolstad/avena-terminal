@@ -1,0 +1,1882 @@
+{
+  "schema_version": 1,
+  "name": "Avena data quality",
+  "built_at": "2026-11-11T23:44:54.155Z",
+  "series_start": "2026-08-05",
+  "method": "Daily capture counts are the days in the observation ledger published with the open dataset. That ledger counts listing rows in Avena's price snapshots from 2026-08-05. A calendar day in that span with no row is missing. Its listing count is left blank. Nothing is interpolated. The declared capture gap is 2026-10-14 to 2026-10-20. Field completeness and coverage by province and town are counted on the current committed listing book, the book the site serves. Weekly new listings and delistings are the public absorption series from the same daily snapshots. A delisting is a listing reference that was seen and is absent from the latest snapshot. It is not a confirmed sale. Same-unit figures compare closed-week copies of the listing book, the same captures as the weekly vintages and the same-unit asking-price index. A price change counts only when that index's unit-identity check calls it the same unit: property type, bedrooms and bathrooms equal, and built and plot size within 2%. A change of 25% or more also needs full specs on both sides, the same photo set, a new EUR per square metre inside the area band, and a price that does not return exactly to an earlier asking price of that reference on this weekly series within 365 days. A specification change is excluded. A large change that fails the check is held back. A step that crosses the declared gap is the change between the two captures that exist. It is not split across the missing days. The listing record has no brochure or developer-PDF field. A PDF link is counted only when the listing URL itself is an http or https address ending in .pdf.",
+  "caveats": [
+    "The trusted daily series starts on 2026-08-05. Earlier stored rows repeated a frozen book and are not included. The history is short.",
+    "Figures are asking prices of listings. A listing reference on a new-build is often a unit type in a development, not one dwelling.",
+    "A delisting means the reference left the captured feed. It may have sold or it may have been withdrawn. It is not a confirmed sale.",
+    "Same-unit counts are weekly comparisons of closed-week listing files. They are not every daily price change. The open dataset moves file contains only changes that passed the same-unit check, so it cannot be the denominator of a pass share.",
+    "A change below 25% is accepted when a specification field is missing on one side. A change of 25% or more is held back when a required spec is missing.",
+    "Days inside a declared capture gap have no listing count. No day is filled in from another day.",
+    "Some days have a price snapshot and no commit of the listing file. Those days are listed under feed-file gaps. They are not missing snapshots.",
+    "Plot size is often absent. A missing plot is absent, not zero square metres.",
+    "The current week is not in the same-unit comparison until that week is closed and frozen."
+  ],
+  "known_gaps": [
+    {
+      "from": "2026-10-14",
+      "to": "2026-10-20",
+      "note": "Declared capture gap 2026-10-14 to 2026-10-20. No snapshot. No listing count is published for these days, and none is filled in."
+    }
+  ],
+  "sources": {
+    "daily_capture": {
+      "file": "public/open-data/movement-ledger.csv",
+      "dataset_version": "v2026-11-11",
+      "as_of": "2026-11-11"
+    },
+    "current_book": {
+      "file": "public/data.json",
+      "feed_generated_at": "2026-11-11T12:39:01.800Z",
+      "listings": 2065
+    },
+    "feed_file_gaps": {
+      "file": "data/vintages/manifest.json"
+    },
+    "churn": {
+      "file": "data/absorption.json",
+      "as_of": "2026-11-11"
+    },
+    "same_unit": {
+      "listing_file": "public/data.json at each frozen vintage commit",
+      "rule": "src/lib/unit-identity.ts via classifyPair in src/lib/price-index.ts"
+    },
+    "daily_passed_moves": {
+      "file": "public/open-data/moves.csv",
+      "rows": 916,
+      "note": "These rows are daily price changes that passed the same-unit check. Changes held back are not in the file, so this count is not a pass share."
+    }
+  },
+  "book": {
+    "listings": 2065,
+    "feed_generated_at": "2026-11-11T12:39:01.800Z",
+    "feed_generated_date": "2026-11-11",
+    "feed_listings": 2065,
+    "content_sha256": "c50fd1dd1a44042beca28d70f3be04fbb2775238dcf428400f5ebcb089779d5c",
+    "agrees_with_feed_meta": true,
+    "latest_snapshot_date": "2026-11-11",
+    "latest_snapshot_listings": 2065,
+    "agrees_with_latest_snapshot": true
+  },
+  "capture": {
+    "from": "2026-08-05",
+    "to": "2026-11-11",
+    "calendar_days": 99,
+    "days_captured": 92,
+    "days_missing": 7,
+    "missing_dates": [
+      "2026-10-14",
+      "2026-10-15",
+      "2026-10-16",
+      "2026-10-17",
+      "2026-10-18",
+      "2026-10-19",
+      "2026-10-20"
+    ],
+    "missing_inside_declared_gap": [
+      "2026-10-14",
+      "2026-10-15",
+      "2026-10-16",
+      "2026-10-17",
+      "2026-10-18",
+      "2026-10-19",
+      "2026-10-20"
+    ],
+    "missing_outside_declared_gap": [],
+    "min_listings": 1990,
+    "max_listings": 2076,
+    "days": [
+      {
+        "date": "2026-08-05",
+        "listings": 1990,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-06",
+        "listings": 1992,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-07",
+        "listings": 1993,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-08",
+        "listings": 1996,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-09",
+        "listings": 1996,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-10",
+        "listings": 1999,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-11",
+        "listings": 1999,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-12",
+        "listings": 2004,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-13",
+        "listings": 2000,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-14",
+        "listings": 2007,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-15",
+        "listings": 2005,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-16",
+        "listings": 2017,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-17",
+        "listings": 2017,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-18",
+        "listings": 2026,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-19",
+        "listings": 2011,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-20",
+        "listings": 2016,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-21",
+        "listings": 2020,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-22",
+        "listings": 2034,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-23",
+        "listings": 2035,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-24",
+        "listings": 2035,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-25",
+        "listings": 2036,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-26",
+        "listings": 2036,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-27",
+        "listings": 2041,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-28",
+        "listings": 2047,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-29",
+        "listings": 2042,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-30",
+        "listings": 2044,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-08-31",
+        "listings": 2044,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-01",
+        "listings": 2043,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-02",
+        "listings": 2033,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-03",
+        "listings": 2034,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-04",
+        "listings": 2037,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-05",
+        "listings": 2026,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-06",
+        "listings": 2034,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-07",
+        "listings": 2034,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-08",
+        "listings": 2037,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-09",
+        "listings": 2037,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-10",
+        "listings": 2036,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-11",
+        "listings": 2035,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-12",
+        "listings": 2036,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-13",
+        "listings": 2042,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-14",
+        "listings": 2042,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-15",
+        "listings": 2044,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-16",
+        "listings": 2046,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-17",
+        "listings": 2045,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-18",
+        "listings": 2038,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-19",
+        "listings": 2039,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-20",
+        "listings": 2039,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-21",
+        "listings": 2039,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-22",
+        "listings": 2036,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-23",
+        "listings": 2036,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-24",
+        "listings": 2034,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-25",
+        "listings": 2029,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-26",
+        "listings": 2028,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-27",
+        "listings": 2028,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-28",
+        "listings": 2032,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-29",
+        "listings": 2023,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-09-30",
+        "listings": 2029,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-01",
+        "listings": 2026,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-02",
+        "listings": 2025,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-03",
+        "listings": 2023,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-04",
+        "listings": 2030,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-05",
+        "listings": 2030,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-06",
+        "listings": 2030,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-07",
+        "listings": 2033,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-08",
+        "listings": 2034,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-09",
+        "listings": 2039,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-10",
+        "listings": 2039,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-11",
+        "listings": 2039,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-12",
+        "listings": 2039,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-13",
+        "listings": 2039,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-14",
+        "listings": null,
+        "captured": false,
+        "in_declared_gap": true
+      },
+      {
+        "date": "2026-10-15",
+        "listings": null,
+        "captured": false,
+        "in_declared_gap": true
+      },
+      {
+        "date": "2026-10-16",
+        "listings": null,
+        "captured": false,
+        "in_declared_gap": true
+      },
+      {
+        "date": "2026-10-17",
+        "listings": null,
+        "captured": false,
+        "in_declared_gap": true
+      },
+      {
+        "date": "2026-10-18",
+        "listings": null,
+        "captured": false,
+        "in_declared_gap": true
+      },
+      {
+        "date": "2026-10-19",
+        "listings": null,
+        "captured": false,
+        "in_declared_gap": true
+      },
+      {
+        "date": "2026-10-20",
+        "listings": null,
+        "captured": false,
+        "in_declared_gap": true
+      },
+      {
+        "date": "2026-10-21",
+        "listings": 2034,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-22",
+        "listings": 2039,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-23",
+        "listings": 2043,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-24",
+        "listings": 2040,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-25",
+        "listings": 2051,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-26",
+        "listings": 2051,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-27",
+        "listings": 2055,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-28",
+        "listings": 2058,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-29",
+        "listings": 2063,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-30",
+        "listings": 2056,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-10-31",
+        "listings": 2065,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-11-01",
+        "listings": 2064,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-11-02",
+        "listings": 2064,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-11-03",
+        "listings": 2061,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-11-04",
+        "listings": 2069,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-11-05",
+        "listings": 2073,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-11-06",
+        "listings": 2076,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-11-07",
+        "listings": 2074,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-11-08",
+        "listings": 2075,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-11-09",
+        "listings": 2075,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-11-10",
+        "listings": 2066,
+        "captured": true,
+        "in_declared_gap": false
+      },
+      {
+        "date": "2026-11-11",
+        "listings": 2065,
+        "captured": true,
+        "in_declared_gap": false
+      }
+    ]
+  },
+  "feed_file_gaps": {
+    "definition": "Days, on or after the series start, with no eligible commit of the listing file. Taken from the vintage manifest. A day can be on this list and still have a price snapshot.",
+    "dates": [
+      "2026-08-17",
+      "2026-09-14",
+      "2026-09-21",
+      "2026-10-10",
+      "2026-10-11",
+      "2026-10-12",
+      "2026-10-14",
+      "2026-10-15",
+      "2026-10-16",
+      "2026-10-17",
+      "2026-10-18",
+      "2026-10-19",
+      "2026-10-20",
+      "2026-10-26",
+      "2026-11-01"
+    ],
+    "no_price_snapshot": [
+      "2026-10-14",
+      "2026-10-15",
+      "2026-10-16",
+      "2026-10-17",
+      "2026-10-18",
+      "2026-10-19",
+      "2026-10-20"
+    ],
+    "price_snapshot_present": [
+      "2026-08-17",
+      "2026-09-14",
+      "2026-09-21",
+      "2026-10-10",
+      "2026-10-11",
+      "2026-10-12",
+      "2026-10-26",
+      "2026-11-01"
+    ],
+    "outside_snapshot_series": []
+  },
+  "completeness": {
+    "listings": 2065,
+    "fields": [
+      {
+        "id": "asking_price",
+        "label": "Asking price",
+        "present": 2065,
+        "listings": 2065,
+        "share": "1.0000",
+        "note": "One positive asking price. A from-to range would not be counted."
+      },
+      {
+        "id": "built_m2",
+        "label": "Built size, m²",
+        "present": 2065,
+        "listings": 2065,
+        "share": "1.0000",
+        "note": "Built area greater than zero."
+      },
+      {
+        "id": "bedrooms",
+        "label": "Bedrooms",
+        "present": 2065,
+        "listings": 2065,
+        "share": "1.0000",
+        "note": "A numeric bedroom count, including zero. 15 listings have a count of 0. Zero is present, not missing."
+      },
+      {
+        "id": "unit_type",
+        "label": "Unit type",
+        "present": 2065,
+        "listings": 2065,
+        "share": "1.0000",
+        "note": "A non-empty unit type."
+      },
+      {
+        "id": "town",
+        "label": "Town",
+        "present": 2065,
+        "listings": 2065,
+        "share": "1.0000",
+        "note": "The first part of the location text, before the comma."
+      },
+      {
+        "id": "province",
+        "label": "Province",
+        "present": 2065,
+        "listings": 2065,
+        "share": "1.0000",
+        "note": "Every listing location maps to a covered province."
+      },
+      {
+        "id": "coordinates",
+        "label": "Coordinates",
+        "present": 2065,
+        "listings": 2065,
+        "share": "1.0000",
+        "note": "Finite latitude and longitude, excluding the pair 0, 0."
+      },
+      {
+        "id": "brochure_pdf",
+        "label": "Developer PDF or brochure link",
+        "present": 0,
+        "listings": 2065,
+        "share": "0.0000",
+        "note": "The listing record has no brochure or developer-PDF field. Counted only when the listing URL is an http or https address ending in .pdf."
+      },
+      {
+        "id": "listing_url",
+        "label": "Listing page URL",
+        "present": 1159,
+        "listings": 2065,
+        "share": "0.5613",
+        "note": "906 listings have a mailto address and no page URL."
+      },
+      {
+        "id": "bathrooms",
+        "label": "Bathrooms",
+        "present": 2065,
+        "listings": 2065,
+        "share": "1.0000",
+        "note": "A numeric bathroom count, including zero."
+      },
+      {
+        "id": "plot_m2",
+        "label": "Plot size, m²",
+        "present": 822,
+        "listings": 2065,
+        "share": "0.3981",
+        "note": "Plot area greater than zero. Apartments often have none. A missing plot is absent, not zero square metres."
+      },
+      {
+        "id": "images",
+        "label": "Images",
+        "present": 2065,
+        "listings": 2065,
+        "share": "1.0000",
+        "note": "At least one image URL."
+      },
+      {
+        "id": "developer_name",
+        "label": "Developer name",
+        "present": 2065,
+        "listings": 2065,
+        "share": "1.0000",
+        "note": "A non-empty developer name on the listing."
+      }
+    ]
+  },
+  "coverage": {
+    "provinces": [
+      {
+        "name": "Málaga",
+        "province": null,
+        "listings": 863,
+        "share": "0.4179"
+      },
+      {
+        "name": "Alicante",
+        "province": null,
+        "listings": 829,
+        "share": "0.4015"
+      },
+      {
+        "name": "Murcia",
+        "province": null,
+        "listings": 331,
+        "share": "0.1603"
+      },
+      {
+        "name": "Cádiz",
+        "province": null,
+        "listings": 35,
+        "share": "0.0169"
+      },
+      {
+        "name": "Granada",
+        "province": null,
+        "listings": 6,
+        "share": "0.0029"
+      },
+      {
+        "name": "Almería",
+        "province": null,
+        "listings": 1,
+        "share": "0.0005"
+      }
+    ],
+    "towns": [
+      {
+        "name": "Estepona",
+        "province": "Málaga",
+        "listings": 234,
+        "share": "0.1133"
+      },
+      {
+        "name": "Mijas",
+        "province": "Málaga",
+        "listings": 188,
+        "share": "0.0910"
+      },
+      {
+        "name": "Torrevieja",
+        "province": "Alicante",
+        "listings": 123,
+        "share": "0.0596"
+      },
+      {
+        "name": "Fuengirola",
+        "province": "Málaga",
+        "listings": 101,
+        "share": "0.0489"
+      },
+      {
+        "name": "Pilar de La Horadada",
+        "province": "Alicante",
+        "listings": 93,
+        "share": "0.0450"
+      },
+      {
+        "name": "Marbella",
+        "province": "Málaga",
+        "listings": 80,
+        "share": "0.0387"
+      },
+      {
+        "name": "Los Alcazares",
+        "province": "Murcia",
+        "listings": 75,
+        "share": "0.0363"
+      },
+      {
+        "name": "Finestrat",
+        "province": "Alicante",
+        "listings": 57,
+        "share": "0.0276"
+      },
+      {
+        "name": "Guardamar del Segura",
+        "province": "Alicante",
+        "listings": 55,
+        "share": "0.0266"
+      },
+      {
+        "name": "Casares",
+        "province": "Málaga",
+        "listings": 52,
+        "share": "0.0252"
+      },
+      {
+        "name": "San Pedro del Pinatar",
+        "province": "Murcia",
+        "listings": 51,
+        "share": "0.0247"
+      },
+      {
+        "name": "Torre Pacheco",
+        "province": "Murcia",
+        "listings": 48,
+        "share": "0.0232"
+      },
+      {
+        "name": "Benijofar",
+        "province": "Alicante",
+        "listings": 42,
+        "share": "0.0203"
+      },
+      {
+        "name": "Manilva",
+        "province": "Málaga",
+        "listings": 40,
+        "share": "0.0194"
+      },
+      {
+        "name": "Benahavís",
+        "province": "Málaga",
+        "listings": 36,
+        "share": "0.0174"
+      },
+      {
+        "name": "Algorfa",
+        "province": "Alicante",
+        "listings": 30,
+        "share": "0.0145"
+      },
+      {
+        "name": "Pinoso",
+        "province": "Alicante",
+        "listings": 30,
+        "share": "0.0145"
+      },
+      {
+        "name": "San Miguel de Salinas",
+        "province": "Alicante",
+        "listings": 30,
+        "share": "0.0145"
+      },
+      {
+        "name": "Villajoyosa",
+        "province": "Alicante",
+        "listings": 28,
+        "share": "0.0136"
+      },
+      {
+        "name": "Polop",
+        "province": "Alicante",
+        "listings": 26,
+        "share": "0.0126"
+      },
+      {
+        "name": "Torremolinos",
+        "province": "Málaga",
+        "listings": 26,
+        "share": "0.0126"
+      },
+      {
+        "name": "Rojales",
+        "province": "Alicante",
+        "listings": 24,
+        "share": "0.0116"
+      },
+      {
+        "name": "Málaga",
+        "province": "Málaga",
+        "listings": 23,
+        "share": "0.0111"
+      },
+      {
+        "name": "Benalmádena",
+        "province": "Málaga",
+        "listings": 22,
+        "share": "0.0107"
+      },
+      {
+        "name": "Baños y Mendigo",
+        "province": "Murcia",
+        "listings": 21,
+        "share": "0.0102"
+      },
+      {
+        "name": "Orihuela Costa",
+        "province": "Alicante",
+        "listings": 21,
+        "share": "0.0102"
+      },
+      {
+        "name": "San Javier",
+        "province": "Murcia",
+        "listings": 20,
+        "share": "0.0097"
+      },
+      {
+        "name": "Vélez Málaga",
+        "province": "Málaga",
+        "listings": 19,
+        "share": "0.0092"
+      },
+      {
+        "name": "El Verger",
+        "province": "Alicante",
+        "listings": 18,
+        "share": "0.0087"
+      },
+      {
+        "name": "San Roque",
+        "province": "Cádiz",
+        "listings": 18,
+        "share": "0.0087"
+      },
+      {
+        "name": "Calpe",
+        "province": "Alicante",
+        "listings": 16,
+        "share": "0.0077"
+      },
+      {
+        "name": "Fuente Álamo",
+        "province": "Murcia",
+        "listings": 16,
+        "share": "0.0077"
+      },
+      {
+        "name": "Orihuela",
+        "province": "Alicante",
+        "listings": 16,
+        "share": "0.0077"
+      },
+      {
+        "name": "Alicante",
+        "province": "Alicante",
+        "listings": 15,
+        "share": "0.0073"
+      },
+      {
+        "name": "La Manga del Mar Menor",
+        "province": "Murcia",
+        "listings": 15,
+        "share": "0.0073"
+      },
+      {
+        "name": "Aguilas",
+        "province": "Murcia",
+        "listings": 13,
+        "share": "0.0063"
+      },
+      {
+        "name": "El Campello",
+        "province": "Alicante",
+        "listings": 13,
+        "share": "0.0063"
+      },
+      {
+        "name": "Jávea Xàbia",
+        "province": "Alicante",
+        "listings": 13,
+        "share": "0.0063"
+      },
+      {
+        "name": "la Nucia",
+        "province": "Alicante",
+        "listings": 13,
+        "share": "0.0063"
+      },
+      {
+        "name": "Hondón de las Nieves",
+        "province": "Alicante",
+        "listings": 12,
+        "share": "0.0058"
+      },
+      {
+        "name": "La Linea De La Concepcion",
+        "province": "Cádiz",
+        "listings": 12,
+        "share": "0.0058"
+      },
+      {
+        "name": "rincon de la victoria",
+        "province": "Málaga",
+        "listings": 12,
+        "share": "0.0058"
+      },
+      {
+        "name": "San Pedro De Alcantara",
+        "province": "Málaga",
+        "listings": 12,
+        "share": "0.0058"
+      },
+      {
+        "name": "Alhama De Murcia",
+        "province": "Murcia",
+        "listings": 11,
+        "share": "0.0053"
+      },
+      {
+        "name": "Benissa",
+        "province": "Alicante",
+        "listings": 11,
+        "share": "0.0053"
+      },
+      {
+        "name": "Dolores",
+        "province": "Alicante",
+        "listings": 11,
+        "share": "0.0053"
+      },
+      {
+        "name": "Cartagena",
+        "province": "Murcia",
+        "listings": 10,
+        "share": "0.0048"
+      },
+      {
+        "name": "Ciudad Quesada",
+        "province": "Alicante",
+        "listings": 10,
+        "share": "0.0048"
+      },
+      {
+        "name": "La Manga Club",
+        "province": "Murcia",
+        "listings": 10,
+        "share": "0.0048"
+      },
+      {
+        "name": "Puerto de Mazarron",
+        "province": "Murcia",
+        "listings": 10,
+        "share": "0.0048"
+      },
+      {
+        "name": "Santa Pola",
+        "province": "Alicante",
+        "listings": 10,
+        "share": "0.0048"
+      },
+      {
+        "name": "Mazarron",
+        "province": "Murcia",
+        "listings": 9,
+        "share": "0.0044"
+      },
+      {
+        "name": "Aspe",
+        "province": "Alicante",
+        "listings": 8,
+        "share": "0.0039"
+      },
+      {
+        "name": "Mutxamel",
+        "province": "Alicante",
+        "listings": 8,
+        "share": "0.0039"
+      },
+      {
+        "name": "Cox",
+        "province": "Alicante",
+        "listings": 7,
+        "share": "0.0034"
+      },
+      {
+        "name": "Formentera del Segura",
+        "province": "Alicante",
+        "listings": 7,
+        "share": "0.0034"
+      },
+      {
+        "name": "Moraira_Teulada",
+        "province": "Alicante",
+        "listings": 7,
+        "share": "0.0034"
+      },
+      {
+        "name": "San Fulgencio",
+        "province": "Alicante",
+        "listings": 7,
+        "share": "0.0034"
+      },
+      {
+        "name": "Almuñecar",
+        "province": "Granada",
+        "listings": 6,
+        "share": "0.0029"
+      },
+      {
+        "name": "Bigastro",
+        "province": "Alicante",
+        "listings": 6,
+        "share": "0.0029"
+      },
+      {
+        "name": "La Romana",
+        "province": "Alicante",
+        "listings": 6,
+        "share": "0.0029"
+      },
+      {
+        "name": "Ojen",
+        "province": "Málaga",
+        "listings": 6,
+        "share": "0.0029"
+      },
+      {
+        "name": "Torrox",
+        "province": "Málaga",
+        "listings": 6,
+        "share": "0.0029"
+      },
+      {
+        "name": "Benidorm",
+        "province": "Alicante",
+        "listings": 5,
+        "share": "0.0024"
+      },
+      {
+        "name": "Catral",
+        "province": "Alicante",
+        "listings": 5,
+        "share": "0.0024"
+      },
+      {
+        "name": "La Marina",
+        "province": "Alicante",
+        "listings": 5,
+        "share": "0.0024"
+      },
+      {
+        "name": "Monforte del Cid",
+        "province": "Alicante",
+        "listings": 5,
+        "share": "0.0024"
+      },
+      {
+        "name": "Sotogrande",
+        "province": "Cádiz",
+        "listings": 5,
+        "share": "0.0024"
+      },
+      {
+        "name": "Alfas del Pi",
+        "province": "Alicante",
+        "listings": 4,
+        "share": "0.0019"
+      },
+      {
+        "name": "Altea",
+        "province": "Alicante",
+        "listings": 4,
+        "share": "0.0019"
+      },
+      {
+        "name": "Daya Nueva",
+        "province": "Alicante",
+        "listings": 4,
+        "share": "0.0019"
+      },
+      {
+        "name": "Denia",
+        "province": "Alicante",
+        "listings": 4,
+        "share": "0.0019"
+      },
+      {
+        "name": "Lorca",
+        "province": "Murcia",
+        "listings": 4,
+        "share": "0.0019"
+      },
+      {
+        "name": "Los Montesinos",
+        "province": "Alicante",
+        "listings": 4,
+        "share": "0.0019"
+      },
+      {
+        "name": "Penaguila",
+        "province": "Alicante",
+        "listings": 4,
+        "share": "0.0019"
+      },
+      {
+        "name": "Avileses",
+        "province": "Murcia",
+        "listings": 3,
+        "share": "0.0015"
+      },
+      {
+        "name": "Calasparra",
+        "province": "Murcia",
+        "listings": 3,
+        "share": "0.0015"
+      },
+      {
+        "name": "Istán",
+        "province": "Málaga",
+        "listings": 3,
+        "share": "0.0015"
+      },
+      {
+        "name": "Jacarilla",
+        "province": "Alicante",
+        "listings": 3,
+        "share": "0.0015"
+      },
+      {
+        "name": "Yecla",
+        "province": "Murcia",
+        "listings": 3,
+        "share": "0.0015"
+      },
+      {
+        "name": "Alhaurín De La Torre",
+        "province": "Málaga",
+        "listings": 2,
+        "share": "0.0010"
+      },
+      {
+        "name": "Benejúzar",
+        "province": "Alicante",
+        "listings": 2,
+        "share": "0.0010"
+      },
+      {
+        "name": "Gran Alacant",
+        "province": "Alicante",
+        "listings": 2,
+        "share": "0.0010"
+      },
+      {
+        "name": "La Union",
+        "province": "Murcia",
+        "listings": 2,
+        "share": "0.0010"
+      },
+      {
+        "name": "Santiago de la Ribera",
+        "province": "Murcia",
+        "listings": 2,
+        "share": "0.0010"
+      },
+      {
+        "name": "Almoradi",
+        "province": "Alicante",
+        "listings": 1,
+        "share": "0.0005"
+      },
+      {
+        "name": "Benitachell",
+        "province": "Alicante",
+        "listings": 1,
+        "share": "0.0005"
+      },
+      {
+        "name": "Cabo de Palos",
+        "province": "Murcia",
+        "listings": 1,
+        "share": "0.0005"
+      },
+      {
+        "name": "Fortuna",
+        "province": "Murcia",
+        "listings": 1,
+        "share": "0.0005"
+      },
+      {
+        "name": "Lliber",
+        "province": "Alicante",
+        "listings": 1,
+        "share": "0.0005"
+      },
+      {
+        "name": "Los Nietos",
+        "province": "Murcia",
+        "listings": 1,
+        "share": "0.0005"
+      },
+      {
+        "name": "Los Urrutias",
+        "province": "Murcia",
+        "listings": 1,
+        "share": "0.0005"
+      },
+      {
+        "name": "Mojacar",
+        "province": "Almería",
+        "listings": 1,
+        "share": "0.0005"
+      },
+      {
+        "name": "Nerja",
+        "province": "Málaga",
+        "listings": 1,
+        "share": "0.0005"
+      },
+      {
+        "name": "Rafal",
+        "province": "Alicante",
+        "listings": 1,
+        "share": "0.0005"
+      },
+      {
+        "name": "San Juan Alicante",
+        "province": "Alicante",
+        "listings": 1,
+        "share": "0.0005"
+      },
+      {
+        "name": "Sucina",
+        "province": "Murcia",
+        "listings": 1,
+        "share": "0.0005"
+      }
+    ]
+  },
+  "churn": {
+    "as_of": "2026-11-11",
+    "definition": "A new listing is a reference first seen after the series start. A delisting is a reference seen in an earlier snapshot and absent from the latest one, dated the day after it was last seen. A delisting is not a confirmed sale. Weeks are Monday to Sunday. The count of days in a week is not repeated here: that absorption field counts calendar days outside the declared gap, not snapshots.",
+    "weeks": [
+      {
+        "week": "2026-08-03",
+        "week_end": "2026-08-09",
+        "new_listings": 32,
+        "delistings": 25,
+        "overlaps_declared_gap": false
+      },
+      {
+        "week": "2026-08-10",
+        "week_end": "2026-08-16",
+        "new_listings": 54,
+        "delistings": 25,
+        "overlaps_declared_gap": false
+      },
+      {
+        "week": "2026-08-17",
+        "week_end": "2026-08-23",
+        "new_listings": 41,
+        "delistings": 15,
+        "overlaps_declared_gap": false
+      },
+      {
+        "week": "2026-08-24",
+        "week_end": "2026-08-30",
+        "new_listings": 16,
+        "delistings": 6,
+        "overlaps_declared_gap": false
+      },
+      {
+        "week": "2026-08-31",
+        "week_end": "2026-09-06",
+        "new_listings": 21,
+        "delistings": 31,
+        "overlaps_declared_gap": false
+      },
+      {
+        "week": "2026-09-07",
+        "week_end": "2026-09-13",
+        "new_listings": 15,
+        "delistings": 15,
+        "overlaps_declared_gap": false
+      },
+      {
+        "week": "2026-09-14",
+        "week_end": "2026-09-20",
+        "new_listings": 9,
+        "delistings": 13,
+        "overlaps_declared_gap": false
+      },
+      {
+        "week": "2026-09-21",
+        "week_end": "2026-09-27",
+        "new_listings": 36,
+        "delistings": 52,
+        "overlaps_declared_gap": false
+      },
+      {
+        "week": "2026-09-28",
+        "week_end": "2026-10-04",
+        "new_listings": 19,
+        "delistings": 30,
+        "overlaps_declared_gap": false
+      },
+      {
+        "week": "2026-10-05",
+        "week_end": "2026-10-11",
+        "new_listings": 22,
+        "delistings": 24,
+        "overlaps_declared_gap": false
+      },
+      {
+        "week": "2026-10-12",
+        "week_end": "2026-10-18",
+        "new_listings": 0,
+        "delistings": 37,
+        "overlaps_declared_gap": true
+      },
+      {
+        "week": "2026-10-19",
+        "week_end": "2026-10-25",
+        "new_listings": 49,
+        "delistings": 14,
+        "overlaps_declared_gap": true
+      },
+      {
+        "week": "2026-10-26",
+        "week_end": "2026-11-01",
+        "new_listings": 31,
+        "delistings": 22,
+        "overlaps_declared_gap": false
+      },
+      {
+        "week": "2026-11-02",
+        "week_end": "2026-11-08",
+        "new_listings": 21,
+        "delistings": 13,
+        "overlaps_declared_gap": false
+      },
+      {
+        "week": "2026-11-09",
+        "week_end": "2026-11-15",
+        "new_listings": 9,
+        "delistings": 19,
+        "overlaps_declared_gap": false
+      }
+    ],
+    "new_listings": 375,
+    "delistings": 341
+  },
+  "same_unit": {
+    "grain": "Closed-week listing books. One comparison per frozen vintage after the first.",
+    "through": "2026-10-31",
+    "price_index_as_of": "2026-10-31",
+    "reconciled": true,
+    "price_index_check": {
+      "cuts": 223,
+      "rises": 485,
+      "unchanged": 23308,
+      "held_back_large_move": 3,
+      "excluded_spec_change": 46,
+      "reassigned": 0,
+      "excluded_unpriced": 0,
+      "excluded_price_range": 0
+    },
+    "counts": {
+      "passed": 708,
+      "passed_under_25": 690,
+      "passed_25_to_50": 13,
+      "passed_over_50": 5,
+      "held_spec": 37,
+      "held_spec_under_25": 26,
+      "held_spec_25_to_50": 9,
+      "held_spec_over_50": 2,
+      "held_large": 3,
+      "held_large_25_to_50": 3,
+      "held_large_over_50": 0,
+      "spec_only": 9,
+      "unchanged": 23308,
+      "reassigned": 0,
+      "excluded_price_range": 0,
+      "excluded_unpriced": 0
+    },
+    "price_changes": 748,
+    "pass_share": "0.9465",
+    "weeks": [
+      {
+        "passed": 44,
+        "passed_under_25": 43,
+        "passed_25_to_50": 1,
+        "passed_over_50": 0,
+        "held_spec": 2,
+        "held_spec_under_25": 1,
+        "held_spec_25_to_50": 1,
+        "held_spec_over_50": 0,
+        "held_large": 1,
+        "held_large_25_to_50": 1,
+        "held_large_over_50": 0,
+        "spec_only": 0,
+        "unchanged": 1914,
+        "reassigned": 0,
+        "excluded_price_range": 0,
+        "excluded_unpriced": 0,
+        "capture_date": "2026-08-16",
+        "compared_to": "2026-08-09",
+        "spans_declared_gap": false,
+        "note": null
+      },
+      {
+        "passed": 57,
+        "passed_under_25": 54,
+        "passed_25_to_50": 3,
+        "passed_over_50": 0,
+        "held_spec": 1,
+        "held_spec_under_25": 1,
+        "held_spec_25_to_50": 0,
+        "held_spec_over_50": 0,
+        "held_large": 0,
+        "held_large_25_to_50": 0,
+        "held_large_over_50": 0,
+        "spec_only": 1,
+        "unchanged": 1929,
+        "reassigned": 0,
+        "excluded_price_range": 0,
+        "excluded_unpriced": 0,
+        "capture_date": "2026-08-23",
+        "compared_to": "2026-08-16",
+        "spans_declared_gap": false,
+        "note": null
+      },
+      {
+        "passed": 18,
+        "passed_under_25": 18,
+        "passed_25_to_50": 0,
+        "passed_over_50": 0,
+        "held_spec": 5,
+        "held_spec_under_25": 4,
+        "held_spec_25_to_50": 1,
+        "held_spec_over_50": 0,
+        "held_large": 0,
+        "held_large_25_to_50": 0,
+        "held_large_over_50": 0,
+        "spec_only": 4,
+        "unchanged": 2003,
+        "reassigned": 0,
+        "excluded_price_range": 0,
+        "excluded_unpriced": 0,
+        "capture_date": "2026-08-30",
+        "compared_to": "2026-08-23",
+        "spans_declared_gap": false,
+        "note": null
+      },
+      {
+        "passed": 70,
+        "passed_under_25": 69,
+        "passed_25_to_50": 0,
+        "passed_over_50": 1,
+        "held_spec": 2,
+        "held_spec_under_25": 1,
+        "held_spec_25_to_50": 1,
+        "held_spec_over_50": 0,
+        "held_large": 0,
+        "held_large_25_to_50": 0,
+        "held_large_over_50": 0,
+        "spec_only": 1,
+        "unchanged": 1934,
+        "reassigned": 0,
+        "excluded_price_range": 0,
+        "excluded_unpriced": 0,
+        "capture_date": "2026-09-06",
+        "compared_to": "2026-08-30",
+        "spans_declared_gap": false,
+        "note": null
+      },
+      {
+        "passed": 71,
+        "passed_under_25": 66,
+        "passed_25_to_50": 3,
+        "passed_over_50": 2,
+        "held_spec": 3,
+        "held_spec_under_25": 2,
+        "held_spec_25_to_50": 0,
+        "held_spec_over_50": 1,
+        "held_large": 0,
+        "held_large_25_to_50": 0,
+        "held_large_over_50": 0,
+        "spec_only": 0,
+        "unchanged": 1942,
+        "reassigned": 0,
+        "excluded_price_range": 0,
+        "excluded_unpriced": 0,
+        "capture_date": "2026-09-13",
+        "compared_to": "2026-09-06",
+        "spans_declared_gap": false,
+        "note": null
+      },
+      {
+        "passed": 66,
+        "passed_under_25": 65,
+        "passed_25_to_50": 1,
+        "passed_over_50": 0,
+        "held_spec": 2,
+        "held_spec_under_25": 2,
+        "held_spec_25_to_50": 0,
+        "held_spec_over_50": 0,
+        "held_large": 0,
+        "held_large_25_to_50": 0,
+        "held_large_over_50": 0,
+        "spec_only": 0,
+        "unchanged": 1954,
+        "reassigned": 0,
+        "excluded_price_range": 0,
+        "excluded_unpriced": 0,
+        "capture_date": "2026-09-20",
+        "compared_to": "2026-09-13",
+        "spans_declared_gap": false,
+        "note": null
+      },
+      {
+        "passed": 76,
+        "passed_under_25": 74,
+        "passed_25_to_50": 2,
+        "passed_over_50": 0,
+        "held_spec": 5,
+        "held_spec_under_25": 3,
+        "held_spec_25_to_50": 2,
+        "held_spec_over_50": 0,
+        "held_large": 0,
+        "held_large_25_to_50": 0,
+        "held_large_over_50": 0,
+        "spec_only": 2,
+        "unchanged": 1903,
+        "reassigned": 0,
+        "excluded_price_range": 0,
+        "excluded_unpriced": 0,
+        "capture_date": "2026-09-27",
+        "compared_to": "2026-09-20",
+        "spans_declared_gap": false,
+        "note": null
+      },
+      {
+        "passed": 63,
+        "passed_under_25": 63,
+        "passed_25_to_50": 0,
+        "passed_over_50": 0,
+        "held_spec": 2,
+        "held_spec_under_25": 0,
+        "held_spec_25_to_50": 2,
+        "held_spec_over_50": 0,
+        "held_large": 2,
+        "held_large_25_to_50": 2,
+        "held_large_over_50": 0,
+        "spec_only": 0,
+        "unchanged": 1929,
+        "reassigned": 0,
+        "excluded_price_range": 0,
+        "excluded_unpriced": 0,
+        "capture_date": "2026-10-04",
+        "compared_to": "2026-09-27",
+        "spans_declared_gap": false,
+        "note": null
+      },
+      {
+        "passed": 47,
+        "passed_under_25": 45,
+        "passed_25_to_50": 2,
+        "passed_over_50": 0,
+        "held_spec": 8,
+        "held_spec_under_25": 8,
+        "held_spec_25_to_50": 0,
+        "held_spec_over_50": 0,
+        "held_large": 0,
+        "held_large_25_to_50": 0,
+        "held_large_over_50": 0,
+        "spec_only": 1,
+        "unchanged": 1949,
+        "reassigned": 0,
+        "excluded_price_range": 0,
+        "excluded_unpriced": 0,
+        "capture_date": "2026-10-09",
+        "compared_to": "2026-10-04",
+        "spans_declared_gap": false,
+        "note": null
+      },
+      {
+        "passed": 5,
+        "passed_under_25": 5,
+        "passed_25_to_50": 0,
+        "passed_over_50": 0,
+        "held_spec": 0,
+        "held_spec_under_25": 0,
+        "held_spec_25_to_50": 0,
+        "held_spec_over_50": 0,
+        "held_large": 0,
+        "held_large_25_to_50": 0,
+        "held_large_over_50": 0,
+        "spec_only": 0,
+        "unchanged": 2034,
+        "reassigned": 0,
+        "excluded_price_range": 0,
+        "excluded_unpriced": 0,
+        "capture_date": "2026-10-13",
+        "compared_to": "2026-10-09",
+        "spans_declared_gap": false,
+        "note": null
+      },
+      {
+        "passed": 131,
+        "passed_under_25": 129,
+        "passed_25_to_50": 1,
+        "passed_over_50": 1,
+        "held_spec": 3,
+        "held_spec_under_25": 1,
+        "held_spec_25_to_50": 1,
+        "held_spec_over_50": 1,
+        "held_large": 0,
+        "held_large_25_to_50": 0,
+        "held_large_over_50": 0,
+        "spec_only": 0,
+        "unchanged": 1853,
+        "reassigned": 0,
+        "excluded_price_range": 0,
+        "excluded_unpriced": 0,
+        "capture_date": "2026-10-25",
+        "compared_to": "2026-10-13",
+        "spans_declared_gap": true,
+        "note": "Change between 2026-10-13 and 2026-10-25. The days between them include the declared capture gap. Those days have no value, and this change is not split across them."
+      },
+      {
+        "passed": 60,
+        "passed_under_25": 59,
+        "passed_25_to_50": 0,
+        "passed_over_50": 1,
+        "held_spec": 4,
+        "held_spec_under_25": 3,
+        "held_spec_25_to_50": 1,
+        "held_spec_over_50": 0,
+        "held_large": 0,
+        "held_large_25_to_50": 0,
+        "held_large_over_50": 0,
+        "spec_only": 0,
+        "unchanged": 1964,
+        "reassigned": 0,
+        "excluded_price_range": 0,
+        "excluded_unpriced": 0,
+        "capture_date": "2026-10-31",
+        "compared_to": "2026-10-25",
+        "spans_declared_gap": false,
+        "note": null
+      }
+    ]
+  },
+  "freshness": {
+    "feed_generated_at": "2026-11-11T12:39:01.800Z",
+    "latest_capture_date": "2026-11-11",
+    "capture_source": "Latest day in public/open-data/movement-ledger.csv, the per-day count of price snapshot rows. Not a live database read.",
+    "note": "Feed age is graded from public/feed-meta.json when the page or API is rendered. Live database status is /api/health."
+  }
+}
