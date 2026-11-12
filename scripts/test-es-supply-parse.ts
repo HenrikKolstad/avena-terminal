@@ -50,11 +50,27 @@ check('missing Last-Modified is null', fileModifiedDay(null), null);
 check('unparseable Last-Modified is null', fileModifiedDay('not a date'), null);
 
 const VDP_HEADER = 'CODAUTO;COMUNIDAD_AUTONOMA;CPRO;PROVINCIA;AÑO;MES;TIPO_VIVIENDA;ESTADO;VALOR';
+const VDP_HEADER_RENAMED = 'COD_CCAA;NOM_CCAA;COD_PROV;NOM_PROV;ANIO;MES;REGIMEN_VIVIENDA;ESTADO_CONSTRUCCION;NUM_VIVIENDAS';
 const INE_HEADER = 'Total Nacional;Comunidades y Ciudades Autónomas;Provincias;Régimen y estado;Periodo;Total';
 
 function vdpRow(cpro: string, name: string, year: number, month: number, estado: 'Iniciadas' | 'Terminadas', value: string): string {
   const tipo = estado === 'Iniciadas' ? 'Libres' : 'Libre';
   return `1;Andalucía;${cpro};${name};${year};${month};${tipo};${estado};${value}`;
+}
+
+function vdpRowRenamed(
+  cpro: string,
+  name: string,
+  year: number,
+  month: number,
+  estado: 'Iniciadas' | 'Terminadas',
+  value: string,
+  ccaa = 'Andalucía',
+  ccaaCode = '01',
+): string {
+  const tipo = estado === 'Iniciadas' ? 'Libres' : 'Libre';
+  const word = estado === 'Iniciadas' ? 'Iniciada' : 'Terminada';
+  return `${ccaaCode};${ccaa};${cpro};${name};${year};${month};${tipo};${word};${value}`;
 }
 
 function monthsBack(endYear: number, endMonth: number, n: number): { year: number; month: number }[] {
@@ -98,6 +114,55 @@ throws('unknown estado', () => parseVdp005(vdpFile([
   '1;Andalucía;29;Málaga;2026;6;Libres;Visados;10',
 ])), 'estado');
 throws('header drift', () => parseVdp005('Año;Valor\n2026;1\n'), 'header');
+try {
+  parseVdp005('Año;Valor\n2026;1\n');
+  fail++; console.log('  FAIL  unknown header names both known layouts\n        returned normally');
+} catch (e) {
+  const msg = (e as Error).message;
+  check('unknown header names the legacy layout', msg.includes('CODAUTO') && msg.includes('header'), true);
+  check('unknown header names the renamed layout', msg.includes('COD_CCAA') && msg.includes('NUM_VIVIENDAS'), true);
+}
+
+const renamedMalaga = window.flatMap(({ year, month }, i) => [
+  vdpRowRenamed('29', 'Málaga', year, month, 'Iniciadas', String(100 + i)),
+  vdpRowRenamed('29', 'Málaga', year, month, 'Terminadas', String(10 + i)),
+]);
+const renamedFile = `${VDP_HEADER_RENAMED}\n${renamedMalaga.join('\n')}\n`;
+check('renamed VDP005 header matches the legacy rows', parseVdp005(renamedFile), parsedVdp);
+check('BOM and CRLF do not change the renamed parse', parseVdp005(`\uFEFF${renamedFile.replace(/\n/g, '\r\n')}`), parsedVdp);
+
+const renamedExtra = parseVdp005(`${VDP_HEADER_RENAMED}\n${[
+  vdpRowRenamed('29', 'Málaga', 2026, 6, 'Iniciadas', '1.132'),
+  vdpRowRenamed('29', 'Málaga', 2026, 6, 'Terminadas', '0'),
+  vdpRowRenamed('42', 'Soria', 2026, 1, 'Iniciadas', ''),
+  vdpRowRenamed('42', 'Soria', 2026, 1, 'Terminadas', '3'),
+  vdpRowRenamed('30', 'Murcia', 2026, 6, 'Iniciadas', '7', 'Murcia, Región de', '14'),
+  vdpRowRenamed('30', 'Murcia', 2026, 6, 'Terminadas', '1', 'Murcia, Región de', '14'),
+  vdpRowRenamed('03', 'Alicante/Alacant', 2026, 6, 'Iniciadas', '5', 'Comunitat Valenciana', '10'),
+  vdpRowRenamed('03', 'Alicante/Alacant', 2026, 6, 'Terminadas', '4', 'Comunitat Valenciana', '10'),
+].join('\n')}\n`);
+check('renamed header reads a grouped integer', renamedExtra.find((r) => r.cpro === '29' && r.estado === 'Iniciadas')?.value, 1132);
+check('renamed header keeps a printed zero', renamedExtra.find((r) => r.cpro === '29' && r.estado === 'Terminadas')?.value, 0);
+check('renamed header keeps a blank', renamedExtra.find((r) => r.cpro === '42' && r.estado === 'Iniciadas')?.value, null);
+check('renamed header keeps a comma inside the community name', renamedExtra.find((r) => r.cpro === '30')?.ccaa, 'Murcia, Región de');
+const alicante = renamedExtra.find((r) => r.cpro === '03' && r.estado === 'Iniciadas');
+check('renamed header keeps the bilingual province name and code', alicante ? [alicante.provincia, alicante.cpro, alicante.value] : null, ['Alicante/Alacant', '03', 5]);
+throws('plural estado on the renamed header is refused', () => parseVdp005(
+  `${VDP_HEADER_RENAMED}\n01;Andalucía;29;Málaga;2026;6;Libres;Iniciadas;10\n`,
+), 'estado');
+throws('singular estado on the legacy header is refused', () => parseVdp005(
+  `${VDP_HEADER}\n1;Andalucía;29;Málaga;2026;6;Libres;Iniciada;10\n`,
+), 'estado');
+throws('renamed iniciada labelled Libre', () => parseVdp005(`${VDP_HEADER_RENAMED}\n${[
+  '01;Andalucía;29;Málaga;2026;6;Libre;Iniciada;10',
+  vdpRowRenamed('29', 'Málaga', 2026, 6, 'Terminadas', '4'),
+].join('\n')}\n`), 'Libres');
+throws('reordered renamed header is refused', () => parseVdp005(
+  `NOM_CCAA;COD_CCAA;COD_PROV;NOM_PROV;ANIO;MES;REGIMEN_VIVIENDA;ESTADO_CONSTRUCCION;NUM_VIVIENDAS\nAndalucía;01;29;Málaga;2026;6;Libres;Iniciada;10\n`,
+), 'header');
+throws('pipe-separated renamed header is refused', () => parseVdp005(
+  `${VDP_HEADER_RENAMED.split(';').join('|')}\n01|Andalucía|29|Málaga|2026|6|Libres|Iniciada|10\n`,
+), 'header');
 
 function ineRow(province: string, ccaa: string, period: string, value: string, regime = 'Vivienda nueva'): string {
   return `Total Nacional;${ccaa};${province};${regime};${period};${value}`;
@@ -143,6 +208,35 @@ check('conflict names both counts', /1700/.test(conflict.reason) && /Málaga/.te
 const clean = assessVdp003(vdp003.split('\n').filter((l) => !l.includes(';0;396413')).join('\n'), 200);
 check('a clean file is still not published without a parser', /no parser/.test(clean.reason) && clean.ingested === false, true);
 check('unreachable file stays an omission', /could not be reached/.test(assessVdp003(null, null).reason), true);
+
+const VDP003_HEADER_RENAMED = 'COD_CCAA;NOM_CCAA;COD_PROV;NOM_PROV;TIPO_TRANSACCION;REGIMEN_VIVIENDA;ANIO;TRIMESTRE;NUM_TRANSACCIONES;IMPORTE_TRANSACCIONES_EUR';
+const vdp003Renamed = [
+  VDP003_HEADER_RENAMED,
+  '01;Andalucía;29;Málaga;NUEVA;LIBRE;2026;2;0;396412,5',
+  '01;Andalucía;29;Málaga;NUEVA;LIBRE;2026;2;1700;0',
+  '01;Andalucía;29;Málaga;SEGUNDA_MANO;LIBRE;2026;2;7117;0',
+  '01;Andalucía;29;Málaga;NUEVA;PROTEGIDA;2026;2;20;0',
+  '00;Nacional;00;Nacional;NUEVA;LIBRE;2026;2;99999;0',
+  '14;Murcia, Región de;30;Murcia;NUEVA;LIBRE;2026;2;1047;180000',
+].join('\n');
+const renamedConflict = assessVdp003(vdp003Renamed, 200);
+check('renamed VDP003 conflict is not ingested', renamedConflict.ingested, false);
+check('renamed VDP003 conflict names both new free-market counts', /1700/.test(renamedConflict.reason) && /Málaga/.test(renamedConflict.reason) && /does not choose/.test(renamedConflict.reason), true);
+check(
+  'renamed VDP003 ignores second-hand, protected and national rows',
+  ['7117', '99999', '20'].some((count) => new RegExp(`\\b${count}\\b`).test(renamedConflict.reason)),
+  false,
+);
+const renamedClean = assessVdp003(vdp003Renamed.split('\n').filter((l) => !l.includes(';0;396412,5')).join('\n'), 200);
+check('a clean renamed VDP003 file is still not published', /no parser/.test(renamedClean.reason) && renamedClean.ingested === false, true);
+const unknownVdp003 = assessVdp003('Foo;Bar\n1;2\n', 200);
+check('unknown VDP003 header is not ingested', unknownVdp003.ingested, false);
+check('unknown VDP003 header is named', /header/.test(unknownVdp003.reason) && /COD_CCAA/.test(unknownVdp003.reason), true);
+const unknownTipo = assessVdp003([
+  VDP003_HEADER_RENAMED,
+  '01;Andalucía;29;Málaga;OTRA;LIBRE;2026;2;10;0',
+].join('\n'), 200);
+check('unknown VDP003 category is not ingested', unknownTipo.ingested === false && /tipo not understood/.test(unknownTipo.reason) && !/chooses|choose a count/.test(unknownTipo.reason), true);
 
 const layer = buildSpainSupplyLayer({
   now: new Date('2026-10-27T03:00:00.000Z'),
