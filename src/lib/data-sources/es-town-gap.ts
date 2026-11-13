@@ -47,6 +47,20 @@ export const NOTARIADO_PORTAL_URL = 'https://penotariado.com/inmobiliario/home';
 export const VDP003_HEADER =
   'CODCOMUNIDAD;COMUNIDAD;CODPROVINCIA;PROVINCIA;Tipo;regimen;AÑO;Trimestre;Numero_Transacciones;Valor_Transacciones';
 
+/**
+ * November 2026 rename of the same ten fields, in the same order.
+ * COD_CCAA was CODCOMUNIDAD, NOM_CCAA was COMUNIDAD, COD_PROV was
+ * CODPROVINCIA, NOM_PROV was PROVINCIA, TIPO_TRANSACCION was Tipo,
+ * REGIMEN_VIVIENDA was regimen, ANIO was AÑO, TRIMESTRE was Trimestre,
+ * NUM_TRANSACCIONES was Numero_Transacciones, and IMPORTE_TRANSACCIONES_EUR
+ * was Valor_Transacciones. Still a provincial count and a total value.
+ * There is still no municipality column and no €/m² column.
+ */
+export const VDP003_HEADER_RENAMED =
+  'COD_CCAA;NOM_CCAA;COD_PROV;NOM_PROV;TIPO_TRANSACCION;REGIMEN_VIVIENDA;ANIO;TRIMESTRE;NUM_TRANSACCIONES;IMPORTE_TRANSACCIONES_EUR';
+
+const VDP003_KNOWN_HEADERS = new Set<string>([VDP003_HEADER, VDP003_HEADER_RENAMED]);
+
 const ARTICLES = new Set(['el', 'la', 'los', 'las']);
 const QUARTER_WORD: Record<string, number> = { primer: 1, segundo: 2, tercer: 3, cuarto: 4 };
 const SHEET_NAME = /^T([1-4])A(\d{4})$/;
@@ -180,7 +194,7 @@ function vdp003Omission(header: string | null): LayerOmission {
     };
   }
   const got = header.replace(/^\uFEFF/, '').trim();
-  if (got !== VDP003_HEADER) {
+  if (!VDP003_KNOWN_HEADERS.has(got)) {
     throw new Error(
       `VDP003_01 header is no longer the provincial count-and-value file (${got.slice(0, 180)}). Refusing to keep describing it as a file with no municipal €/m².`,
     );

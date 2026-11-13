@@ -13,8 +13,9 @@
  *
  * The Notariado portal is not fetched: its terms prohibit commercial
  * reproduction. The Registradores portal is probed and recorded. VDP003_01
- * is re-read for its header only; a changed header fails the job rather
- * than leaving a stale "no municipal €/m²" note.
+ * is re-read for its header only. The legacy header and the November 2026
+ * rename are both the provincial count-and-value file. Any other header
+ * fails the job rather than leaving a stale "no municipal €/m²" note.
  */
 
 import { writeFileSync, readFileSync, existsSync } from 'fs';
