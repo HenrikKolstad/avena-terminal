@@ -388,6 +388,33 @@
         "2026-10-26"
       ],
       "reason": null
+    },
+    {
+      "iso_week": "2026-W45",
+      "week_start": "2026-11-02",
+      "week_end": "2026-11-08",
+      "status": "frozen",
+      "vintage_date": "2026-11-08",
+      "row_count": 73,
+      "sha256": "6b89f13fdc9c6c38d24dd05b3bb848c276d53e2e76133e1f541e805883740bff",
+      "file": "data/vintages/2026-11-08.json",
+      "capture_commit": "8afb46d8809aa7474b4402b316db901e8cf79872",
+      "compared_to": "2026-10-31",
+      "capture_dates_in_week": [
+        "2026-11-02",
+        "2026-11-03",
+        "2026-11-04",
+        "2026-11-05",
+        "2026-11-06",
+        "2026-11-07",
+        "2026-11-08"
+      ],
+      "gap_dates_in_week": [],
+      "overlaps_declared_capture_gap": false,
+      "missing_days_since_compared_to": [
+        "2026-11-01"
+      ],
+      "reason": null
     }
   ]
 }

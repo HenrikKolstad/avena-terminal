@@ -4,7 +4,9 @@
  *
  * A vintage is the last commit of public/data.json in a closed ISO week
  * (Monday–Sunday, UTC), on or after SERIES_START, and not inside KNOWN_GAPS.
- * The file is written once. decideFreeze / writeFreeze refuse to replace it.
+ * Each dated file is written once. decideFreeze / writeFreeze refuse to
+ * replace it. The manifest is append-only: a later closed week may be added,
+ * and a run that would change an existing entry fails instead of rewriting it.
  * Days with no eligible capture are listed and left empty. Nothing is
  * interpolated, and commits before the series start are not used.
  *
@@ -740,6 +742,49 @@ function sameJson(a: unknown, b: unknown): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
+const MANIFEST_FILE = 'data/vintages/manifest.json';
+
+/**
+ * A new manifest may add weeks and missing capture dates. It may not drop or
+ * rewrite a week already recorded, and it may not edit known_gaps.
+ */
+function manifestAppendErrors(existing: VintageManifest, next: VintageManifest): string[] {
+  const errors: string[] = [];
+  if (!sameJson(existing.known_gaps, next.known_gaps)) {
+    errors.push('refusing to revise known_gaps in the vintage manifest');
+  }
+  const priorMissing = existing.missing_capture_dates;
+  const samePrefix = priorMissing.every((date, i) => next.missing_capture_dates[i] === date);
+  if (!samePrefix || priorMissing.length > next.missing_capture_dates.length) {
+    errors.push('refusing to revise missing capture dates already recorded');
+  }
+  for (const prior of existing.vintages) {
+    const row = next.vintages.find((item) => item.iso_week === prior.iso_week);
+    if (!row) {
+      errors.push(`refusing to drop vintage week ${prior.iso_week}`);
+      continue;
+    }
+    if (!sameJson(orderEntry(prior), orderEntry(row))) {
+      errors.push(`refusing to revise manifest entry ${prior.iso_week}`);
+    }
+  }
+  return errors;
+}
+
+function assertManifestAppend(currentBody: string, nextBody: string): void {
+  let current: VintageManifest;
+  let next: VintageManifest;
+  try {
+    current = parseManifest(JSON.parse(currentBody) as unknown);
+    next = parseManifest(JSON.parse(nextBody) as unknown);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    throw new Error(`refusing to overwrite ${MANIFEST_FILE}: ${message}`);
+  }
+  const errors = manifestAppendErrors(current, next);
+  if (errors.length) throw new Error(errors.join('\n'));
+}
+
 export function decideFreeze(args: {
   plans: PlannedWeek[];
   files: Map<string, VintageFile>;
@@ -804,30 +849,11 @@ export function decideFreeze(args: {
     vintages: entries,
   });
 
-  if (existing) {
-    if (!sameJson(existing.known_gaps, manifest.known_gaps)) {
-      errors.push('refusing to revise known_gaps in the vintage manifest');
-    }
-    const priorMissing = existing.missing_capture_dates;
-    const samePrefix = priorMissing.every((date, i) => manifest.missing_capture_dates[i] === date);
-    if (!samePrefix || priorMissing.length > manifest.missing_capture_dates.length) {
-      errors.push('refusing to revise missing capture dates already recorded');
-    }
-    for (const prior of existing.vintages) {
-      const next = manifest.vintages.find((row) => row.iso_week === prior.iso_week);
-      if (!next) {
-        errors.push(`refusing to drop vintage week ${prior.iso_week}`);
-        continue;
-      }
-      if (!sameJson(orderEntry(prior), orderEntry(next))) {
-        errors.push(`refusing to revise manifest entry ${prior.iso_week}`);
-      }
-    }
-  }
+  if (existing) errors.push(...manifestAppendErrors(existing, manifest));
 
   const manifestBody = canonicalManifestJson(manifest);
   const priorManifestBody = args.existingManifestBody ?? null;
-  if (priorManifestBody !== manifestBody) writes.push({ path: 'data/vintages/manifest.json', body: manifestBody });
+  if (priorManifestBody !== manifestBody) writes.push({ path: MANIFEST_FILE, body: manifestBody });
 
   if (errors.length) return { writes: [], errors, manifest };
   return { writes, errors, manifest };
@@ -847,8 +873,11 @@ export function writeFreeze(root: string, decision: FreezeDecision): void {
     mkdirSync(dirname(dest), { recursive: true });
     if (existsSync(dest)) {
       const current = readFileSync(dest, 'utf8');
-      if (current !== write.body) throw new Error(`refusing to overwrite ${write.path}`);
-      continue;
+      if (current === write.body) continue;
+      // Dated vintage files are immutable. The manifest is not: a closed week
+      // is appended every Monday, and only a change to an existing entry fails.
+      if (write.path !== MANIFEST_FILE) throw new Error(`refusing to overwrite ${write.path}`);
+      assertManifestAppend(current, write.body);
     }
     const tmp = `${dest}.tmp`;
     writeFileSync(tmp, write.body);

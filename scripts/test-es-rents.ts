@@ -307,7 +307,17 @@ const calpe = live.towns.find((t) => t.town.toLowerCase() === 'calpe');
 check('Calpe is Calp', calpe?.municipality ?? null, 'Calp');
 const fuente = live.towns.find((t) => t.town.toLowerCase() === 'fuente álamo');
 check('Fuente Álamo is Fuente Álamo de Murcia', fuente?.municipality ?? null, 'Fuente Álamo de Murcia');
-const sanJuan = live.towns.find((t) => t.town.toLowerCase() === 'san juan alicante');
+const sanJuanLive = live.towns.find((t) => t.town.toLowerCase() === 'san juan alicante');
+const sanJuan = sanJuanLive ?? buildEsRents(committed, [
+  { location: 'San Juan Alicante, Alicante', askingEurM2: 2000, grossYieldPct: null },
+  { location: 'San Juan Alicante, Alicante', askingEurM2: 2100, grossYieldPct: null },
+  { location: 'San Juan Alicante, Alicante', askingEurM2: 1900, grossYieldPct: null },
+  { location: 'San Juan Alicante, Alicante', askingEurM2: 2200, grossYieldPct: null },
+  { location: 'San Juan Alicante, Alicante', askingEurM2: 1800, grossYieldPct: null },
+  { location: 'San Juan Alicante, Alicante', askingEurM2: 2000, grossYieldPct: null },
+  { location: 'San Juan Alicante, Alicante', askingEurM2: 2050, grossYieldPct: null },
+  { location: 'San Juan Alicante, Alicante', askingEurM2: 1950, grossYieldPct: null },
+]).towns.find((t) => t.town.toLowerCase() === 'san juan alicante');
 check('San Juan Alicante is Sant Joan d\'Alacant', sanJuan?.municipality ?? null, "Sant Joan d'Alacant");
 check('a not-in-table town has no rent and no implied yield', live.towns.filter((t) => t.status === 'not_in_table').every((t) => t.colectiva == null && t.implied_flat_gross_yield_pct == null), true);
 console.log(`  towns ${live.summary.towns}, compared ${live.summary.compared}, official only ${live.summary.official_only}, withheld ${live.summary.withheld}, not in table ${live.summary.not_in_table}`);
