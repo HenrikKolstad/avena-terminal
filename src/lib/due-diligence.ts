@@ -17,6 +17,7 @@ import { LEDGER_EPOCH } from '@/lib/open-dataset-io';
 import { KNOWN_GAPS } from '@/lib/sellthrough';
 import { VINTAGE_GUARANTEE, latestFrozenDate, readVintageManifest } from '@/lib/vintages';
 import { ABSORPTION_METHOD, readAbsorption } from '@/lib/absorption';
+import { LISTING_DURATION_METHOD, readListingDuration } from '@/lib/listing-duration';
 import { PRICE_INDEX_METHOD, readPriceIndex } from '@/lib/price-index';
 import { findMissingRanges, type MissingRange } from '@/lib/fund-report';
 import { LARGE_MOVE, PM2_BAND, RECUR_DAYS, SIZE_TOL } from '@/lib/unit-identity';
@@ -179,6 +180,7 @@ export interface DueDiligencePack {
     weekly_vintages: string;
     same_unit_index: string;
     absorption: string;
+    listing_duration: string;
     scribe_last_run: NotAvailable;
     scribe_last_run_reason: string;
   };
@@ -1176,6 +1178,19 @@ export function buildPipeline(health: HealthReport | null, officialAt: string | 
       health_status: NOT_AVAILABLE,
       health_detail: NOT_AVAILABLE,
     },
+    {
+      id: 'listing-duration',
+      name: 'Listing duration',
+      cadence: 'GitHub Actions listing-duration-refresh.yml daily at 06:55 UTC.',
+      what: 'Rebuilds data/listing-duration.json from price_snapshots and the delisting ledger since 2026-08-05. Coast, region and town only. Live days run from the first snapshot to the as-of date. Exit duration is days until delisting, not a confirmed sale. The declared October gap is not counted as days listed. A median under 5 references is left blank. A read that fails leaves the previous file in place.',
+      source_file: '.github/workflows/listing-duration-refresh.yml',
+      last_observed: listingDurationAsOf() ?? NOT_AVAILABLE,
+      last_observed_kind: listingDurationAsOf()
+        ? 'asOf in data/listing-duration.json. This is the latest snapshot date in the series, not the GitHub run timestamp. /api/health does not watch listing-duration-refresh.yml.'
+        : 'not available. /api/health does not watch listing-duration-refresh.yml, and data/listing-duration.json had no asOf.',
+      health_status: NOT_AVAILABLE,
+      health_detail: NOT_AVAILABLE,
+    },
   ];
 }
 
@@ -1194,6 +1209,14 @@ function priceIndexAsOf(): string | null {
 function absorptionAsOf(): string | null {
   try {
     return readAbsorption().asOf;
+  } catch {
+    return null;
+  }
+}
+
+function listingDurationAsOf(): string | null {
+  try {
+    return readListingDuration().asOf;
   } catch {
     return null;
   }
@@ -1236,6 +1259,7 @@ function pointInTime() {
     weekly_vintages: `${VINTAGE_GUARANTEE} The index is /data/vintages and the manifest is GET /api/v1/vintages.`,
     same_unit_index: `${PRICE_INDEX_METHOD} The page is /data/price-index and the file is GET /api/v1/price-index.`,
     absorption: `${ABSORPTION_METHOD} The page is /data/absorption and the file is GET /api/v1/absorption.`,
+    listing_duration: `${LISTING_DURATION_METHOD} The page is /data/listing-duration and the file is GET /api/v1/listing-duration.`,
     scribe_last_run: NOT_AVAILABLE,
     scribe_last_run_reason: '/api/health does not report the scribe job, so its last-run timestamp is not available.',
   };
@@ -1253,6 +1277,7 @@ function delivery(mirror: OrNA<string>): DeliveryOption[] {
     { id: 'weekly-vintages', method: 'GET', path: '/api/v1/vintages', format: 'JSON. One vintage at /api/v1/vintages/YYYY-MM-DD. CSV of those rows with ?format=csv.', auth: 'No key.', note: 'Town and province aggregates frozen once a week from the committed listing book. A file is not rewritten. A week with no capture has no file. The index is /data/vintages.' },
     { id: 'same-unit-price-index', method: 'GET', path: '/api/v1/price-index', format: 'JSON. CSV of the rows with ?format=csv. level=coast, province or town limits the rows.', auth: 'No key.', note: 'Weekly same-unit asking-price index from the committed listing book. The page is /data/price-index. A gap week has no value. A cell under its matched-pair minimum is blank. Not a transaction price and not the AVENA composite.' },
     { id: 'listing-absorption', method: 'GET', path: '/api/v1/absorption', format: 'JSON. CSV of town rows with ?format=csv. level=coast, region or town limits the groups.', auth: 'No key.', note: 'Coast, region and town listing absorption from the daily capture. The page is /data/absorption. An exit is a delisting, not a confirmed sale. Days to sell are not estimated. Project rows are not in the file.' },
+    { id: 'listing-duration', method: 'GET', path: '/api/v1/listing-duration', format: 'JSON. CSV with ?format=csv. level=coast, region or town limits the groups.', auth: 'No key.', note: 'Coast, region and town listing duration from the daily capture and the delisting ledger. The page is /data/listing-duration. An exit is a delisting, not a confirmed sale. Days to sell are not estimated. The October gap is not counted as days listed. Project rows are not in the file.' },
     { id: 'official-summary', method: 'GET', path: '/official', format: 'HTML. JSON at /api/v1/official-summary.', auth: 'No key.', note: 'Index of the official-statistics layers and the asking-versus-benchmark gaps computed from them. Not the listing history.' },
     { id: 'spain-official', method: 'GET', path: '/spain/official', format: 'HTML. Source file data/es-official.json.', auth: 'No key.', note: 'Weekly official benchmark. Not the listing history.' },
     { id: 'spain-supply', method: 'GET', path: '/spain/supply', format: 'HTML. Source file data/es-supply.json. JSON at /api/v1/es-supply.', auth: 'No key.', note: 'Weekly supply pipeline. Ministry starts and completions, and INE registered sales of new dwellings. Not the listing history.' },

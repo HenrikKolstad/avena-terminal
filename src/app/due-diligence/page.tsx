@@ -181,6 +181,7 @@ export default async function DueDiligencePage() {
           <Link href="/data/vintages" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Weekly vintages</Link>
           <Link href="/data/price-index" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Same-unit price index</Link>
           <Link href="/data/absorption" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Listing absorption</Link>
+          <Link href="/data/listing-duration" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Listing duration</Link>
         </div>
 
         <div className="mt-10 grid gap-px sm:grid-cols-2 lg:grid-cols-4" style={{ background: 'hsl(var(--av-border) / 0.6)' }}>
@@ -342,12 +343,15 @@ export default async function DueDiligencePage() {
           <p>{pack.point_in_time.weekly_vintages}</p>
           <p>{pack.point_in_time.same_unit_index}</p>
           <p>{pack.point_in_time.absorption}</p>
+          <p>{pack.point_in_time.listing_duration}</p>
           <p>
             <Link href="/data/vintages" className="text-primary hover:text-foreground">Weekly vintages</Link>
             {' · '}
             <Link href="/data/price-index" className="text-primary hover:text-foreground">Same-unit price index</Link>
             {' · '}
             <Link href="/data/absorption" className="text-primary hover:text-foreground">Listing absorption</Link>
+            {' · '}
+            <Link href="/data/listing-duration" className="text-primary hover:text-foreground">Listing duration</Link>
             {' · '}
             <Link href="/api/v1/vintages" className="text-primary hover:text-foreground">JSON manifest</Link>
           </p>
