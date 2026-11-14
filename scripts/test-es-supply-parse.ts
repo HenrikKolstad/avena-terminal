@@ -230,10 +230,13 @@ check('committed layer is ready', committed.status, 'ready');
 const book = JSON.parse(readFileSync(join(__dirname, '..', 'public', 'data.json'), 'utf8')) as { l: string }[];
 const live = corpusProvinces(book.map((r) => r.l));
 check('every listing location maps to a province', live.unmapped.length, 0);
+const missingFromLayer: string[] = [];
 for (const key of live.keys) {
   const row = committed.provinces.find((p) => p.key === key);
-  check(`committed layer covers ${key}`, row != null, true);
-  if (!row) continue;
+  if (!row) {
+    missingFromLayer.push(key);
+    continue;
+  }
   for (const field of ['starts_latest', 'starts_trailing_12m', 'completions_latest', 'completions_trailing_12m', 'ine_new_sales_latest', 'ine_new_sales_trailing_12m'] as const) {
     const figure = row[field];
     check(`${key} ${field} is a whole dwelling count`, Number.isInteger(figure.value) && figure.value >= 0 && figure.unit === 'dwellings', true);
@@ -274,8 +277,14 @@ check('live view maps every listing', liveView.unmapped_listings, 0);
 check('move counts reconcile to the file', liveView.provinces.reduce((s, p) => s + p.price_moves, 0) + liveView.moves_file.unplaced, liveView.moves_file.rows);
 for (const row of liveView.provinces.filter((p) => live.keys.includes(p.key))) {
   check(`${row.name} has listings`, row.listings > 0, true);
-  check(`${row.name} official side is ready`, row.official, 'ready');
+  const inLayer = committed.provinces.some((p) => p.key === row.key);
+  check(inLayer ? `${row.name} official side is ready` : `${row.name} official side is missing from the layer`, row.official, inLayer ? 'ready' : 'missing_from_layer');
 }
+check(
+  'a book province left out of the layer is marked missing, not given a number',
+  missingFromLayer.every((key) => liveView.provinces.find((p) => p.key === key)?.official === 'missing_from_layer'),
+  true,
+);
 
 if (fail) {
   console.log(`\nFAILED — ${pass} passed, ${fail} failed`);

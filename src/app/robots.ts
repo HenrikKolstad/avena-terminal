@@ -55,6 +55,8 @@ const BROAD_ALLOW: string[] = [
   '/challenge/',
   '/briefs/',
   '/track-record',
+  '/data/quality',
+  '/api/v1/data-quality',
   '/reports/sample',
   '/roadmap',
   '/badge/',

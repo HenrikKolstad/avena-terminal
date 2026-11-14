@@ -1,0 +1,61 @@
+name: Data quality refresh
+
+# Rebuilds data/data-quality.json from the observation ledger, the current
+# listing book, the vintage manifest and the closed-week listing files.
+# It does not query the database. Daily snapshot counts already live in the
+# ledger. Same-unit pairs are read from git history of public/data.json.
+#
+# 11:45 UTC is after the morning feed, the open-dataset rebuild and the 06:40
+# absorption refresh, and after the capture backstop's late window. The file
+# is only as current as those commits. A failed read exits non-zero and the
+# previous file stays.
+
+on:
+  schedule:
+    - cron: '45 11 * * *'   # 11:45 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data-quality-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Rebuild the data quality file
+        run: npx tsx scripts/build-data-quality.ts
+
+      - name: Check the file
+        run: npx tsx scripts/test-data-quality.ts
+
+      - name: Commit refreshed snapshot (if changed)
+        run: |
+          git config user.name "avena-feed-bot"
+          git config user.email "feed@avenaterminal.com"
+          git add data/data-quality.json
+          if git diff --staged --quiet; then
+            echo "No data-quality change this morning."
+          else
+            git commit -m "chore(data): refresh data quality snapshot [skip ci]"
+            git pull --rebase origin main
+            git push
+            echo "Pushed data quality."
+          fi

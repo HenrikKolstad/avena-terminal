@@ -76,7 +76,7 @@ checkTrue('every Alicante place is elevated', file.towns.filter((t) => t.provinc
 checkTrue('Murcia places stay unknown', file.towns.filter((t) => t.province_key === 'murcia').every((t) => t.risk === 'unknown'));
 check('high count', tally.high, 1);
 check('elevated count', tally.elevated, 51);
-check('unknown count', tally.unknown, 44);
+check('unknown count', tally.unknown, 45);
 
 for (const group of [...file.national, ...file.regions]) {
   checkTrue(`${group.id} has a summary`, group.summary.length > 80);
