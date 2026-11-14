@@ -81,6 +81,8 @@ const endpoints: Endpoint[] = [
   { path: '/api/v1/sovereign-export',       methods: ['GET'], category: 'semantic',    description: 'Sovereign data export for institutional partners.', auth: 'none' },
   { path: '/api/v1/dataset-export',         methods: ['GET'], category: 'semantic',    description: 'Full dataset export.', auth: 'none' },
   { path: '/api/v1/open-dataset',           methods: ['GET'], category: 'semantic',    description: 'Open-licensed subset of the dataset.', auth: 'none' },
+  { path: '/api/v1/bulk',                   methods: ['GET'], category: 'semantic',    description: 'Weekly bulk index: gzipped CSV of frozen town and province vintages, with SHA-256 checksums.', auth: 'none' },
+  { path: '/api/v1/bulk/schema',            methods: ['GET'], category: 'semantic',    description: 'Schema changelog for the weekly bulk files.', auth: 'none' },
   { path: '/api/knowledge-graph/build',     methods: ['GET', 'POST'], category: 'semantic', description: 'Trigger knowledge-graph build.', auth: 'api-key' },
   { path: '/api/knowledge-graph/export',    methods: ['GET'], category: 'semantic',    description: 'Knowledge graph export.', auth: 'none' },
   { path: '/api/knowledge-graph/query',     methods: ['GET', 'POST'], category: 'semantic', description: 'Query the knowledge graph.', auth: 'none' },

@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-10T23:49:35.717Z",
+  "vintage_date": "2026-10-09",
+  "iso_week": "2026-W41",
+  "week_start": "2026-10-05",
+  "week_end": "2026-10-11",
+  "source_capture_dates": [
+    "2026-10-05",
+    "2026-10-06",
+    "2026-10-07",
+    "2026-10-08",
+    "2026-10-09"
+  ],
+  "gap_dates_in_week": [
+    "2026-10-10",
+    "2026-10-11"
+  ],
+  "missing_days_since_compared_to": [],
+  "overlaps_declared_capture_gap": false,
+  "compared_to": "2026-10-04",
+  "capture_commit": "dfd1df06abc1ebde495d9ac58a077fb620636f27",
+  "series_start": "2026-08-05",
+  "town_min_listings": 5,
+  "vintage_file": "data/vintages/2026-10-09.json",
+  "vintage_sha256": "64f1770e7073eff334e65119eee63325bb193ed2d8972e1da912a7c0b85a4414",
+  "row_count": 74,
+  "book": {
+    "live_listings": 2039,
+    "priced_listings": 2039,
+    "unmapped_listings": 0,
+    "towns_published": 69,
+    "towns_omitted": 29,
+    "comparable_listings": 2005,
+    "price_cuts": 24,
+    "price_rises": 31,
+    "price_cut_share": "0.0120",
+    "price_rise_share": "0.0155",
+    "new_listings": 34,
+    "removed_listings": 25,
+    "reassigned_in": 0,
+    "reassigned_out": 0,
+    "reassigned_listings": 0
+  },
+  "columns": [
+    "vintage_date",
+    "iso_week",
+    "week_start",
+    "week_end",
+    "level",
+    "key",
+    "name",
+    "province",
+    "costa",
+    "live_listings",
+    "priced_listings",
+    "median_asking_eur_m2",
+    "comparable_listings",
+    "price_cuts",
+    "price_rises",
+    "price_cut_share",
+    "price_rise_share",
+    "new_listings",
+    "removed_listings",
+    "reassigned_in",
+    "reassigned_out"
+  ],
+  "files": [
+    {
+      "name": "town-province.csv.gz",
+      "format": "csv.gz",
+      "sha256": "751551387b5687112fee041cc325305a4d2bb7e712d800d9a784bf6321fdb4f3",
+      "bytes": 1949,
+      "uncompressed_sha256": "e6528342a8fb844301578e364c4d0af66886af430970057f7884d931fd3c406b",
+      "uncompressed_bytes": 10349,
+      "row_count": 74,
+      "schema_version": 1
+    }
+  ]
+}
