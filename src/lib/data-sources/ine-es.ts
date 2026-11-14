@@ -541,7 +541,7 @@ const NOTARY_OMISSION: LayerOmission = {
   source: 'Consejo General del Notariado',
   url: null,
   ingested: false,
-  reason: 'No keyless CSV or JSON endpoint is read by this job. Notarial prices are not in this file.',
+  reason: 'No keyless CSV or JSON endpoint is read by this job. Notarial prices are not in this file. The CIEN annex is published separately at /spain/notary.',
 };
 
 export function registradoresOmission(httpStatus: number | null): LayerOmission {

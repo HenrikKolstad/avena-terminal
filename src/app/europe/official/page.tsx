@@ -146,6 +146,8 @@ export default function EuropeOfficialPage() {
             <p className="text-sm mb-8">
               <Link href="/official" className="text-primary hover:underline">Official statistics</Link>
               <span className="text-muted-foreground"> · </span>
+              <Link href="/spain/notary" className="text-primary hover:underline">Spain notary transaction prices</Link>
+              <span className="text-muted-foreground"> · </span>
               <Link href="/spain/official" className="text-primary hover:underline">Spain province benchmark</Link>
               <span className="text-muted-foreground"> · </span>
               <Link href="/portugal" className="text-primary hover:underline">Portugal official statistics</Link>

@@ -1,0 +1,72 @@
+name: Spain notary price refresh
+
+# Rebuilds data/es-notary.json (the /spain/notary page) from the two newest
+# CIEN statistical annexes linked on the Consejo General del Notariado
+# informes page: housing sales through the latest month, and foreign buyers
+# through the latest semester. Both are keyless public workbooks, so this
+# job needs NO secrets.
+#
+# Saturday 04:20 UTC sits clear of the Monday 04:50 Eurostat job, the
+# Tuesday 04:35 rent job, the Wednesday 04:40 official-benchmark job, the
+# Thursday 04:15 supply job, the Friday 04:25 municipal-appraisal job and
+# the Sunday 04:30 Portugal job.
+#
+# The Portal Estadístico del Notariado is not fetched. Its terms prohibit
+# commercial use and unauthorised reproduction, and the annex has no
+# municipality. scripts/ingest-es-notary.ts records that omission and does
+# not invent a town price.
+#
+# If a required source stops parsing, the script exits non-zero and nothing
+# is committed: the previous layer stays live and this run goes red. If
+# nothing changed upstream the script leaves the file untouched and the
+# commit step is a no-op.
+
+on:
+  schedule:
+    - cron: '20 4 * * 6'   # Saturdays 04:20 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: es-notary-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Reachability probe (diagnostic only)
+        continue-on-error: true
+        run: |
+          curl -sS -L -o /dev/null -w "cien -> %{http_code} %{remote_ip} %{time_total}s\n" --max-time 60 -A 'AvenaTerminal-OfficialStats/1.0 (+https://avenaterminal.com/spain/notary)' 'https://www.notariado.org/liferay/web/cien/sala-de-prensa/informes' || echo 'cien -> curl failed'
+
+      - name: Build the Spain notary layer from the CIEN annexes
+        run: npx tsx scripts/ingest-es-notary.ts
+
+      - name: Commit refreshed layer (if changed)
+        run: |
+          git config user.name "avena-feed-bot"
+          git config user.email "feed@avenaterminal.com"
+          git add data/es-notary.json
+          if git diff --staged --quiet; then
+            echo "No Spain notary layer changes this week."
+          else
+            git commit -m "chore(es): weekly CIEN notary price refresh [skip ci]"
+            git pull --rebase origin main
+            git push
+            echo "Pushed refreshed Spain notary layer."
+          fi
