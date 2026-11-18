@@ -1,12 +1,11 @@
 {
   "status": "ready",
-  "generated_at": "2026-11-11T12:08:53.500Z",
-  "retrieved_at": "2026-11-11",
+  "generated_at": "2026-11-18T13:25:34.646Z",
+  "retrieved_at": "2026-11-18",
   "provinces_in_corpus": [
     "Málaga",
     "Alicante",
     "Murcia",
-    "Almería",
     "Granada",
     "Cádiz"
   ],
@@ -55,7 +54,7 @@
       "source": "mivau",
       "source_name": "Ministerio de Vivienda y Agenda Urbana",
       "source_url": "https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP006_01.csv",
-      "retrieved_at": "2026-11-11",
+      "retrieved_at": "2026-11-18",
       "provisional": null
     },
     "ine_new_index": {
@@ -67,7 +66,7 @@
       "source": "ine_es",
       "source_name": "Instituto Nacional de Estadística",
       "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-      "retrieved_at": "2026-11-11",
+      "retrieved_at": "2026-11-18",
       "provisional": false
     },
     "ine_new_yoy_pct": {
@@ -79,7 +78,7 @@
       "source": "ine_es",
       "source_name": "Instituto Nacional de Estadística",
       "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-      "retrieved_at": "2026-11-11",
+      "retrieved_at": "2026-11-18",
       "provisional": false
     },
     "ine_existing_index": {
@@ -91,7 +90,7 @@
       "source": "ine_es",
       "source_name": "Instituto Nacional de Estadística",
       "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-      "retrieved_at": "2026-11-11",
+      "retrieved_at": "2026-11-18",
       "provisional": false
     },
     "ine_existing_yoy_pct": {
@@ -103,7 +102,7 @@
       "source": "ine_es",
       "source_name": "Instituto Nacional de Estadística",
       "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-      "retrieved_at": "2026-11-11",
+      "retrieved_at": "2026-11-18",
       "provisional": false
     }
   },
@@ -125,7 +124,7 @@
         "source": "mivau",
         "source_name": "Ministerio de Vivienda y Agenda Urbana",
         "source_url": "https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP006_01.csv",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": null
       },
       "ine_new_index": {
@@ -137,7 +136,7 @@
         "source": "ine_es",
         "source_name": "Instituto Nacional de Estadística",
         "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": false
       },
       "ine_new_yoy_pct": {
@@ -149,7 +148,7 @@
         "source": "ine_es",
         "source_name": "Instituto Nacional de Estadística",
         "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": false
       },
       "ine_existing_index": {
@@ -161,7 +160,7 @@
         "source": "ine_es",
         "source_name": "Instituto Nacional de Estadística",
         "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": false
       },
       "ine_existing_yoy_pct": {
@@ -173,7 +172,7 @@
         "source": "ine_es",
         "source_name": "Instituto Nacional de Estadística",
         "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": false
       }
     },
@@ -194,7 +193,7 @@
         "source": "mivau",
         "source_name": "Ministerio de Vivienda y Agenda Urbana",
         "source_url": "https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP006_01.csv",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": null
       },
       "ine_new_index": {
@@ -206,7 +205,7 @@
         "source": "ine_es",
         "source_name": "Instituto Nacional de Estadística",
         "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": false
       },
       "ine_new_yoy_pct": {
@@ -218,7 +217,7 @@
         "source": "ine_es",
         "source_name": "Instituto Nacional de Estadística",
         "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": false
       },
       "ine_existing_index": {
@@ -230,7 +229,7 @@
         "source": "ine_es",
         "source_name": "Instituto Nacional de Estadística",
         "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": false
       },
       "ine_existing_yoy_pct": {
@@ -242,7 +241,7 @@
         "source": "ine_es",
         "source_name": "Instituto Nacional de Estadística",
         "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": false
       }
     },
@@ -263,7 +262,7 @@
         "source": "mivau",
         "source_name": "Ministerio de Vivienda y Agenda Urbana",
         "source_url": "https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP006_01.csv",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": null
       },
       "ine_new_index": {
@@ -275,7 +274,7 @@
         "source": "ine_es",
         "source_name": "Instituto Nacional de Estadística",
         "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": false
       },
       "ine_new_yoy_pct": {
@@ -287,7 +286,7 @@
         "source": "ine_es",
         "source_name": "Instituto Nacional de Estadística",
         "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": false
       },
       "ine_existing_index": {
@@ -299,7 +298,7 @@
         "source": "ine_es",
         "source_name": "Instituto Nacional de Estadística",
         "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": false
       },
       "ine_existing_yoy_pct": {
@@ -311,76 +310,7 @@
         "source": "ine_es",
         "source_name": "Instituto Nacional de Estadística",
         "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
-        "provisional": false
-      }
-    },
-    {
-      "name": "Almería",
-      "slug": "almeria",
-      "key": "almeria",
-      "cpro": "04",
-      "nuts3": "ES611",
-      "ccaa": "Andalucía",
-      "ine_territory_equals_province": false,
-      "appraisal": {
-        "value": 1492.6,
-        "unit": "eur_per_m2",
-        "unit_label": "€/m²",
-        "period": "2026-Q2",
-        "series_id": "VDP006_01:libre:cpro=04",
-        "source": "mivau",
-        "source_name": "Ministerio de Vivienda y Agenda Urbana",
-        "source_url": "https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP006_01.csv",
-        "retrieved_at": "2026-11-11",
-        "provisional": null
-      },
-      "ine_new_index": {
-        "value": 108.261,
-        "unit": "index",
-        "unit_label": "Índice",
-        "period": "2026-Q2",
-        "series_id": "IPV1628",
-        "source": "ine_es",
-        "source_name": "Instituto Nacional de Estadística",
-        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
-        "provisional": false
-      },
-      "ine_new_yoy_pct": {
-        "value": 9,
-        "unit": "pct",
-        "unit_label": "Tasas",
-        "period": "2026-Q2",
-        "series_id": "IPV1630",
-        "source": "ine_es",
-        "source_name": "Instituto Nacional de Estadística",
-        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
-        "provisional": false
-      },
-      "ine_existing_index": {
-        "value": 111.393,
-        "unit": "index",
-        "unit_label": "Índice",
-        "period": "2026-Q2",
-        "series_id": "IPV1633",
-        "source": "ine_es",
-        "source_name": "Instituto Nacional de Estadística",
-        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
-        "provisional": false
-      },
-      "ine_existing_yoy_pct": {
-        "value": 12.5,
-        "unit": "pct",
-        "unit_label": "Tasas",
-        "period": "2026-Q2",
-        "series_id": "IPV1635",
-        "source": "ine_es",
-        "source_name": "Instituto Nacional de Estadística",
-        "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": false
       }
     },
@@ -401,7 +331,7 @@
         "source": "mivau",
         "source_name": "Ministerio de Vivienda y Agenda Urbana",
         "source_url": "https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP006_01.csv",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": null
       },
       "ine_new_index": {
@@ -413,7 +343,7 @@
         "source": "ine_es",
         "source_name": "Instituto Nacional de Estadística",
         "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": false
       },
       "ine_new_yoy_pct": {
@@ -425,7 +355,7 @@
         "source": "ine_es",
         "source_name": "Instituto Nacional de Estadística",
         "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": false
       },
       "ine_existing_index": {
@@ -437,7 +367,7 @@
         "source": "ine_es",
         "source_name": "Instituto Nacional de Estadística",
         "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": false
       },
       "ine_existing_yoy_pct": {
@@ -449,7 +379,7 @@
         "source": "ine_es",
         "source_name": "Instituto Nacional de Estadística",
         "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": false
       }
     },
@@ -470,7 +400,7 @@
         "source": "mivau",
         "source_name": "Ministerio de Vivienda y Agenda Urbana",
         "source_url": "https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP006_01.csv",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": null
       },
       "ine_new_index": {
@@ -482,7 +412,7 @@
         "source": "ine_es",
         "source_name": "Instituto Nacional de Estadística",
         "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": false
       },
       "ine_new_yoy_pct": {
@@ -494,7 +424,7 @@
         "source": "ine_es",
         "source_name": "Instituto Nacional de Estadística",
         "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": false
       },
       "ine_existing_index": {
@@ -506,7 +436,7 @@
         "source": "ine_es",
         "source_name": "Instituto Nacional de Estadística",
         "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": false
       },
       "ine_existing_yoy_pct": {
@@ -518,7 +448,7 @@
         "source": "ine_es",
         "source_name": "Instituto Nacional de Estadística",
         "source_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=79563",
-        "retrieved_at": "2026-11-11",
+        "retrieved_at": "2026-11-18",
         "provisional": false
       }
     }
