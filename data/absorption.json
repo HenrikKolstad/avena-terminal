@@ -1,8 +1,8 @@
 {
   "name": "Avena listing absorption",
-  "asOf": "2026-11-21",
+  "asOf": "2026-11-22",
   "windowDays": 30,
-  "windowStart": "2026-10-22",
+  "windowStart": "2026-10-23",
   "seriesStart": "2026-08-05",
   "knownGaps": [
     {
@@ -24,18 +24,18 @@
     "label": "All covered markets",
     "region": null,
     "live": 2052,
-    "exitsWindow": 120,
+    "exitsWindow": 111,
     "exitsSinceStart": 389,
-    "newWindow": 122,
-    "absorptionPct30d": 5.5,
-    "monthsOfSupply": 17.1,
-    "cutsWindow": 107,
-    "risesWindow": 233,
-    "cutBreadthPct": 4.7,
+    "newWindow": 117,
+    "absorptionPct30d": 5.1,
+    "monthsOfSupply": 18.5,
+    "cutsWindow": 105,
+    "risesWindow": 208,
+    "cutBreadthPct": 4.6,
     "medianCutPct": -3.6,
     "medianRisePct": 3.4,
     "medianPm2": 5636,
-    "medianDaysListed": 227
+    "medianDaysListed": 228
   },
   "regions": [
     {
@@ -43,18 +43,18 @@
       "label": "costa-del-sol",
       "region": "costa-del-sol",
       "live": 902,
-      "exitsWindow": 52,
+      "exitsWindow": 45,
       "exitsSinceStart": 144,
       "newWindow": 50,
-      "absorptionPct30d": 5.5,
-      "monthsOfSupply": 17.3,
+      "absorptionPct30d": 4.8,
+      "monthsOfSupply": 20,
       "cutsWindow": 59,
-      "risesWindow": 77,
+      "risesWindow": 74,
       "cutBreadthPct": 6.1,
       "medianCutPct": -4.2,
-      "medianRisePct": 5.3,
+      "medianRisePct": 5.2,
       "medianPm2": 6854,
-      "medianDaysListed": 227
+      "medianDaysListed": 228
     },
     {
       "key": "cb-south",
@@ -63,16 +63,16 @@
       "live": 574,
       "exitsWindow": 20,
       "exitsSinceStart": 99,
-      "newWindow": 36,
+      "newWindow": 33,
       "absorptionPct30d": 3.4,
       "monthsOfSupply": 28.7,
-      "cutsWindow": 22,
-      "risesWindow": 88,
-      "cutBreadthPct": 3.7,
+      "cutsWindow": 20,
+      "risesWindow": 67,
+      "cutBreadthPct": 3.4,
       "medianCutPct": -2.9,
-      "medianRisePct": 2.7,
+      "medianRisePct": 2.6,
       "medianPm2": 4600,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "costa-calida",
@@ -81,7 +81,7 @@
       "live": 323,
       "exitsWindow": 26,
       "exitsSinceStart": 70,
-      "newWindow": 22,
+      "newWindow": 20,
       "absorptionPct30d": 7.4,
       "monthsOfSupply": 12.4,
       "cutsWindow": 20,
@@ -90,25 +90,25 @@
       "medianCutPct": -2.5,
       "medianRisePct": 3.2,
       "medianPm2": 4417,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "cb-north",
       "label": "cb-north",
       "region": "cb-north",
       "live": 253,
-      "exitsWindow": 22,
+      "exitsWindow": 20,
       "exitsSinceStart": 76,
       "newWindow": 14,
-      "absorptionPct30d": 8,
-      "monthsOfSupply": 11.5,
+      "absorptionPct30d": 7.3,
+      "monthsOfSupply": 12.7,
       "cutsWindow": 6,
-      "risesWindow": 25,
+      "risesWindow": 24,
       "cutBreadthPct": 1.5,
       "medianCutPct": -4.5,
       "medianRisePct": 4.4,
       "medianPm2": 6143,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     }
   ],
   "towns": [
@@ -117,36 +117,36 @@
       "label": "Estepona",
       "region": "costa-del-sol",
       "live": 233,
-      "exitsWindow": 18,
+      "exitsWindow": 17,
       "exitsSinceStart": 50,
       "newWindow": 20,
-      "absorptionPct30d": 7.2,
-      "monthsOfSupply": 12.9,
+      "absorptionPct30d": 6.8,
+      "monthsOfSupply": 13.7,
       "cutsWindow": 13,
-      "risesWindow": 16,
+      "risesWindow": 14,
       "cutBreadthPct": 4.8,
       "medianCutPct": -4.8,
-      "medianRisePct": 6.6,
+      "medianRisePct": 9.4,
       "medianPm2": 6728,
-      "medianDaysListed": 227
+      "medianDaysListed": 228
     },
     {
       "key": "Mijas",
       "label": "Mijas",
       "region": "costa-del-sol",
       "live": 192,
-      "exitsWindow": 16,
+      "exitsWindow": 11,
       "exitsSinceStart": 32,
       "newWindow": 10,
-      "absorptionPct30d": 7.7,
-      "monthsOfSupply": 12,
+      "absorptionPct30d": 5.4,
+      "monthsOfSupply": 17.5,
       "cutsWindow": 27,
-      "risesWindow": 17,
-      "cutBreadthPct": 13,
+      "risesWindow": 16,
+      "cutBreadthPct": 13.3,
       "medianCutPct": -4.1,
-      "medianRisePct": 3.5,
+      "medianRisePct": 3,
       "medianPm2": 6704,
-      "medianDaysListed": 227
+      "medianDaysListed": 228
     },
     {
       "key": "Torrevieja",
@@ -164,25 +164,25 @@
       "medianCutPct": -3.6,
       "medianRisePct": 4.4,
       "medianPm2": 5068,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Fuengirola",
       "label": "Fuengirola",
       "region": "costa-del-sol",
       "live": 99,
-      "exitsWindow": 3,
+      "exitsWindow": 2,
       "exitsSinceStart": 16,
       "newWindow": 1,
-      "absorptionPct30d": 2.9,
-      "monthsOfSupply": 33,
+      "absorptionPct30d": 2,
+      "monthsOfSupply": 49.5,
       "cutsWindow": 6,
       "risesWindow": 3,
       "cutBreadthPct": 5.9,
       "medianCutPct": -7.3,
       "medianRisePct": 3.4,
       "medianPm2": 7375,
-      "medianDaysListed": 227
+      "medianDaysListed": 228
     },
     {
       "key": "Pilar de La Horadada",
@@ -200,7 +200,7 @@
       "medianCutPct": -3.2,
       "medianRisePct": 2.5,
       "medianPm2": 4998,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Los Alcazares",
@@ -218,7 +218,7 @@
       "medianCutPct": null,
       "medianRisePct": 2.9,
       "medianPm2": 4621,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Marbella",
@@ -236,7 +236,7 @@
       "medianCutPct": -3.5,
       "medianRisePct": 6.3,
       "medianPm2": 8641,
-      "medianDaysListed": 227
+      "medianDaysListed": 228
     },
     {
       "key": "Finestrat",
@@ -254,7 +254,7 @@
       "medianCutPct": null,
       "medianRisePct": 2.6,
       "medianPm2": 5598,
-      "medianDaysListed": 109
+      "medianDaysListed": 110
     },
     {
       "key": "Guardamar del Segura",
@@ -263,7 +263,7 @@
       "live": 55,
       "exitsWindow": 3,
       "exitsSinceStart": 20,
-      "newWindow": 7,
+      "newWindow": 4,
       "absorptionPct30d": 5.2,
       "monthsOfSupply": 18.3,
       "cutsWindow": 0,
@@ -272,7 +272,7 @@
       "medianCutPct": null,
       "medianRisePct": 1.4,
       "medianPm2": 4798,
-      "medianDaysListed": 109
+      "medianDaysListed": 110
     },
     {
       "key": "Torre Pacheco",
@@ -281,7 +281,7 @@
       "live": 44,
       "exitsWindow": 8,
       "exitsSinceStart": 15,
-      "newWindow": 3,
+      "newWindow": 2,
       "absorptionPct30d": 15.4,
       "monthsOfSupply": 5.5,
       "cutsWindow": 7,
@@ -290,7 +290,7 @@
       "medianCutPct": -1.6,
       "medianRisePct": 1.6,
       "medianPm2": 4271,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "San Pedro del Pinatar",
@@ -299,7 +299,7 @@
       "live": 51,
       "exitsWindow": 3,
       "exitsSinceStart": 7,
-      "newWindow": 3,
+      "newWindow": 2,
       "absorptionPct30d": 5.6,
       "monthsOfSupply": 17,
       "cutsWindow": 0,
@@ -308,7 +308,7 @@
       "medianCutPct": null,
       "medianRisePct": 2.9,
       "medianPm2": 4345,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Casares",
@@ -326,7 +326,7 @@
       "medianCutPct": -1.3,
       "medianRisePct": 3.5,
       "medianPm2": 5962,
-      "medianDaysListed": 227
+      "medianDaysListed": 228
     },
     {
       "key": "Benijofar",
@@ -339,12 +339,12 @@
       "absorptionPct30d": 0,
       "monthsOfSupply": null,
       "cutsWindow": 0,
-      "risesWindow": 6,
+      "risesWindow": 0,
       "cutBreadthPct": 0,
       "medianCutPct": null,
-      "medianRisePct": 1.9,
+      "medianRisePct": null,
       "medianPm2": 4747,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Manilva",
@@ -362,7 +362,7 @@
       "medianCutPct": -8.2,
       "medianRisePct": 6.8,
       "medianPm2": 5933,
-      "medianDaysListed": 109
+      "medianDaysListed": 110
     },
     {
       "key": "Algorfa",
@@ -374,13 +374,13 @@
       "newWindow": 0,
       "absorptionPct30d": 0,
       "monthsOfSupply": null,
-      "cutsWindow": 2,
-      "risesWindow": 9,
-      "cutBreadthPct": 6.5,
-      "medianCutPct": -0.5,
-      "medianRisePct": 5,
+      "cutsWindow": 1,
+      "risesWindow": 3,
+      "cutBreadthPct": 3.2,
+      "medianCutPct": -0.8,
+      "medianRisePct": 1.1,
       "medianPm2": 4919,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Villajoyosa",
@@ -398,7 +398,7 @@
       "medianCutPct": -3.7,
       "medianRisePct": 11.1,
       "medianPm2": 6771,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Benahavís",
@@ -416,7 +416,7 @@
       "medianCutPct": -9.9,
       "medianRisePct": 6.2,
       "medianPm2": 9842,
-      "medianDaysListed": 227
+      "medianDaysListed": 228
     },
     {
       "key": "San Miguel de Salinas",
@@ -428,13 +428,13 @@
       "newWindow": 0,
       "absorptionPct30d": 6.3,
       "monthsOfSupply": 15,
-      "cutsWindow": 2,
+      "cutsWindow": 1,
       "risesWindow": 7,
-      "cutBreadthPct": 6.3,
-      "medianCutPct": -5.5,
+      "cutBreadthPct": 3.1,
+      "medianCutPct": -4.1,
       "medianRisePct": 2.1,
       "medianPm2": 4085,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Pinoso",
@@ -447,12 +447,12 @@
       "absorptionPct30d": 3.2,
       "monthsOfSupply": 30,
       "cutsWindow": 3,
-      "risesWindow": 11,
+      "risesWindow": 7,
       "cutBreadthPct": 9.7,
       "medianCutPct": -3,
-      "medianRisePct": 3.4,
+      "medianRisePct": 1.1,
       "medianPm2": 3192,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Málaga",
@@ -470,7 +470,7 @@
       "medianCutPct": null,
       "medianRisePct": 7.7,
       "medianPm2": 8828,
-      "medianDaysListed": 109
+      "medianDaysListed": 110
     },
     {
       "key": "Polop",
@@ -488,7 +488,7 @@
       "medianCutPct": null,
       "medianRisePct": 4.7,
       "medianPm2": 6273,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Orihuela Costa",
@@ -506,7 +506,7 @@
       "medianCutPct": -2,
       "medianRisePct": 7,
       "medianPm2": 6115,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Torremolinos",
@@ -524,7 +524,7 @@
       "medianCutPct": null,
       "medianRisePct": 4.9,
       "medianPm2": 7531,
-      "medianDaysListed": 109
+      "medianDaysListed": 110
     },
     {
       "key": "Rojales",
@@ -542,7 +542,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 4757,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Baños y Mendigo",
@@ -560,7 +560,7 @@
       "medianCutPct": null,
       "medianRisePct": 3.9,
       "medianPm2": 4704,
-      "medianDaysListed": 109
+      "medianDaysListed": 110
     },
     {
       "key": "Benalmádena",
@@ -578,7 +578,7 @@
       "medianCutPct": -0.8,
       "medianRisePct": null,
       "medianPm2": 6276,
-      "medianDaysListed": 227
+      "medianDaysListed": 228
     },
     {
       "key": "San Javier",
@@ -596,7 +596,7 @@
       "medianCutPct": -3.6,
       "medianRisePct": 1.1,
       "medianPm2": 4788,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "El Campello",
@@ -614,7 +614,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 6462,
-      "medianDaysListed": 56
+      "medianDaysListed": 57
     },
     {
       "key": "Calpe",
@@ -632,7 +632,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 8345,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Alicante",
@@ -650,7 +650,7 @@
       "medianCutPct": -4.8,
       "medianRisePct": 5.4,
       "medianPm2": 4725,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Vélez Málaga",
@@ -668,7 +668,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 5965,
-      "medianDaysListed": 227
+      "medianDaysListed": 228
     },
     {
       "key": "Jávea Xàbia",
@@ -686,7 +686,7 @@
       "medianCutPct": null,
       "medianRisePct": 4.9,
       "medianPm2": 7944,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "El Verger",
@@ -704,7 +704,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 5538,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "San Roque",
@@ -722,7 +722,7 @@
       "medianCutPct": null,
       "medianRisePct": 0.9,
       "medianPm2": 5864,
-      "medianDaysListed": 227
+      "medianDaysListed": 228
     },
     {
       "key": "Orihuela",
@@ -740,7 +740,7 @@
       "medianCutPct": -5.3,
       "medianRisePct": 8.1,
       "medianPm2": 4662,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Fuente Álamo",
@@ -758,7 +758,7 @@
       "medianCutPct": -4.2,
       "medianRisePct": 2.4,
       "medianPm2": 3814,
-      "medianDaysListed": 109
+      "medianDaysListed": 110
     },
     {
       "key": "la Nucia",
@@ -771,12 +771,12 @@
       "absorptionPct30d": 6.3,
       "monthsOfSupply": 15,
       "cutsWindow": 0,
-      "risesWindow": 1,
+      "risesWindow": 0,
       "cutBreadthPct": 0,
       "medianCutPct": null,
-      "medianRisePct": 8.7,
+      "medianRisePct": null,
       "medianPm2": 5552,
-      "medianDaysListed": 109
+      "medianDaysListed": 110
     },
     {
       "key": "La Manga del Mar Menor",
@@ -794,7 +794,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 4649,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "San Pedro De Alcantara",
@@ -812,7 +812,7 @@
       "medianCutPct": -3.1,
       "medianRisePct": 10,
       "medianPm2": 8870,
-      "medianDaysListed": 105
+      "medianDaysListed": 106
     },
     {
       "key": "rincon de la victoria",
@@ -830,7 +830,7 @@
       "medianCutPct": -3.8,
       "medianRisePct": 3.4,
       "medianPm2": 5622,
-      "medianDaysListed": 227
+      "medianDaysListed": 228
     },
     {
       "key": "Aguilas",
@@ -848,7 +848,7 @@
       "medianCutPct": -7,
       "medianRisePct": 4,
       "medianPm2": 5343,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Alhama De Murcia",
@@ -866,7 +866,7 @@
       "medianCutPct": -1.8,
       "medianRisePct": 4.1,
       "medianPm2": 4143,
-      "medianDaysListed": 95
+      "medianDaysListed": 96
     },
     {
       "key": "La Linea De La Concepcion",
@@ -884,7 +884,7 @@
       "medianCutPct": -1.1,
       "medianRisePct": 3.4,
       "medianPm2": 6751,
-      "medianDaysListed": 109
+      "medianDaysListed": 110
     },
     {
       "key": "La Manga Club",
@@ -902,7 +902,7 @@
       "medianCutPct": -3,
       "medianRisePct": 5.5,
       "medianPm2": 5048,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Santa Pola",
@@ -920,7 +920,7 @@
       "medianCutPct": null,
       "medianRisePct": 6.4,
       "medianPm2": 4198,
-      "medianDaysListed": 44
+      "medianDaysListed": 45
     },
     {
       "key": "Puerto de Mazarron",
@@ -938,7 +938,7 @@
       "medianCutPct": null,
       "medianRisePct": 5.9,
       "medianPm2": 3753,
-      "medianDaysListed": 109
+      "medianDaysListed": 110
     },
     {
       "key": "Hondón de las Nieves",
@@ -956,7 +956,7 @@
       "medianCutPct": null,
       "medianRisePct": 20,
       "medianPm2": 2933,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Ciudad Quesada",
@@ -974,7 +974,7 @@
       "medianCutPct": null,
       "medianRisePct": 4.6,
       "medianPm2": 4743,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Benissa",
@@ -992,7 +992,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 9828,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Dolores",
@@ -1010,7 +1010,7 @@
       "medianCutPct": -2.3,
       "medianRisePct": 2.5,
       "medianPm2": 3999,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Aspe",
@@ -1023,12 +1023,12 @@
       "absorptionPct30d": 0,
       "monthsOfSupply": null,
       "cutsWindow": 1,
-      "risesWindow": 7,
+      "risesWindow": 3,
       "cutBreadthPct": 12.5,
       "medianCutPct": -2.7,
-      "medianRisePct": 2.5,
+      "medianRisePct": 1,
       "medianPm2": 3463,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Cartagena",
@@ -1046,7 +1046,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 4932,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "San Fulgencio",
@@ -1064,7 +1064,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 4158,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Mazarron",
@@ -1082,7 +1082,7 @@
       "medianCutPct": null,
       "medianRisePct": 3.3,
       "medianPm2": 2406,
-      "medianDaysListed": 109
+      "medianDaysListed": 110
     },
     {
       "key": "La Romana",
@@ -1100,7 +1100,7 @@
       "medianCutPct": -2.9,
       "medianRisePct": 1.1,
       "medianPm2": 3341,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Mutxamel",
@@ -1118,7 +1118,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 4939,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Formentera del Segura",
@@ -1136,7 +1136,7 @@
       "medianCutPct": null,
       "medianRisePct": 5.7,
       "medianPm2": 4222,
-      "medianDaysListed": 25
+      "medianDaysListed": 26
     },
     {
       "key": "Almuñecar",
@@ -1154,7 +1154,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 4987,
-      "medianDaysListed": 227
+      "medianDaysListed": 228
     },
     {
       "key": "Cox",
@@ -1167,12 +1167,12 @@
       "absorptionPct30d": 0,
       "monthsOfSupply": null,
       "cutsWindow": 0,
-      "risesWindow": 1,
+      "risesWindow": 0,
       "cutBreadthPct": 0,
       "medianCutPct": null,
-      "medianRisePct": 2.9,
+      "medianRisePct": null,
       "medianPm2": 3500,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Moraira_Teulada",
@@ -1190,25 +1190,25 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 7967,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Denia",
       "label": "Denia",
       "region": "cb-north",
       "live": 4,
-      "exitsWindow": 1,
+      "exitsWindow": 0,
       "exitsSinceStart": 2,
       "newWindow": 0,
-      "absorptionPct30d": 20,
-      "monthsOfSupply": 4,
+      "absorptionPct30d": 0,
+      "monthsOfSupply": null,
       "cutsWindow": 0,
       "risesWindow": 0,
       "cutBreadthPct": 0,
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 6530,
-      "medianDaysListed": 172
+      "medianDaysListed": 173
     },
     {
       "key": "Monforte del Cid",
@@ -1226,7 +1226,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 2607,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Ojen",
@@ -1244,7 +1244,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 8622,
-      "medianDaysListed": 109
+      "medianDaysListed": 110
     },
     {
       "key": "Bigastro",
@@ -1262,7 +1262,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 3120,
-      "medianDaysListed": 231
+      "medianDaysListed": 232
     },
     {
       "key": "Benidorm",
@@ -1280,7 +1280,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 8780,
-      "medianDaysListed": 109
+      "medianDaysListed": 110
     },
     {
       "key": "Torrox",
@@ -1298,7 +1298,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 4763,
-      "medianDaysListed": 227
+      "medianDaysListed": 228
     },
     {
       "key": "Daya Nueva",
@@ -1316,7 +1316,7 @@
       "medianCutPct": -5,
       "medianRisePct": null,
       "medianPm2": 4042,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Los Montesinos",
@@ -1334,7 +1334,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 4716,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Altea",
@@ -1352,7 +1352,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 7901,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "La Marina",
@@ -1370,7 +1370,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 4211,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Sotogrande",
@@ -1388,7 +1388,7 @@
       "medianCutPct": null,
       "medianRisePct": 10.5,
       "medianPm2": 5761,
-      "medianDaysListed": 227
+      "medianDaysListed": 228
     },
     {
       "key": "Alfas del Pi",
@@ -1406,7 +1406,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 4883,
-      "medianDaysListed": 109
+      "medianDaysListed": 110
     },
     {
       "key": "Penaguila",
@@ -1424,7 +1424,7 @@
       "medianCutPct": null,
       "medianRisePct": 2.1,
       "medianPm2": 3860,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Catral",
@@ -1442,7 +1442,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 2760,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Istán",
@@ -1460,7 +1460,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 5722,
-      "medianDaysListed": 109
+      "medianDaysListed": 110
     },
     {
       "key": "Lorca",
@@ -1478,7 +1478,7 @@
       "medianCutPct": null,
       "medianRisePct": 2.6,
       "medianPm2": 3493,
-      "medianDaysListed": 227
+      "medianDaysListed": 228
     },
     {
       "key": "Avileses",
@@ -1496,7 +1496,7 @@
       "medianCutPct": null,
       "medianRisePct": 3.8,
       "medianPm2": 2422,
-      "medianDaysListed": 227
+      "medianDaysListed": 228
     },
     {
       "key": "Benitachell",
@@ -1514,7 +1514,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 3833,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Calasparra",
@@ -1532,7 +1532,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 3650,
-      "medianDaysListed": 227
+      "medianDaysListed": 228
     },
     {
       "key": "Yecla",
@@ -1550,7 +1550,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 2424,
-      "medianDaysListed": 227
+      "medianDaysListed": 228
     },
     {
       "key": "Jacarilla",
@@ -1568,7 +1568,7 @@
       "medianCutPct": null,
       "medianRisePct": 1.3,
       "medianPm2": 2698,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Benejúzar",
@@ -1586,7 +1586,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 4253,
-      "medianDaysListed": 172
+      "medianDaysListed": 173
     },
     {
       "key": "Sucina",
@@ -1604,7 +1604,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 4958,
-      "medianDaysListed": 109
+      "medianDaysListed": 110
     },
     {
       "key": "Monda",
@@ -1640,7 +1640,7 @@
       "medianCutPct": -2.4,
       "medianRisePct": null,
       "medianPm2": 5542,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Fortuna",
@@ -1658,21 +1658,21 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 2917,
-      "medianDaysListed": 227
+      "medianDaysListed": 228
     },
     {
       "key": "Els Poblets",
       "label": "Els Poblets",
       "region": "cb-north",
       "live": 0,
-      "exitsWindow": 1,
+      "exitsWindow": 0,
       "exitsSinceStart": 2,
       "newWindow": 0,
-      "absorptionPct30d": 100,
-      "monthsOfSupply": 0,
+      "absorptionPct30d": null,
+      "monthsOfSupply": null,
       "cutsWindow": 0,
       "risesWindow": 0,
-      "cutBreadthPct": 0,
+      "cutBreadthPct": null,
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": null,
@@ -1694,7 +1694,7 @@
       "medianCutPct": null,
       "medianRisePct": 4.4,
       "medianPm2": 4267,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "La Union",
@@ -1712,7 +1712,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 2819,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Cabo de Palos",
@@ -1730,7 +1730,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 13636,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Alhaurín De La Torre",
@@ -1748,7 +1748,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 3554,
-      "medianDaysListed": 97
+      "medianDaysListed": 98
     },
     {
       "key": "Molina De Segura",
@@ -1784,7 +1784,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 8924,
-      "medianDaysListed": 3
+      "medianDaysListed": 4
     },
     {
       "key": "Los Urrutias",
@@ -1802,7 +1802,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 3840,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Los Nietos",
@@ -1820,7 +1820,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 3408,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Almoradi",
@@ -1838,7 +1838,7 @@
       "medianCutPct": null,
       "medianRisePct": 4.1,
       "medianPm2": 3249,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Rafal",
@@ -1856,7 +1856,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 4150,
-      "medianDaysListed": 235
+      "medianDaysListed": 236
     },
     {
       "key": "Mojacar",
@@ -1892,7 +1892,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 6580,
-      "medianDaysListed": 227
+      "medianDaysListed": 228
     },
     {
       "key": "Lliber",
@@ -1910,7 +1910,7 @@
       "medianCutPct": null,
       "medianRisePct": null,
       "medianPm2": 6268,
-      "medianDaysListed": 73
+      "medianDaysListed": 74
     }
   ],
   "weekly": [
@@ -2051,7 +2051,7 @@
     },
     {
       "week": "2026-11-16",
-      "daysObserved": 6,
+      "daysObserved": 7,
       "exits": 42,
       "newListings": 22,
       "cuts": 29,
