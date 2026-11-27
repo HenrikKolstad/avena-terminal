@@ -53,20 +53,115 @@ export const VISADOS_BULLETIN_URL = 'https://apps.fomento.gob.es/Boletinonline/?
 export const VISADOS_MINISTRY_URL =
   'https://www.transportes.gob.es/informacion-para-el-ciudadano/informacion-estadistica/construccion/obras-en-edificacion-visados-de-direccion-de-obra-de-los-colegios-de-arquitectos-tecnicos';
 
-const VDP005_COLUMNS = [
-  'CODAUTO', 'COMUNIDAD_AUTONOMA', 'CPRO', 'PROVINCIA', 'AÑO', 'MES',
-  'TIPO_VIVIENDA', 'ESTADO', 'VALOR',
-] as const;
-
 const INE_SALES_COLUMNS = [
   'Total Nacional', 'Comunidades y Ciudades Autónomas', 'Provincias',
   'Régimen y estado', 'Periodo', 'Total',
 ] as const;
 
-const VDP003_COLUMNS = [
+/**
+ * VDP005_01 has two known headers. The November 2026 file renamed every
+ * column and shortened the status words to Iniciada and Terminada. The
+ * fields are still the same nine, in the same order. Libres is still a
+ * start and Libre is still a completion. Any other header is refused.
+ */
+const VDP005_FIELDS = [
+  'CODAUTO', 'COMUNIDAD_AUTONOMA', 'CPRO', 'PROVINCIA', 'AÑO', 'MES',
+  'TIPO_VIVIENDA', 'ESTADO', 'VALOR',
+] as const;
+
+interface Vdp005Schema {
+  header: readonly string[];
+  toCanonical: Readonly<Record<string, string>>;
+  /** Printed status word -> the plural form the rest of this file uses. */
+  estado: Readonly<Record<string, 'Iniciadas' | 'Terminadas'>>;
+}
+
+function identityMap(columns: readonly string[]): Record<string, string> {
+  return Object.fromEntries(columns.map((column) => [column, column]));
+}
+
+const VDP005_LEGACY: Vdp005Schema = {
+  header: VDP005_FIELDS,
+  toCanonical: identityMap(VDP005_FIELDS),
+  estado: { Iniciadas: 'Iniciadas', Terminadas: 'Terminadas' },
+};
+
+const VDP005_RENAMED: Vdp005Schema = {
+  header: [
+    'COD_CCAA', 'NOM_CCAA', 'COD_PROV', 'NOM_PROV', 'ANIO', 'MES',
+    'REGIMEN_VIVIENDA', 'ESTADO_CONSTRUCCION', 'NUM_VIVIENDAS',
+  ],
+  toCanonical: {
+    COD_CCAA: 'CODAUTO',
+    NOM_CCAA: 'COMUNIDAD_AUTONOMA',
+    COD_PROV: 'CPRO',
+    NOM_PROV: 'PROVINCIA',
+    ANIO: 'AÑO',
+    MES: 'MES',
+    REGIMEN_VIVIENDA: 'TIPO_VIVIENDA',
+    ESTADO_CONSTRUCCION: 'ESTADO',
+    NUM_VIVIENDAS: 'VALOR',
+  },
+  estado: { Iniciada: 'Iniciadas', Terminada: 'Terminadas' },
+};
+
+const VDP005_SCHEMAS = [VDP005_LEGACY, VDP005_RENAMED] as const;
+
+/**
+ * VDP003_01 was renamed in the same ministry pass. NUEVA and LIBRE are the
+ * upper-case forms of Nueva and Libre. SEGUNDA_MANO and PROTEGIDA are the
+ * other printed categories; they are not the new free-market series. An
+ * unknown header or an unknown category is refused. The euro amount is not
+ * read: the renamed file prints a decimal comma there.
+ */
+const VDP003_LEGACY_HEADER = [
   'CODCOMUNIDAD', 'COMUNIDAD', 'CODPROVINCIA', 'PROVINCIA', 'Tipo', 'regimen',
   'AÑO', 'Trimestre', 'Numero_Transacciones', 'Valor_Transacciones',
 ] as const;
+
+interface Vdp003Schema {
+  header: readonly string[];
+  toCanonical: Readonly<Record<string, string>>;
+  /**
+   * Closed vocabulary for a renamed file, written onto the legacy field
+   * names. Null means the cells are already the legacy tokens.
+   */
+  vocabulary: {
+    tipo: Readonly<Record<string, string>>;
+    regimen: Readonly<Record<string, string>>;
+  } | null;
+}
+
+const VDP003_LEGACY: Vdp003Schema = {
+  header: VDP003_LEGACY_HEADER,
+  toCanonical: identityMap(VDP003_LEGACY_HEADER),
+  vocabulary: null,
+};
+
+const VDP003_RENAMED: Vdp003Schema = {
+  header: [
+    'COD_CCAA', 'NOM_CCAA', 'COD_PROV', 'NOM_PROV', 'TIPO_TRANSACCION',
+    'REGIMEN_VIVIENDA', 'ANIO', 'TRIMESTRE', 'NUM_TRANSACCIONES', 'IMPORTE_TRANSACCIONES_EUR',
+  ],
+  toCanonical: {
+    COD_CCAA: 'CODCOMUNIDAD',
+    NOM_CCAA: 'COMUNIDAD',
+    COD_PROV: 'CODPROVINCIA',
+    NOM_PROV: 'PROVINCIA',
+    TIPO_TRANSACCION: 'Tipo',
+    REGIMEN_VIVIENDA: 'regimen',
+    ANIO: 'AÑO',
+    TRIMESTRE: 'Trimestre',
+    NUM_TRANSACCIONES: 'Numero_Transacciones',
+    IMPORTE_TRANSACCIONES_EUR: 'Valor_Transacciones',
+  },
+  vocabulary: {
+    tipo: { NUEVA: 'Nueva', SEGUNDA_MANO: 'SEGUNDA_MANO' },
+    regimen: { LIBRE: 'Libre', PROTEGIDA: 'PROTEGIDA' },
+  },
+};
+
+const VDP003_SCHEMAS = [VDP003_LEGACY, VDP003_RENAMED] as const;
 
 /** Province codes 01–52: the fifty provinces plus Ceuta and Melilla. */
 export const ES_CPRO_CODES: string[] = Array.from({ length: 52 }, (_, i) => String(i + 1).padStart(2, '0'));
@@ -225,7 +320,7 @@ const NOTARY_OMISSION: SupplyOmission = {
   reason: 'No keyless CSV or JSON endpoint is read by this job. A direct notarial series is not in this file. The ministry file that republishes notarial transactions is assessed separately.',
 };
 
-export function parseSemicolonTable(text: string, expected: readonly string[], label: string): Record<string, string>[] {
+function readSemicolonTable(text: string): string[][] {
   const src = text.replace(/^\uFEFF/, '');
   const table: string[][] = [];
   let row: string[] = [];
@@ -251,19 +346,56 @@ export function parseSemicolonTable(text: string, expected: readonly string[], l
     row.push(field);
     if (row.some((cell) => cell.trim() !== '')) table.push(row);
   }
-  if (table.length < 2) throw new Error(`${label}: CSV has no data rows`);
-  const header = table[0].map((h) => h.trim());
-  if (header.length !== expected.length || expected.some((col, i) => header[i] !== col)) {
-    throw new Error(`${label}: header is "${header.join('|')}", expected "${expected.join('|')}"`);
-  }
+  return table;
+}
+
+function headerMatches(header: string[], expected: readonly string[]): boolean {
+  return header.length === expected.length && expected.every((col, i) => header[i] === col);
+}
+
+function projectRows(
+  table: string[][],
+  header: string[],
+  toCanonical: Readonly<Record<string, string>>,
+  label: string,
+): Record<string, string>[] {
   return table.slice(1).map((cells, index) => {
-    if (cells.length !== expected.length) {
-      throw new Error(`${label}: row ${index + 2} has ${cells.length} cells, expected ${expected.length}`);
+    if (cells.length !== header.length) {
+      throw new Error(`${label}: row ${index + 2} has ${cells.length} cells, expected ${header.length}`);
     }
     const out: Record<string, string> = {};
-    header.forEach((h, i) => { out[h] = (cells[i] ?? '').trim(); });
+    header.forEach((h, i) => {
+      const key = toCanonical[h];
+      if (!key) throw new Error(`${label}: column "${h}" has no mapping`);
+      out[key] = (cells[i] ?? '').trim();
+    });
     return out;
   });
+}
+
+interface NamedSchema {
+  header: readonly string[];
+  toCanonical: Readonly<Record<string, string>>;
+}
+
+function parseOneOf<T extends NamedSchema>(
+  text: string,
+  schemas: readonly T[],
+  label: string,
+): { rows: Record<string, string>[]; schema: T } {
+  const table = readSemicolonTable(text);
+  if (table.length < 2) throw new Error(`${label}: CSV has no data rows`);
+  const header = table[0].map((h) => h.trim());
+  const schema = schemas.find((candidate) => headerMatches(header, candidate.header));
+  if (!schema) {
+    const expected = schemas.map((candidate) => candidate.header.join('|')).join('" or "');
+    throw new Error(`${label}: header is "${header.join('|')}", expected "${expected}"`);
+  }
+  return { rows: projectRows(table, header, schema.toCanonical, label), schema };
+}
+
+export function parseSemicolonTable(text: string, expected: readonly string[], label: string): Record<string, string>[] {
+  return parseOneOf(text, [{ header: expected, toCanonical: identityMap(expected) }], label).rows;
 }
 
 /**
@@ -331,12 +463,13 @@ export interface VdpMonthRow {
 }
 
 export function parseVdp005(text: string): VdpMonthRow[] {
-  const records = parseSemicolonTable(text, VDP005_COLUMNS, VDP005_DATASET_ID);
+  const parsed = parseOneOf(text, VDP005_SCHEMAS, VDP005_DATASET_ID);
+  const records = parsed.rows;
   const rows: VdpMonthRow[] = [];
   for (const r of records) {
-    const estado = r['ESTADO'];
+    const estado = parsed.schema.estado[r['ESTADO']];
     if (estado !== 'Iniciadas' && estado !== 'Terminadas') {
-      throw new Error(`${VDP005_DATASET_ID}: estado not understood: "${estado}"`);
+      throw new Error(`${VDP005_DATASET_ID}: estado not understood: "${r['ESTADO']}"`);
     }
     const tipo = r['TIPO_VIVIENDA'];
     const expectedTipo = estado === 'Iniciadas' ? 'Libres' : 'Libre';
@@ -417,11 +550,24 @@ export interface Vdp003Assessment {
   omission: SupplyOmission;
 }
 
+function applyVdp003Vocabulary(rows: Record<string, string>[], schema: Vdp003Schema): Record<string, string>[] {
+  if (!schema.vocabulary) return rows;
+  const { tipo, regimen } = schema.vocabulary;
+  return rows.map((r) => {
+    const nextTipo = tipo[r['Tipo']];
+    const nextRegimen = regimen[r['regimen']];
+    if (nextTipo === undefined) throw new Error(`${VDP003_DATASET_ID}: tipo not understood: "${r['Tipo']}"`);
+    if (nextRegimen === undefined) throw new Error(`${VDP003_DATASET_ID}: regimen not understood: "${r['regimen']}"`);
+    return { ...r, Tipo: nextTipo, regimen: nextRegimen };
+  });
+}
+
 /**
  * VDP003_01 is the ministry's notarial transaction file. On the file this job
  * was written against, the same province-quarter of new free-market sales is
  * printed twice, with two different transaction counts (one of them zero).
- * This function never picks a count.
+ * The November 2026 header keeps that double count. This function never
+ * picks a count.
  */
 export function assessVdp003(text: string | null, httpStatus: number | null): SupplyOmission {
   const base = {
@@ -435,9 +581,10 @@ export function assessVdp003(text: string | null, httpStatus: number | null): Su
   }
   let records: Record<string, string>[];
   try {
-    records = parseSemicolonTable(text, VDP003_COLUMNS, VDP003_DATASET_ID);
+    const parsed = parseOneOf(text, VDP003_SCHEMAS, VDP003_DATASET_ID);
+    records = applyVdp003Vocabulary(parsed.rows, parsed.schema);
   } catch (e) {
-    return { ...base, reason: `The notarial transactions file did not match the expected columns (${(e as Error).message}). No notarial transaction count was ingested.` };
+    return { ...base, reason: `The notarial transactions file did not match a known layout (${(e as Error).message}). No notarial transaction count was ingested.` };
   }
   const groups = new Map<string, { name: string; period: string; counts: Set<string> }>();
   for (const r of records) {
