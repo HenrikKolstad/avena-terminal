@@ -15,6 +15,7 @@ import { getAllProperties } from '../src/lib/properties';
 import {
   MIN_PRICED_LISTINGS,
   VDP003_HEADER,
+  VDP003_HEADER_RENAMED,
   askingVsAppraisalPct,
   buildSpainTownLayer,
   buildTownGapView,
@@ -135,18 +136,19 @@ function padded(data: SheetCell[][]): SheetCell[][] {
   return sheet([...data, ...pads]);
 }
 
+const layerInput = padded([
+  row('Alicante', 'Torrevieja', 2000, 1500, 60, 700),
+  row('', 'Campello, el', 'n.r', 2800, 12, 169),
+  row('', 'Jávea/Xábia', 4000, 3500, 21, 170),
+  row('', 'Orihuela', 2100, 1800, 30, 400),
+  row('Málaga', 'Estepona', 4100, 3600, 80, 500),
+  row('', 'Málaga', 3900, 3400, 70, 600),
+  row('', 'Mazarrón', 1600, 1500, 9, 100),
+].map((r) => r[2] === 'Mazarrón' ? ['', 'Murcia', 'Mazarrón', 'n.r', 1400, 1500, '', 9, 90, 99] : r));
 const layer = buildSpainTownLayer({
   now: new Date('2026-10-28T00:00:00.000Z'),
   sheetName: 'T2A2026',
-  rows: padded([
-    row('Alicante', 'Torrevieja', 2000, 1500, 60, 700),
-    row('', 'Campello, el', 'n.r', 2800, 12, 169),
-    row('', 'Jávea/Xábia', 4000, 3500, 21, 170),
-    row('', 'Orihuela', 2100, 1800, 30, 400),
-    row('Málaga', 'Estepona', 4100, 3600, 80, 500),
-    row('', 'Málaga', 3900, 3400, 70, 600),
-    row('', 'Mazarrón', 1600, 1500, 9, 100),
-  ].map((r) => r[2] === 'Mazarrón' ? ['', 'Murcia', 'Mazarrón', 'n.r', 1400, 1500, '', 9, 90, 99] : r)),
+  rows: layerInput,
   fileModified: '2026-09-17',
   provinceKeys: ['alicante', 'malaga', 'murcia'],
   registradoresStatus: 403,
@@ -155,7 +157,40 @@ const layer = buildSpainTownLayer({
 check('corpus filter drops Madrid', layer.municipalities.some((m) => m.province_key === 'madrid'), false);
 check('registradores refusal is recorded', layer.omissions.some((o) => o.source === 'Colegio de Registradores' && /403/.test(o.reason)), true);
 check('notaries are not ingested', layer.omissions.some((o) => o.source === 'Consejo General del Notariado' && /commercial/.test(o.reason)), true);
-check('VDP003 has no municipal price', layer.omissions.some((o) => /VDP003_01/.test(o.source) && /no municipality/.test(o.reason)), true);
+const VDP003_READ_REASON =
+  'The file was re-read. Its columns are a province, a dwelling type, a quarter, a transaction count and a total transaction value. There is no municipality column and no €/m² column, so it cannot fill this layer. No figure from it was ingested.';
+function vdp003OmissionOf(built: SpainTownLayer) {
+  return built.omissions.find((o) => /VDP003_01/.test(o.source)) ?? null;
+}
+const legacyVdp = vdp003OmissionOf(layer);
+check('VDP003 has no municipal price', legacyVdp != null && /no municipality/.test(legacyVdp.reason), true);
+check('legacy VDP003 header keeps the published omission', legacyVdp, {
+  source: 'Ministerio de Vivienda y Agenda Urbana, VDP003_01',
+  url: 'https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP003_01.csv',
+  ingested: false,
+  reason: VDP003_READ_REASON,
+});
+const renamed = buildSpainTownLayer({
+  now: new Date('2026-10-28T00:00:00.000Z'),
+  sheetName: 'T2A2026',
+  rows: layerInput,
+  fileModified: '2026-09-17',
+  provinceKeys: ['alicante', 'malaga', 'murcia'],
+  registradoresStatus: 403,
+  vdp003Header: VDP003_HEADER_RENAMED,
+});
+check('renamed VDP003 header keeps the same omission', vdp003OmissionOf(renamed), legacyVdp);
+check('renamed VDP003 header does not change a published appraisal', renamed.municipalities, layer.municipalities);
+const renamedWithBom = buildSpainTownLayer({
+  now: new Date('2026-10-28T00:00:00.000Z'),
+  sheetName: 'T2A2026',
+  rows: layerInput,
+  fileModified: '2026-09-17',
+  provinceKeys: ['alicante', 'malaga', 'murcia'],
+  registradoresStatus: 403,
+  vdp003Header: `\uFEFF${VDP003_HEADER_RENAMED} \r`,
+});
+check('BOM and surrounding space on the renamed header are the same omission', vdp003OmissionOf(renamedWithBom), legacyVdp);
 check('the sheet is not described as CC BY', /does not claim/.test(layer.sources.municipal_appraisal.licence_note), true);
 throws('a changed transaction header', () => buildSpainTownLayer({
   now: new Date('2026-10-28T00:00:00.000Z'),
@@ -165,6 +200,15 @@ throws('a changed transaction header', () => buildSpainTownLayer({
   provinceKeys: ['alicante'],
   registradoresStatus: null,
   vdp003Header: 'CPRO;MUNICIPIO;EUR_M2',
+}), 'CPRO;MUNICIPIO;EUR_M2');
+throws('a reordered renamed header is refused', () => buildSpainTownLayer({
+  now: new Date('2026-10-28T00:00:00.000Z'),
+  sheetName: 'T2A2026',
+  rows: padded([row('Alicante', 'Torrevieja', 2000, 1500)]),
+  fileModified: null,
+  provinceKeys: ['alicante'],
+  registradoresStatus: null,
+  vdp003Header: VDP003_HEADER_RENAMED.split(';').reverse().join(';'),
 }), 'header');
 throws('a corpus province missing from the sheet', () => buildSpainTownLayer({
   now: new Date('2026-10-28T00:00:00.000Z'),
@@ -229,6 +273,7 @@ check('Almazora stays under the province printed on the sheet', committed.munici
 const committedTorre = committed.municipalities.find((m) => m.municipality === 'Torrevieja' && m.province_key === 'alicante');
 check('Torrevieja has a published up-to-five-years appraisal', committedTorre != null && (committedTorre.up_to_five_years_eur_m2 ?? 0) > 500, true);
 check('notarial omission is on the committed file', committed.omissions.some((o) => o.source === 'Consejo General del Notariado' && o.ingested === false), true);
+check('committed VDP003 omission keeps the re-read wording', committed.omissions.find((o) => /VDP003_01/.test(o.source))?.reason, VDP003_READ_REASON);
 
 const live = buildTownGapView(committed, getAllProperties().map((p) => ({
   location: p.l,

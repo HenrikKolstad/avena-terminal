@@ -14,9 +14,10 @@ name: Spain municipal appraisal refresh
 # and nothing is committed: the previous layer stays live and this run goes
 # red. The Notariado portal is not fetched. The Registradores portal is
 # probed and, when it refuses the runner, recorded as not ingested. That
-# refusal does not fail the job. A changed VDP003_01 header does fail the
+# refusal does not fail the job. An unknown VDP003_01 header does fail the
 # job, because the omission that says that file has no municipal €/m² would
-# otherwise go stale.
+# otherwise go stale. The November 2026 column rename is a known header
+# (same ten fields, still no municipality and no €/m²) and does not fail.
 # If nothing changed upstream the script leaves the file untouched and the
 # commit step is a no-op.
 
