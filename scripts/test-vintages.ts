@@ -218,6 +218,100 @@ try {
   rmSync(dir, { recursive: true, force: true });
 }
 
+console.log('manifest append');
+const appendPlans = planClosedWeeks({
+  commits: [
+    { date: '2026-08-09', commit: SHA_A },
+    { date: '2026-08-16', commit: SHA_B },
+  ],
+  asOf: '2026-08-17',
+});
+const laterFile = buildVintageFile(weekOf(appendPlans, '2026-08-16'), firstBook, firstBook);
+const laterBody = canonicalVintageJson(laterFile);
+const appendFiles = new Map<string, VintageFile>([
+  ['2026-08-09', firstFileA],
+  ['2026-08-16', laterFile],
+]);
+const appended = decideFreeze({
+  plans: appendPlans,
+  files: appendFiles,
+  existingFiles: new Map([['2026-08-09', bodyA]]),
+  existingManifest: created.manifest,
+  existingManifestBody: manifestBody,
+});
+check(
+  'a new week appends to the manifest and does not rewrite the previous file',
+  appended.errors.length === 0
+    && appended.writes.some((write) => write.path === 'data/vintages/manifest.json')
+    && appended.writes.some((write) => write.path === 'data/vintages/2026-08-16.json' && write.body === laterBody)
+    && !appended.writes.some((write) => write.path === 'data/vintages/2026-08-09.json')
+    && appended.manifest.vintages.length === created.manifest.vintages.length + 1
+    && JSON.stringify(appended.manifest.vintages[0]) === JSON.stringify(created.manifest.vintages[0])
+    && appended.manifest.vintages[1]?.vintage_date === '2026-08-16'
+    && created.manifest.missing_capture_dates.every((day, i) => appended.manifest.missing_capture_dates[i] === day),
+);
+const appendDir = mkdtempSync(path.join(tmpdir(), 'avena-vintages-append-'));
+try {
+  writeFreeze(appendDir, created);
+  const vintagePath = path.join(appendDir, 'data/vintages/2026-08-09.json');
+  const manifestPath = path.join(appendDir, 'data/vintages/manifest.json');
+  const vintageBefore = readFileSync(vintagePath, 'utf8');
+  writeFreeze(appendDir, appended);
+  const manifestAfter = readFileSync(manifestPath, 'utf8');
+  const storedManifest = JSON.parse(manifestAfter) as { vintages: Array<{ iso_week: string; vintage_date: string | null; sha256: string | null }> };
+  check(
+    'writing the new week leaves the previous vintage bytes in place',
+    readFileSync(vintagePath, 'utf8') === vintageBefore
+      && readFileSync(path.join(appendDir, 'data/vintages/2026-08-16.json'), 'utf8') === laterBody
+      && storedManifest.vintages.length === 2
+      && storedManifest.vintages[0]?.sha256 === hashA
+      && storedManifest.vintages[1]?.vintage_date === '2026-08-16',
+  );
+  const rerun = decideFreeze({
+    plans: appendPlans,
+    files: appendFiles,
+    existingFiles: new Map([
+      ['2026-08-09', vintageBefore],
+      ['2026-08-16', laterBody],
+    ]),
+    existingManifest: JSON.parse(manifestAfter) as unknown,
+    existingManifestBody: manifestAfter,
+  });
+  check('re-running the same week is idempotent', rerun.errors.length === 0 && rerun.writes.length === 0);
+  writeFreeze(appendDir, rerun);
+  check('the idempotent re-run does not change the manifest', readFileSync(manifestPath, 'utf8') === manifestAfter);
+
+  let revisedFile = false;
+  try {
+    writeFreeze(appendDir, {
+      writes: [{ path: 'data/vintages/2026-08-09.json', body: '{"replaced":true}\n' }],
+      errors: [],
+      manifest: appended.manifest,
+    });
+  } catch (err) {
+    revisedFile = err instanceof Error && /refusing to overwrite data\/vintages\/2026-08-09\.json/.test(err.message);
+  }
+  check('altering a past vintage file throws', revisedFile);
+  check('the past vintage file is unchanged after the refusal', readFileSync(vintagePath, 'utf8') === vintageBefore);
+
+  const tampered = JSON.parse(manifestAfter) as { vintages: Array<{ sha256: string | null }> };
+  tampered.vintages[0].sha256 = '0'.repeat(64);
+  let revisedEntry = false;
+  try {
+    writeFreeze(appendDir, {
+      writes: [{ path: 'data/vintages/manifest.json', body: `${JSON.stringify(tampered, null, 2)}\n` }],
+      errors: [],
+      manifest: appended.manifest,
+    });
+  } catch (err) {
+    revisedEntry = err instanceof Error && /refusing to revise manifest entry 2026-W32/.test(err.message);
+  }
+  check('altering a past manifest entry throws', revisedEntry);
+  check('the manifest is unchanged after the refusal', readFileSync(manifestPath, 'utf8') === manifestAfter);
+} finally {
+  rmSync(appendDir, { recursive: true, force: true });
+}
+
 console.log('week-to-week counts');
 const week1 = townListings('t', 'Estepona', 6, 100, 2000).map((row, i) => ({ ...row, ref: `t${i}` }));
 const week2 = [

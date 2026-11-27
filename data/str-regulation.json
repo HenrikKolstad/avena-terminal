@@ -2767,43 +2767,6 @@
       ]
     },
     {
-      "town": "San Juan Alicante, Alicante",
-      "slug": "san-juan-alicante-alicante",
-      "place": "San Juan Alicante",
-      "province": "Alicante",
-      "province_key": "alicante",
-      "costa": "Costa Blanca North",
-      "region_id": "valenciana",
-      "municipality": "Sant Joan d'Alacant",
-      "municipality_resolution": "alias",
-      "risk": "elevated",
-      "reason": "A new tourist-use registration in the Valencian Community needs a favourable municipal urban-compatibility report and is valid for five years. A change of owner after 8 August 2024 needs a new declaration. Whether this town hall is issuing favourable reports was not verified.",
-      "municipal_status": "not_read",
-      "as_of": "2026-11-05",
-      "sources": [
-        {
-          "title": "Decreto-ley 9/2024, de 2 de agosto, viviendas de uso turístico (DOGV 9910)",
-          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90168",
-          "published": "2024-08-07"
-        },
-        {
-          "title": "Convalidación del Decreto-ley 9/2024 por Les Corts, 5 de septiembre de 2024",
-          "url": "https://www.boe.es/buscar/doc.php?id=DOGV-r-2024-90175",
-          "published": "2024-09-13"
-        },
-        {
-          "title": "Ley 3/2026, de 29 de junio, de la Generalitat, artículo 133 (modifica el Decreto 10/2021)",
-          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-15683",
-          "published": "2026-07-02"
-        },
-        {
-          "title": "Normativa de turismo, Generalitat Valenciana",
-          "url": "https://cindi.gva.es/va/web/turisme/normativa",
-          "published": null
-        }
-      ]
-    },
-    {
       "town": "San Miguel de Salinas, Alicante",
       "slug": "san-miguel-de-salinas-alicante",
       "place": "San Miguel de Salinas",
