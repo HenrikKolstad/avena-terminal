@@ -1,0 +1,57 @@
+name: Weekly bulk snapshots
+
+# Packages each frozen vintage as gzipped CSV under data/bulk/.
+# Reads data/vintages. Does not freeze a week and does not edit vintage files.
+#
+# Monday 07:20 UTC is after vintages-freeze.yml at 06:20 UTC. That freeze job
+# times out at 30 minutes, so 07:20 is after the window. A week the freeze has
+# not written yet is left absent. This job does not invent it.
+#
+# An existing bundle whose row text still matches the vintage is kept, gzip
+# bytes and checksum included. A vintage whose rows would change the bundle
+# fails the job and writes nothing.
+
+on:
+  schedule:
+    - cron: '20 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bulk-refresh
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Publish bulk snapshots of frozen vintages
+        run: npx tsx scripts/build-bulk.ts
+
+      - name: Commit new bulk bundles (if any)
+        run: |
+          git config user.name "avena-feed-bot"
+          git config user.email "feed@avenaterminal.com"
+          git add data/bulk
+          if git diff --staged --quiet; then
+            echo "No new bulk bundle."
+          else
+            git commit -m "chore(data): publish weekly bulk snapshots [skip ci]"
+            git pull --rebase origin main
+            git push
+            echo "Pushed bulk snapshots."
+          fi

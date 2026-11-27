@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-10T23:49:35.717Z",
+  "vintage_date": "2026-10-13",
+  "iso_week": "2026-W42",
+  "week_start": "2026-10-12",
+  "week_end": "2026-10-18",
+  "source_capture_dates": [
+    "2026-10-13"
+  ],
+  "gap_dates_in_week": [
+    "2026-10-12",
+    "2026-10-14",
+    "2026-10-15",
+    "2026-10-16",
+    "2026-10-17",
+    "2026-10-18"
+  ],
+  "missing_days_since_compared_to": [
+    "2026-10-10",
+    "2026-10-11",
+    "2026-10-12"
+  ],
+  "overlaps_declared_capture_gap": true,
+  "compared_to": "2026-10-09",
+  "capture_commit": "e158eb449cb25189fec7a3e8d338fc4f0ec5aaa1",
+  "series_start": "2026-08-05",
+  "town_min_listings": 5,
+  "vintage_file": "data/vintages/2026-10-13.json",
+  "vintage_sha256": "fcf4ef68aa5973b054081a8bbdbc36fe623162e049864e5eb30ba4c7a2bac92b",
+  "row_count": 74,
+  "book": {
+    "live_listings": 2039,
+    "priced_listings": 2039,
+    "unmapped_listings": 0,
+    "towns_published": 69,
+    "towns_omitted": 29,
+    "comparable_listings": 2039,
+    "price_cuts": 3,
+    "price_rises": 2,
+    "price_cut_share": "0.0015",
+    "price_rise_share": "0.0010",
+    "new_listings": 0,
+    "removed_listings": 0,
+    "reassigned_in": 0,
+    "reassigned_out": 0,
+    "reassigned_listings": 0
+  },
+  "columns": [
+    "vintage_date",
+    "iso_week",
+    "week_start",
+    "week_end",
+    "level",
+    "key",
+    "name",
+    "province",
+    "costa",
+    "live_listings",
+    "priced_listings",
+    "median_asking_eur_m2",
+    "comparable_listings",
+    "price_cuts",
+    "price_rises",
+    "price_cut_share",
+    "price_rise_share",
+    "new_listings",
+    "removed_listings",
+    "reassigned_in",
+    "reassigned_out"
+  ],
+  "files": [
+    {
+      "name": "town-province.csv.gz",
+      "format": "csv.gz",
+      "sha256": "7cbee65e86cc7a948a40183c713815cb2a6c1941a3eaa5b40d741e2176d4cfa4",
+      "bytes": 1735,
+      "uncompressed_sha256": "11cc4ed44a96aef1ef2c93f4129c775e89d803aebb4b7a355492f1472b27ebad",
+      "uncompressed_bytes": 10344,
+      "row_count": 74,
+      "schema_version": 1
+    }
+  ]
+}

@@ -231,6 +231,7 @@ export default function AbsorptionPage() {
           <Link href="/data/price-index" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Same-unit price index</Link>
           <Link href="/spain/short-let-rules" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Short-let rules</Link>
           <Link href="/data/vintages" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Weekly vintages</Link>
+          <Link href="/data/bulk" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Bulk files</Link>
           <Link href="/methodology#absorption" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Methodology</Link>
         </p>
 

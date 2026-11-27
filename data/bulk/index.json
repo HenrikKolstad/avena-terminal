@@ -1,0 +1,563 @@
+{
+  "schema_version": 1,
+  "series_start": "2026-08-05",
+  "generated_at": "2026-11-10T23:49:35.717Z",
+  "cadence": "GitHub Actions bulk-refresh.yml on Monday at 07:20 UTC, after the 06:20 UTC vintage freeze. Also workflow_dispatch. The job reads frozen vintage files. It does not freeze a week and it does not rewrite a bundle.",
+  "format": "csv.gz",
+  "parquet": null,
+  "page": "/data/bulk",
+  "schema_changelog": "data/bulk/schema-changelog.json",
+  "guarantee": "Each bundle is the town and province rows of one frozen vintage, written once as gzipped CSV. The SHA-256 is of those gzip bytes. The source is the vintage file and the capture dates recorded on it. A later run keeps a bundle whose row text still matches that vintage, including its gzip bytes and checksum. A week with no frozen file is listed and left empty. Nothing is interpolated.",
+  "not_included": [
+    "These files are the town and province rows already published as weekly vintages. They are not a listing-level extract.",
+    "Listing descriptions, images, URLs and developer names are not in these files.",
+    "Lender-gated series, including the sell-through monitor, are not in these files.",
+    "Schema 1 is gzipped CSV. Parquet is not generated."
+  ],
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "license_note": "The open observation files are CC BY 4.0. These files are aggregates of that book.",
+  "known_gaps": [
+    {
+      "from": "2026-10-14",
+      "to": "2026-10-20"
+    }
+  ],
+  "missing_capture_dates": [
+    "2026-08-17",
+    "2026-09-14",
+    "2026-09-21",
+    "2026-10-10",
+    "2026-10-11",
+    "2026-10-12",
+    "2026-10-14",
+    "2026-10-15",
+    "2026-10-16",
+    "2026-10-17",
+    "2026-10-18",
+    "2026-10-19",
+    "2026-10-20",
+    "2026-10-26",
+    "2026-11-01"
+  ],
+  "bundles": [
+    {
+      "iso_week": "2026-W32",
+      "week_start": "2026-08-03",
+      "week_end": "2026-08-09",
+      "status": "frozen",
+      "vintage_date": "2026-08-09",
+      "row_count": 74,
+      "generated_at": "2026-11-10T23:49:35.717Z",
+      "source_capture_dates": [
+        "2026-08-05",
+        "2026-08-06",
+        "2026-08-07",
+        "2026-08-08",
+        "2026-08-09"
+      ],
+      "gap_dates_in_week": [],
+      "missing_days_since_compared_to": null,
+      "overlaps_declared_capture_gap": false,
+      "vintage_sha256": "41e73a3cca0ba3436219df9aad6553ce0bf884b98831b3a1afb71d47210b49df",
+      "reason": null,
+      "manifest_path": "data/bulk/weeks/2026-08-09/manifest.json",
+      "manifest_sha256": "d3f7115bf37fc8d663d8ad9b414ec6665a895bbd217ab26d1f5a93996cd4bdf9",
+      "files": [
+        {
+          "name": "town-province.csv.gz",
+          "format": "csv.gz",
+          "sha256": "e228dfa647c5e455be447eb6bb9b97eae37a1bcd77cde2d97f20add015b105c7",
+          "bytes": 1569,
+          "uncompressed_sha256": "e4c90bbb2c5e8905771de8b8b5a26cc66849b622eacac2ba1307f2f3205c46db",
+          "uncompressed_bytes": 8853,
+          "row_count": 74,
+          "schema_version": 1,
+          "path": "data/bulk/weeks/2026-08-09/town-province.csv.gz"
+        }
+      ]
+    },
+    {
+      "iso_week": "2026-W33",
+      "week_start": "2026-08-10",
+      "week_end": "2026-08-16",
+      "status": "frozen",
+      "vintage_date": "2026-08-16",
+      "row_count": 74,
+      "generated_at": "2026-11-10T23:49:35.717Z",
+      "source_capture_dates": [
+        "2026-08-10",
+        "2026-08-11",
+        "2026-08-12",
+        "2026-08-13",
+        "2026-08-14",
+        "2026-08-15",
+        "2026-08-16"
+      ],
+      "gap_dates_in_week": [],
+      "missing_days_since_compared_to": [],
+      "overlaps_declared_capture_gap": false,
+      "vintage_sha256": "56bd741bc866e25cdf5b3ba2e93bd9a3247b40d197c9d8f7d783c6d072c601de",
+      "reason": null,
+      "manifest_path": "data/bulk/weeks/2026-08-16/manifest.json",
+      "manifest_sha256": "21b98f36594a283cbfca52f8ada1b4342f436d461b084c36a0cc944439c9f50a",
+      "files": [
+        {
+          "name": "town-province.csv.gz",
+          "format": "csv.gz",
+          "sha256": "0ccc7899a570d892e10bea14effbffa9b065b9c9ec31017c40171792026ab61a",
+          "bytes": 1916,
+          "uncompressed_sha256": "191b3d15fe8274df73c477bc6c2b1a27351bec878e2e963852f819b92dacec19",
+          "uncompressed_bytes": 10319,
+          "row_count": 74,
+          "schema_version": 1,
+          "path": "data/bulk/weeks/2026-08-16/town-province.csv.gz"
+        }
+      ]
+    },
+    {
+      "iso_week": "2026-W34",
+      "week_start": "2026-08-17",
+      "week_end": "2026-08-23",
+      "status": "frozen",
+      "vintage_date": "2026-08-23",
+      "row_count": 73,
+      "generated_at": "2026-11-10T23:49:35.717Z",
+      "source_capture_dates": [
+        "2026-08-18",
+        "2026-08-19",
+        "2026-08-20",
+        "2026-08-21",
+        "2026-08-22",
+        "2026-08-23"
+      ],
+      "gap_dates_in_week": [
+        "2026-08-17"
+      ],
+      "missing_days_since_compared_to": [
+        "2026-08-17"
+      ],
+      "overlaps_declared_capture_gap": false,
+      "vintage_sha256": "332d01b5e381d716fd201d4c7a8cc6a8b1b5c0d133567f12e45aaa32fa9eb9ae",
+      "reason": null,
+      "manifest_path": "data/bulk/weeks/2026-08-23/manifest.json",
+      "manifest_sha256": "c4d54a24419d229cb8b8b8093380881db6327eccc22d534acda67e37413294e1",
+      "files": [
+        {
+          "name": "town-province.csv.gz",
+          "format": "csv.gz",
+          "sha256": "027935ff68e8b0f6f8d17f8701743036fdca4e2cecb981b847cce24455bf53f3",
+          "bytes": 1945,
+          "uncompressed_sha256": "8c4779adca720c36be2c1618b52f8119d4d0d0f5934720f91be172d05be26a58",
+          "uncompressed_bytes": 10180,
+          "row_count": 73,
+          "schema_version": 1,
+          "path": "data/bulk/weeks/2026-08-23/town-province.csv.gz"
+        }
+      ]
+    },
+    {
+      "iso_week": "2026-W35",
+      "week_start": "2026-08-24",
+      "week_end": "2026-08-30",
+      "status": "frozen",
+      "vintage_date": "2026-08-30",
+      "row_count": 72,
+      "generated_at": "2026-11-10T23:49:35.717Z",
+      "source_capture_dates": [
+        "2026-08-24",
+        "2026-08-25",
+        "2026-08-26",
+        "2026-08-27",
+        "2026-08-28",
+        "2026-08-29",
+        "2026-08-30"
+      ],
+      "gap_dates_in_week": [],
+      "missing_days_since_compared_to": [],
+      "overlaps_declared_capture_gap": false,
+      "vintage_sha256": "e2f12e2c9c43fce4b56c0f47ae371e7748803f90fc61bffda85f07f50931a960",
+      "reason": null,
+      "manifest_path": "data/bulk/weeks/2026-08-30/manifest.json",
+      "manifest_sha256": "184fdf5881c5dcdf7f10a798398ccd4a33e3ed1e18cc17ee4abc1c16fd35bd37",
+      "files": [
+        {
+          "name": "town-province.csv.gz",
+          "format": "csv.gz",
+          "sha256": "19e14cea460827fde575beed68b22b9742fd5b7287632a364007b70e703a9e94",
+          "bytes": 1797,
+          "uncompressed_sha256": "dae8cd9664030a770b733a959f92b01c6707e64f7b287fa91d39081f19acb9b4",
+          "uncompressed_bytes": 10044,
+          "row_count": 72,
+          "schema_version": 1,
+          "path": "data/bulk/weeks/2026-08-30/town-province.csv.gz"
+        }
+      ]
+    },
+    {
+      "iso_week": "2026-W36",
+      "week_start": "2026-08-31",
+      "week_end": "2026-09-06",
+      "status": "frozen",
+      "vintage_date": "2026-09-06",
+      "row_count": 73,
+      "generated_at": "2026-11-10T23:49:35.717Z",
+      "source_capture_dates": [
+        "2026-08-31",
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-05",
+        "2026-09-06"
+      ],
+      "gap_dates_in_week": [],
+      "missing_days_since_compared_to": [],
+      "overlaps_declared_capture_gap": false,
+      "vintage_sha256": "73d226a0747a5238bc06b10b65defdd526cd25f7851ee09fc58ffa5fbd7c6510",
+      "reason": null,
+      "manifest_path": "data/bulk/weeks/2026-09-06/manifest.json",
+      "manifest_sha256": "e54cca4dffa38c5abddaff8aea20a5fc12700948a47656326aafbd43fea9fa91",
+      "files": [
+        {
+          "name": "town-province.csv.gz",
+          "format": "csv.gz",
+          "sha256": "d80690565e5916f1a53d0789f16d4fb358e073489892dded8e0ac5653b51757e",
+          "bytes": 1970,
+          "uncompressed_sha256": "b3ad1dffca0dc80b9219fe1ac04e5e9676d4f8cc27f47af4e8136c9ed15b233e",
+          "uncompressed_bytes": 10190,
+          "row_count": 73,
+          "schema_version": 1,
+          "path": "data/bulk/weeks/2026-09-06/town-province.csv.gz"
+        }
+      ]
+    },
+    {
+      "iso_week": "2026-W37",
+      "week_start": "2026-09-07",
+      "week_end": "2026-09-13",
+      "status": "frozen",
+      "vintage_date": "2026-09-13",
+      "row_count": 74,
+      "generated_at": "2026-11-10T23:49:35.717Z",
+      "source_capture_dates": [
+        "2026-09-07",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-12",
+        "2026-09-13"
+      ],
+      "gap_dates_in_week": [],
+      "missing_days_since_compared_to": [],
+      "overlaps_declared_capture_gap": false,
+      "vintage_sha256": "7adb7d43130b7a3369c3a878fdaae5e0be999c8b03629fc92921cd903cc5288f",
+      "reason": null,
+      "manifest_path": "data/bulk/weeks/2026-09-13/manifest.json",
+      "manifest_sha256": "bbaaea14e7be58b336322391eadd29bc58609f1cd4fa15dc3b5a40fddd916c5c",
+      "files": [
+        {
+          "name": "town-province.csv.gz",
+          "format": "csv.gz",
+          "sha256": "37072e85986674ef016dda29bf70225be7a94c88583098b3e0308b2d661e5ed9",
+          "bytes": 1970,
+          "uncompressed_sha256": "7587fafd996a38ddf6b331b4e08d262ae90372e2005f8692ccfa181b1fd034fe",
+          "uncompressed_bytes": 10332,
+          "row_count": 74,
+          "schema_version": 1,
+          "path": "data/bulk/weeks/2026-09-13/town-province.csv.gz"
+        }
+      ]
+    },
+    {
+      "iso_week": "2026-W38",
+      "week_start": "2026-09-14",
+      "week_end": "2026-09-20",
+      "status": "frozen",
+      "vintage_date": "2026-09-20",
+      "row_count": 74,
+      "generated_at": "2026-11-10T23:49:35.717Z",
+      "source_capture_dates": [
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-19",
+        "2026-09-20"
+      ],
+      "gap_dates_in_week": [
+        "2026-09-14"
+      ],
+      "missing_days_since_compared_to": [
+        "2026-09-14"
+      ],
+      "overlaps_declared_capture_gap": false,
+      "vintage_sha256": "2ff5a639fcb911bc8ec3f80822e2f59d3def1cab6aa2d1a55560bf7cc54d9356",
+      "reason": null,
+      "manifest_path": "data/bulk/weeks/2026-09-20/manifest.json",
+      "manifest_sha256": "5c18d7c12aabae1fddd2bfde0199a9045138aa87d3bdb90fe2385a803b41275c",
+      "files": [
+        {
+          "name": "town-province.csv.gz",
+          "format": "csv.gz",
+          "sha256": "5ed95dedb846ec0524c8926587880d877eea7191c0c7bfa389609f933b1112ba",
+          "bytes": 1932,
+          "uncompressed_sha256": "e60606a35859edce52060609d6bc6d29f9fa331d1365a5c8bc54d33544641e02",
+          "uncompressed_bytes": 10332,
+          "row_count": 74,
+          "schema_version": 1,
+          "path": "data/bulk/weeks/2026-09-20/town-province.csv.gz"
+        }
+      ]
+    },
+    {
+      "iso_week": "2026-W39",
+      "week_start": "2026-09-21",
+      "week_end": "2026-09-27",
+      "status": "frozen",
+      "vintage_date": "2026-09-27",
+      "row_count": 74,
+      "generated_at": "2026-11-10T23:49:35.717Z",
+      "source_capture_dates": [
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-26",
+        "2026-09-27"
+      ],
+      "gap_dates_in_week": [
+        "2026-09-21"
+      ],
+      "missing_days_since_compared_to": [
+        "2026-09-21"
+      ],
+      "overlaps_declared_capture_gap": false,
+      "vintage_sha256": "c0cae8525996f34b765edf91f6e15068bc56c48d19d83f1af16e588ddab334fd",
+      "reason": null,
+      "manifest_path": "data/bulk/weeks/2026-09-27/manifest.json",
+      "manifest_sha256": "428f6e0036c5719f96fa55ae4a8fba3a00ec3106b63ba1fdbd35dbe562e8f2ef",
+      "files": [
+        {
+          "name": "town-province.csv.gz",
+          "format": "csv.gz",
+          "sha256": "81047b4bb20214e268dabf40b3c532c1f5d37bfaed338f56c6a0a931db17bf1a",
+          "bytes": 1999,
+          "uncompressed_sha256": "30a3f52fa2f00ebd348285f249f17072c805bdc21bb2ee4b771f1fd83fba1408",
+          "uncompressed_bytes": 10332,
+          "row_count": 74,
+          "schema_version": 1,
+          "path": "data/bulk/weeks/2026-09-27/town-province.csv.gz"
+        }
+      ]
+    },
+    {
+      "iso_week": "2026-W40",
+      "week_start": "2026-09-28",
+      "week_end": "2026-10-04",
+      "status": "frozen",
+      "vintage_date": "2026-10-04",
+      "row_count": 73,
+      "generated_at": "2026-11-10T23:49:35.717Z",
+      "source_capture_dates": [
+        "2026-09-28",
+        "2026-09-29",
+        "2026-09-30",
+        "2026-10-01",
+        "2026-10-02",
+        "2026-10-03",
+        "2026-10-04"
+      ],
+      "gap_dates_in_week": [],
+      "missing_days_since_compared_to": [],
+      "overlaps_declared_capture_gap": false,
+      "vintage_sha256": "9e62d15527d5caf117f904813f9775d5607e03664f5194bfe7646552c44ec12c",
+      "reason": null,
+      "manifest_path": "data/bulk/weeks/2026-10-04/manifest.json",
+      "manifest_sha256": "51e0232e9b32f575c0799774fa9fa11b9d7718d9794d86363f0c015e486b9d24",
+      "files": [
+        {
+          "name": "town-province.csv.gz",
+          "format": "csv.gz",
+          "sha256": "c6a74f282aa3c70a1e6f59dfb1d6be984886b2602327b006a32271d33669d40d",
+          "bytes": 1939,
+          "uncompressed_sha256": "105e00c427eb7f89e45441feba49d153ed57947c3896aed3454bef7912fb8d76",
+          "uncompressed_bytes": 10200,
+          "row_count": 73,
+          "schema_version": 1,
+          "path": "data/bulk/weeks/2026-10-04/town-province.csv.gz"
+        }
+      ]
+    },
+    {
+      "iso_week": "2026-W41",
+      "week_start": "2026-10-05",
+      "week_end": "2026-10-11",
+      "status": "frozen",
+      "vintage_date": "2026-10-09",
+      "row_count": 74,
+      "generated_at": "2026-11-10T23:49:35.717Z",
+      "source_capture_dates": [
+        "2026-10-05",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08",
+        "2026-10-09"
+      ],
+      "gap_dates_in_week": [
+        "2026-10-10",
+        "2026-10-11"
+      ],
+      "missing_days_since_compared_to": [],
+      "overlaps_declared_capture_gap": false,
+      "vintage_sha256": "64f1770e7073eff334e65119eee63325bb193ed2d8972e1da912a7c0b85a4414",
+      "reason": null,
+      "manifest_path": "data/bulk/weeks/2026-10-09/manifest.json",
+      "manifest_sha256": "145e408de475bfbae7e462e80221d185b8dce2f89d47eedc3b4345c68cfe88f2",
+      "files": [
+        {
+          "name": "town-province.csv.gz",
+          "format": "csv.gz",
+          "sha256": "751551387b5687112fee041cc325305a4d2bb7e712d800d9a784bf6321fdb4f3",
+          "bytes": 1949,
+          "uncompressed_sha256": "e6528342a8fb844301578e364c4d0af66886af430970057f7884d931fd3c406b",
+          "uncompressed_bytes": 10349,
+          "row_count": 74,
+          "schema_version": 1,
+          "path": "data/bulk/weeks/2026-10-09/town-province.csv.gz"
+        }
+      ]
+    },
+    {
+      "iso_week": "2026-W42",
+      "week_start": "2026-10-12",
+      "week_end": "2026-10-18",
+      "status": "frozen",
+      "vintage_date": "2026-10-13",
+      "row_count": 74,
+      "generated_at": "2026-11-10T23:49:35.717Z",
+      "source_capture_dates": [
+        "2026-10-13"
+      ],
+      "gap_dates_in_week": [
+        "2026-10-12",
+        "2026-10-14",
+        "2026-10-15",
+        "2026-10-16",
+        "2026-10-17",
+        "2026-10-18"
+      ],
+      "missing_days_since_compared_to": [
+        "2026-10-10",
+        "2026-10-11",
+        "2026-10-12"
+      ],
+      "overlaps_declared_capture_gap": true,
+      "vintage_sha256": "fcf4ef68aa5973b054081a8bbdbc36fe623162e049864e5eb30ba4c7a2bac92b",
+      "reason": null,
+      "manifest_path": "data/bulk/weeks/2026-10-13/manifest.json",
+      "manifest_sha256": "38dc131188ad98e9aecb41264a97bdca4be9e85c28f337fe623c22a1ec07762e",
+      "files": [
+        {
+          "name": "town-province.csv.gz",
+          "format": "csv.gz",
+          "sha256": "7cbee65e86cc7a948a40183c713815cb2a6c1941a3eaa5b40d741e2176d4cfa4",
+          "bytes": 1735,
+          "uncompressed_sha256": "11cc4ed44a96aef1ef2c93f4129c775e89d803aebb4b7a355492f1472b27ebad",
+          "uncompressed_bytes": 10344,
+          "row_count": 74,
+          "schema_version": 1,
+          "path": "data/bulk/weeks/2026-10-13/town-province.csv.gz"
+        }
+      ]
+    },
+    {
+      "iso_week": "2026-W43",
+      "week_start": "2026-10-19",
+      "week_end": "2026-10-25",
+      "status": "frozen",
+      "vintage_date": "2026-10-25",
+      "row_count": 74,
+      "generated_at": "2026-11-10T23:49:35.717Z",
+      "source_capture_dates": [
+        "2026-10-21",
+        "2026-10-22",
+        "2026-10-23",
+        "2026-10-24",
+        "2026-10-25"
+      ],
+      "gap_dates_in_week": [
+        "2026-10-19",
+        "2026-10-20"
+      ],
+      "missing_days_since_compared_to": [
+        "2026-10-14",
+        "2026-10-15",
+        "2026-10-16",
+        "2026-10-17",
+        "2026-10-18",
+        "2026-10-19",
+        "2026-10-20"
+      ],
+      "overlaps_declared_capture_gap": true,
+      "vintage_sha256": "cae10214538b33f3d89590958f2ca92d78306673185b7253cc941172afdb8f11",
+      "reason": null,
+      "manifest_path": "data/bulk/weeks/2026-10-25/manifest.json",
+      "manifest_sha256": "1f3bb16c6c71a9bda76e295281f3197e2838c3bbd01ee1f2e9627344b806de10",
+      "files": [
+        {
+          "name": "town-province.csv.gz",
+          "format": "csv.gz",
+          "sha256": "8d494072cb89b1bdb8b9c8b5bf41789de2dae215bf91355856dd0db4aa8b4ccf",
+          "bytes": 2076,
+          "uncompressed_sha256": "e58389773fa05bb3ddc0be956fa37b1a954348219733f08c3f2c235c4d61736c",
+          "uncompressed_bytes": 10347,
+          "row_count": 74,
+          "schema_version": 1,
+          "path": "data/bulk/weeks/2026-10-25/town-province.csv.gz"
+        }
+      ]
+    },
+    {
+      "iso_week": "2026-W44",
+      "week_start": "2026-10-26",
+      "week_end": "2026-11-01",
+      "status": "frozen",
+      "vintage_date": "2026-10-31",
+      "row_count": 73,
+      "generated_at": "2026-11-10T23:49:35.717Z",
+      "source_capture_dates": [
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30",
+        "2026-10-31"
+      ],
+      "gap_dates_in_week": [
+        "2026-10-26",
+        "2026-11-01"
+      ],
+      "missing_days_since_compared_to": [
+        "2026-10-26"
+      ],
+      "overlaps_declared_capture_gap": false,
+      "vintage_sha256": "0db4387d0f089b2e876546ddf0d1cc264edce321e7748bf7ff9cb6ba11b77ff1",
+      "reason": null,
+      "manifest_path": "data/bulk/weeks/2026-10-31/manifest.json",
+      "manifest_sha256": "cb697dacd17b06d462b13168bf93ef8ba6e1ac71232516eea9d0f956468b0013",
+      "files": [
+        {
+          "name": "town-province.csv.gz",
+          "format": "csv.gz",
+          "sha256": "a89e54e5a2f78f516d5d7b4f4a8083d850e1cbef5177bf348f53522aca636a50",
+          "bytes": 1945,
+          "uncompressed_sha256": "5054ad08807c34b3a76cf35c72c0e67c0e081fd475c0baceaf09ee42a2d9292e",
+          "uncompressed_bytes": 10229,
+          "row_count": 73,
+          "schema_version": 1,
+          "path": "data/bulk/weeks/2026-10-31/town-province.csv.gz"
+        }
+      ]
+    }
+  ]
+}
