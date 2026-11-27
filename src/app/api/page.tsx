@@ -139,6 +139,7 @@ export default function APIPage() {
           <div className="flex flex-wrap gap-4">
             <Link href="/dataset" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Download dataset →</Link>
             <Link href="/due-diligence" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Due diligence pack →</Link>
+            <Link href="/data/quality" className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary hover:text-foreground">Data quality →</Link>
           </div>
         </Section>
 

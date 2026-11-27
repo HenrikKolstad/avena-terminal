@@ -78,7 +78,8 @@
       "provinces": [
         "Málaga",
         "Cádiz",
-        "Granada"
+        "Granada",
+        "Almería"
       ],
       "summary": "Decree 28/2016, as amended by Decree 31/2024 and Decree-law 1/2025, orders viviendas de uso turístico. The operator files a responsible declaration with the regional tourism department and may advertise from that filing. The declaration must say the dwelling is compatible with the planning rules and, where planning law requires it, that a municipal licence or change-of-use declaration is held. The town hall is told of the inscription and can ask for it to be cancelled if the dwelling does not fit its planning rules. Decree-law 1/2025, article 6, lets a municipality that justifies imperative reasons of general interest regulate whether tourist use is compatible with residential use, and, when it starts the planning change, suspend new licences and responsible declarations for up to three years. Where this review did not read such a municipal decision, the town is unknown.",
       "sources": [
@@ -2076,6 +2077,38 @@
       "municipality_resolution": "name",
       "risk": "unknown",
       "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review.",
+      "municipal_status": "not_read",
+      "as_of": "2026-11-05",
+      "sources": [
+        {
+          "title": "Decreto 28/2016, consolidated text in force 4 March 2025, viviendas con fines turísticos",
+          "url": "https://ws040.juntadeandalucia.es/sedeboja/lconsolidada/eli/es-an/d/2016/02/02/28/con/20250304/spa/html/LE0000568558_20250304.html",
+          "published": "2016-02-02"
+        },
+        {
+          "title": "Decreto 31/2024, de 29 de enero, viviendas de uso turístico",
+          "url": "https://www.juntadeandalucia.es/boja/2024/24/50",
+          "published": "2024-02-02"
+        },
+        {
+          "title": "Decreto-ley 1/2025, de 24 de febrero, de medidas urgentes en materia de vivienda",
+          "url": "https://www.juntadeandalucia.es/boja/2025/41/1",
+          "published": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "town": "Mojacar, Almería",
+      "slug": "mojacar-almeria",
+      "place": "Mojacar",
+      "province": "Almería",
+      "province_key": "almeria",
+      "costa": "Costa del Sol",
+      "region_id": "andalucia",
+      "municipality": "Mojácar",
+      "municipality_resolution": "alias",
+      "risk": "unknown",
+      "reason": "Andalusian law requires a responsible declaration to the regional tourism register and, where planning law requires it, a municipal licence or change-of-use declaration. Decree-law 1/2025 lets a town hall limit or suspend new tourist dwellings. No municipal instrument for this place was read in this review. The listing book spells the place Mojacar. The municipality is Mojácar.",
       "municipal_status": "not_read",
       "as_of": "2026-11-05",
       "sources": [
