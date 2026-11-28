@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-11-27T18:38:15.662Z",
-  "generated_date": "2026-11-27",
-  "listings": 2062,
+  "generated_at": "2026-11-28T14:05:46.754Z",
+  "generated_date": "2026-11-28",
+  "listings": 2058,
   "source": "avena-capture",
-  "source_sha256": "a999321005c3be9855e7b4f472d32a5d373daa1261bd9c97ec94bd054a7909b6",
-  "source_bytes": 105264599,
-  "source_first_seen_at": "2026-11-27T18:38:15.662Z",
-  "content_sha256": "fba5d794b822530fdf65e3c7cf26c9de7e64a8b516b2275b260d2d06c9fa524f",
-  "content_refs": 2062,
-  "content_first_seen_at": "2026-11-27T18:38:15.662Z",
-  "origin_last_modified": "Fri, 27 Nov 2026 10:06:25 GMT"
+  "source_sha256": "d9fd7d39a6aa36c0b50e40a9a1fe7f8d432fca61abb1ef6b23e8f4dd28e72fd1",
+  "source_bytes": 105171498,
+  "source_first_seen_at": "2026-11-28T14:05:46.754Z",
+  "content_sha256": "b676a25a0cb128d258971f4f118b9a7eea8a214df697394e11565c7ffa9d4d42",
+  "content_refs": 2058,
+  "content_first_seen_at": "2026-11-28T14:05:46.754Z",
+  "origin_last_modified": "Sat, 28 Nov 2026 02:22:30 GMT"
 }
